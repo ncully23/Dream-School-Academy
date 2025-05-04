@@ -9,6 +9,7 @@
       font-family: Arial, sans-serif;
       margin: 0;
       padding: 0;
+      background-color: #f8f8f8;
     }
     header {
       background-color: #00539c;
@@ -36,79 +37,100 @@
     nav ul li:hover {
       background-color: #002b57;
     }
-    nav ul li ul {
-      display: none;
-      position: absolute;
-      background-color: #003f7d;
-      top: 100%;
-      left: 0;
-      min-width: 250px;
-      z-index: 1;
+    main {
+      padding: 40px 20px;
+      text-align: center;
     }
-    nav ul li:hover ul {
-      display: block;
+    .topic-links {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 20px;
     }
-    nav ul li ul li {
-      width: 100%;
+    .topic-category {
+      background-color: #ffffff;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      padding: 20px;
+      width: 300px;
+      box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.1);
     }
-    nav ul li ul li a {
-      padding: 10px;
+    .topic-category h2 {
+      margin-top: 0;
+    }
+    .topic-category ul {
+      list-style: none;
+      padding: 0;
+    }
+    .topic-category ul li {
+      margin: 10px 0;
+    }
+    .topic-category ul li a {
+      text-decoration: none;
+      color: #00539c;
+    }
+    .topic-category ul li a:hover {
+      text-decoration: underline;
     }
   </style>
 </head>
 <body>
   <header>
-    <h1>Study Resources</h1>
+    <h1>Study</h1>
   </header>
+
   <nav>
     <ul>
+      <li><a href="index.html">Home</a></li>
+      <li><a href="study.html">Study</a></li>
       <li><a href="#">Practice</a></li>
-      <li>
-        <a href="#">Study</a>
-        <ul>
-          <li>
-            <a href="#">Reading</a>
-            <ul>
-              <li><a href="#">Words in Context</a></li>
-              <li><a href="#">Structure & Purpose</a></li>
-              <li><a href="#">Cross Text</a></li>
-              <li><a href="#">Central Ideas</a></li>
-              <li><a href="#">Command of Evidence</a></li>
-              <li><a href="#">Inferences</a></li>
-              <li><a href="#">Form, Structure, & Sense</a></li>
-              <li><a href="#">Boundaries</a></li>
-              <li><a href="#">Transitions</a></li>
-              <li><a href="#">Rhetorical Synthesis</a></li>
-            </ul>
-          </li>
-          <li>
-            <a href="#">Math</a>
-            <ul>
-              <li><a href="#">Rates, Ratios, & Units</a></li>
-              <li><a href="#">Percentages</a></li>
-              <li><a href="#">Probability</a></li>
-              <li><a href="#">Statistical Claims</a></li>
-              <li><a href="#">Inference from Statistics</a></li>
-              <li><a href="#">1 Variable Linear Equations</a></li>
-              <li><a href="#">2 Variable Linear Equations</a></li>
-              <li><a href="#">Equivalent Expressions</a></li>
-              <li><a href="#">Linear Functions</a></li>
-              <li><a href="#">Linear Inequalities in 1 or 2 Variables</a></li>
-              <li><a href="#">Nonlinear Equations and Systems</a></li>
-              <li><a href="#">Nonlinear Functions</a></li>
-              <li><a href="#">1 Variable Data</a></li>
-              <li><a href="#">2 Variable Data</a></li>
-              <li><a href="#">Lines, Angles, Triangles</a></li>
-              <li><a href="#">Right Triangles & Trigonometry</a></li>
-              <li><a href="#">Area & Volume</a></li>
-              <li><a href="#">Circles</a></li>
-            </ul>
-          </li>
-        </ul>
-      </li>
       <li><a href="#">Tutoring</a></li>
       <li><a href="#">Contact Us</a></li>
     </ul>
   </nav>
+
+  <main>
+    <h2>Select a Subject to Explore Topics</h2>
+    <div class="topic-links">
+      <div class="topic-category">
+        <h2>Reading</h2>
+        <ul>
+          <li><a href="#">Words in Context</a></li>
+          <li><a href="#">Structure & Purpose</a></li>
+          <li><a href="#">Cross Text</a></li>
+          <li><a href="#">Central Ideas</a></li>
+          <li><a href="#">Command of Evidence</a></li>
+          <li><a href="#">Inferences</a></li>
+          <li><a href="#">Form, Structure, & Sense</a></li>
+          <li><a href="#">Boundaries</a></li>
+          <li><a href="#">Transitions</a></li>
+          <li><a href="#">Rhetorical Synthesis</a></li>
+        </ul>
+      </div>
+      <div class="topic-category">
+        <h2>Math</h2>
+        <ul>
+          <li><a href="#">Rates, Ratios, & Units</a></li>
+          <li><a href="#">Percentages</a></li>
+          <li><a href="#">Probability</a></li>
+          <li><a href="#">Statistical Claims</a></li>
+          <li><a href="#">Inference from Statistics</a></li>
+          <li><a href="#">1 Variable Linear Equations</a></li>
+          <li><a href="#">2 Variable Linear Equations</a></li>
+          <li><a href="#">Equivalent Expressions</a></li>
+          <li><a href="#">Linear Functions</a></li>
+          <li><a href="#">Linear Inequalities</a></li>
+          <li><a href="#">Nonlinear Equations & Systems</a></li>
+          <li><a href="#">Nonlinear Functions</a></li>
+          <li><a href="#">1 Variable Data</a></li>
+          <li><a href="#">2 Variable Data</a></li>
+          <li><a href="#">Lines, Angles, Triangles</a></li>
+          <li><a href="#">Right Triangles & Trigonometry</a></li>
+          <li><a href="#">Area & Volume</a></li>
+          <li><a href="#">Circles</a></li>
+        </ul>
+      </div>
+    </div>
+  </main>
 </body>
 </html>
