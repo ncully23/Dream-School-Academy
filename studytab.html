@@ -5,15 +5,74 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Study - Dream School</title>
   <link rel="stylesheet" href="style.css" />
+  <style>
+    main {
+      padding: 50px 20px;
+      text-align: center;
+    }
+
+    .study-heading {
+      margin-bottom: 20px;
+    }
+
+    .study-cards {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 30px;
+      margin-top: 30px;
+    }
+
+    .card {
+      background-color: #1e1e1e;
+      border-radius: 12px;
+      padding: 30px;
+      width: 350px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+      transition: transform 0.3s, box-shadow 0.3s;
+    }
+
+    .card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 25px rgba(255, 215, 0, 0.2);
+    }
+
+    .card h2 {
+      color: gold;
+      font-size: 24px;
+      margin-bottom: 15px;
+    }
+
+    .card ul {
+      list-style: none;
+      padding: 0;
+      text-align: left;
+    }
+
+    .card ul li {
+      margin: 10px 0;
+    }
+
+    .card ul li a {
+      color: #3399ff;
+      text-decoration: none;
+      font-weight: 500;
+    }
+
+    .card ul li a:hover {
+      color: gold;
+      text-decoration: underline;
+    }
+  </style>
 </head>
 <body>
 
   <header>
-    <h1>Dream School</h1>
+    <h1>DREAM SCHOOL</h1>
     <nav>
       <ul class="nav-menu">
         <li><a href="index.html">Home</a></li>
-        <li><a href="study.html">Study</a></li>
+        <li><a href="studytab.html">Study</a></li>
         <li><a href="#">Practice</a></li>
         <li><a href="#">Tutoring</a></li>
         <li><a href="#">Contact Us</a></li>
@@ -22,13 +81,14 @@
   </header>
 
   <main>
-    <section class="hero-section">
+    <div class="study-heading">
       <h2>Study Topics</h2>
       <p>Select a subject below to explore SAT topics and strategies.</p>
-    </section>
+    </div>
 
-    <div class="topic-links">
-      <div class="topic-category">
+    <div class="study-cards">
+      <!-- Reading Card -->
+      <div class="card">
         <h2>Reading</h2>
         <ul>
           <li><a href="#">Words in Context</a></li>
@@ -44,7 +104,8 @@
         </ul>
       </div>
 
-      <div class="topic-category">
+      <!-- Math Card -->
+      <div class="card">
         <h2>Math</h2>
         <ul>
           <li><a href="#">Rates, Ratios, & Units</a></li>
