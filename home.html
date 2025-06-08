@@ -67,6 +67,7 @@
       text-decoration: none;
       font-weight: bold;
       border-radius: 5px;
+      cursor: pointer;
     }
 
     footer {
@@ -74,99 +75,63 @@
       padding: 10px;
       font-size: 0.9em;
     }
-<style>
-  .popup-overlay {
-    display: none;
-    position: fixed;
-    top: 0; left: 0;
-    width: 100%; height: 100%;
-    background: rgba(0,0,0,0.5);
-    z-index: 1000;
-  }
 
-  .popup-content {
-    position: fixed;
-    top: 50%; left: 50%;
-    transform: translate(-50%, -50%);
-    background: white;
-    padding: 30px;
-    border-radius: 10px;
-    box-shadow: 0 0 20px rgba(0,0,0,0.2);
-    max-width: 400px;
-    width: 90%;
-  }
+    /* Popup Styling */
+    .popup-overlay {
+      display: none;
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0,0,0,0.5);
+      z-index: 1000;
+    }
 
-  .popup-content input {
-    width: 100%;
-    padding: 10px;
-    margin: 10px 0;
-    border: 1px solid #aaa;
-    border-radius: 5px;
-  }
+    .popup-content {
+      position: fixed;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      background: white;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 0 20px rgba(0,0,0,0.2);
+      max-width: 400px;
+      width: 90%;
+    }
 
-  .popup-content button {
-    background: #00539c;
-    color: white;
-    border: none;
-    padding: 10px;
-    width: 100%;
-    font-weight: bold;
-    border-radius: 5px;
-    cursor: pointer;
-  }
+    .popup-content input {
+      width: 100%;
+      padding: 10px;
+      margin: 10px 0;
+      border: 1px solid #aaa;
+      border-radius: 5px;
+    }
 
-  .popup-content button:hover {
-    background: #003f7c;
-  }
+    .popup-content button {
+      background: #00539c;
+      color: white;
+      border: none;
+      padding: 10px;
+      width: 100%;
+      font-weight: bold;
+      border-radius: 5px;
+      cursor: pointer;
+    }
 
-  .popup-close {
-    margin-top: 10px;
-    background: none;
-    border: none;
-    color: #888;
-    cursor: pointer;
-    font-size: 0.9em;
-    text-decoration: underline;
-  }
-</style>
-<section>
-  <h2>Get Daily SAT Practice</h2>
-  <button class="signup-button" onclick="openPopup()">Get the SAT Question of the Day</button>
-</section>
+    .popup-content button:hover {
+      background: #003f7c;
+    }
 
-<div class="popup-overlay" id="popup">
-  <div class="popup-content">
-    <h3>Sign Up for Daily SAT Questions</h3>
-    <form id="optin-form">
-      <input type="text" name="name" placeholder="Your Name" required>
-      <input type="email" name="email" placeholder="Your Email" required>
-      <input type="tel" name="phone" placeholder="Your Phone (optional)">
-      <button type="submit">Subscribe</button>
-    </form>
-    <button class="popup-close" onclick="closePopup()">No thanks</button>
-  </div>
-</div>
-
-
+    .popup-close {
+      margin-top: 10px;
+      background: none;
+      border: none;
+      color: #888;
+      cursor: pointer;
+      font-size: 0.9em;
+      text-decoration: underline;
+    }
   </style>
 </head>
-<script>
-  function openPopup() {
-    document.getElementById('popup').style.display = 'block';
-  }
-
-  function closePopup() {
-    document.getElementById('popup').style.display = 'none';
-  }
-
-  document.getElementById('optin-form').addEventListener('submit', function(e) {
-    e.preventDefault();
-    alert('Thanks for signing up! You’ll get your SAT question soon.');
-    closePopup();
-    // Here you could send data to Google Forms or Mailchimp with more JS later
-  });
-</script>
-
 <body>
 
   <header>
@@ -191,19 +156,53 @@
       <h2>Available Times</h2>
       <p>Check below for open SAT tutoring sessions and click the button to reserve a time.</p>
 
-      <!-- Embed your published Google Sheet -->
       <iframe src="https://docs.google.com/spreadsheets/d/e/2PACX-1vShQxHC8PORWUs7jKD8VWGTGX_Z84bJNFwmNEiRm0EZ_cxiLr_MTu7_J2IpHv2cJrs11qCfJCCd3u6p/pubhtml?widget=true&headers=false">Loading…</iframe>
 
-      <!-- Optional: link to editable sign-up sheet -->
       <a class="signup-button" href="https://docs.google.com/spreadsheets/d/1VrmQrj6vnvEg_wRatT1Fb0hB9cNULALOEIxb0yvQ-zE/edit?usp=sharing" target="_blank">
         Reserve a Time
       </a>
     </section>
+
+    <section>
+      <h2>Get Daily SAT Practice</h2>
+      <button class="signup-button" onclick="openPopup()">Get the SAT Question of the Day</button>
+    </section>
+
+    <!-- Popup Form -->
+    <div class="popup-overlay" id="popup">
+      <div class="popup-content">
+        <h3>Sign Up for Daily SAT Questions</h3>
+        <form id="optin-form">
+          <input type="text" name="name" placeholder="Your Name" required>
+          <input type="email" name="email" placeholder="Your Email" required>
+          <input type="tel" name="phone" placeholder="Your Phone (optional)">
+          <button type="submit">Subscribe</button>
+        </form>
+        <button class="popup-close" onclick="closePopup()">No thanks</button>
+      </div>
+    </div>
   </main>
 
   <footer>
     <p>&copy; 2025 Dream School. All rights reserved.</p>
   </footer>
+
+  <script>
+    function openPopup() {
+      document.getElementById('popup').style.display = 'block';
+    }
+
+    function closePopup() {
+      document.getElementById('popup').style.display = 'none';
+    }
+
+    document.getElementById('optin-form').addEventListener('submit', function(e) {
+      e.preventDefault();
+      alert('Thanks for signing up! You’ll get your SAT question soon.');
+      closePopup();
+      // Optional: send data to Google Forms, Mailchimp, etc.
+    });
+  </script>
 
 </body>
 </html>
