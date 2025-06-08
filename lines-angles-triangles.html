@@ -1,103 +1,112 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Lines, Angles, Triangles - Dream School</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Lines, Angles, and Triangles - Dream School</title>
+  <link rel="stylesheet" href="style.css" />
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      margin: 0;
-      padding: 0 20px;
-      background-color: #f8f8f8;
+    main {
+      padding: 40px 20px;
+      max-width: 850px;
+      margin: auto;
     }
-    header {
-      background-color: #00539c;
-      color: white;
-      padding: 20px;
-      text-align: center;
-    }
+
     h2 {
-      color: #00539c;
+      color: gold;
+      border-bottom: 1px solid #444;
+      padding-bottom: 6px;
+      margin-top: 40px;
     }
-    section {
-      margin-bottom: 40px;
-    }
+
     ul {
-      list-style-type: disc;
-      margin-left: 20px;
+      padding-left: 20px;
+    }
+
+    li {
+      color: #ddd;
+      line-height: 1.6;
     }
   </style>
 </head>
 <body>
   <header>
-    <h1>Lines, Angles, and Triangles</h1>
+    <h1>DREAM SCHOOL</h1>
+    <nav>
+      <ul class="nav-menu">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="studytab.html">Study</a></li>
+        <li><a href="#">Practice</a></li>
+        <li><a href="#">Tutoring</a></li>
+        <li><a href="#">Contact Us</a></li>
+      </ul>
+    </nav>
   </header>
 
   <main>
-    <section>
-      <h2>1. Properties of Lines and Angles</h2>
-      <ul>
-        <li><strong>Vertical angles</strong> are congruent.</li>
-        <li><strong>Supplementary angles</strong> sum to 180&deg;.</li>
-        <li><strong>Complementary angles</strong> sum to 90&deg;.</li>
-        <li><strong>Parallel lines and transversals:</strong>
-          <ul>
-            <li>Corresponding angles are congruent.</li>
-            <li>Alternate interior angles are congruent.</li>
-            <li>Alternate exterior angles are congruent.</li>
-            <li>Same-side interior angles are supplementary.</li>
-          </ul>
-        </li>
-        <li><strong>Exterior Angle Theorem:</strong> The exterior angle of a triangle equals the sum of the two non-adjacent interior angles.</li>
-      </ul>
-    </section>
+    <h2>1. Properties of Lines and Angles</h2>
+    <ul>
+      <li><strong>Vertical angles</strong> are congruent.</li>
+      <li><strong>Supplementary angles</strong> sum to 180&deg;.</li>
+      <li><strong>Complementary angles</strong> sum to 90&deg;.</li>
+      <li><strong>Parallel lines and transversals:</strong>
+        <ul>
+          <li>Corresponding angles are congruent.</li>
+          <li>Alternate interior angles are congruent.</li>
+          <li>Alternate exterior angles are congruent.</li>
+          <li>Same-side interior angles are supplementary.</li>
+        </ul>
+      </li>
+      <li><strong>Exterior Angle Theorem:</strong> An exterior angle of a triangle equals the sum of the two non-adjacent interior angles.</li>
+    </ul>
 
-    <section>
-      <h2>2. Triangle Properties and Theorems</h2>
-      <ul>
-        <li><strong>Triangle Sum Theorem:</strong> The sum of a triangle’s interior angles is always 180&deg;.</li>
-        <li><strong>Isosceles Triangle:</strong> Two equal sides and two equal base angles.</li>
-        <li><strong>Equilateral Triangle:</strong> All sides and angles equal (each angle is 60&deg;).</li>
-        <li><strong>Triangle Similarity:</strong>
-          <ul>
-            <li><strong>AA:</strong> Two matching angles imply triangle similarity.</li>
-            <li><strong>SSS:</strong> Corresponding side ratios are equal.</li>
-            <li><strong>SAS:</strong> Two proportional sides and included equal angle.</li>
-          </ul>
-        </li>
-        <li><strong>Triangle Congruence:</strong>
-          <ul>
-            <li><strong>SSS:</strong> All sides equal.</li>
-            <li><strong>SAS:</strong> Two sides and included angle equal.</li>
-            <li><strong>ASA:</strong> Two angles and included side equal.</li>
-            <li><strong>AAS:</strong> Two angles and a non-included side equal.</li>
-          </ul>
-        </li>
-        <li><strong>Right Triangle Properties:</strong>
-          <ul>
-            <li>Pythagorean Theorem: <em>a&sup2; + b&sup2; = c&sup2;</em></li>
-            <li>Special right triangles: 30-60-90 and 45-45-90</li>
-          </ul>
-        </li>
-        <li><strong>Midsegments:</strong> Parallel to third side and half its length.</li>
-        <li><strong>Medians:</strong> Connect vertex to midpoint of opposite side.</li>
-      </ul>
-    </section>
+    <h2>2. Triangle Properties and Theorems</h2>
+    <ul>
+      <li><strong>Triangle Sum Theorem:</strong> The interior angles of a triangle always sum to 180&deg;.</li>
+      <li><strong>Isosceles Triangle:</strong> Two equal sides and two equal base angles.</li>
+      <li><strong>Equilateral Triangle:</strong> All sides and all angles equal (each angle = 60&deg;).</li>
+      <li><strong>Triangle Similarity:</strong>
+        <ul>
+          <li><strong>AA:</strong> Two matching angles imply triangle similarity.</li>
+          <li><strong>SSS:</strong> Corresponding side ratios are equal.</li>
+          <li><strong>SAS:</strong> Two proportional sides and the included equal angle.</li>
+        </ul>
+      </li>
+      <li><strong>Triangle Congruence:</strong>
+        <ul>
+          <li><strong>SSS:</strong> All three sides are equal.</li>
+          <li><strong>SAS:</strong> Two sides and the included angle are equal.</li>
+          <li><strong>ASA:</strong> Two angles and the included side are equal.</li>
+          <li><strong>AAS:</strong> Two angles and a non-included side are equal.</li>
+        </ul>
+      </li>
+      <li><strong>Right Triangle Properties:</strong>
+        <ul>
+          <li>Pythagorean Theorem: \( a^2 + b^2 = c^2 \)</li>
+          <li>Special triangles: 30-60-90 and 45-45-90</li>
+        </ul>
+      </li>
+      <li><strong>Midsegments:</strong> Connect midpoints, parallel to the third side, and half its length.</li>
+      <li><strong>Medians:</strong> Line segments from a vertex to the midpoint of the opposite side.</li>
+    </ul>
 
-    <section>
-      <h2>3. Proportionality and Applications</h2>
-      <ul>
-        <li><strong>Triangle Similarity in Proportions:</strong> Use ratios to find missing side lengths.</li>
-        <li><strong>Trigonometric Applications:</strong> Use sine, cosine, and tangent with right triangles.</li>
-        <li><strong>Real-World Problems:</strong>
-          <ul>
-            <li>Find heights using shadows and triangle similarity.</li>
-            <li>Estimate distances using triangle properties and angle measures.</li>
-          </ul>
-        </li>
-      </ul>
-    </section>
+    <h2>3. Proportionality and Applications</h2>
+    <ul>
+      <li><strong>Triangle Similarity in Proportions:</strong> Use ratios to find missing side lengths.</li>
+      <li><strong>Trigonometric Applications:</strong> Use sine, cosine, and tangent with right triangles.</li>
+      <li><strong>Real-World Problems:</strong>
+        <ul>
+          <li>Find heights using shadows and triangle similarity.</li>
+          <li>Estimate distances using triangle properties and angle measures.</li>
+        </ul>
+      </li>
+    </ul>
   </main>
+
+  <footer>
+    <p>&copy; 2025 Dream School. All rights reserved.</p>
+  </footer>
 </body>
 </html>
