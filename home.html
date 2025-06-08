@@ -74,8 +74,99 @@
       padding: 10px;
       font-size: 0.9em;
     }
+<style>
+  .popup-overlay {
+    display: none;
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: rgba(0,0,0,0.5);
+    z-index: 1000;
+  }
+
+  .popup-content {
+    position: fixed;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    background: white;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 0 20px rgba(0,0,0,0.2);
+    max-width: 400px;
+    width: 90%;
+  }
+
+  .popup-content input {
+    width: 100%;
+    padding: 10px;
+    margin: 10px 0;
+    border: 1px solid #aaa;
+    border-radius: 5px;
+  }
+
+  .popup-content button {
+    background: #00539c;
+    color: white;
+    border: none;
+    padding: 10px;
+    width: 100%;
+    font-weight: bold;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+
+  .popup-content button:hover {
+    background: #003f7c;
+  }
+
+  .popup-close {
+    margin-top: 10px;
+    background: none;
+    border: none;
+    color: #888;
+    cursor: pointer;
+    font-size: 0.9em;
+    text-decoration: underline;
+  }
+</style>
+<section>
+  <h2>Get Daily SAT Practice</h2>
+  <button class="signup-button" onclick="openPopup()">Get the SAT Question of the Day</button>
+</section>
+
+<div class="popup-overlay" id="popup">
+  <div class="popup-content">
+    <h3>Sign Up for Daily SAT Questions</h3>
+    <form id="optin-form">
+      <input type="text" name="name" placeholder="Your Name" required>
+      <input type="email" name="email" placeholder="Your Email" required>
+      <input type="tel" name="phone" placeholder="Your Phone (optional)">
+      <button type="submit">Subscribe</button>
+    </form>
+    <button class="popup-close" onclick="closePopup()">No thanks</button>
+  </div>
+</div>
+
+
   </style>
 </head>
+<script>
+  function openPopup() {
+    document.getElementById('popup').style.display = 'block';
+  }
+
+  function closePopup() {
+    document.getElementById('popup').style.display = 'none';
+  }
+
+  document.getElementById('optin-form').addEventListener('submit', function(e) {
+    e.preventDefault();
+    alert('Thanks for signing up! You’ll get your SAT question soon.');
+    closePopup();
+    // Here you could send data to Google Forms or Mailchimp with more JS later
+  });
+</script>
+
 <body>
 
   <header>
