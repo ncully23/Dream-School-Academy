@@ -4,93 +4,72 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Study - Dream School</title>
+  <link rel="stylesheet" href="css/style.css" />
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      margin: 0;
-      padding: 0;
-      background-color: #f8f8f8;
-    }
-    header {
-      background-color: #00539c;
-      padding: 20px;
-      color: white;
-      text-align: center;
-    }
-    nav ul {
-      list-style: none;
-      padding: 0;
-      margin: 0;
-      display: flex;
-      justify-content: center;
-      background-color: #003f7d;
-    }
-    nav ul li {
-      position: relative;
-    }
-    nav ul li a {
-      display: block;
-      padding: 15px 20px;
-      color: white;
-      text-decoration: none;
-    }
-    nav ul li:hover {
-      background-color: #002b57;
-    }
-    main {
-      padding: 40px 20px;
-      text-align: center;
-    }
+    /* Additional styles for topic grid */
     .topic-links {
       display: flex;
       flex-wrap: wrap;
       justify-content: center;
-      gap: 20px;
+      gap: 30px;
+      margin-top: 40px;
     }
+
     .topic-category {
-      background-color: #ffffff;
-      border: 1px solid #ccc;
+      background-color: #2b2b2b;
+      border: 1px solid #444;
       border-radius: 8px;
-      padding: 20px;
-      width: 300px;
-      box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.1);
+      padding: 25px;
+      width: 320px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.4);
     }
+
     .topic-category h2 {
       margin-top: 0;
+      color: #ffd700;
     }
+
     .topic-category ul {
       list-style: none;
       padding: 0;
+      margin: 0;
     }
+
     .topic-category ul li {
       margin: 10px 0;
     }
+
     .topic-category ul li a {
       text-decoration: none;
-      color: #00539c;
+      color: #57a9ff;
+      transition: color 0.2s;
     }
+
     .topic-category ul li a:hover {
-      text-decoration: underline;
+      color: #ffd700;
     }
   </style>
 </head>
 <body>
   <header>
-    <h1>Study</h1>
+    <h1>Dream School</h1>
+    <nav>
+      <ul class="nav-menu">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="study.html">Study</a></li>
+        <li><a href="#">Practice</a></li>
+        <li><a href="#">Tutoring</a></li>
+        <li><a href="#">Contact Us</a></li>
+      </ul>
+    </nav>
   </header>
 
-  <nav>
-    <ul>
-      <li><a href="index.html">Home</a></li>
-      <li><a href="study.html">Study</a></li>
-      <li><a href="#">Practice</a></li>
-      <li><a href="#">Tutoring</a></li>
-      <li><a href="#">Contact Us</a></li>
-    </ul>
-  </nav>
-
   <main>
-    <h2>Select a Subject to Explore Topics</h2>
+    <section class="hero">
+      <h2>Study Topics</h2>
+      <p>Select a subject below to explore SAT topics and strategies.</p>
+    </section>
+
     <div class="topic-links">
       <div class="topic-category">
         <h2>Reading</h2>
@@ -107,6 +86,7 @@
           <li><a href="#">Rhetorical Synthesis</a></li>
         </ul>
       </div>
+
       <div class="topic-category">
         <h2>Math</h2>
         <ul>
@@ -115,7 +95,7 @@
           <li><a href="#">Probability</a></li>
           <li><a href="#">Statistical Claims</a></li>
           <li><a href="#">Inference from Statistics</a></li>
-          <li><a href="1VariableData.html">1 Variable Data</a></li>         
+          <li><a href="1VariableData.html">1 Variable Data</a></li>
           <li><a href="2VariableData.html">2 Variable Data</a></li>
           <li><a href="#">Equivalent Expressions</a></li>
           <li><a href="#">Linear Functions</a></li>
@@ -130,5 +110,9 @@
       </div>
     </div>
   </main>
+
+  <footer>
+    <p>&copy; 2025 Dream School. All rights reserved.</p>
+  </footer>
 </body>
 </html>
