@@ -2,18 +2,27 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Dream School</title>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700;800&display=swap" rel="stylesheet">
+  <title>Dream School SAT Prep</title>
   <style>
-    body {
-      font-family: 'Poppins', sans-serif;
-      margin: 0;
+    .slot-list {
+      list-style: none;
       padding: 0;
-      background-color: #0a0a0a;
-      color: white;
-      text-align: center;
+      text-align: left;
+      margin: 0 auto;
+      max-width: 400px;
+      font-size: 1.1em;
+      color: #fff;
     }
+
+    .slot-list li {
+      background: #003366;
+      padding: 10px;
+      margin: 5px 0;
+      border-radius: 6px;
+    }
+  </style>
+</head>
+
 
     header {
       background: #000;
@@ -173,15 +182,24 @@
       <a class="cta-button" onclick="document.getElementById('popup-form').style.display='block'">Get the SAT Question of the Day</a>
     </section>
 
-    <section class="cta-section">
+      <!-- <section class="cta-section"
       <h2>Available Times</h2>
-      <p>Check below for open SAT tutoring sessions and click the button to reserve a time.</p>
-      <iframe src="https://docs.google.com/spreadsheets/d/e/2PACX-1vShQxHC8PORWUs7jKD8VWGTGX_Z84bJNFwmNEiRm0EZ_cxiLr_MTu7_J2IpHv2cJrs11qCfJCCd3u6p/pubhtml?widget=true&headers=false"></iframe>
+     <p>Check below for open SAT tutoring sessions and click the button to reserve a time.</p>
+     <iframe src="https://docs.google.com/spreadsheets/d/e/2PACX-1vShQxHC8PORWUs7jKD8VWGTGX_Z84bJNFwmNEiRm0EZ_cxiLr_MTu7_J2IpHv2cJrs11qCfJCCd3u6p/pubhtml?widget=true&headers=false"></iframe>
       <br>
       <a class="cta-button" href="https://docs.google.com/spreadsheets/d/1VrmQrj6vnvEg_wRatT1Fb0hB9cNULALOEIxb0yvQ-zE/edit?usp=sharing" target="_blank">Reserve a Time</a>
     </section>
-  </main>
+  </main> --> 
+<ul class="slot-list">
+  <li>🕓 June 10 – 6:00 PM</li>
+  <li>🕔 June 11 – 4:30 PM</li>
+  <li>🕕 June 13 – 5:00 PM</li>
+  
+</ul>
+<a class="signup-button" href="mailto:youremail@example.com?subject=SAT Session Request">Request a Slot</a>
 
+
+    
   <div id="popup-form" class="popup">
     <span class="popup-close" onclick="document.getElementById('popup-form').style.display='none'">&times;</span>
     <h3>Get the SAT Question of the Day</h3>
