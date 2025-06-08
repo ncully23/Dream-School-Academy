@@ -4,20 +4,26 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Dream School</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700;800&display=swap" rel="stylesheet">
   <style>
     body {
-      font-family: Arial, sans-serif;
+      font-family: 'Poppins', sans-serif;
       margin: 0;
       padding: 0;
-      background: #f8f8f8;
-      color: #333;
+      background-color: #0a0a0a;
+      color: white;
       text-align: center;
     }
 
     header {
-      background: #00539c;
-      color: white;
+      background: #000;
       padding: 20px 0;
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: 28px;
+      color: #ffd700; /* gold */
     }
 
     .nav-menu {
@@ -36,20 +42,100 @@
     }
 
     .nav-menu li a:hover {
-      text-decoration: underline;
+      color: #ffd700;
     }
 
-    main {
-      padding: 40px 20px;
+    .hero {
+      padding: 60px 20px;
+      background-color: #111;
+    }
+
+    .hero h2 {
+      font-size: 36px;
+      font-weight: 800;
+      margin-bottom: 10px;
+    }
+
+    .hero p {
+      font-size: 18px;
+      color: #ccc;
+      max-width: 600px;
+      margin: 0 auto 30px;
+    }
+
+    .cta-button {
+      padding: 16px 32px;
+      font-size: 18px;
+      font-weight: 700;
+      color: #fff;
+      background-color: #00539c;
+      border: 2px solid #ffd700;
+      border-radius: 36px;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-block;
+    }
+
+    .cta-button:hover {
+      background-color: #ffd700;
+      color: #000;
+    }
+
+    .popup {
+      display: none;
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: white;
+      color: #000;
+      padding: 30px;
+      border-radius: 10px;
+      z-index: 9999;
+      max-width: 400px;
+      width: 90%;
+      box-shadow: 0 0 20px rgba(0, 0, 0, 0.4);
+    }
+
+    .popup h3 {
+      margin-top: 0;
+    }
+
+    .popup input {
+      width: 100%;
+      padding: 10px;
+      margin: 10px 0;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+
+    .popup button {
+      background: #00539c;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 5px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .popup button:hover {
+      background: #ffd700;
+      color: #000;
+    }
+
+    .popup-close {
+      position: absolute;
+      top: 10px;
+      right: 15px;
+      font-size: 18px;
+      cursor: pointer;
     }
 
     .cta-section {
-      background-color: #fff;
+      background-color: #222;
       padding: 40px 20px;
-      margin: 20px auto;
-      max-width: 800px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
-      border-radius: 8px;
+      margin-top: 40px;
     }
 
     iframe {
@@ -58,77 +144,11 @@
       border: none;
     }
 
-    .signup-button {
-      display: inline-block;
-      margin-top: 20px;
-      padding: 10px 20px;
-      background-color: #00539c;
-      color: white;
-      text-decoration: none;
-      font-weight: bold;
-      border-radius: 5px;
-      cursor: pointer;
-    }
-
     footer {
-      background: #ddd;
+      background: #000;
       padding: 10px;
       font-size: 0.9em;
-    }
-
-    /* Popup Styling */
-    .popup-overlay {
-      display: none;
-      position: fixed;
-      top: 0; left: 0;
-      width: 100%; height: 100%;
-      background: rgba(0,0,0,0.5);
-      z-index: 1000;
-    }
-
-    .popup-content {
-      position: fixed;
-      top: 50%; left: 50%;
-      transform: translate(-50%, -50%);
-      background: white;
-      padding: 30px;
-      border-radius: 10px;
-      box-shadow: 0 0 20px rgba(0,0,0,0.2);
-      max-width: 400px;
-      width: 90%;
-    }
-
-    .popup-content input {
-      width: 100%;
-      padding: 10px;
-      margin: 10px 0;
-      border: 1px solid #aaa;
-      border-radius: 5px;
-    }
-
-    .popup-content button {
-      background: #00539c;
-      color: white;
-      border: none;
-      padding: 10px;
-      width: 100%;
-      font-weight: bold;
-      border-radius: 5px;
-      cursor: pointer;
-    }
-
-    .popup-content button:hover {
-      background: #003f7c;
-    }
-
-    .popup-close {
-      margin-top: 10px;
-      background: none;
-      border: none;
-      color: #888;
-      cursor: pointer;
-      font-size: 0.9em;
-      text-decoration: underline;
+      color: #aaa;
     }
   </style>
 </head>
@@ -147,62 +167,35 @@
   </header>
 
   <main>
-    <section>
-      <h2>Welcome to Dream School</h2>
-      <p>Your home for SAT mastery—learn at your pace, and rise to your potential.</p>
+    <section class="hero">
+      <h2>DO YOU WANT TO BOOST YOUR SAT SCORE?</h2>
+      <p>Get personalized SAT guidance from a top tutor with a 1450+ score and proven strategies.</p>
+      <a class="cta-button" onclick="document.getElementById('popup-form').style.display='block'">Get the SAT Question of the Day</a>
     </section>
 
     <section class="cta-section">
       <h2>Available Times</h2>
       <p>Check below for open SAT tutoring sessions and click the button to reserve a time.</p>
-
-      <iframe src="https://docs.google.com/spreadsheets/d/e/2PACX-1vShQxHC8PORWUs7jKD8VWGTGX_Z84bJNFwmNEiRm0EZ_cxiLr_MTu7_J2IpHv2cJrs11qCfJCCd3u6p/pubhtml?widget=true&headers=false">Loading…</iframe>
-
-      <a class="signup-button" href="https://docs.google.com/spreadsheets/d/1VrmQrj6vnvEg_wRatT1Fb0hB9cNULALOEIxb0yvQ-zE/edit?usp=sharing" target="_blank">
-        Reserve a Time
-      </a>
+      <iframe src="https://docs.google.com/spreadsheets/d/e/2PACX-1vShQxHC8PORWUs7jKD8VWGTGX_Z84bJNFwmNEiRm0EZ_cxiLr_MTu7_J2IpHv2cJrs11qCfJCCd3u6p/pubhtml?widget=true&headers=false"></iframe>
+      <br>
+      <a class="cta-button" href="https://docs.google.com/spreadsheets/d/1VrmQrj6vnvEg_wRatT1Fb0hB9cNULALOEIxb0yvQ-zE/edit?usp=sharing" target="_blank">Reserve a Time</a>
     </section>
-
-    <section>
-      <h2>Get Daily SAT Practice</h2>
-      <button class="signup-button" onclick="openPopup()">Get the SAT Question of the Day</button>
-    </section>
-
-    <!-- Popup Form -->
-    <div class="popup-overlay" id="popup">
-      <div class="popup-content">
-        <h3>Sign Up for Daily SAT Questions</h3>
-        <form id="optin-form">
-          <input type="text" name="name" placeholder="Your Name" required>
-          <input type="email" name="email" placeholder="Your Email" required>
-          <input type="tel" name="phone" placeholder="Your Phone (optional)">
-          <button type="submit">Subscribe</button>
-        </form>
-        <button class="popup-close" onclick="closePopup()">No thanks</button>
-      </div>
-    </div>
   </main>
+
+  <div id="popup-form" class="popup">
+    <span class="popup-close" onclick="document.getElementById('popup-form').style.display='none'">&times;</span>
+    <h3>Get the SAT Question of the Day</h3>
+    <form action="https://formspree.io/f/mexample" method="POST">
+      <input type="text" name="name" placeholder="Your name" required>
+      <input type="email" name="email" placeholder="Your email" required>
+      <input type="text" name="phone" placeholder="Phone number (optional)">
+      <button type="submit">Submit</button>
+    </form>
+  </div>
 
   <footer>
     <p>&copy; 2025 Dream School. All rights reserved.</p>
   </footer>
-
-  <script>
-    function openPopup() {
-      document.getElementById('popup').style.display = 'block';
-    }
-
-    function closePopup() {
-      document.getElementById('popup').style.display = 'none';
-    }
-
-    document.getElementById('optin-form').addEventListener('submit', function(e) {
-      e.preventDefault();
-      alert('Thanks for signing up! You’ll get your SAT question soon.');
-      closePopup();
-      // Optional: send data to Google Forms, Mailchimp, etc.
-    });
-  </script>
 
 </body>
 </html>
