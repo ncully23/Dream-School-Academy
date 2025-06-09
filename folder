@@ -20,6 +20,6 @@
 │   ├── header.html
 │   └── footer.html
 ├── assets/
-│   ├── styles.css
+│   ├── style.css
 │   └── script.js
 └── README.md
