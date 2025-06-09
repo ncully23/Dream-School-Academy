@@ -1,0 +1,25 @@
+📁 Dream-School-Academy/
+├── home.html                    ← main home page
+├── study/
+│   ├── 1-variable-data.html
+│   ├── 2-variable-data.html
+│   ├── equivalent-expressions.html
+│   ├── linear-functions.html
+│   ├── nonlinear-equations.html
+│   ├── lines-angles-triangles.html
+│   ├── circles.html
+│   └── ... (all other study topics)
+├── practice/
+│   ├── module1.html
+│   └── ... (more practice sets)
+├── tutoring/
+│   ├── about.html
+│   ├── book.html
+│   └── contact.html
+├── components/
+│   ├── header.html
+│   └── footer.html
+├── assets/
+│   ├── styles.css
+│   └── script.js
+└── README.md
