@@ -4,12 +4,12 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Dream School</title>
-  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="/assets/style.css" />
 </head>
 <body>
 
 <header>
-  <h1><a href="/home.html" style="color: yellow; text-decoration: none;">Dream School</a></h1>
+  <h1><a href="/index.html" style="color: yellow; text-decoration: none;">Dream School</a></h1>
   <nav>
     <ul class="nav-menu">
       <li><a href="/study.html">Study</a></li>
@@ -20,24 +20,34 @@
   </nav>
 </header>
 
-  <main>
-    <section class="hero-section">
-      <h2>Master the SAT with Confidence</h2>
-      <p>Get expert strategies, real practice, and personalized tutoring to unlock your dream school admission.</p>
-    </section>
+<main>
+  <section class="hero-section">
+    <h2>Master the SAT with Confidence</h2>
+    <p>Get expert strategies, real practice, and personalized tutoring to unlock your dream school admission.</p>
+  </section>
 
-    <section class="cta-section">
-      <h2>Available Times</h2>
-      <p>Check our schedule and click below to reserve your free SAT strategy consult.</p>
-      <a class="cta-button" href="https://docs.google.com/spreadsheets/d/1VrmQrj6vnvEg_wRatT1Fb0hB9cNULALOEIxb0yvQ-zE/edit?usp=sharing" target="_blank">
-        Reserve a Time
-      </a>
-    </section>
-  </main>
+  <section class="cta-section">
+    <h2>Available Times</h2>
+    <p>Check our schedule and click below to reserve your free SAT strategy consult.</p>
+    <a class="cta-button" href="https://docs.google.com/spreadsheets/d/1VrmQrj6vnvEg_wRatT1Fb0hB9cNULALOEIxb0yvQ-zE/edit?usp=sharing" target="_blank">
+      Reserve a Time
+    </a>
+  </section>
 
-  <footer>
-    <p>&copy; 2025 Dream School. All rights reserved.</p>
-  </footer>
+  <section class="email-signup">
+    <h2>Sign Up for Updates</h2>
+    <p>Enter your email to get updates on free resources, SAT tips, and new practice tests.</p>
+    <form name="email-signup" method="POST" data-netlify="true">
+      <input type="hidden" name="form-name" value="email-signup" />
+      <input type="email" name="email" placeholder="Enter your email" required />
+      <button type="submit">Sign Up</button>
+    </form>
+  </section>
+</main>
+
+<footer>
+  <p>&copy; 2025 Dream School. All rights reserved.</p>
+</footer>
 
 </body>
 </html>
