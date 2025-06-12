@@ -5,49 +5,138 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Dream School</title>
   <link rel="stylesheet" href="/assets/style.css" />
+  <style>
+    /* Modal-specific styles */
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 1000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      overflow: auto;
+      background-color: rgba(0, 0, 0, 0.8);
+    }
+
+    .modal-content {
+      background-color: #1e1e1e;
+      margin: 10% auto;
+      padding: 20px;
+      border: 2px solid #ffd700;
+      width: 90%;
+      max-width: 400px;
+      border-radius: 8px;
+      color: white;
+      text-align: left;
+    }
+
+    .modal-content h3 {
+      color: #ffd700;
+      text-align: center;
+      margin-bottom: 15px;
+    }
+
+    .modal-content input {
+      width: 100%;
+      padding: 10px;
+      margin: 8px 0;
+      border-radius: 5px;
+      border: none;
+    }
+
+    .modal-content button {
+      background-color: #0057d9;
+      color: white;
+      padding: 10px 15px;
+      border: none;
+      border-radius: 25px;
+      font-weight: bold;
+      width: 100%;
+      margin-top: 10px;
+    }
+
+    .modal-content button:hover {
+      background-color: #003f9e;
+    }
+
+    .close {
+      float: right;
+      font-size: 28px;
+      font-weight: bold;
+      color: #aaa;
+    }
+
+    .close:hover {
+      color: white;
+      cursor: pointer;
+    }
+  </style>
 </head>
 <body>
 
-<header>
-  <h1><a href="/index.html" style="color: yellow; text-decoration: none;">Dream School</a></h1>
-  <nav>
-    <ul class="nav-menu">
-      <li><a href="/study.html">Study</a></li>
-      <li><a href="/practice/">Practice</a></li>
-      <li><a href="/tutoring/">Tutoring</a></li>
-      <li><a href="/tutoring/contact.html">Contact Us</a></li>
-    </ul>
-  </nav>
-</header>
+  <header>
+    <h1><a href="/index.html" style="text-decoration: none;">Dream School</a></h1>
+    <nav>
+      <ul class="nav-menu">
+        <li><a href="/study.html">Study</a></li>
+        <li><a href="/practice/">Practice</a></li>
+        <li><a href="/tutoring/">Tutoring</a></li>
+        <li><a href="/tutoring/contact.html">Contact Us</a></li>
+      </ul>
+    </nav>
+  </header>
 
-<main>
-  <section class="hero-section">
-    <h2>Master the SAT with Confidence</h2>
-    <p>Get expert strategies, real practice, and personalized tutoring to unlock your dream school admission.</p>
-  </section>
+  <main>
+    <section class="hero">
+      <h2>Master the SAT with Confidence</h2>
+      <p>Get expert strategies, real practice, and personalized tutoring to unlock your dream school admission.</p>
+    </section>
 
-  <section class="cta-section">
-    <h2>Available Times</h2>
-    <p>Check our schedule and click below to reserve your free SAT strategy consult.</p>
-    <a class="cta-button" href="https://docs.google.com/spreadsheets/d/1VrmQrj6vnvEg_wRatT1Fb0hB9cNULALOEIxb0yvQ-zE/edit?usp=sharing" target="_blank">
-      Reserve a Time
-    </a>
-  </section>
+    <section class="cta-section">
+      <h2>Available Times</h2>
+      <p>Check our schedule and click below to reserve your free SAT strategy consult.</p>
+      <a class="signup-button" href="https://docs.google.com/spreadsheets/d/1VrmQrj6vnvEg_wRatT1Fb0hB9cNULALOEIxb0yvQ-zE/edit?usp=sharing" target="_blank">
+        Reserve a Time
+      </a>
+      <br><br>
+      <button class="signup-button" onclick="document.getElementById('signupModal').style.display='block'">
+        Join Our Email List
+      </button>
+    </section>
+  </main>
 
-  <section class="email-signup">
-    <h2>Sign Up for Updates</h2>
-    <p>Enter your email to get updates on free resources, SAT tips, and new practice tests.</p>
-    <form name="email-signup" method="POST" data-netlify="true">
-      <input type="hidden" name="form-name" value="email-signup" />
-      <input type="email" name="email" placeholder="Enter your email" required />
-      <button type="submit">Sign Up</button>
-    </form>
-  </section>
-</main>
+  <!-- Netlify Form Modal -->
+  <div id="signupModal" class="modal">
+    <div class="modal-content">
+      <span class="close" onclick="document.getElementById('signupModal').style.display='none'">&times;</span>
+      <h3>Join Our List</h3>
+      <form name="email-signup" method="POST" data-netlify="true">
+        <input type="hidden" name="form-name" value="email-signup" />
+        <label for="first-name">First Name</label>
+        <input type="text" name="first-name" id="first-name" required />
+        <label for="last-name">Last Name</label>
+        <input type="text" name="last-name" id="last-name" required />
+        <label for="email">Email</label>
+        <input type="email" name="email" id="email" required />
+        <button type="submit">Sign Up</button>
+      </form>
+    </div>
+  </div>
 
-<footer>
-  <p>&copy; 2025 Dream School. All rights reserved.</p>
-</footer>
+  <footer>
+    <p>&copy; 2025 Dream School. All rights reserved.</p>
+  </footer>
+
+  <script>
+    // Close modal when clicking outside
+    window.onclick = function(event) {
+      const modal = document.getElementById('signupModal');
+      if (event.target == modal) {
+        modal.style.display = "none";
+      }
+    };
+  </script>
 
 </body>
 </html>
