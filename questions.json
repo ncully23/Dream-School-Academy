@@ -1,0 +1,16 @@
+[
+  {
+    "id": 1,
+    "type": "math",
+    "question": "What is the value of \\( x \\) that satisfies the equation \\( 2x + 3 = 11 \\)?",
+    "choices": ["3", "4", "5", "6"],
+    "correct": 2
+  },
+  {
+    "id": 2,
+    "type": "math",
+    "question": "Solve for \\( y \\): \\( \\frac{y}{2} + 5 = 9 \\)",
+    "choices": ["2", "4", "6", "8"],
+    "correct": 1
+  }
+]
