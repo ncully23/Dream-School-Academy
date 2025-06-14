@@ -5,7 +5,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Contact Us - Dream School</title>
   <link rel="stylesheet" href="./assets/style.css" />
+  
   <div id="site-header"></div>
+  <script>
+  fetch('/assets/header.html')
+    .then(response => response.text())
+    .then(data => document.getElementById('site-header').innerHTML = data);
+</script>
   
   <style>
     main {
