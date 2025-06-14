@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Test Strategies - Dream School</title>
+  <link rel="stylesheet" href="./assets/style.css" />
+  <style>
+    main {
+      padding: 60px 20px;
+      max-width: 800px;
+      margin: 0 auto;
+      text-align: left;
+    }
+
+    h2 {
+      color: #f0c948;
+      margin-bottom: 20px;
+    }
+
+    p {
+      font-size: 1.1rem;
+      color: #dddddd;
+      margin-bottom: 20px;
+      line-height: 1.8;
+    }
+
+    .image-wrapper {
+      margin: 30px 0;
+      text-align: center;
+    }
+
+    .image-wrapper img {
+      max-width: 100%;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(255, 255, 255, 0.1);
+    }
+  </style>
+</head>
+<body>
+
+  <div id="site-header"></div>
+  <script>
+    fetch('/assets/header.html')
+      .then(response => response.text())
+      .then(data => document.getElementById('site-header').innerHTML = data);
+  </script>
+
+  <main>
+    <h2>Smart Strategies for SAT Success</h2>
+    <p>This page will include detailed essays and visuals breaking down the most effective strategies for every section of the SAT. Whether you're aiming for a 1200 or a 1500, you'll find tools here to improve your timing, accuracy, and confidence.</p>
+
+    <p>We’ll be covering question types, elimination tactics, pacing methods, mindset tips, and how to practice the right way—not just more.</p>
+
+    <div class="image-wrapper">
+      <img src="./assets/images/strategy-preview.png" alt="SAT Strategy Overview (Coming Soon)" />
+    </div>
+
+    <p>Check back soon—new content is being added weekly. In the meantime, you can sign up for free SAT tips or schedule a strategy consult from the homepage.</p>
+  </main>
+
+  <footer>
+    <p>&copy; 2025 Dream School. All rights reserved.</p>
+  </footer>
+
+</body>
+</html>
