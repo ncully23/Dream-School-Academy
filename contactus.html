@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Contact Us - Dream School</title>
+  <link rel="stylesheet" href="./assets/style.css" />
+  <style>
+    main {
+      padding: 60px 20px;
+      max-width: 700px;
+      margin: 0 auto;
+      text-align: center;
+    }
+
+    h2 {
+      color: #f0c948;
+      margin-bottom: 20px;
+    }
+
+    form {
+      background-color: #1e1e1e;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 0 20px rgba(255, 255, 255, 0.03);
+    }
+
+    label {
+      display: block;
+      margin: 15px 0 5px;
+      font-weight: bold;
+      text-align: left;
+      color: #ddd;
+    }
+
+    input, textarea {
+      width: 100%;
+      padding: 12px;
+      border-radius: 6px;
+      border: none;
+      margin-bottom: 10px;
+      font-size: 1rem;
+    }
+
+    textarea {
+      height: 150px;
+      resize: vertical;
+    }
+
+    button {
+      background-color: #3399ff;
+      color: white;
+      padding: 12px 24px;
+      border: none;
+      border-radius: 25px;
+      font-size: 1rem;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    button:hover {
+      background-color: #2678c8;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1><a href="/home.html" style="text-decoration: none;">Dream School</a></h1>
+    <nav>
+      <ul class="nav-menu">
+        <li><a href="/study.html">Study</a></li>
+        <li><a href="/teststrategies.html">Test Strategies</a></li>
+        <li><a href="/practice.html">Practice</a></li>
+        <li><a href="/tutoring.html">Tutoring</a></li>
+        <li><a href="/contactus.html">Contact Us</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main>
+    <h2>We’d Love Your Feedback</h2>
+    <p>Leave your thoughts, ideas, or questions. Name and email are optional.</p>
+
+    <form name="contact-form" method="POST" data-netlify="true">
+      <input type="hidden" name="form-name" value="contact-form" />
+
+      <label for="name">Name (optional)</label>
+      <input type="text" id="name" name="name" />
+
+      <label for="email">Email (optional)</label>
+      <input type="email" id="email" name="email" />
+
+      <label for="feedback">Your Feedback *</label>
+      <textarea id="feedback" name="feedback" required placeholder="Let us know what you think..."></textarea>
+
+      <button type="submit">Send Feedback</button>
+    </form>
+  </main>
+
+  <footer>
+    <p>&copy; 2025 Dream School. All rights reserved.</p>
+  </footer>
+
+</body>
+</html>
