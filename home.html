@@ -29,6 +29,8 @@
       border-radius: 8px;
       color: white;
       text-align: left;
+      max-height: 90vh;
+      overflow-y: auto;
     }
 
     .modal-content h3 {
@@ -54,6 +56,7 @@
       font-weight: bold;
       width: 100%;
       margin-top: 10px;
+      cursor: pointer;
     }
 
     .modal-content button:hover {
@@ -70,6 +73,12 @@
     .close:hover {
       color: white;
       cursor: pointer;
+    }
+
+    /* Blur background when modal is open */
+    body.modal-open header,
+    body.modal-open main {
+      filter: blur(4px);
     }
   </style>
 </head>
@@ -100,8 +109,8 @@
         Reserve a Time
       </a>
       <br><br>
-      <button class="signup-button" onclick="document.getElementById('signupModal').style.display='block'">
-        Join Our Email List
+      <button class="signup-button" onclick="openModal()">
+        Get Free SAT Tips
       </button>
     </section>
   </main>
@@ -109,17 +118,17 @@
   <!-- Netlify Form Modal -->
   <div id="signupModal" class="modal">
     <div class="modal-content">
-      <span class="close" onclick="document.getElementById('signupModal').style.display='none'">&times;</span>
+      <span class="close" onclick="closeModal()">&times;</span>
       <h3>Join Our List</h3>
-      <form name="email-signup" method="POST" data-netlify="true">
+      <form name="email-signup" method="POST" data-netlify="true" onsubmit="handleSubmit(event)">
         <input type="hidden" name="form-name" value="email-signup" />
         <label for="first-name">First Name</label>
-        <input type="text" name="first-name" id="first-name" required />
+        <input type="text" name="first-name" id="first-name" required tabindex="1" />
         <label for="last-name">Last Name</label>
-        <input type="text" name="last-name" id="last-name" required />
+        <input type="text" name="last-name" id="last-name" required tabindex="2" />
         <label for="email">Email</label>
-        <input type="email" name="email" id="email" required />
-        <button type="submit">Sign Up</button>
+        <input type="email" name="email" id="email" required tabindex="3" pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$" />
+        <button type="submit" id="submitBtn" tabindex="4">Sign Up</button>
       </form>
     </div>
   </div>
@@ -129,13 +138,50 @@
   </footer>
 
   <script>
-    // Close modal when clicking outside
+    function openModal() {
+      document.getElementById('signupModal').style.display = 'block';
+      document.body.classList.add('modal-open');
+      setTimeout(() => {
+        document.getElementById('first-name').focus();
+      }, 100);
+    }
+
+    function closeModal() {
+      document.getElementById('signupModal').style.display = 'none';
+      document.body.classList.remove('modal-open');
+    }
+
+    // Close modal when clicking outside of modal content
     window.onclick = function(event) {
       const modal = document.getElementById('signupModal');
       if (event.target == modal) {
-        modal.style.display = "none";
+        closeModal();
       }
     };
+
+    // Close modal on Escape key
+    document.addEventListener("keydown", function(event) {
+      if (event.key === "Escape") {
+        closeModal();
+      }
+    });
+
+    // Handle form submission
+    function handleSubmit(event) {
+      event.preventDefault();
+      const btn = document.getElementById("submitBtn");
+      btn.innerText = "Submitting...";
+      btn.disabled = true;
+
+      // Let Netlify handle the submission
+      event.target.submit();
+
+      // Show confirmation and close modal
+      setTimeout(() => {
+        alert("Thanks for signing up! Check your email soon.");
+        closeModal();
+      }, 500);
+    }
   </script>
 
 </body>
