@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Practice - Dream School</title>
+  <link rel="stylesheet" href="./assets/style.css" />
+  <style>
+    main {
+      padding: 40px 20px;
+      max-width: 900px;
+      margin: auto;
+    }
+    .question {
+      margin-bottom: 25px;
+      padding: 15px;
+      background-color: #1e1e1e;
+      border-left: 4px solid #ffd700;
+      border-radius: 8px;
+      color: white;
+    }
+    .timer {
+      font-weight: bold;
+      color: gold;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+    .result {
+      font-size: 1.2em;
+      font-weight: bold;
+      color: lightgreen;
+      margin-top: 30px;
+      text-align: center;
+    }
+    button {
+      display: block;
+      margin: 30px auto;
+      background-color: #0057d9;
+      color: white;
+      padding: 12px 20px;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #003f9e;
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <div class="timer">Time Elapsed: <span id="timer">0:00</span></div>
+    <form id="quiz-form">
+      <div class="question" data-answer="c">
+        <p><strong>1. Of the 8 planets in our solar system, 4 are considered rocky. What is the probability that a randomly selected planet will be rocky?</strong></p>
+        <label><input type="radio" name="q1" value="a"> A) 1/8</label><br>
+        <label><input type="radio" name="q1" value="b"> B) 1/4</label><br>
+        <label><input type="radio" name="q1" value="c"> C) 1/2</label><br>
+        <label><input type="radio" name="q1" value="d"> D) 2</label>
+      </div>
+      <div class="question" data-answer="b">
+        <p><strong>2. If 1,200 customers register each day, what fraction of the first 60,000 new accounts are registered in the first 5 days?</strong></p>
+        <label><input type="radio" name="q2" value="a"> A) 1/5</label><br>
+        <label><input type="radio" name="q2" value="b"> B) 1/10</label><br>
+        <label><input type="radio" name="q2" value="c"> C) 1/12</label><br>
+        <label><input type="radio" name="q2" value="d"> D) 1/50</label>
+      </div>
+      <div class="question" data-answer="b">
+        <p><strong>3. Given a total of 671 callers asked about a bill and 48 also asked for repairs, what is the probability a caller who asked about a bill also asked for repairs?</strong></p>
+        <label><input type="radio" name="q3" value="a"> A) 0.05</label><br>
+        <label><input type="radio" name="q3" value="b"> B) 0.07</label><br>
+        <label><input type="radio" name="q3" value="c"> C) 0.20</label><br>
+        <label><input type="radio" name="q3" value="d"> D) 0.27</label>
+      </div>
+      <div class="question" data-answer="a">
+        <p><strong>4. A bag contains 60 marbles. If the probability of selecting a blue marble is 0.35, how many marbles are blue?</strong></p>
+        <label><input type="radio" name="q4" value="a"> A) 21</label><br>
+        <label><input type="radio" name="q4" value="b"> B) 25</label><br>
+        <label><input type="radio" name="q4" value="c"> C) 35</label><br>
+        <label><input type="radio" name="q4" value="d"> D) 39</label>
+      </div>
+      <div class="question" data-answer="d">
+        <p><strong>5. What fraction of chocolate-colored kittens has deep blue eyes?</strong></p>
+        <label><input type="radio" name="q5" value="a"> A) 12/48</label><br>
+        <label><input type="radio" name="q5" value="b"> B) 12/28</label><br>
+        <label><input type="radio" name="q5" value="c"> C) 16/32</label><br>
+        <label><input type="radio" name="q5" value="d"> D) 12/16</label>
+      </div>
+      <button type="button" onclick="gradeQuiz()">Submit</button>
+    </form>
+    <div class="result" id="result"></div>
+  </main>
+  <script>
+    let startTime = Date.now();
+    const timerElement = document.getElementById("timer");
+    setInterval(() => {
+      const elapsed = Math.floor((Date.now() - startTime) / 1000);
+      const minutes = Math.floor(elapsed / 60);
+      const seconds = elapsed % 60;
+      timerElement.textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+    }, 1000);
+
+    function gradeQuiz() {
+      const questions = document.querySelectorAll(".question");
+      let correct = 0;
+      questions.forEach((q, index) => {
+        const name = "q" + (index + 1);
+        const selected = document.querySelector(`input[name="${name}"]:checked`);
+        const answer = q.getAttribute("data-answer");
+        if (selected && selected.value === answer) {
+          correct++;
+        }
+      });
+      const total = questions.length;
+      const timeElapsed = timerElement.textContent;
+      document.getElementById("result").textContent = `You got ${correct} out of ${total} correct. Time: ${timeElapsed}`;
+    }
+  </script>
+</body>
+</html>
