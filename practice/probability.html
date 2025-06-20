@@ -6,92 +6,182 @@
   <title>Probability Practice - Dream School</title>
   <link rel="stylesheet" href="../assets/bluebook.css" />
   <style>
-    main {
-      padding: 40px 20px;
-      max-width: 900px;
-      margin: auto;
+    body {
+      background-color: #f2f5fa;
+      font-family: 'Segoe UI', sans-serif;
     }
-    .question {
-      margin-bottom: 25px;
-      padding: 15px;
-      background-color: #1e1e1e;
-      border-left: 4px solid #ffd700;
+    .container {
+      max-width: 900px;
+      margin: 40px auto;
+      background: white;
+      padding: 30px;
       border-radius: 8px;
-      color: white;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
     }
     .timer {
+      text-align: center;
       font-weight: bold;
-      color: gold;
+      font-size: 18px;
       margin-bottom: 20px;
-      text-align: center;
     }
-    .result {
-      font-size: 1.2em;
-      font-weight: bold;
-      color: lightgreen;
+    .question-box {
+      display: none;
+    }
+    .question-box.active {
+      display: block;
+    }
+    h2 {
+      font-size: 18px;
+      margin-bottom: 20px;
+    }
+    label {
+      display: block;
+      padding: 14px 18px;
+      margin-bottom: 12px;
+      border: 2px solid #ccc;
+      border-radius: 6px;
+      background-color: #f9f9f9;
+      cursor: pointer;
+      font-size: 16px;
+    }
+    input[type="radio"] {
+      display: none;
+    }
+    input[type="radio"]:checked + label {
+      border-color: #0057d9;
+      background-color: #e6f0ff;
+    }
+    .navigation {
+      display: flex;
+      justify-content: space-between;
       margin-top: 30px;
-      text-align: center;
     }
     button {
-      display: block;
-      margin: 30px auto;
+      padding: 10px 20px;
+      font-size: 16px;
+      border: none;
+      border-radius: 6px;
       background-color: #0057d9;
       color: white;
-      padding: 12px 20px;
-      border: none;
-      border-radius: 8px;
-      font-size: 16px;
       cursor: pointer;
     }
     button:hover {
       background-color: #003f9e;
     }
+    .results {
+      display: none;
+    }
+    .result-item {
+      margin: 15px 0;
+      padding: 10px;
+      border-left: 5px solid;
+    }
+    .correct {
+      border-color: #28a745;
+      background-color: #eaf8ee;
+    }
+    .incorrect {
+      border-color: #dc3545;
+      background-color: #fbeaea;
+    }
   </style>
 </head>
 <body>
-  <main>
+  <div class="container">
     <div class="timer">Time Elapsed: <span id="timer">0:00</span></div>
+
     <form id="quiz-form">
-      <div class="question" data-answer="c">
-        <p><strong>1. Of the 8 planets in our solar system, 4 are considered rocky. What is the probability that a randomly selected planet will be rocky?</strong></p>
-        <label><input type="radio" name="q1" value="a"> A) 1/8</label><br>
-        <label><input type="radio" name="q1" value="b"> B) 1/4</label><br>
-        <label><input type="radio" name="q1" value="c"> C) 1/2</label><br>
-        <label><input type="radio" name="q1" value="d"> D) 2</label>
+      <div class="question-box active" data-index="0">
+        <h2>1. Of the 8 planets in our solar system, 4 are considered rocky. What is the probability that a randomly selected planet will be rocky?</h2>
+        <input type="radio" name="q0" id="q0a" value="a"><label for="q0a">A) 1/8</label>
+        <input type="radio" name="q0" id="q0b" value="b"><label for="q0b">B) 1/4</label>
+        <input type="radio" name="q0" id="q0c" value="c"><label for="q0c">C) 1/2</label>
+        <input type="radio" name="q0" id="q0d" value="d"><label for="q0d">D) 2</label>
       </div>
-      <div class="question" data-answer="b">
-        <p><strong>2. If 1,200 customers register each day, what fraction of the first 60,000 new accounts are registered in the first 5 days?</strong></p>
-        <label><input type="radio" name="q2" value="a"> A) 1/5</label><br>
-        <label><input type="radio" name="q2" value="b"> B) 1/10</label><br>
-        <label><input type="radio" name="q2" value="c"> C) 1/12</label><br>
-        <label><input type="radio" name="q2" value="d"> D) 1/50</label>
+      <div class="question-box" data-index="1">
+        <h2>2. If 1,200 customers register each day, what fraction of the first 60,000 new accounts are registered in the first 5 days?</h2>
+        <input type="radio" name="q1" id="q1a" value="a"><label for="q1a">A) 1/5</label>
+        <input type="radio" name="q1" id="q1b" value="b"><label for="q1b">B) 1/10</label>
+        <input type="radio" name="q1" id="q1c" value="c"><label for="q1c">C) 1/12</label>
+        <input type="radio" name="q1" id="q1d" value="d"><label for="q1d">D) 1/50</label>
       </div>
-      <div class="question" data-answer="b">
-        <p><strong>3. Given a total of 671 callers asked about a bill and 48 also asked for repairs, what is the probability a caller who asked about a bill also asked for repairs?</strong></p>
-        <label><input type="radio" name="q3" value="a"> A) 0.05</label><br>
-        <label><input type="radio" name="q3" value="b"> B) 0.07</label><br>
-        <label><input type="radio" name="q3" value="c"> C) 0.20</label><br>
-        <label><input type="radio" name="q3" value="d"> D) 0.27</label>
+      <div class="question-box" data-index="2">
+        <h2>3. Given a total of 671 callers asked about a bill and 48 also asked for repairs, what is the probability a caller who asked about a bill also asked for repairs?</h2>
+        <input type="radio" name="q2" id="q2a" value="a"><label for="q2a">A) 0.05</label>
+        <input type="radio" name="q2" id="q2b" value="b"><label for="q2b">B) 0.07</label>
+        <input type="radio" name="q2" id="q2c" value="c"><label for="q2c">C) 0.20</label>
+        <input type="radio" name="q2" id="q2d" value="d"><label for="q2d">D) 0.27</label>
       </div>
-      <div class="question" data-answer="a">
-        <p><strong>4. A bag contains 60 marbles. If the probability of selecting a blue marble is 0.35, how many marbles are blue?</strong></p>
-        <label><input type="radio" name="q4" value="a"> A) 21</label><br>
-        <label><input type="radio" name="q4" value="b"> B) 25</label><br>
-        <label><input type="radio" name="q4" value="c"> C) 35</label><br>
-        <label><input type="radio" name="q4" value="d"> D) 39</label>
+      <div class="question-box" data-index="3">
+        <h2>4. A bag contains 60 marbles. If the probability of selecting a blue marble is 0.35, how many marbles are blue?</h2>
+        <input type="radio" name="q3" id="q3a" value="a"><label for="q3a">A) 21</label>
+        <input type="radio" name="q3" id="q3b" value="b"><label for="q3b">B) 25</label>
+        <input type="radio" name="q3" id="q3c" value="c"><label for="q3c">C) 35</label>
+        <input type="radio" name="q3" id="q3d" value="d"><label for="q3d">D) 39</label>
       </div>
-      <div class="question" data-answer="d">
-        <p><strong>5. What fraction of chocolate-colored kittens has deep blue eyes?</strong></p>
-        <label><input type="radio" name="q5" value="a"> A) 12/48</label><br>
-        <label><input type="radio" name="q5" value="b"> B) 12/28</label><br>
-        <label><input type="radio" name="q5" value="c"> C) 16/32</label><br>
-        <label><input type="radio" name="q5" value="d"> D) 12/16</label>
+      <div class="question-box" data-index="4">
+        <h2>5. What fraction of chocolate-colored kittens has deep blue eyes?</h2>
+        <input type="radio" name="q4" id="q4a" value="a"><label for="q4a">A) 12/48</label>
+        <input type="radio" name="q4" id="q4b" value="b"><label for="q4b">B) 12/28</label>
+        <input type="radio" name="q4" id="q4c" value="c"><label for="q4c">C) 16/32</label>
+        <input type="radio" name="q4" id="q4d" value="d"><label for="q4d">D) 12/16</label>
       </div>
-      <button type="button" onclick="gradeQuiz()">Submit</button>
+
+      <div class="navigation">
+        <button type="button" onclick="prevQuestion()">Back</button>
+        <button type="button" onclick="nextQuestion()" id="nextBtn">Next</button>
+        <button type="button" onclick="gradeQuiz()" id="submitBtn" style="display: none;">Submit</button>
+      </div>
     </form>
-    <div class="result" id="result"></div>
-  </main>
+
+    <div class="results" id="results"></div>
+  </div>
+
   <script>
+    const correctAnswers = ['c', 'b', 'b', 'a', 'd'];
+    let current = 0;
+    const boxes = document.querySelectorAll('.question-box');
+
+    function showQuestion(index) {
+      boxes.forEach(box => box.classList.remove('active'));
+      boxes[index].classList.add('active');
+      document.getElementById('nextBtn').style.display = index === boxes.length - 1 ? 'none' : 'inline-block';
+      document.getElementById('submitBtn').style.display = index === boxes.length - 1 ? 'inline-block' : 'none';
+    }
+
+    function nextQuestion() {
+      if (current < boxes.length - 1) {
+        current++;
+        showQuestion(current);
+      }
+    }
+
+    function prevQuestion() {
+      if (current > 0) {
+        current--;
+        showQuestion(current);
+      }
+    }
+
+    function gradeQuiz() {
+      document.querySelector('form').style.display = 'none';
+      const resultBox = document.getElementById('results');
+      resultBox.style.display = 'block';
+      let correct = 0;
+      correctAnswers.forEach((ans, i) => {
+        const selected = document.querySelector(`input[name="q${i}"]:checked`);
+        const isCorrect = selected && selected.value === ans;
+        if (isCorrect) correct++;
+        const div = document.createElement('div');
+        div.className = `result-item ${isCorrect ? 'correct' : 'incorrect'}`;
+        div.innerHTML = `<strong>Question ${i + 1}:</strong> ${isCorrect ? 'Correct' : 'Incorrect'}<br>Correct Answer: ${ans.toUpperCase()}`;
+        resultBox.appendChild(div);
+      });
+      const finalScore = document.createElement('h2');
+      finalScore.textContent = `You got ${correct} out of ${correctAnswers.length} correct.`;
+      resultBox.prepend(finalScore);
+    }
+
     let startTime = Date.now();
     const timerElement = document.getElementById("timer");
     setInterval(() => {
@@ -100,22 +190,6 @@
       const seconds = elapsed % 60;
       timerElement.textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
     }, 1000);
-
-    function gradeQuiz() {
-      const questions = document.querySelectorAll(".question");
-      let correct = 0;
-      questions.forEach((q, index) => {
-        const name = "q" + (index + 1);
-        const selected = document.querySelector(`input[name="${name}"]:checked`);
-        const answer = q.getAttribute("data-answer");
-        if (selected && selected.value === answer) {
-          correct++;
-        }
-      });
-      const total = questions.length;
-      const timeElapsed = timerElement.textContent;
-      document.getElementById("result").textContent = `You got ${correct} out of ${total} correct. Time: ${timeElapsed}`;
-    }
   </script>
 </body>
 </html>
