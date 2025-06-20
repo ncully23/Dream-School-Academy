@@ -1,124 +1,66 @@
-/* ===== Reset and Base ===== */
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-
-/* ===== Top Banner ===== */
 .top-bar {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background-color: #1f2e78;
-  padding: 8px 20px;
-  color: white;
-  height: 50px;
-  font-size: 16px;
-  border-bottom: 2px solid #101c48;
-}
-body {
-  font-family: 'Segoe UI', Tahoma, sans-serif;
-  background-color: #f1f4f8;
+  background-color: #dce6f5; /* slightly darker than #e6edf8 */
+  padding: 10px 20px;
   color: #000;
-  line-height: 1.5;
+  height: 54px;
+  font-size: 16px;
+  border-bottom: 2px dashed black; /* dashed bottom line */
+  box-sizing: border-box;
 }
-<link rel="stylesheet" href="assets/bluebook-header.css" />
 
+.header-left,
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
 
-.section-label {
-  font-weight: 500;
+.header-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-grow: 1;
+  gap: 10px;
+  position: relative;
+  top: 1px;
 }
 
 .timer {
   font-weight: bold;
   font-size: 18px;
-  position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
 }
 
-.top-buttons {
-  display: flex;
-  gap: 12px;
+.hide-button {
+  font-size: 12px;
+  background: #ddd;
+  color: #000;
+  border-radius: 4px;
+  padding: 2px 8px;
+  cursor: pointer;
+  border: none;
 }
 
-.top-buttons button {
+.header-right button {
   background-color: white;
   color: #1f2e78;
-  border: none;
-  padding: 5px 12px;
+  border: 1px solid #1f2e78;
+  padding: 6px 12px;
+  font-weight: bold;
   border-radius: 4px;
   cursor: pointer;
-  font-weight: bold;
-  font-size: 14px;
-  transition: background 0.2s;
 }
 
-.top-buttons button:hover {
+.header-right button:hover {
   background-color: #e6e9f3;
 }
 
-/* ===== Question Card ===== */
-.question-container {
-  max-width: 850px;
-  margin: 50px auto;
-  padding: 30px 40px;
-  background-color: white;
-  border-radius: 10px;
-  box-shadow: 0px 8px 20px rgba(0, 0, 0, 0.05);
-}
-
-.question-container h2 {
-  font-size: 20px;
-  margin-bottom: 20px;
-}
-
-.question-text {
-  font-weight: bold;
-  margin-bottom: 20px;
-}
-
-.options {
-  margin-bottom: 30px;
-}
-
-.options label {
-  display: block;
-  margin-bottom: 10px;
-  padding: 12px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-  background: #f9f9f9;
-  cursor: pointer;
-  transition: background 0.2s, border 0.2s;
-}
-
-.options label:hover {
-  background-color: #eef2fa;
-  border-color: #1f2e78;
-}
-
-.options input[type="radio"] {
-  margin-right: 10px;
-}
-
-/* ===== Navigation Buttons ===== */
-.navigation-buttons {
-  display: flex;
-  justify-content: space-between;
-}
-
-button.nav-button {
-  background-color: #0057d9;
-  color: white;
-  padding: 8px 16px;
+.directions-button {
+  font-size: 14px;
+  background: none;
   border: none;
-  font-weight: bold;
-  border-radius: 5px;
   cursor: pointer;
-}
-
-button.nav-button:hover {
-  background-color: #0046b3;
+  color: #1f2e78;
 }
