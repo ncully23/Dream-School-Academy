@@ -1,47 +1,80 @@
-/* Page and container */
-body {
+/* Layout Reset */
+* {
   margin: 0;
-  font-family: "Segoe UI", sans-serif;
-  background-color: #f2f5fa;
+  padding: 0;
+  box-sizing: border-box;
 }
 
-main {
+/* Body */
+body {
+  background-color: #f2f5fa;
+  font-family: 'Segoe UI', sans-serif;
+}
+
+/* Top Blue Header */
+.header-bar {
+  background-color: #e7f0fc;
+  color: #1e1e1e;
   display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 20px;
+  border-bottom: 1px solid #ccc;
+  position: fixed;
+  top: 0;
+  width: 100%;
+  z-index: 999;
+}
+
+.header-left {
+  font-weight: bold;
+}
+
+.timer-wrapper {
+  text-align: center;
+  font-weight: bold;
+  font-size: 18px;
+}
+
+.timer-wrapper button {
+  font-size: 12px;
+  background: none;
+  color: #0057d9;
+  border: none;
+  cursor: pointer;
+  margin-top: 4px;
+}
+
+.header-right {
+  display: flex;
+  gap: 20px;
+}
+
+.header-right button {
+  background: none;
+  border: none;
+  color: #0057d9;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+/* Container below header */
+main {
   max-width: 1200px;
-  margin: 40px auto;
-  border: 1px solid #ccc;
-  border-radius: 8px;
-  overflow: hidden;
+  margin: 80px auto 40px auto;
   background-color: white;
+  padding: 30px;
+  border-radius: 8px;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
 }
 
-/* Passage container (optional) */
-.passage-container {
-  width: 50%;
-  padding: 30px;
-  border-right: 1px solid #ddd;
-  background-color: #fefefe;
-}
-
-.passage-container p {
-  font-size: 16px;
-  line-height: 1.6;
-}
-
-/* Question panel */
-.question-container {
-  width: 50%;
-  padding: 30px;
-  background-color: white;
-}
-
-.question-container h2 {
+/* Question & Choices */
+h2 {
   font-size: 18px;
   margin-bottom: 20px;
 }
 
-.question-container label {
+label {
   display: block;
   padding: 14px 18px;
   margin-bottom: 12px;
@@ -50,7 +83,6 @@ main {
   background-color: #f9f9f9;
   cursor: pointer;
   font-size: 16px;
-  transition: all 0.2s ease;
 }
 
 input[type="radio"] {
@@ -62,36 +94,46 @@ input[type="radio"]:checked + label {
   background-color: #e6f0ff;
 }
 
-/* Timer */
-.timer {
-  text-align: center;
-  font-weight: bold;
-  font-size: 18px;
-  color: #444;
-  margin-top: 20px;
-}
-
-/* Button */
+/* Buttons */
 button {
-  display: block;
-  margin: 40px auto 10px;
-  padding: 12px 30px;
+  padding: 10px 20px;
   font-size: 16px;
   background-color: #0057d9;
   color: white;
   border: none;
   border-radius: 6px;
   cursor: pointer;
+  margin-top: 20px;
 }
 
 button:hover {
   background-color: #003f9e;
 }
 
-/* Result */
-.result {
-  text-align: center;
-  font-size: 20px;
+/* Navigation Buttons */
+.navigation {
+  display: flex;
+  justify-content: space-between;
   margin-top: 30px;
-  color: #28a745;
+}
+
+/* Results Styling */
+.results {
+  display: none;
+}
+
+.result-item {
+  margin: 15px 0;
+  padding: 10px;
+  border-left: 5px solid;
+}
+
+.correct {
+  border-color: #28a745;
+  background-color: #eaf8ee;
+}
+
+.incorrect {
+  border-color: #dc3545;
+  background-color: #fbeaea;
 }
