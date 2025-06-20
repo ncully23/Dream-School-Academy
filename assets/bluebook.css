@@ -1,139 +1,124 @@
-/* Layout Reset */
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-
-/* Body */
-body {
-  background-color: #f2f5fa;
-  font-family: 'Segoe UI', sans-serif;
-}
-
-/* Top Blue Header */
-.header-bar {
-  background-color: #e7f0fc;
-  color: #1e1e1e;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 10px 20px;
-  border-bottom: 1px solid #ccc;
-  position: fixed;
-  top: 0;
-  width: 100%;
-  z-index: 999;
-}
-
-.header-left {
-  font-weight: bold;
-}
-
-.timer-wrapper {
+<style>
+/* === Question Number Circle === */
+.question-number {
+  background-color: #000;
+  color: #fff;
+  border-radius: 50%;
+  display: inline-block;
+  width: 28px;
+  height: 28px;
+  line-height: 28px;
   text-align: center;
   font-weight: bold;
-  font-size: 18px;
+  margin-right: 10px;
 }
 
-.timer-wrapper button {
-  font-size: 12px;
+/* === Mark for Review Button === */
+.mark-review {
   background: none;
-  color: #0057d9;
-  border: none;
+  border: 2px solid #555;
+  color: #555;
+  padding: 4px 10px;
+  border-radius: 4px;
   cursor: pointer;
-  margin-top: 4px;
+  font-weight: bold;
+  transition: all 0.2s ease-in-out;
+}
+.mark-review.active {
+  color: #fff;
+  background-color: crimson;
+  border-color: crimson;
 }
 
-.header-right {
+/* === Cross-Off Button === */
+.strike-toggle {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  background-color: #ccc;
+  border: none;
+  font-weight: bold;
+  padding: 4px 10px;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+/* === Answer Choices === */
+.answer {
   display: flex;
-  gap: 20px;
-}
-
-.header-right button {
-  background: none;
-  border: none;
-  color: #0057d9;
-  font-size: 14px;
-  cursor: pointer;
-}
-
-/* Container below header */
-main {
-  max-width: 1200px;
-  margin: 80px auto 40px auto;
-  background-color: white;
-  padding: 30px;
+  align-items: center;
+  padding: 10px;
+  border: 1px solid #ccc;
   border-radius: 8px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
-}
-
-/* Question & Choices */
-h2 {
-  font-size: 18px;
-  margin-bottom: 20px;
-}
-
-label {
-  display: block;
-  padding: 14px 18px;
-  margin-bottom: 12px;
-  border: 2px solid #ccc;
-  border-radius: 6px;
+  margin: 8px 0;
   background-color: #f9f9f9;
   cursor: pointer;
-  font-size: 16px;
+  transition: all 0.2s ease-in-out;
+}
+.answer:hover {
+  background-color: #eef;
+}
+.answer.disabled {
+  opacity: 0.5;
+  pointer-events: none;
+  text-decoration: line-through;
 }
 
-input[type="radio"] {
-  display: none;
-}
-
-input[type="radio"]:checked + label {
-  border-color: #0057d9;
-  background-color: #e6f0ff;
-}
-
-/* Buttons */
-button {
-  padding: 10px 20px;
-  font-size: 16px;
-  background-color: #0057d9;
+.answer-circle {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background-color: #000;
   color: white;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-  margin-top: 20px;
-}
-
-button:hover {
-  background-color: #003f9e;
-}
-
-/* Navigation Buttons */
-.navigation {
+  font-weight: bold;
   display: flex;
-  justify-content: space-between;
-  margin-top: 30px;
+  align-items: center;
+  justify-content: center;
+  margin-right: 10px;
 }
 
-/* Results Styling */
-.results {
+/* === Utility === */
+.hidden {
   display: none;
 }
+</style>
 
-.result-item {
-  margin: 15px 0;
-  padding: 10px;
-  border-left: 5px solid;
+<script>
+// Toggle mark for review
+function toggleReview(btn) {
+  btn.classList.toggle("active");
 }
 
-.correct {
-  border-color: #28a745;
-  background-color: #eaf8ee;
+// Toggle strike mode
+let strikeMode = false;
+function toggleStrike(btn) {
+  strikeMode = !strikeMode;
+  btn.style.backgroundColor = strikeMode ? 'crimson' : '#ccc';
 }
 
-.incorrect {
-  border-color: #dc3545;
-  background-color: #fbeaea;
+// Strike or un-strike answer
+function handleAnswerClick(answerDiv) {
+  if (strikeMode) {
+    answerDiv.classList.toggle("disabled");
+  } else {
+    // Normal selection logic (radio or highlight)
+    const answers = document.querySelectorAll(".answer");
+    answers.forEach(ans => ans.classList.remove("selected"));
+    answerDiv.classList.add("selected");
+  }
 }
+</script>
+
+<!-- Sample HTML Template for Reference -->
+<div style="position: relative; max-width: 800px; margin: auto;">
+  <div>
+    <span class="question-number">1</span>
+    <button class="mark-review" onclick="toggleReview(this)">Mark for Review</button>
+    <button class="strike-toggle" onclick="toggleStrike(this)">A⧸B⧸C</button>
+  </div>
+  <p><strong>1. Of the 8 planets in our solar system, 4 are considered rocky. What is the probability that a randomly selected planet will be rocky?</strong></p>
+  <div class="answer" onclick="handleAnswerClick(this)"><span class="answer-circle">A</span> 1/8</div>
+  <div class="answer" onclick="handleAnswerClick(this)"><span class="answer-circle">B</span> 1/4</div>
+  <div class="answer" onclick="handleAnswerClick(this)"><span class="answer-circle">C</span> 1/2</div>
+  <div class="answer" onclick="handleAnswerClick(this)"><span class="answer-circle">D</span> 2</div>
+</div>
