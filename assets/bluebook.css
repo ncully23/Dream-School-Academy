@@ -1,124 +1,169 @@
-<style>
-/* === Question Number Circle === */
-.question-number {
-  background-color: #000;
-  color: #fff;
-  border-radius: 50%;
-  display: inline-block;
-  width: 28px;
-  height: 28px;
-  line-height: 28px;
-  text-align: center;
-  font-weight: bold;
-  margin-right: 10px;
-}
-
-/* === Mark for Review Button === */
-.mark-review {
-  background: none;
-  border: 2px solid #555;
-  color: #555;
-  padding: 4px 10px;
-  border-radius: 4px;
-  cursor: pointer;
-  font-weight: bold;
-  transition: all 0.2s ease-in-out;
-}
-.mark-review.active {
-  color: #fff;
-  background-color: crimson;
-  border-color: crimson;
-}
-
-/* === Cross-Off Button === */
-.strike-toggle {
-  position: absolute;
-  top: 12px;
-  right: 12px;
-  background-color: #ccc;
-  border: none;
-  font-weight: bold;
-  padding: 4px 10px;
-  cursor: pointer;
-  border-radius: 4px;
-}
-
-/* === Answer Choices === */
-.answer {
-  display: flex;
-  align-items: center;
-  padding: 10px;
-  border: 1px solid #ccc;
-  border-radius: 8px;
-  margin: 8px 0;
-  background-color: #f9f9f9;
-  cursor: pointer;
-  transition: all 0.2s ease-in-out;
-}
-.answer:hover {
-  background-color: #eef;
-}
-.answer.disabled {
-  opacity: 0.5;
-  pointer-events: none;
-  text-decoration: line-through;
-}
-
-.answer-circle {
-  width: 28px;
-  height: 28px;
-  border-radius: 50%;
-  background-color: #000;
-  color: white;
-  font-weight: bold;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-right: 10px;
-}
-
-/* === Utility === */
-.hidden {
-  display: none;
-}
-</style>
-
-<script>
-// Toggle mark for review
-function toggleReview(btn) {
-  btn.classList.toggle("active");
-}
-
-// Toggle strike mode
-let strikeMode = false;
-function toggleStrike(btn) {
-  strikeMode = !strikeMode;
-  btn.style.backgroundColor = strikeMode ? 'crimson' : '#ccc';
-}
-
-// Strike or un-strike answer
-function handleAnswerClick(answerDiv) {
-  if (strikeMode) {
-    answerDiv.classList.toggle("disabled");
-  } else {
-    // Normal selection logic (radio or highlight)
-    const answers = document.querySelectorAll(".answer");
-    answers.forEach(ans => ans.classList.remove("selected"));
-    answerDiv.classList.add("selected");
-  }
-}
-</script>
-
-<!-- Sample HTML Template for Reference -->
-<div style="position: relative; max-width: 800px; margin: auto;">
-  <div>
-    <span class="question-number">1</span>
-    <button class="mark-review" onclick="toggleReview(this)">Mark for Review</button>
-    <button class="strike-toggle" onclick="toggleStrike(this)">A⧸B⧸C</button>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Math Practice - Bluebook Style</title>
+  <link rel="stylesheet" href="bluebook.css">
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #f5f8fc;
+      margin: 0;
+      padding: 0;
+    }
+    .header {
+      background-color: #dbe7f5;
+      padding: 10px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .question-container {
+      max-width: 800px;
+      margin: 40px auto;
+      background-color: white;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    .question-header {
+      display: flex;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+    .question-number {
+      background: black;
+      color: white;
+      border-radius: 50%;
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      margin-right: 10px;
+    }
+    .mark-review {
+      margin-left: auto;
+      cursor: pointer;
+      background-color: transparent;
+      border: none;
+      color: #333;
+      font-weight: bold;
+    }
+    .mark-review.marked {
+      color: red;
+    }
+    .choice {
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      padding: 10px 16px;
+      margin-bottom: 12px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      transition: background 0.2s;
+    }
+    .choice.disabled {
+      opacity: 0.4;
+      pointer-events: none;
+    }
+    .choice:hover {
+      background-color: #e6f0ff;
+    }
+    .choice-circle {
+      background: #fff;
+      border: 2px solid #0059b3;
+      color: #0059b3;
+      border-radius: 50%;
+      width: 24px;
+      height: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      margin-right: 10px;
+    }
+    .controls {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 30px;
+    }
+    .btn {
+      padding: 10px 20px;
+      border: none;
+      background-color: #0059b3;
+      color: white;
+      border-radius: 5px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    .strike-toggle {
+      position: absolute;
+      top: 10px;
+      right: 20px;
+      cursor: pointer;
+      font-size: 20px;
+      color: #888;
+    }
+    .choice.strike {
+      text-decoration: line-through;
+      opacity: 0.5;
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <div>Section II, Module 1: Math</div>
+    <div>
+      <a href="#">Calculator</a> |
+      <a href="#">Reference</a> |
+      <a href="#">More</a>
+    </div>
   </div>
-  <p><strong>1. Of the 8 planets in our solar system, 4 are considered rocky. What is the probability that a randomly selected planet will be rocky?</strong></p>
-  <div class="answer" onclick="handleAnswerClick(this)"><span class="answer-circle">A</span> 1/8</div>
-  <div class="answer" onclick="handleAnswerClick(this)"><span class="answer-circle">B</span> 1/4</div>
-  <div class="answer" onclick="handleAnswerClick(this)"><span class="answer-circle">C</span> 1/2</div>
-  <div class="answer" onclick="handleAnswerClick(this)"><span class="answer-circle">D</span> 2</div>
-</div>
+
+  <div class="question-container">
+    <div class="question-header">
+      <div class="question-number">1</div>
+      <div class="question-text"><strong>Of the 8 planets in our solar system, 4 are considered rocky. What is the probability that a randomly selected planet will be rocky?</strong></div>
+      <button class="mark-review" onclick="toggleReview(this)">Mark for Review</button>
+    </div>
+
+    <div class="strike-toggle" onclick="toggleStrikeMode(this)">🖉</div>
+
+    <div class="choice" onclick="selectChoice(this)"><div class="choice-circle">A</div> 1/8</div>
+    <div class="choice" onclick="selectChoice(this)"><div class="choice-circle">B</div> 1/4</div>
+    <div class="choice" onclick="selectChoice(this)"><div class="choice-circle">C</div> 1/2</div>
+    <div class="choice" onclick="selectChoice(this)"><div class="choice-circle">D</div> 2</div>
+
+    <div class="controls">
+      <button class="btn">Back</button>
+      <button class="btn">Next</button>
+    </div>
+  </div>
+
+  <script>
+    let strikeMode = false;
+
+    function toggleReview(btn) {
+      btn.classList.toggle('marked');
+    }
+
+    function toggleStrikeMode(icon) {
+      strikeMode = !strikeMode;
+      icon.style.color = strikeMode ? 'red' : '#888';
+    }
+
+    function selectChoice(el) {
+      if (strikeMode) {
+        el.classList.toggle('strike');
+        el.classList.toggle('disabled');
+      } else {
+        document.querySelectorAll('.choice').forEach(c => c.classList.remove('selected'));
+        el.classList.add('selected');
+      }
+    }
+  </script>
+</body>
+</html>
