@@ -19,7 +19,7 @@ body {
   align-items: center;
   background-color: #dce6f5; /* slightly darker than before */
   padding: 10px 20px;
-  height: 80px;
+  height: 100px;
   border-bottom: 2px dashed black; /* dashed bottom border */
   color: #1f2e78;
   font-size: 14px;
