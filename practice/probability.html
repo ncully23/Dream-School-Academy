@@ -13,19 +13,26 @@
   </div>
 </div>
 </head>
-<body>
-  <div class="header-bar">
-    <div class="header-left">Section II, Module 1: Math</div>
-    <div class="timer-wrapper">
-      <div id="timer">0:00</div>
-      <button id="toggleClock" onclick="toggleClock()">Hide</button>
-    </div>
-    <div class="header-right">
-      <button>Calculator</button>
-      <button>Reference</button>
-      <button>More</button>
-    </div>
+
+  <body>
+<div class="top-bar">
+  <div class="header-left">
+    <div class="section-label">Section II, Module 1: Math</div>
+    <button class="directions-button">Directions</button>
   </div>
+
+  <div class="header-center">
+    <div class="timer" id="timer">34:44</div>
+    <button class="hide-button" onclick="document.getElementById('timer').style.display='none'">Hide</button>
+  </div>
+
+  <div class="header-right">
+    <button>Calculator</button>
+    <button>Reference</button>
+    <button>More</button>
+  </div>
+</div>
+
   <style>
     body {
       background-color: #f2f5fa;
