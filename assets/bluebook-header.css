@@ -1,44 +1,56 @@
-/* ===== Bluebook Header Style ===== */
-.header {
+/* ===== Reset and Base ===== */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Segoe UI', Tahoma, sans-serif;
+  background-color: #f1f4f8;
+  color: #000;
+  line-height: 1.5;
+}
+
+/* ===== Bluebook Header ===== */
+.top-bar {
   display: flex;
-  align-items: center;
   justify-content: space-between;
-  background-color: #e3e9f6; /* light blue background */
+  align-items: center;
+  background-color: #e3e9f6;
   padding: 10px 20px;
   height: 60px;
+  border-bottom: 2px solid #1f2e78;
   position: relative;
-  border-bottom: 2px solid #1c2c57;
-  font-family: 'Segoe UI', sans-serif;
-  color: #1c2c57;
+  color: #1f2e78;
   font-size: 14px;
 }
 
-/* ===== Left Section: Section Label + Directions Dropdown ===== */
+/* ===== Left: Section title and dropdown ===== */
 .header-left {
   display: flex;
-  align-items: center;
-  gap: 20px;
-  font-weight: 500;
+  flex-direction: column;
+  gap: 2px;
 }
 
 .section-label {
-  font-size: 16px;
+  font-weight: 600;
+  font-size: 14px;
 }
 
 .directions-button {
   background: none;
   border: none;
-  color: #1c2c57;
-  font-size: 14px;
+  color: #1f2e78;
+  font-size: 13px;
   cursor: pointer;
 }
 
 .directions-button::after {
-  content: '▾';
-  margin-left: 5px;
+  content: " ▾";
 }
 
-/* ===== Center Section: Timer + Hide Button ===== */
+/* ===== Center: Timer and Hide button ===== */
 .header-center {
   position: absolute;
   left: 50%;
@@ -46,41 +58,40 @@
   text-align: center;
 }
 
-.timer-display {
+.timer {
   font-size: 18px;
   font-weight: bold;
 }
 
 .hide-button {
-  display: block;
   margin-top: 2px;
-  padding: 2px 10px;
   font-size: 12px;
-  background-color: white;
-  color: #1c2c57;
-  border: 1px solid #1c2c57;
+  padding: 1px 8px;
   border-radius: 12px;
+  border: 1px solid #1f2e78;
+  background: white;
+  color: #1f2e78;
   cursor: pointer;
 }
 
-/* ===== Right Section: Icons ===== */
+/* ===== Right: Tools ===== */
 .header-right {
   display: flex;
-  align-items: center;
-  gap: 20px;
+  gap: 10px;
 }
 
-.header-icon {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  font-size: 11px;
+.header-right button {
+  background: white;
+  color: #1f2e78;
+  font-weight: bold;
+  font-size: 13px;
+  border: none;
+  padding: 4px 10px;
+  border-radius: 4px;
   cursor: pointer;
-  color: #1c2c57;
+  transition: background 0.2s;
 }
 
-.header-icon img {
-  width: 18px;
-  height: 18px;
-  margin-bottom: 2px;
+.header-right button:hover {
+  background: #d8dfee;
 }
