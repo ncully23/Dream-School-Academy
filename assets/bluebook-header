@@ -1,0 +1,86 @@
+/* ===== Bluebook Header Style ===== */
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: #e3e9f6; /* light blue background */
+  padding: 10px 20px;
+  height: 60px;
+  position: relative;
+  border-bottom: 2px solid #1c2c57;
+  font-family: 'Segoe UI', sans-serif;
+  color: #1c2c57;
+  font-size: 14px;
+}
+
+/* ===== Left Section: Section Label + Directions Dropdown ===== */
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  font-weight: 500;
+}
+
+.section-label {
+  font-size: 16px;
+}
+
+.directions-button {
+  background: none;
+  border: none;
+  color: #1c2c57;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.directions-button::after {
+  content: '▾';
+  margin-left: 5px;
+}
+
+/* ===== Center Section: Timer + Hide Button ===== */
+.header-center {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  text-align: center;
+}
+
+.timer-display {
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.hide-button {
+  display: block;
+  margin-top: 2px;
+  padding: 2px 10px;
+  font-size: 12px;
+  background-color: white;
+  color: #1c2c57;
+  border: 1px solid #1c2c57;
+  border-radius: 12px;
+  cursor: pointer;
+}
+
+/* ===== Right Section: Icons ===== */
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.header-icon {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-size: 11px;
+  cursor: pointer;
+  color: #1c2c57;
+}
+
+.header-icon img {
+  width: 18px;
+  height: 18px;
+  margin-bottom: 2px;
+}
