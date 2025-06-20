@@ -3,193 +3,131 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Probability Practice - Dream School</title>
-  <link rel="stylesheet" href="../assets/bluebook.css" />
-  <style>
-    body {
-      background-color: #f2f5fa;
-      font-family: 'Segoe UI', sans-serif;
-    }
-    .container {
-      max-width: 900px;
-      margin: 40px auto;
-      background: white;
-      padding: 30px;
-      border-radius: 8px;
-      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
-    }
-    .timer {
+  <title>Study - Dream School</title>
+  <link rel="stylesheet" href="./assets/style.css" />
+  
+<div id="site-header"></div>
+
+    <style>
+    main {
+      padding: 50px 20px;
       text-align: center;
-      font-weight: bold;
-      font-size: 18px;
+    }
+
+    .study-heading {
       margin-bottom: 20px;
     }
-    .question-box {
-      display: none;
-    }
-    .question-box.active {
-      display: block;
-    }
-    h2 {
-      font-size: 18px;
-      margin-bottom: 20px;
-    }
-    label {
-      display: block;
-      padding: 14px 18px;
-      margin-bottom: 12px;
-      border: 2px solid #ccc;
-      border-radius: 6px;
-      background-color: #f9f9f9;
-      cursor: pointer;
-      font-size: 16px;
-    }
-    input[type="radio"] {
-      display: none;
-    }
-    input[type="radio"]:checked + label {
-      border-color: #0057d9;
-      background-color: #e6f0ff;
-    }
-    .navigation {
+
+    .study-cards {
       display: flex;
-      justify-content: space-between;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 30px;
       margin-top: 30px;
     }
-    button {
-      padding: 10px 20px;
-      font-size: 16px;
-      border: none;
-      border-radius: 6px;
-      background-color: #0057d9;
-      color: white;
-      cursor: pointer;
+
+    .card {
+      background-color: #1e1e1e;
+      border-radius: 12px;
+      padding: 30px;
+      width: 350px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+      transition: transform 0.3s, box-shadow 0.3s;
     }
-    button:hover {
-      background-color: #003f9e;
+
+    .card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 25px rgba(255, 215, 0, 0.2);
     }
-    .results {
-      display: none;
+
+    .card h2 {
+      color: gold;
+      font-size: 24px;
+      margin-bottom: 15px;
     }
-    .result-item {
-      margin: 15px 0;
-      padding: 10px;
-      border-left: 5px solid;
+
+    .card ul {
+      list-style: none;
+      padding: 0;
+      text-align: left;
     }
-    .correct {
-      border-color: #28a745;
-      background-color: #eaf8ee;
+
+    .card ul li {
+      margin: 10px 0;
     }
-    .incorrect {
-      border-color: #dc3545;
-      background-color: #fbeaea;
+
+    .card ul li a {
+      color: #3399ff;
+      text-decoration: none;
+      font-weight: 500;
+    }
+
+    .card ul li a:hover {
+      color: gold;
+      text-decoration: underline;
     }
   </style>
 </head>
 <body>
-  <div class="container">
-    <div class="timer">Time Elapsed: <span id="timer">0:00</span></div>
+  <main>
+    <div class="study-heading">
+      <h2>Study Topics</h2>
+      <p>CollegeBoard divides the SAT into 29 topics.</p>
+    </div>
 
-    <form id="quiz-form">
-      <div class="question-box active" data-index="0">
-        <h2>1. Of the 8 planets in our solar system, 4 are considered rocky. What is the probability that a randomly selected planet will be rocky?</h2>
-        <input type="radio" name="q0" id="q0a" value="a"><label for="q0a">A) 1/8</label>
-        <input type="radio" name="q0" id="q0b" value="b"><label for="q0b">B) 1/4</label>
-        <input type="radio" name="q0" id="q0c" value="c"><label for="q0c">C) 1/2</label>
-        <input type="radio" name="q0" id="q0d" value="d"><label for="q0d">D) 2</label>
-      </div>
-      <div class="question-box" data-index="1">
-        <h2>2. If 1,200 customers register each day, what fraction of the first 60,000 new accounts are registered in the first 5 days?</h2>
-        <input type="radio" name="q1" id="q1a" value="a"><label for="q1a">A) 1/5</label>
-        <input type="radio" name="q1" id="q1b" value="b"><label for="q1b">B) 1/10</label>
-        <input type="radio" name="q1" id="q1c" value="c"><label for="q1c">C) 1/12</label>
-        <input type="radio" name="q1" id="q1d" value="d"><label for="q1d">D) 1/50</label>
-      </div>
-      <div class="question-box" data-index="2">
-        <h2>3. Given a total of 671 callers asked about a bill and 48 also asked for repairs, what is the probability a caller who asked about a bill also asked for repairs?</h2>
-        <input type="radio" name="q2" id="q2a" value="a"><label for="q2a">A) 0.05</label>
-        <input type="radio" name="q2" id="q2b" value="b"><label for="q2b">B) 0.07</label>
-        <input type="radio" name="q2" id="q2c" value="c"><label for="q2c">C) 0.20</label>
-        <input type="radio" name="q2" id="q2d" value="d"><label for="q2d">D) 0.27</label>
-      </div>
-      <div class="question-box" data-index="3">
-        <h2>4. A bag contains 60 marbles. If the probability of selecting a blue marble is 0.35, how many marbles are blue?</h2>
-        <input type="radio" name="q3" id="q3a" value="a"><label for="q3a">A) 21</label>
-        <input type="radio" name="q3" id="q3b" value="b"><label for="q3b">B) 25</label>
-        <input type="radio" name="q3" id="q3c" value="c"><label for="q3c">C) 35</label>
-        <input type="radio" name="q3" id="q3d" value="d"><label for="q3d">D) 39</label>
-      </div>
-      <div class="question-box" data-index="4">
-        <h2>5. What fraction of chocolate-colored kittens has deep blue eyes?</h2>
-        <input type="radio" name="q4" id="q4a" value="a"><label for="q4a">A) 12/48</label>
-        <input type="radio" name="q4" id="q4b" value="b"><label for="q4b">B) 12/28</label>
-        <input type="radio" name="q4" id="q4c" value="c"><label for="q4c">C) 16/32</label>
-        <input type="radio" name="q4" id="q4d" value="d"><label for="q4d">D) 12/16</label>
+    <div class="study-cards">
+      <!-- Reading Card -->
+      <div class="card">
+        <h2>Reading</h2>
+        <ul>
+          <li><a href="practice/wordsincontext.html">Words in Context</a></li>
+          <li><a href="practice/structureandpurpose.html">Structure & Purpose</a></li>
+          <li><a href="practice/crosstext.html">Cross Text</a></li>
+          <li><a href="practice/centralideas.html">Central Ideas</a></li>
+          <li><a href="practice/commandofevidence.html">Command of Evidence</a></li>
+          <li><a href="practice/inferences.html">Inferences</a></li>
+          <li><a href="practice/form-structure-sense.html">Form, Structure, & Sense</a></li>
+          <li><a href="practice/boundaries">Boundaries</a></li>
+          <li><a href="practice/transitions.html">Transitions</a></li>
+          <li><a href="rhetoricalsynthesis.html">Rhetorical Synthesis</a></li>
+        </ul>
       </div>
 
-      <div class="navigation">
-        <button type="button" onclick="prevQuestion()">Back</button>
-        <button type="button" onclick="nextQuestion()" id="nextBtn">Next</button>
-        <button type="button" onclick="gradeQuiz()" id="submitBtn" style="display: none;">Submit</button>
+      <!-- Math Card -->
+      <div class="card">
+        <h2>Math</h2>
+        <ul>
+          <li><a href="practice/ratesratiosunits.html">Rates, Ratios, & Units</a></li>
+          <li><a href="practice/percentages">Percentages</a></li>
+          <li><a href="practice/probability">Probability</a></li>
+          <li><a href="practice/statisticalclaims.html">Statistical Claims</a></li>
+          <li><a href="practice/inferencesfromstatistics.html">Inference from Statistics</a></li>
+          <li><a href="practice/1VariableData.html">1 Variable Data</a></li>
+          <li><a href="practice/2VariableData.html">2 Variable Data</a></li>
+          <li><a href="practice/equivalentexpressions.html">Equivalent Expressions</a></li>
+          <li><a href="practice/linearfunctions.html">Linear Functions</a></li>
+          <li><a href="practice/linearinequalities.html">Linear Inequalities</a></li>
+          <li><a href="practice/nonlinearequations.html">Nonlinear Equations</a></li>
+          <li><a href="practice/nonlinearin1&systemsin2.html">Nonlinear Equations in 1 Variable & Systems of Equations in 2 Variables</a><li>
+          <li><a href="practice/nonlinearfunctions.html">Nonlinear Functions</a></li>
+          <li><a href="practice/lines-angles-triangles.html">Lines, Angles, Triangles</a></li>
+          <li><a href="practice/righttrianglesandtrigonometry">Right Triangles & Trigonometry</a></li>
+          <li><a href="practice/A&V.html">Area & Volume</a></li>
+          <li><a href="practice/circles.html">Circles</a></li>
+        </ul>
       </div>
-    </form>
+    </div>
+  </main>
 
-    <div class="results" id="results"></div>
-  </div>
+  <footer>
+    <p>&copy; 2025 Dream School. All rights reserved.</p>
+  </footer>
 
-  <script>
-    const correctAnswers = ['c', 'b', 'b', 'a', 'd'];
-    let current = 0;
-    const boxes = document.querySelectorAll('.question-box');
+<script>
+  fetch('/assets/header.html')
+    .then(response => response.text())
+    .then(data => document.getElementById('site-header').innerHTML = data);
+</script>
 
-    function showQuestion(index) {
-      boxes.forEach(box => box.classList.remove('active'));
-      boxes[index].classList.add('active');
-      document.getElementById('nextBtn').style.display = index === boxes.length - 1 ? 'none' : 'inline-block';
-      document.getElementById('submitBtn').style.display = index === boxes.length - 1 ? 'inline-block' : 'none';
-    }
-
-    function nextQuestion() {
-      if (current < boxes.length - 1) {
-        current++;
-        showQuestion(current);
-      }
-    }
-
-    function prevQuestion() {
-      if (current > 0) {
-        current--;
-        showQuestion(current);
-      }
-    }
-
-    function gradeQuiz() {
-      document.querySelector('form').style.display = 'none';
-      const resultBox = document.getElementById('results');
-      resultBox.style.display = 'block';
-      let correct = 0;
-      correctAnswers.forEach((ans, i) => {
-        const selected = document.querySelector(`input[name="q${i}"]:checked`);
-        const isCorrect = selected && selected.value === ans;
-        if (isCorrect) correct++;
-        const div = document.createElement('div');
-        div.className = `result-item ${isCorrect ? 'correct' : 'incorrect'}`;
-        div.innerHTML = `<strong>Question ${i + 1}:</strong> ${isCorrect ? 'Correct' : 'Incorrect'}<br>Correct Answer: ${ans.toUpperCase()}`;
-        resultBox.appendChild(div);
-      });
-      const finalScore = document.createElement('h2');
-      finalScore.textContent = `You got ${correct} out of ${correctAnswers.length} correct.`;
-      resultBox.prepend(finalScore);
-    }
-
-    let startTime = Date.now();
-    const timerElement = document.getElementById("timer");
-    setInterval(() => {
-      const elapsed = Math.floor((Date.now() - startTime) / 1000);
-      const minutes = Math.floor(elapsed / 60);
-      const seconds = elapsed % 60;
-      timerElement.textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
-    }, 1000);
-  </script>
 </body>
 </html>
