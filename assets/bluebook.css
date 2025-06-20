@@ -1,31 +1,24 @@
-/* Reset and base */
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-
+/* Page and container */
 body {
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  background-color: #f7f9fc;
-  color: #1e1e1e;
-  padding: 20px;
+  margin: 0;
+  font-family: "Segoe UI", sans-serif;
+  background-color: #f2f5fa;
 }
 
 main {
-  max-width: 1200px;
-  margin: 0 auto;
-  background-color: white;
   display: flex;
+  max-width: 1200px;
+  margin: 40px auto;
   border: 1px solid #ccc;
   border-radius: 8px;
   overflow: hidden;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+  background-color: white;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
 }
 
-/* Left pane (passage) */
+/* Passage container (optional) */
 .passage-container {
-  flex: 1;
+  width: 50%;
   padding: 30px;
   border-right: 1px solid #ddd;
   background-color: #fefefe;
@@ -34,20 +27,18 @@ main {
 .passage-container p {
   font-size: 16px;
   line-height: 1.6;
-  color: #333;
 }
 
-/* Right pane (question) */
+/* Question panel */
 .question-container {
-  flex: 1;
+  width: 50%;
   padding: 30px;
-  background-color: #ffffff;
+  background-color: white;
 }
 
 .question-container h2 {
   font-size: 18px;
   margin-bottom: 20px;
-  color: #111;
 }
 
 .question-container label {
@@ -56,19 +47,19 @@ main {
   margin-bottom: 12px;
   border: 2px solid #ccc;
   border-radius: 6px;
-  background-color: #fafafa;
+  background-color: #f9f9f9;
   cursor: pointer;
   font-size: 16px;
   transition: all 0.2s ease;
 }
 
-.question-container input[type="radio"] {
+input[type="radio"] {
   display: none;
 }
 
-.question-container input[type="radio"]:checked + label {
-  border-color: #0074d9;
-  background-color: #e6f0fa;
+input[type="radio"]:checked + label {
+  border-color: #0057d9;
+  background-color: #e6f0ff;
 }
 
 /* Timer */
@@ -76,26 +67,25 @@ main {
   text-align: center;
   font-weight: bold;
   font-size: 18px;
-  color: #333;
-  margin-bottom: 20px;
+  color: #444;
+  margin-top: 20px;
 }
 
-/* Submit button */
+/* Button */
 button {
   display: block;
   margin: 40px auto 10px;
   padding: 12px 30px;
   font-size: 16px;
-  background-color: #0074d9;
+  background-color: #0057d9;
   color: white;
   border: none;
   border-radius: 6px;
   cursor: pointer;
-  transition: background-color 0.2s ease;
 }
 
 button:hover {
-  background-color: #005bb5;
+  background-color: #003f9e;
 }
 
 /* Result */
