@@ -5,6 +5,18 @@
   box-sizing: border-box;
 }
 
+/* ===== Top Banner ===== */
+.top-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: #1f2e78;
+  padding: 8px 20px;
+  color: white;
+  height: 50px;
+  font-size: 16px;
+  border-bottom: 2px solid #101c48;
+}
 body {
   font-family: 'Segoe UI', Tahoma, sans-serif;
   background-color: #f1f4f8;
