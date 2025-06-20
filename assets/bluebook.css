@@ -17,14 +17,13 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background-color: #dce6f5; /* slightly darker than before */
-  padding: 1000px 2000px;
-  height: 10000px;
-  border-bottom: 2px dashed black; /* dashed bottom border */
+  background-color: #dce6f5;
+  padding: 20px 40px;
+  border-bottom: 2px dashed black;
   color: #1f2e78;
   font-size: 14px;
-  position: relative;
 }
+
 
 /* ===== Left Section Title and Directions Button ===== */
 .header-left {
@@ -52,11 +51,13 @@ body {
 
 /* ===== Center Timer and Toggle Button ===== */
 .header-center {
-  position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
-  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
 }
+
 
 .timer {
   font-size: 18px;
