@@ -1,66 +1,180 @@
-.top-bar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  background-color: #dce6f5; /* slightly darker than #e6edf8 */
-  padding: 10px 20px;
-  color: #000;
-  height: 54px;
-  font-size: 16px;
-  border-bottom: 2px dashed black; /* dashed bottom line */
+/* ===== Global Reset and Base Styles ===== */
+* {
+  margin: 0;
+  padding: 0;
   box-sizing: border-box;
 }
 
-.header-left,
-.header-right {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.header-center {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-grow: 1;
-  gap: 10px;
-  position: relative;
-  top: 1px;
-}
-
-.timer {
-  font-weight: bold;
-  font-size: 18px;
-}
-
-.hide-button {
-  font-size: 12px;
-  background: #ddd;
+body {
+  font-family: 'Segoe UI', Tahoma, sans-serif;
+  background-color: #f1f4f8;
   color: #000;
-  border-radius: 4px;
-  padding: 2px 8px;
-  cursor: pointer;
-  border: none;
+  line-height: 1.5;
 }
 
-.header-right button {
-  background-color: white;
+/* ===== Top Bluebook Header Bar ===== */
+.top-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #dce6f5; /* slightly darker than before */
+  padding: 10px 20px;
+  height: 60px;
+  border-bottom: 2px dashed black; /* dashed bottom border */
   color: #1f2e78;
-  border: 1px solid #1f2e78;
-  padding: 6px 12px;
-  font-weight: bold;
-  border-radius: 4px;
-  cursor: pointer;
+  font-size: 14px;
+  position: relative;
 }
 
-.header-right button:hover {
-  background-color: #e6e9f3;
+/* ===== Left Section Title and Directions Button ===== */
+.header-left {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.section-label {
+  font-weight: 600;
+  font-size: 14px;
 }
 
 .directions-button {
-  font-size: 14px;
   background: none;
   border: none;
-  cursor: pointer;
   color: #1f2e78;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.directions-button::after {
+  content: " ▾";
+}
+
+/* ===== Center Timer and Toggle Button ===== */
+.header-center {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  text-align: center;
+}
+
+.timer {
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.hide-button {
+  margin-top: 2px;
+  font-size: 12px;
+  padding: 1px 8px;
+  border-radius: 12px;
+  border: 1px solid #1f2e78;
+  background: white;
+  color: #1f2e78;
+  cursor: pointer;
+}
+
+/* ===== Right Tools Buttons ===== */
+.header-right {
+  display: flex;
+  gap: 10px;
+}
+
+.header-right button {
+  background: white;
+  color: #1f2e78;
+  font-weight: bold;
+  font-size: 13px;
+  border: 1px solid #1f2e78;
+  padding: 4px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.header-right button:hover {
+  background: #d8dfee;
+}
+
+/* ===== Main Practice Container ===== */
+.container {
+  max-width: 900px;
+  margin: 40px auto;
+  background: white;
+  padding: 30px;
+  border-radius: 8px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+}
+
+.question-box {
+  display: none;
+}
+
+.question-box.active {
+  display: block;
+}
+
+h2 {
+  font-size: 18px;
+  margin-bottom: 20px;
+}
+
+label {
+  display: block;
+  padding: 14px 18px;
+  margin-bottom: 12px;
+  border: 2px solid #ccc;
+  border-radius: 6px;
+  background-color: #f9f9f9;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+input[type="radio"] {
+  display: none;
+}
+
+input[type="radio"]:checked + label {
+  border-color: #0057d9;
+  background-color: #e6f0ff;
+}
+
+.navigation {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 30px;
+}
+
+button {
+  padding: 10px 20px;
+  font-size: 16px;
+  border: none;
+  border-radius: 6px;
+  background-color: #0057d9;
+  color: white;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: #003f9e;
+}
+
+.results {
+  display: none;
+}
+
+.result-item {
+  margin: 15px 0;
+  padding: 10px;
+  border-left: 5px solid;
+}
+
+.correct {
+  border-color: #28a745;
+  background-color: #eaf8ee;
+}
+
+.incorrect {
+  border-color: #dc3545;
+  background-color: #fbeaea;
 }
