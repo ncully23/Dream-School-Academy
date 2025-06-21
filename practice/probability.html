@@ -13,7 +13,7 @@
 
     .container {
       max-width: 900px;
-      margin: 60px auto;
+      margin: 60px auto 100px;
       background: white;
       padding: 30px;
       border-radius: 8px;
@@ -51,26 +51,6 @@
     input[type="radio"]:checked + label {
       border-color: #0057d9;
       background-color: #e6f0ff;
-    }
-
-    .results {
-      display: none;
-    }
-
-    .result-item {
-      margin: 15px 0;
-      padding: 10px;
-      border-left: 5px solid;
-    }
-
-    .correct {
-      border-color: #28a745;
-      background-color: #eaf8ee;
-    }
-
-    .incorrect {
-      border-color: #dc3545;
-      background-color: #fbeaea;
     }
 
     /* Top Header Bar */
@@ -179,7 +159,12 @@
       cursor: pointer;
     }
 
-    .nav-buttons button:hover {
+    .nav-buttons button:disabled {
+      background-color: #ccc;
+      cursor: not-allowed;
+    }
+
+    .nav-buttons button:hover:not(:disabled) {
       background-color: #103bbd;
     }
   </style>
@@ -208,18 +193,72 @@
   <!-- Main Quiz Content -->
   <div class="container">
     <form id="quiz-form">
-      <!-- Questions will be dynamically inserted here -->
+      <div class="question-box active">
+        <h2>Question 1: What is 2 + 2?</h2>
+        <input type="radio" name="q1" id="q1a" />
+        <label for="q1a">A. 3</label>
+        <input type="radio" name="q1" id="q1b" />
+        <label for="q1b">B. 4</label>
+        <input type="radio" name="q1" id="q1c" />
+        <label for="q1c">C. 5</label>
+        <input type="radio" name="q1" id="q1d" />
+        <label for="q1d">D. 22</label>
+      </div>
+
+      <div class="question-box">
+        <h2>Question 2: What is the square root of 16?</h2>
+        <input type="radio" name="q2" id="q2a" />
+        <label for="q2a">A. 8</label>
+        <input type="radio" name="q2" id="q2b" />
+        <label for="q2b">B. 2</label>
+        <input type="radio" name="q2" id="q2c" />
+        <label for="q2c">C. 4</label>
+        <input type="radio" name="q2" id="q2d" />
+        <label for="q2d">D. 6</label>
+      </div>
     </form>
   </div>
 
-  <!-- Bottom Bar (Fixed to Viewport) -->
+  <!-- Bottom Bar -->
   <div class="bottom-bar">
     <div class="student-name">Nick Cully</div>
-    <div class="question-counter">Question 7 of 27</div>
+    <div class="question-counter" id="counter">Question 1 of 2</div>
     <div class="nav-buttons">
-      <button type="button">Back</button>
-      <button type="button">Next</button>
+      <button id="backBtn" disabled>Back</button>
+      <button id="nextBtn">Next</button>
     </div>
   </div>
+
+  <script>
+    const boxes = document.querySelectorAll('.question-box');
+    const backBtn = document.getElementById('backBtn');
+    const nextBtn = document.getElementById('nextBtn');
+    const counter = document.getElementById('counter');
+
+    let current = 0;
+
+    function updateDisplay() {
+      boxes.forEach((box, index) => {
+        box.classList.toggle('active', index === current);
+      });
+      counter.textContent = `Question ${current + 1} of ${boxes.length}`;
+      backBtn.disabled = current === 0;
+      nextBtn.disabled = current === boxes.length - 1;
+    }
+
+    backBtn.addEventListener('click', () => {
+      if (current > 0) {
+        current--;
+        updateDisplay();
+      }
+    });
+
+    nextBtn.addEventListener('click', () => {
+      if (current < boxes.length - 1) {
+        current++;
+        updateDisplay();
+      }
+    });
+  </script>
 </body>
 </html>
