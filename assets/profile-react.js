@@ -1,8 +1,3 @@
-// ProfilePage.jsx
-import React, { useEffect, useState } from "react";
-import { getAuth, onAuthStateChanged } from "firebase/auth";
-import { getFirestore, doc, getDoc, setDoc } from "firebase/firestore";
-
 const fields = [
   { id: "name", label: "Nickname" },
   { id: "gradYear", label: "Graduation Year" },
@@ -13,65 +8,69 @@ const fields = [
   { id: "extracurriculars", label: "Extracurriculars" },
 ];
 
-export default function ProfilePage() {
-  const [user, setUser] = useState(null);
-  const [profile, setProfile] = useState({});
-  const [editing, setEditing] = useState({});
-  const [status, setStatus] = useState({});
+function ProfilePage() {
+  const [user, setUser] = React.useState(null);
+  const [profile, setProfile] = React.useState({});
+  const [editing, setEditing] = React.useState({});
+  const [status, setStatus] = React.useState({});
 
-  const auth = getAuth();
-  const db = getFirestore();
+  React.useEffect(() => {
+    const auth = firebase.auth();
+    const db = firebase.firestore();
 
-  useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
+    const unsubscribe = auth.onAuthStateChanged(async (firebaseUser) => {
       if (!firebaseUser) {
         window.location.href = "/home.html";
         return;
       }
       setUser(firebaseUser);
-      const ref = doc(db, "userProfiles", firebaseUser.uid);
-      const snap = await getDoc(ref);
-      const data = snap.exists() ? snap.data() : {};
-      if (!snap.exists()) await setDoc(ref, {});
+      const ref = db.collection("userProfiles").doc(firebaseUser.uid);
+      const snap = await ref.get();
+      const data = snap.exists ? snap.data() : {};
+      if (!snap.exists) await ref.set({});
       setProfile(data);
     });
+
     return () => unsubscribe();
   }, []);
 
   const handleEdit = (field) => {
-    setEditing({ ...editing, [field]: true });
+    setEditing((prev) => ({ ...prev, [field]: true }));
   };
 
   const handleCancel = (field) => {
-    setEditing({ ...editing, [field]: false });
+    setEditing((prev) => ({ ...prev, [field]: false }));
   };
 
   const handleChange = (field, value) => {
-    setProfile({ ...profile, [field]: value });
+    setProfile((prev) => ({ ...prev, [field]: value }));
   };
 
   const handleSave = async (field) => {
+    const db = firebase.firestore();
     if (!user) return;
-    const ref = doc(db, "userProfiles", user.uid);
-    await setDoc(ref, { [field]: profile[field] }, { merge: true });
-    setEditing({ ...editing, [field]: false });
-    setStatus({ ...status, [field]: "✅ Saved!" });
-    setTimeout(() => setStatus({ ...status, [field]: "" }), 2000);
+    const ref = db.collection("userProfiles").doc(user.uid);
+    await ref.set({ [field]: profile[field] }, { merge: true });
+    setEditing((prev) => ({ ...prev, [field]: false }));
+    setStatus((prev) => ({ ...prev, [field]: "✅ Saved!" }));
+    setTimeout(() => {
+      setStatus((prev) => ({ ...prev, [field]: "" }));
+    }, 2000);
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-zinc-900 to-black text-white p-8">
-      <h1 className="text-3xl font-bold text-yellow-400 mb-8">Your Profile</h1>
-      <div className="max-w-3xl mx-auto bg-zinc-800 rounded-xl shadow-xl p-6 space-y-6">
+    <div style={{ padding: "40px", color: "white", fontFamily: "Poppins, sans-serif" }}>
+      <h2 style={{ fontSize: "2.2rem", color: "#f0c948", marginBottom: "20px" }}>Your Profile</h2>
+      <div style={{ backgroundColor: "#121212", padding: "30px", borderRadius: "12px", maxWidth: "700px", margin: "auto" }}>
         {fields.map(({ id, label }) => (
-          <div key={id} className="space-y-1">
-            <label className="font-semibold text-lg">{label}</label>
+          <div key={id} style={{ marginBottom: "20px" }}>
+            <label style={{ fontWeight: "bold", display: "block", marginBottom: "5px" }}>{label}</label>
             {id === "gradYear" ? (
               <select
-                className="w-full p-3 bg-zinc-700 text-white rounded-md"
-                disabled={!editing[id]}
                 value={profile[id] || ""}
+                disabled={!editing[id]}
                 onChange={(e) => handleChange(id, e.target.value)}
+                style={{ width: "100%", padding: "14px", borderRadius: "6px", backgroundColor: "#1a1a1a", color: "white" }}
               >
                 <option value="">Select Year</option>
                 {[2024, 2025, 2026, 2027, 2028, 2029].map((yr) => (
@@ -81,37 +80,22 @@ export default function ProfilePage() {
             ) : (
               <input
                 type="text"
-                className="w-full p-3 bg-zinc-700 text-white rounded-md"
-                disabled={!editing[id]}
                 value={profile[id] || ""}
+                disabled={!editing[id]}
                 onChange={(e) => handleChange(id, e.target.value)}
+                style={{ width: "100%", padding: "14px", borderRadius: "6px", backgroundColor: "#1a1a1a", color: "white" }}
               />
             )}
-            <div className="flex gap-2 mt-2">
+            <div style={{ marginTop: "8px" }}>
               {!editing[id] ? (
-                <button
-                  className="bg-yellow-400 text-black px-4 py-1 rounded-full"
-                  onClick={() => handleEdit(id)}
-                >
-                  Edit
-                </button>
+                <button onClick={() => handleEdit(id)} style={{ backgroundColor: "#f0c948", color: "black", borderRadius: "20px", padding: "8px 16px", marginRight: "6px" }}>Edit</button>
               ) : (
                 <>
-                  <button
-                    className="bg-blue-500 text-white px-4 py-1 rounded-full"
-                    onClick={() => handleSave(id)}
-                  >
-                    Save
-                  </button>
-                  <button
-                    className="bg-zinc-500 text-white px-4 py-1 rounded-full"
-                    onClick={() => handleCancel(id)}
-                  >
-                    Cancel
-                  </button>
+                  <button onClick={() => handleSave(id)} style={{ backgroundColor: "#3399ff", color: "white", borderRadius: "20px", padding: "8px 16px", marginRight: "6px" }}>Save</button>
+                  <button onClick={() => handleCancel(id)} style={{ backgroundColor: "#444", color: "white", borderRadius: "20px", padding: "8px 16px" }}>Cancel</button>
                 </>
               )}
-              <span className="text-green-400 text-sm">{status[id]}</span>
+              <span style={{ marginLeft: "10px", fontSize: "0.9rem", color: "#8bc34a" }}>{status[id]}</span>
             </div>
           </div>
         ))}
@@ -119,3 +103,7 @@ export default function ProfilePage() {
     </div>
   );
 }
+
+// Mount React component
+const root = ReactDOM.createRoot(document.getElementById("root"));
+root.render(<ProfilePage />);
