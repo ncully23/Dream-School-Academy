@@ -266,4 +266,14 @@ footer {
 }
 
 /* ===== Responsive ===== */
-@media (max-width: 600px
+@media (max-width: 600px) {
+  .hero h2 {
+    font-size: 2rem;
+  }
+  .cta-section h2 {
+    font-size: 1.5rem;
+  }
+  .signup-button {
+    width: 100%;
+  }
+}
