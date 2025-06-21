@@ -4,12 +4,11 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Practice Test</title>
-  <script defer src="../assets/bluebook.css"></script>
-  <script defer src="../assets/bluebook.js"></script>
   <style>
     body {
       background-color: #f2f5fa;
       font-family: 'Segoe UI', sans-serif;
+      margin: 0;
     }
 
     .container {
@@ -54,26 +53,6 @@
       background-color: #e6f0ff;
     }
 
-    .navigation {
-      display: flex;
-      justify-content: space-between;
-      margin-top: 30px;
-    }
-
-    button {
-      padding: 10px 20px;
-      font-size: 16px;
-      border: none;
-      border-radius: 6px;
-      background-color: #0057d9;
-      color: white;
-      cursor: pointer;
-    }
-
-    button:hover {
-      background-color: #003f9e;
-    }
-
     .results {
       display: none;
     }
@@ -94,7 +73,7 @@
       background-color: #fbeaea;
     }
 
-    /* Bluebook Header Layout */
+    /* Top Header Bar */
     .top-bar {
       display: flex;
       align-items: center;
@@ -156,10 +135,58 @@
     .header-right button:hover {
       background-color: #e6e9f3;
     }
+
+    /* Bottom Bar (Bluebook-style) */
+    .bottom-bar {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 20px;
+      background-color: #e6edf8;
+      border-top: 2px dashed #000;
+      font-size: 14px;
+      z-index: 1000;
+    }
+
+    .student-name {
+      font-weight: 500;
+      color: #000;
+    }
+
+    .question-counter {
+      font-size: 15px;
+      font-weight: bold;
+      background-color: #000;
+      color: white;
+      padding: 6px 14px;
+      border-radius: 6px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+
+    .nav-buttons button {
+      background-color: #1f4ed8;
+      color: #fff;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 6px;
+      margin-left: 8px;
+      font-weight: bold;
+      font-size: 14px;
+      cursor: pointer;
+    }
+
+    .nav-buttons button:hover {
+      background-color: #103bbd;
+    }
   </style>
 </head>
 
 <body>
+  <!-- Top Header -->
   <div class="top-bar">
     <div class="header-left">
       <div class="section-label">Section II, Module 1: Math</div>
@@ -177,23 +204,22 @@
       <button>More</button>
     </div>
   </div>
-  
 
-<div class="container">
-  <form id="quiz-form">
-    <!-- Questions go here -->
-  </form>
-
-<div class="bottom-bar">
-  <div class="student-name">Nick Cully</div>
-  <div class="question-counter">Question 7 of 27</div>
-  <div class="nav-buttons">
-    <button>Back</button>
-    <button>Next</button>
+  <!-- Main Quiz Content -->
+  <div class="container">
+    <form id="quiz-form">
+      <!-- Questions will be dynamically inserted here -->
+    </form>
   </div>
-</div>
-</div>
 
-</div>
-
-</div>
+  <!-- Bottom Bar (Fixed to Viewport) -->
+  <div class="bottom-bar">
+    <div class="student-name">Nick Cully</div>
+    <div class="question-counter">Question 7 of 27</div>
+    <div class="nav-buttons">
+      <button type="button">Back</button>
+      <button type="button">Next</button>
+    </div>
+  </div>
+</body>
+</html>
