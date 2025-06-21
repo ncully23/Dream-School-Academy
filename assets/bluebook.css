@@ -122,14 +122,18 @@ h2 {
 
 /* ===== Bottom Bar ===== */
 .bottom-bar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 10px 20px;
-  border-top: 2px dashed black;
-  background-color: #f0f4fb;
-  height: 60px;
+  padding: 12px 24px;
+  background-color: #fff;
+  border-top: 2px dashed #000;
   font-size: 14px;
+  z-index: 1000;
 }
 
 /* Left: Student Name */
@@ -140,19 +144,38 @@ h2 {
 
 /* Center: Question Counter */
 .question-counter {
-  font-size: 15px;
+  font-size: 14px;
   font-weight: bold;
   background-color: #000;
   color: white;
   padding: 6px 14px;
   border-radius: 6px;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  margin: 0 auto;
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
 }
 
 /* Right: Navigation Buttons */
 .nav-buttons {
   display: flex;
   gap: 10px;
+}
+
+.nav-buttons button {
+  background-color: #0057d9;
+  color: white;
+  padding: 8px 18px;
+  font-size: 14px;
+  font-weight: bold;
+  border: none;
+  border-radius: 20px;
+  cursor: pointer;
+}
+
+.nav-buttons button:hover {
+  background-color: #0040a8;
 }
 
 label {
