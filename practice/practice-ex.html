@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Practice Test</title>
+  <style>
+    body {
+      background-color: #f2f5fa;
+      font-family: 'Segoe UI', sans-serif;
+      margin: 0;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 60px auto 100px;
+      background: white;
+      padding: 30px;
+      border-radius: 8px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+    }
+
+    .question-box {
+      display: none;
+    }
+
+    .question-box.active {
+      display: block;
+    }
+
+    h2 {
+      font-size: 18px;
+      margin-bottom: 20px;
+    }
+
+    label {
+      display: block;
+      padding: 14px 18px;
+      margin-bottom: 12px;
+      border: 2px solid #ccc;
+      border-radius: 6px;
+      background-color: #f9f9f9;
+      cursor: pointer;
+      font-size: 16px;
+    }
+
+    input[type="radio"] {
+      display: none;
+    }
+
+    input[type="radio"]:checked + label {
+      border-color: #0057d9;
+      background-color: #e6f0ff;
+    }
+
+    .top-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background-color: #e6edf8;
+      padding: 10px 20px;
+      color: #000;
+      height: 50px;
+      font-size: 16px;
+      border-bottom: 2px solid #ccd9e8;
+    }
+
+    .header-left,
+    .header-center,
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .header-center {
+      flex-grow: 1;
+      justify-content: center;
+    }
+
+    .timer {
+      font-weight: bold;
+      font-size: 18px;
+    }
+
+    .bottom-bar {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 20px;
+      background-color: #e6edf8;
+      border-top: 2px dashed #000;
+      font-size: 14px;
+      z-index: 1000;
+    }
+
+    .question-counter {
+      font-size: 15px;
+      font-weight: bold;
+      background-color: #000;
+      color: white;
+      padding: 6px 14px;
+      border-radius: 6px;
+    }
+
+    .nav-buttons button {
+      background-color: #1f4ed8;
+      color: #fff;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 6px;
+      margin-left: 8px;
+      font-weight: bold;
+      font-size: 14px;
+      cursor: pointer;
+    }
+
+    .results {
+      display: none;
+      padding-top: 20px;
+    }
+
+    .result-item {
+      margin-bottom: 10px;
+    }
+
+    .correct { color: green; }
+    .incorrect { color: red; }
+  </style>
+</head>
+<body>
+  <div class="top-bar">
+    <div class="header-left">Section II, Module 1: Math</div>
+    <div class="header-center">
+      <div class="timer" id="timer">35:00</div>
+    </div>
+    <div class="header-right">
+      <button>Calculator</button>
+      <button>Reference</button>
+      <button>More</button>
+    </div>
+  </div>
+
+  <div class="container">
+    <form id="quiz-form">
+      <div class="question-box active">
+        <h2>Question 1: What is 2 + 2?</h2>
+        <input type="radio" name="q1" id="q1a" value="A" /><label for="q1a">A. 3</label>
+        <input type="radio" name="q1" id="q1b" value="B" /><label for="q1b">B. 4</label>
+        <input type="radio" name="q1" id="q1c" value="C" /><label for="q1c">C. 5</label>
+      </div>
+
+      <div class="question-box">
+        <h2>Question 2: What is the square root of 16?</h2>
+        <input type="radio" name="q2" id="q2a" value="A" /><label for="q2a">A. 8</label>
+        <input type="radio" name="q2" id="q2b" value="B" /><label for="q2b">B. 2</label>
+        <input type="radio" name="q2" id="q2c" value="C" /><label for="q2c">C. 4</label>
+      </div>
+
+      <div class="results" id="results"></div>
+    </form>
+  </div>
+
+  <div class="bottom-bar">
+    <div class="student-name">Nick Cully</div>
+    <div class="question-counter" id="counter">Question 1 of 2</div>
+    <div class="nav-buttons">
+      <button id="backBtn" disabled>Back</button>
+      <button id="nextBtn">Next</button>
+      <button id="submitBtn" style="display:none">Submit</button>
+    </div>
+  </div>
+
+  <script>
+    const boxes = document.querySelectorAll('.question-box');
+    const counter = document.getElementById('counter');
+    const backBtn = document.getElementById('backBtn');
+    const nextBtn = document.getElementById('nextBtn');
+    const submitBtn = document.getElementById('submitBtn');
+    const resultsDiv = document.getElementById('results');
+
+    const correctAnswers = ['B', 'C'];
+    let current = 0;
+
+    function updateDisplay() {
+      boxes.forEach((box, idx) => box.classList.toggle('active', idx === current));
+      counter.textContent = `Question ${current + 1} of ${boxes.length}`;
+      backBtn.disabled = current === 0;
+      nextBtn.style.display = current === boxes.length - 1 ? 'none' : 'inline-block';
+      submitBtn.style.display = current === boxes.length - 1 ? 'inline-block' : 'none';
+    }
+
+    backBtn.onclick = () => { current--; updateDisplay(); };
+    nextBtn.onclick = () => { current++; updateDisplay(); };
+
+    submitBtn.onclick = (e) => {
+      e.preventDefault();
+      resultsDiv.innerHTML = '';
+      boxes.forEach((box, i) => {
+        const answer = document.querySelector(`input[name="q${i+1}"]:checked`);
+        const selected = answer ? answer.value : 'None';
+        const isCorrect = selected === correctAnswers[i];
+        resultsDiv.innerHTML += `<div class="result-item ${isCorrect ? 'correct' : 'incorrect'}">Question ${i+1}: ${isCorrect ? 'Correct' : 'Incorrect'} (Selected: ${selected})</div>`;
+      });
+      resultsDiv.style.display = 'block';
+      boxes.forEach(b => b.classList.remove('active'));
+    }
+
+    // Timer
+    let totalSeconds = 35 * 60;
+    const timerDisplay = document.getElementById('timer');
+    setInterval(() => {
+      if (totalSeconds > 0) {
+        totalSeconds--;
+        let min = String(Math.floor(totalSeconds / 60)).padStart(2, '0');
+        let sec = String(totalSeconds % 60).padStart(2, '0');
+        timerDisplay.textContent = `${min}:${sec}`;
+      }
+    }, 1000);
+
+    updateDisplay();
+  </script>
+</body>
+</html>
