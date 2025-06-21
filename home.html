@@ -33,7 +33,8 @@ function signInWithGoogle() {
       const user = result.user;
       console.log("Signed in as:", user.displayName); // <--- Add this
       document.getElementById("google-signin").style.display = "none";
-      document.getElementById("user-info").innerText = `Signed in as ${user.displayName}`;
+      const firstName = user.displayName.split(" ")[0];
+      document.getElementById("user-info").innerText = `${firstName}! Chase your dreams!`;
     })
     .catch(error => console.error("Sign-in error:", error));
 }
