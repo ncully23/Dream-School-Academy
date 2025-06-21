@@ -5,95 +5,39 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Dream School</title>
   <link rel="stylesheet" href="./assets/style.css" />
-  <style>
-    .modal {
-      display: none;
-      position: fixed;
-      z-index: 1000;
-      left: 0;
-      top: 0;
-      width: 100%;
-      height: 100%;
-      overflow: auto;
-      background-color: rgba(0, 0, 0, 0.8);
+  <!-- Firebase App (core) -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+  <script>
+    const firebaseConfig = {
+      apiKey: "YOUR_API_KEY",
+      authDomain: "YOUR_AUTH_DOMAIN",
+      projectId: "YOUR_PROJECT_ID",
+      storageBucket: "YOUR_STORAGE_BUCKET",
+      messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+      appId: "YOUR_APP_ID"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    function signInWithGoogle() {
+      const provider = new firebase.auth.GoogleAuthProvider();
+      auth.signInWithPopup(provider)
+        .then(result => {
+          const user = result.user;
+          document.getElementById("google-signin").style.display = "none";
+          document.getElementById("user-info").innerText = `Signed in as ${user.displayName}`;
+        })
+        .catch(error => console.error(error));
     }
-
-    .modal-content {
-      background-color: #1e1e1e;
-      margin: 10% auto;
-      padding: 20px;
-      border: 2px solid #ffd700;
-      width: 90%;
-      max-width: 400px;
-      border-radius: 8px;
-      color: white;
-      text-align: left;
-      max-height: 90vh;
-      overflow-y: auto;
-    }
-
-    .modal-content h3 {
-      color: #ffd700;
-      text-align: center;
-      margin-bottom: 15px;
-    }
-
-    .modal-content input,
-    .modal-content select {
-      width: 100%;
-      padding: 10px;
-      margin: 8px 0;
-      border-radius: 5px;
-      border: none;
-    }
-
-    .modal-content label {
-      display: block;
-      margin-top: 10px;
-      font-weight: bold;
-    }
-
-    .modal-content input[type="checkbox"] {
-      margin-right: 8px;
-      width: auto;
-    }
-
-    .modal-content button {
-      background-color: #0057d9;
-      color: white;
-      padding: 10px 15px;
-      border: none;
-      border-radius: 25px;
-      font-weight: bold;
-      width: 100%;
-      margin-top: 15px;
-      cursor: pointer;
-    }
-
-    .modal-content button:hover {
-      background-color: #003f9e;
-    }
-
-    .close {
-      float: right;
-      font-size: 28px;
-      font-weight: bold;
-      color: #aaa;
-    }
-
-    .close:hover {
-      color: white;
-      cursor: pointer;
-    }
-
-    body.modal-open header,
-    body.modal-open main {
-      filter: blur(4px);
-    }
-  </style>
+    auth.onAuthStateChanged(user => {
+      if (user) {
+        document.getElementById("google-signin").style.display = "none";
+        document.getElementById("user-info").innerText = `Signed in as ${user.displayName}`;
+      }
+    });
+  </script>
 </head>
 <body>
-
   <header>
     <h1><a href="/home.html" style="text-decoration: none;">Dream School</a></h1>
     <nav>
@@ -103,6 +47,8 @@
         <li><a href="/practice.html">Practice</a></li>
         <li><a href="/tutoring.html">Tutoring</a></li>
         <li><a href="/contactus.html">Contact Us</a></li>
+        <li><button id="google-signin" onclick="signInWithGoogle()">Sign in with Google</button></li>
+        <li><span id="user-info" style="color:white; margin-left:10px;"></span></li>
       </ul>
     </nav>
   </header>
@@ -126,16 +72,12 @@
       <h3>Get Free Tutoring</h3>
       <form name="free-tutoring" method="POST" data-netlify="true" onsubmit="handleSubmit(event)">
         <input type="hidden" name="form-name" value="free-tutoring" />
-
         <label for="first-name">First Name</label>
         <input type="text" name="first-name" id="first-name" required tabindex="1" />
-
         <label for="last-name">Last Name</label>
         <input type="text" name="last-name" id="last-name" required tabindex="2" />
-
         <label for="email">Email</label>
         <input type="email" name="email" id="email" required tabindex="3" pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$" />
-
         <label for="grade">Grade in School</label>
         <select name="grade" id="grade" required tabindex="4">
           <option value="" disabled selected>Select Grade</option>
@@ -147,17 +89,14 @@
           <option value="College">College</option>
           <option value="Other">Other</option>
         </select>
-
         <label>Preferred Contact Days</label>
         <label><input type="checkbox" name="contact-days" value="Weekdays" /> Weekdays</label>
         <label><input type="checkbox" name="contact-days" value="Weekends" /> Weekends</label>
-
         <label>Preferred Contact Time</label>
         <label><input type="checkbox" name="contact-time" value="Day" /> Day</label>
         <label><input type="checkbox" name="contact-time" value="Evening" /> Evening</label>
         <label for="comments">Anything else you'd like us to know?</label>
         <textarea name="comments" id="comments" rows="4" placeholder="e.g. specific times, test date, goals, past scores..." style="width: 100%; padding: 10px; border-radius: 5px; margin-top: 8px;"></textarea>
-
         <button type="submit" id="submitBtn" tabindex="5">Sign Up</button>
       </form>
     </div>
@@ -175,25 +114,21 @@
         document.getElementById('first-name').focus();
       }, 100);
     }
-
     function closeModal() {
       document.getElementById('signupModal').style.display = 'none';
       document.body.classList.remove('modal-open');
     }
-
     window.onclick = function(event) {
       const modal = document.getElementById('signupModal');
       if (event.target == modal) {
         closeModal();
       }
     };
-
     document.addEventListener("keydown", function(event) {
       if (event.key === "Escape") {
         closeModal();
       }
     });
-
     function handleSubmit(event) {
       event.preventDefault();
       const btn = document.getElementById("submitBtn");
@@ -206,6 +141,5 @@
       }, 500);
     }
   </script>
-
 </body>
 </html>
