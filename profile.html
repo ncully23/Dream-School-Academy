@@ -45,7 +45,6 @@
     }
 
     input[type="text"],
-    input[type="email"],
     select {
       width: 100%;
       padding: 16px;
@@ -90,7 +89,7 @@
   <main>
     <h2>Your Profile</h2>
     <form id="profile-form">
-      <label for="Nickname">Nickname</label>
+      <label for="name">Nickname</label>
       <input type="text" id="name" required />
 
       <label for="gradYear">Graduation Year</label>
@@ -145,15 +144,16 @@
 
     const form = document.getElementById("profile-form");
 
+    let currentUserRef = null;
+
     auth.onAuthStateChanged(user => {
       if (!user) {
         window.location.href = "/home.html";
       } else {
         const uid = user.uid;
-        const userRef = db.collection("users").doc(uid);
+        currentUserRef = db.collection("users").doc(uid);
 
-        // Load saved data
-        userRef.get().then(doc => {
+        currentUserRef.get().then(doc => {
           if (doc.exists) {
             const data = doc.data();
             document.getElementById("name").value = data.name || "";
@@ -165,25 +165,28 @@
             document.getElementById("extracurriculars").value = data.extracurriculars || "";
           }
         });
-
-        // Save data
-        form.addEventListener("submit", (e) => {
-          e.preventDefault();
-          userRef.set({
-            name: document.getElementById("name").value,
-            gradYear: document.getElementById("gradYear").value,
-            dreamSchools: document.getElementById("dreamSchools").value,
-            safetySchools: document.getElementById("safetySchools").value,
-            satGoal: document.getElementById("satGoal").value,
-            classes: document.getElementById("classes").value,
-            extracurriculars: document.getElementById("extracurriculars").value
-          }).then(() => {
-            alert("Profile saved!");
-          }).catch(error => {
-            console.error("Error saving profile:", error);
-          });
-        });
       }
+    });
+
+    form.addEventListener("submit", (e) => {
+      e.preventDefault();
+
+      if (!currentUserRef) return;
+
+      currentUserRef.set({
+        name: document.getElementById("name").value,
+        gradYear: document.getElementById("gradYear").value,
+        dreamSchools: document.getElementById("dreamSchools").value,
+        safetySchools: document.getElementById("safetySchools").value,
+        satGoal: document.getElementById("satGoal").value,
+        classes: document.getElementById("classes").value,
+        extracurriculars: document.getElementById("extracurriculars").value
+      }).then(() => {
+        // Reload the page with saved data reflected
+        location.reload();
+      }).catch(error => {
+        console.error("Error saving profile:", error);
+      });
     });
   </script>
 </body>
