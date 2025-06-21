@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Your Profile - Dream School</title>
+  <link rel="stylesheet" href="./assets/style.css" />
+
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+</head>
+<body>
+  <header>
+    <h1><a href="/home.html" style="text-decoration: none;">Dream School</a></h1>
+  </header>
+
+  <main style="padding: 20px; max-width: 600px; margin: auto;">
+    <h2>Your Profile</h2>
+    <form id="profile-form">
+      <label>Name</label>
+      <input type="text" id="name" required /><br />
+
+      <label>Graduation Year</label>
+      <select id="gradYear" required>
+        <option value="">Select Year</option>
+        <option value="2024">2024</option>
+        <option value="2025">2025</option>
+        <option value="2026">2026</option>
+        <option value="2027">2027</option>
+        <option value="2028">2028</option>
+      </select><br />
+
+      <label>Dream Schools</label>
+      <input type="text" id="dreamSchools" /><br />
+
+      <label>Safety Schools</label>
+      <input type="text" id="safetySchools" /><br />
+
+      <label>SAT Goal</label>
+      <input type="text" id="satGoal" /><br />
+
+      <label>Current Classes</label>
+      <input type="text" id="classes" /><br />
+
+      <label>Extracurriculars</label>
+      <input type="text" id="extracurriculars" /><br />
+
+      <button type="submit" style="margin-top: 20px;">Save Profile</button>
+    </form>
+  </main>
+
+  <footer>
+    <p>&copy; 2025 Dream School. All rights reserved.</p>
+  </footer>
+
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyD7R7ZsmTpGojgLNt7w_R0tm_mWg_FZEYE",
+      authDomain: "dream-school-academy.firebaseapp.com",
+      projectId: "dream-school-academy",
+      storageBucket: "dream-school-academy.firebasestorage.app",
+      messagingSenderId: "665412130733",
+      appId: "1:665412130733:web:c3d59ab2c2f065a2277324",
+      measurementId: "G-HJCW8VZKZX"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.firestore();
+
+    const form = document.getElementById("profile-form");
+
+    auth.onAuthStateChanged(user => {
+      if (!user) {
+        window.location.href = "/home.html";
+      } else {
+        const uid = user.uid;
+        const userRef = db.collection("users").doc(uid);
+
+        // Load saved data
+        userRef.get().then(doc => {
+          if (doc.exists) {
+            const data = doc.data();
+            document.getElementById("name").value = data.name || "";
+            document.getElementById("gradYear").value = data.gradYear || "";
+            document.getElementById("dreamSchools").value = data.dreamSchools || "";
+            document.getElementById("safetySchools").value = data.safetySchools || "";
+            document.getElementById("satGoal").value = data.satGoal || "";
+            document.getElementById("classes").value = data.classes || "";
+            document.getElementById("extracurriculars").value = data.extracurriculars || "";
+          }
+        });
+
+        // Save data
+        form.addEventListener("submit", (e) => {
+          e.preventDefault();
+          userRef.set({
+            name: document.getElementById("name").value,
+            gradYear: document.getElementById("gradYear").value,
+            dreamSchools: document.getElementById("dreamSchools").value,
+            safetySchools: document.getElementById("safetySchools").value,
+            satGoal: document.getElementById("satGoal").value,
+            classes: document.getElementById("classes").value,
+            extracurriculars: document.getElementById("extracurriculars").value
+          }).then(() => {
+            alert("Profile saved!");
+          }).catch(error => {
+            console.error("Error saving profile:", error);
+          });
+        });
+      }
+    });
+  </script>
+</body>
+</html>
