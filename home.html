@@ -11,6 +11,17 @@
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 
 <script>
+  const firebaseConfig = {
+    apiKey: "AIzaSyD7R7ZsmTpG0jgLNt7w_R0tm_mWg_FZEYE",
+    authDomain: "dream-school-academy.firebaseapp.com",
+    projectId: "dream-school-academy",
+    storageBucket: "dream-school-academy.appspot.com",
+    messagingSenderId: "665412130733",
+    appId: "1:665412130733:web:c3d59ab2c2f065a2277324",
+    measurementId: "G-HJUC8WZXZK"
+  };
+
+  // Initialize Firebase
   firebase.initializeApp(firebaseConfig);
   const auth = firebase.auth();
 
@@ -33,36 +44,7 @@
   });
 </script>
 
- 
-  <script>
-const firebaseConfig = {
-  apiKey: "AIzaSyD7R7ZsmTpG0jgLNt7w_R0tm_mWg_FZEYE",
-  authDomain: "dream-school-academy.firebaseapp.com",
-  projectId: "dream-school-academy",
-  storageBucket: "dream-school-academy.appspot.com",
-  messagingSenderId: "665412130733",
-  appId: "1:665412130733:web:c3d59ab2c2f065a2277324",
-  measurementId: "G-HJUC8WZXZK"
-};
-    firebase.initializeApp(firebaseConfig);
-    const auth = firebase.auth();
-    function signInWithGoogle() {
-      const provider = new firebase.auth.GoogleAuthProvider();
-      auth.signInWithPopup(provider)
-        .then(result => {
-          const user = result.user;
-          document.getElementById("google-signin").style.display = "none";
-          document.getElementById("user-info").innerText = `Signed in as ${user.displayName}`;
-        })
-        .catch(error => console.error(error));
-    }
-    auth.onAuthStateChanged(user => {
-      if (user) {
-        document.getElementById("google-signin").style.display = "none";
-        document.getElementById("user-info").innerText = `Signed in as ${user.displayName}`;
-      }
-    });
-  </script>
+  
 </head>
 <body>
   <header>
