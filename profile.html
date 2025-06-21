@@ -92,18 +92,19 @@
     <h2>Your Profile</h2>
     <div class="profile-container">
 
-      <!-- Field Template -->
+      <!-- Field: Name -->
       <div class="profile-field" data-field="name">
         <label class="profile-label">Nickname</label>
         <input type="text" id="name" disabled />
         <div class="button-row">
-          <button class="edit-btn">Edit</button>
-          <button class="save-btn" style="display:none;">Save</button>
-          <button class="cancel-btn" style="display:none;">Cancel</button>
+          <button id="name-edit" class="edit-btn">Edit</button>
+          <button id="name-save" class="save-btn" style="display:none;">Save</button>
+          <button id="name-cancel" class="cancel-btn" style="display:none;">Cancel</button>
           <span class="status" id="name-status"></span>
         </div>
       </div>
 
+      <!-- Field: Graduation Year -->
       <div class="profile-field" data-field="gradYear">
         <label class="profile-label">Graduation Year</label>
         <select id="gradYear" disabled>
@@ -117,65 +118,69 @@
           <option value="2030">2030</option>
         </select>
         <div class="button-row">
-          <button class="edit-btn">Edit</button>
-          <button class="save-btn" style="display:none;">Save</button>
-          <button class="cancel-btn" style="display:none;">Cancel</button>
+          <button id="gradYear-edit" class="edit-btn">Edit</button>
+          <button id="gradYear-save" class="save-btn" style="display:none;">Save</button>
+          <button id="gradYear-cancel" class="cancel-btn" style="display:none;">Cancel</button>
           <span class="status" id="gradYear-status"></span>
         </div>
       </div>
 
-      <!-- Add other fields in same structure -->
+      <!-- Field: Dream Schools -->
       <div class="profile-field" data-field="dreamSchools">
         <label class="profile-label">Dream Schools</label>
         <input type="text" id="dreamSchools" disabled />
         <div class="button-row">
-          <button class="edit-btn">Edit</button>
-          <button class="save-btn" style="display:none;">Save</button>
-          <button class="cancel-btn" style="display:none;">Cancel</button>
+          <button id="dreamSchools-edit" class="edit-btn">Edit</button>
+          <button id="dreamSchools-save" class="save-btn" style="display:none;">Save</button>
+          <button id="dreamSchools-cancel" class="cancel-btn" style="display:none;">Cancel</button>
           <span class="status" id="dreamSchools-status"></span>
         </div>
       </div>
 
+      <!-- Field: Safety Schools -->
       <div class="profile-field" data-field="safetySchools">
         <label class="profile-label">Safety Schools</label>
         <input type="text" id="safetySchools" disabled />
         <div class="button-row">
-          <button class="edit-btn">Edit</button>
-          <button class="save-btn" style="display:none;">Save</button>
-          <button class="cancel-btn" style="display:none;">Cancel</button>
+          <button id="safetySchools-edit" class="edit-btn">Edit</button>
+          <button id="safetySchools-save" class="save-btn" style="display:none;">Save</button>
+          <button id="safetySchools-cancel" class="cancel-btn" style="display:none;">Cancel</button>
           <span class="status" id="safetySchools-status"></span>
         </div>
       </div>
 
+      <!-- Field: SAT Goal -->
       <div class="profile-field" data-field="satGoal">
         <label class="profile-label">SAT Goal</label>
         <input type="text" id="satGoal" disabled />
         <div class="button-row">
-          <button class="edit-btn">Edit</button>
-          <button class="save-btn" style="display:none;">Save</button>
-          <button class="cancel-btn" style="display:none;">Cancel</button>
+          <button id="satGoal-edit" class="edit-btn">Edit</button>
+          <button id="satGoal-save" class="save-btn" style="display:none;">Save</button>
+          <button id="satGoal-cancel" class="cancel-btn" style="display:none;">Cancel</button>
           <span class="status" id="satGoal-status"></span>
         </div>
       </div>
 
+      <!-- Field: Current Classes -->
       <div class="profile-field" data-field="classes">
         <label class="profile-label">Current Classes</label>
         <input type="text" id="classes" disabled />
         <div class="button-row">
-          <button class="edit-btn">Edit</button>
-          <button class="save-btn" style="display:none;">Save</button>
-          <button class="cancel-btn" style="display:none;">Cancel</button>
+          <button id="classes-edit" class="edit-btn">Edit</button>
+          <button id="classes-save" class="save-btn" style="display:none;">Save</button>
+          <button id="classes-cancel" class="cancel-btn" style="display:none;">Cancel</button>
           <span class="status" id="classes-status"></span>
         </div>
       </div>
 
+      <!-- Field: Extracurriculars -->
       <div class="profile-field" data-field="extracurriculars">
         <label class="profile-label">Extracurriculars</label>
         <input type="text" id="extracurriculars" disabled />
         <div class="button-row">
-          <button class="edit-btn">Edit</button>
-          <button class="save-btn" style="display:none;">Save</button>
-          <button class="cancel-btn" style="display:none;">Cancel</button>
+          <button id="extracurriculars-edit" class="edit-btn">Edit</button>
+          <button id="extracurriculars-save" class="save-btn" style="display:none;">Save</button>
+          <button id="extracurriculars-cancel" class="cancel-btn" style="display:none;">Cancel</button>
           <span class="status" id="extracurriculars-status"></span>
         </div>
       </div>
