@@ -1,6 +1,4 @@
-// profile.js
-
-// Firebase configuration (ensure this is correct for your project)
+// Firebase config
 const firebaseConfig = {
   apiKey: "AIzaSyD7R7ZsmTpGojgLNt7w_R0tm_mWg_FZEYE",
   authDomain: "dream-school-academy.firebaseapp.com",
@@ -11,7 +9,6 @@ const firebaseConfig = {
   measurementId: "G-HJCW8VZKZX"
 };
 
-// Initialize Firebase
 firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const db = firebase.firestore();
@@ -19,30 +16,25 @@ const db = firebase.firestore();
 let currentUserRef = null;
 let originalValues = {};
 
-// Check auth state
 auth.onAuthStateChanged(user => {
   if (!user) {
     window.location.href = "/home.html";
   } else {
     currentUserRef = db.collection("userProfiles").doc(user.uid);
     currentUserRef.get().then(doc => {
-      if (!doc.exists) {
-        // 👶 Create default profile on first login
-        const defaultData = {
-          name: user.displayName || "",
-          gradYear: "",
-          dreamSchools: "",
-          safetySchools: "",
-          satGoal: "",
-          classes: "",
-          extracurriculars: ""
-        };
-        currentUserRef.set(defaultData).then(() => {
-          loadProfile(defaultData); // Load new data into form
-        });
-      } else {
-        loadProfile(doc.data()); // Load existing data
-      }
+      const data = doc.exists ? doc.data() : {
+        name: user.displayName || "",
+        gradYear: "",
+        dreamSchools: "",
+        safetySchools: "",
+        satGoal: "",
+        classes: "",
+        extracurriculars: ""
+      };
+      currentUserRef.set(data, { merge: true });
+      loadProfile(data);
+    }).catch(err => {
+      console.error("Error fetching profile:", err);
     });
   }
 });
@@ -58,34 +50,10 @@ function loadProfile(data) {
   setupFieldHandlers();
 }
 
-
-    currentUserRef.get().then(doc => {
-      if (doc.exists) {
-        const data = doc.data();
-        for (const key in data) {
-          const el = document.getElementById(key);
-          if (el) {
-            el.value = data[key];
-            originalValues[key] = data[key];
-          }
-        }
-      }
-      setupFieldHandlers(); // setup edit/save buttons
-    }).catch(err => {
-      console.error("Error fetching profile:", err);
-    });
-  }
-});
-
 function setupFieldHandlers() {
   const fields = [
-    "name",
-    "gradYear",
-    "dreamSchools",
-    "safetySchools",
-    "satGoal",
-    "classes",
-    "extracurriculars"
+    "name", "gradYear", "dreamSchools", "safetySchools",
+    "satGoal", "classes", "extracurriculars"
   ];
 
   fields.forEach(field => {
@@ -115,8 +83,7 @@ function setupFieldHandlers() {
 
       saveBtn.addEventListener("click", () => {
         const newValue = input.value;
-        const updateObj = {};
-        updateObj[field] = newValue;
+        const updateObj = { [field]: newValue };
 
         currentUserRef.set(updateObj, { merge: true }).then(() => {
           input.disabled = true;
@@ -125,7 +92,7 @@ function setupFieldHandlers() {
           cancelBtn.style.display = "none";
           editBtn.style.display = "inline-block";
           status.textContent = "✅ Saved!";
-          setTimeout(() => (status.textContent = ""), 2000);
+          setTimeout(() => status.textContent = "", 2000);
         }).catch(err => {
           console.error(`Error saving ${field}:`, err);
           status.textContent = "❌ Error saving";
