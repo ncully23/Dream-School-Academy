@@ -56,33 +56,54 @@ function signInWithGoogle() {
 <body>
   <header>
     <h1><a href="/home.html" style="text-decoration: none;">Dream School</a></h1>
-    <nav>
-      <ul class="nav-menu">
-        <li><a href="/study.html">Study</a></li>
-        <li><a href="/teststrategies.html">Test Strategies</a></li>
-        <li><a href="/practice.html">Practice</a></li>
-        <li><a href="/tutoring.html">Tutoring</a></li>
-        <li><a href="/contactus.html">Contact Us</a></li>
-<li>
-  <button id="google-signin" onclick="signInWithGoogle()" style="
-    padding: 8px 16px;
-    font-size: 14px;
-    border: none;
-    background-color: #ffffff;
-    color: #1a73e8;
-    border-radius: 4px;
-    cursor: pointer;
-    font-weight: bold;
-    margin-left: 20px;
-  ">
-    Sign in with Google
-  </button>
-</li>
+    
+<nav>
+  <ul class="nav-menu">
+    <li><a href="/study.html">Study</a></li>
+    <li><a href="/teststrategies.html">Test Strategies</a></li>
+    <li><a href="/practice.html">Practice</a></li>
+    <li><a href="/tutoring.html">Tutoring</a></li>
+    <li><a href="/contactus.html">Contact Us</a></li>
 
+    <!-- Google Sign-In Button -->
+    <li id="signin-container">
+      <button id="google-signin" onclick="signInWithGoogle()" style="
+        padding: 8px 16px;
+        font-size: 14px;
+        border: none;
+        background-color: #ffffff;
+        color: #1a73e8;
+        border-radius: 4px;
+        cursor: pointer;
+        font-weight: bold;
+        margin-left: 20px;
+      ">
+        Sign in with Google
+      </button>
+    </li>
 
-        <li><span id="user-info" style="color:white; margin-left:10px;"></span></li>
+    <!-- Signed-in User Dropdown -->
+    <li id="user-menu" class="user-dropdown" style="display: none; position: relative;">
+      <span id="user-info" style="color:white; margin-left:10px; cursor: pointer;"></span>
+      <ul class="dropdown-menu" style="
+        display: none;
+        position: absolute;
+        background-color: white;
+        color: black;
+        list-style: none;
+        padding: 10px;
+        top: 100%;
+        right: 0;
+        box-shadow: 0px 4px 6px rgba(0,0,0,0.1);
+        border-radius: 4px;
+      ">
+        <li><a href="/profile.html" style="text-decoration: none; color: black;">View Profile</a></li>
       </ul>
-    </nav>
+    </li>
+  </ul>
+</nav>
+
+    
   </header>
 
   <main>
