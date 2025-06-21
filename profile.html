@@ -7,6 +7,7 @@
   <link rel="stylesheet" href="./assets/style.css" />
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
 
+  <!-- Firebase SDKs -->
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
@@ -153,7 +154,6 @@
     const form = document.getElementById("profile-form");
     const editBtn = document.getElementById("edit-btn");
     const saveBtn = document.getElementById("save-btn");
-    let currentUserRef = null;
 
     const toggleEditable = (editable) => {
       document.querySelectorAll("input, select").forEach(el => {
@@ -162,6 +162,8 @@
       editBtn.style.display = editable ? "none" : "inline-block";
       saveBtn.style.display = editable ? "inline-block" : "none";
     };
+
+    let currentUserRef = null;
 
     auth.onAuthStateChanged(user => {
       if (!user) {
@@ -182,30 +184,30 @@
             document.getElementById("extracurriculars").value = data.extracurriculars || "";
           }
         });
+
+        // ✅ Form submission placed here AFTER auth/user check
+        form.addEventListener("submit", (e) => {
+          e.preventDefault();
+
+          currentUserRef.set({
+            name: document.getElementById("name").value,
+            gradYear: document.getElementById("gradYear").value,
+            dreamSchools: document.getElementById("dreamSchools").value,
+            safetySchools: document.getElementById("safetySchools").value,
+            satGoal: document.getElementById("satGoal").value,
+            classes: document.getElementById("classes").value,
+            extracurriculars: document.getElementById("extracurriculars").value
+          }).then(() => {
+            toggleEditable(false);
+            alert("Profile updated!");
+          }).catch(error => {
+            console.error("Error updating profile:", error);
+          });
+        });
       }
     });
 
     editBtn.addEventListener("click", () => toggleEditable(true));
-
-    form.addEventListener("submit", (e) => {
-      e.preventDefault();
-      if (!currentUserRef) return;
-
-      currentUserRef.set({
-        name: document.getElementById("name").value,
-        gradYear: document.getElementById("gradYear").value,
-        dreamSchools: document.getElementById("dreamSchools").value,
-        safetySchools: document.getElementById("safetySchools").value,
-        satGoal: document.getElementById("satGoal").value,
-        classes: document.getElementById("classes").value,
-        extracurriculars: document.getElementById("extracurriculars").value
-      }).then(() => {
-        toggleEditable(false);
-        alert("Profile updated!");
-      }).catch(error => {
-        console.error("Error updating profile:", error);
-      });
-    });
   </script>
 </body>
 </html>
