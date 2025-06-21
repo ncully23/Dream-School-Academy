@@ -28,7 +28,11 @@ auth.onAuthStateChanged(user => {
         for (const key in data) {
           const el = document.getElementById(key);
           if (el) {
-            el.value = data[key];
+            if (el.tagName === "SELECT") {
+              el.value = data[key];
+            } else {
+              el.value = data[key];
+            }
             originalValues[key] = data[key];
           }
         }
@@ -39,59 +43,52 @@ auth.onAuthStateChanged(user => {
 });
 
 function setupFieldHandlers() {
-  const fields = [
-    "name",
-    "gradYear",
-    "dreamSchools",
-    "safetySchools",
-    "satGoal",
-    "classes",
-    "extracurriculars"
-  ];
+  const fieldContainers = document.querySelectorAll(".profile-field");
 
-  fields.forEach(field => {
+  fieldContainers.forEach(container => {
+    const field = container.getAttribute("data-field");
     const input = document.getElementById(field);
-    const editBtn = document.getElementById(`${field}-edit`);
-    const saveBtn = document.getElementById(`${field}-save`);
-    const cancelBtn = document.getElementById(`${field}-cancel`);
-    const status = document.getElementById(`${field}-status`);
+    const editBtn = container.querySelector(".edit-btn");
+    const saveBtn = container.querySelector(".save-btn");
+    const cancelBtn = container.querySelector(".cancel-btn");
+    const status = container.querySelector(".status");
 
-    if (editBtn && saveBtn && cancelBtn && input) {
-      editBtn.addEventListener("click", () => {
-        input.disabled = false;
-        editBtn.style.display = "none";
-        saveBtn.style.display = "inline-block";
-        cancelBtn.style.display = "inline-block";
-        status.textContent = "";
-      });
+    if (!input || !editBtn || !saveBtn || !cancelBtn) return;
 
-      cancelBtn.addEventListener("click", () => {
-        input.value = originalValues[field] || "";
+    editBtn.addEventListener("click", () => {
+      input.disabled = false;
+      editBtn.style.display = "none";
+      saveBtn.style.display = "inline-block";
+      cancelBtn.style.display = "inline-block";
+      status.textContent = "";
+    });
+
+    cancelBtn.addEventListener("click", () => {
+      input.value = originalValues[field] || "";
+      input.disabled = true;
+      saveBtn.style.display = "none";
+      cancelBtn.style.display = "none";
+      editBtn.style.display = "inline-block";
+      status.textContent = "";
+    });
+
+    saveBtn.addEventListener("click", () => {
+      const newValue = input.value;
+      const updateObj = {};
+      updateObj[field] = newValue;
+
+      currentUserRef.update(updateObj).then(() => {
         input.disabled = true;
+        originalValues[field] = newValue;
         saveBtn.style.display = "none";
         cancelBtn.style.display = "none";
         editBtn.style.display = "inline-block";
-        status.textContent = "";
+        status.textContent = "✅ Saved!";
+        setTimeout(() => (status.textContent = ""), 2000);
+      }).catch(err => {
+        console.error(`Error saving ${field}:`, err);
+        status.textContent = "❌ Error saving";
       });
-
-      saveBtn.addEventListener("click", () => {
-        const newValue = input.value;
-        const updateObj = {};
-        updateObj[field] = newValue;
-
-        currentUserRef.update(updateObj).then(() => {
-          input.disabled = true;
-          originalValues[field] = newValue;
-          saveBtn.style.display = "none";
-          cancelBtn.style.display = "none";
-          editBtn.style.display = "inline-block";
-          status.textContent = "✅ Saved!";
-          setTimeout(() => (status.textContent = ""), 2000);
-        }).catch(err => {
-          console.error(`Error saving ${field}:`, err);
-          status.textContent = "❌ Error saving";
-        });
-      });
-    }
+    });
   });
 }
