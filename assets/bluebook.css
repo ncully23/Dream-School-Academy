@@ -120,7 +120,6 @@ h2 {
   margin-bottom: 20px;
 }
 
-/* ===== Bottom Bar ===== */
 .bottom-bar {
   position: fixed;
   bottom: 0;
@@ -130,38 +129,51 @@ h2 {
   justify-content: space-between;
   align-items: center;
   padding: 12px 24px;
-  background-color: #fff;
+  background-color: #e6edf8; /* Bluebook's light blue */
   border-top: 2px dashed #000;
   font-size: 14px;
   z-index: 1000;
 }
 
-/* Left: Student Name */
+/* Left: Name */
 .student-name {
-  font-weight: 500;
-  color: #000;
+  color: #1a1a1a;
+  font-weight: 600;
 }
 
-/* Center: Question Counter */
+/* Center: Question Box */
 .question-counter {
-  font-size: 14px;
-  font-weight: bold;
   background-color: #000;
-  color: white;
+  color: #fff;
   padding: 6px 14px;
   border-radius: 6px;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-  margin: 0 auto;
-  position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
+  font-size: 14px;
+  font-weight: bold;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.2);
 }
 
-/* Right: Navigation Buttons */
+/* Right: Nav Buttons */
 .nav-buttons {
   display: flex;
-  gap: 10px;
+  gap: 12px;
 }
+
+.nav-buttons button {
+  background-color: #2b52dd;
+  color: white;
+  font-weight: bold;
+  font-size: 14px;
+  border: none;
+  border-radius: 20px;
+  padding: 8px 20px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.nav-buttons button:hover {
+  background-color: #1e3ebd;
+}
+
 
 .nav-buttons button {
   background-color: #0057d9;
