@@ -98,3 +98,26 @@ onAuthStateChanged(auth, user => {
   }
 });
 
+function handleProfileSubmit(event) {
+  event.preventDefault();
+
+  const profileData = {
+    name: document.getElementById("name").value,
+    gradYear: document.getElementById("grad-year").value,
+    dreamSchools: document.getElementById("dream-schools").value,
+    safetySchools: document.getElementById("safety-schools").value,
+    satGoal: document.getElementById("sat-goal").value,
+    classes: document.getElementById("classes").value,
+    extracurriculars: document.getElementById("extracurriculars").value
+  };
+
+  console.log("Profile Saved:", profileData);
+
+  // Optionally: Save to Firestore here
+  alert("Profile saved! (Not stored permanently yet)");
+}
+
+function prefillProfile(user) {
+  document.getElementById("name").value = user.displayName || "";
+  document.getElementById("email").value = user.email || "";
+}
