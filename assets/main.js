@@ -4,10 +4,13 @@ import { getAuth, onAuthStateChanged, signInWithPopup, GoogleAuthProvider, signO
 
 // Your Firebase config object from Firebase console
 const firebaseConfig = {
-  apiKey: "YOUR_API_KEY",
-  authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
-  projectId: "YOUR_PROJECT_ID",
-  appId: "YOUR_APP_ID"
+  apiKey: "AIzaSyD7R7ZsmTpGojgLNt7w_R0tm_mWg_FZEYE",
+  authDomain: "dream-school-academy.firebaseapp.com",
+  projectId: "dream-school-academy",
+  storageBucket: "dream-school-academy.firebasestorage.app",
+  messagingSenderId: "665412130733",
+  appId: "1:665412130733:web:c3d59ab2c2f065a2277324",
+  measurementId: "G-HJCW8VZKZX"
 };
 
 const app = initializeApp(firebaseConfig);
