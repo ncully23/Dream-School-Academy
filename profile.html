@@ -5,24 +5,95 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Your Profile - Dream School</title>
   <link rel="stylesheet" href="./assets/style.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
 
   <!-- Firebase SDKs -->
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(to bottom, #2c2c2c, #000000);
+      color: white;
+      padding: 40px;
+    }
+
+    h2 {
+      font-size: 2.2rem;
+      color: #f0c948;
+      margin-bottom: 20px;
+    }
+
+    form {
+      max-width: 700px;
+      margin: auto;
+      background-color: #121212;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 0 20px rgba(255, 255, 255, 0.05);
+      text-align: left;
+    }
+
+    label {
+      display: block;
+      margin-top: 20px;
+      margin-bottom: 6px;
+      font-weight: 600;
+      font-size: 1.1rem;
+    }
+
+    input[type="text"],
+    input[type="email"],
+    select {
+      width: 100%;
+      padding: 16px;
+      font-size: 1rem;
+      border: none;
+      border-radius: 6px;
+      background-color: #1a1a1a;
+      color: white;
+    }
+
+    button[type="submit"] {
+      margin-top: 30px;
+      padding: 16px 30px;
+      background-color: #3399ff;
+      color: white;
+      font-size: 1.1rem;
+      font-weight: bold;
+      border: none;
+      border-radius: 30px;
+      cursor: pointer;
+      transition: background-color 0.3s ease, transform 0.2s ease;
+    }
+
+    button[type="submit"]:hover {
+      background-color: #2678c8;
+      transform: scale(1.03);
+    }
+
+    footer {
+      text-align: center;
+      margin-top: 50px;
+      color: #aaa;
+      font-size: 0.9rem;
+    }
+  </style>
 </head>
 <body>
   <header>
-    <h1><a href="/home.html" style="text-decoration: none;">Dream School</a></h1>
+    <h1><a href="/home.html" style="text-decoration: none; color: #f0c948;">Dream School</a></h1>
   </header>
 
-  <main style="padding: 20px; max-width: 600px; margin: auto;">
+  <main>
     <h2>Your Profile</h2>
     <form id="profile-form">
-      <label>Name</label>
-      <input type="text" id="name" required /><br />
+      <label for="name">Name</label>
+      <input type="text" id="name" required />
 
-      <label>Graduation Year</label>
+      <label for="gradYear">Graduation Year</label>
       <select id="gradYear" required>
         <option value="">Select Year</option>
         <option value="2024">2024</option>
@@ -30,26 +101,26 @@
         <option value="2026">2026</option>
         <option value="2027">2027</option>
         <option value="2028">2028</option>
-        <option value="2029">2028</option>
-        <option value="2030">2028</option>
-      </select><br />
+        <option value="2029">2029</option>
+        <option value="2030">2030</option>
+      </select>
 
-      <label>Dream Schools</label>
-      <input type="text" id="dreamSchools" /><br />
+      <label for="dreamSchools">Dream Schools</label>
+      <input type="text" id="dreamSchools" />
 
-      <label>Safety Schools</label>
-      <input type="text" id="safetySchools" /><br />
+      <label for="safetySchools">Safety Schools</label>
+      <input type="text" id="safetySchools" />
 
-      <label>SAT Goal</label>
-      <input type="text" id="satGoal" /><br />
+      <label for="satGoal">SAT Goal</label>
+      <input type="text" id="satGoal" />
 
-      <label>Current Classes</label>
-      <input type="text" id="classes" /><br />
+      <label for="classes">Current Classes</label>
+      <input type="text" id="classes" />
 
-      <label>Extracurriculars</label>
-      <input type="text" id="extracurriculars" /><br />
+      <label for="extracurriculars">Extracurriculars</label>
+      <input type="text" id="extracurriculars" />
 
-      <button type="submit" style="margin-top: 20px;">Save Profile</button>
+      <button type="submit">💾 Save Profile</button>
     </form>
   </main>
 
