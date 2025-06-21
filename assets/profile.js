@@ -22,9 +22,42 @@ let originalValues = {};
 // Check auth state
 auth.onAuthStateChanged(user => {
   if (!user) {
-    window.location.href = "/home.html"; // redirect if not logged in
+    window.location.href = "/home.html";
   } else {
     currentUserRef = db.collection("userProfiles").doc(user.uid);
+    currentUserRef.get().then(doc => {
+      if (!doc.exists) {
+        // 👶 Create default profile on first login
+        const defaultData = {
+          name: user.displayName || "",
+          gradYear: "",
+          dreamSchools: "",
+          safetySchools: "",
+          satGoal: "",
+          classes: "",
+          extracurriculars: ""
+        };
+        currentUserRef.set(defaultData).then(() => {
+          loadProfile(defaultData); // Load new data into form
+        });
+      } else {
+        loadProfile(doc.data()); // Load existing data
+      }
+    });
+  }
+});
+
+function loadProfile(data) {
+  for (const key in data) {
+    const el = document.getElementById(key);
+    if (el) {
+      el.value = data[key];
+      originalValues[key] = data[key];
+    }
+  }
+  setupFieldHandlers();
+}
+
 
     currentUserRef.get().then(doc => {
       if (doc.exists) {
