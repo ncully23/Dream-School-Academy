@@ -78,13 +78,23 @@ function monitorAuthState() {
   const authBtn = document.getElementById("auth-btn");
   const userNameEl = document.getElementById("user-name");
 
-  onAuthStateChanged(auth, user => {
-    if (user) {
-      authBtn.textContent = "Sign Out";
-      if (userNameEl) userNameEl.textContent = `Hello, ${user.displayName}`;
-    } else {
-      authBtn.textContent = "Sign in with Google";
-      if (userNameEl) userNameEl.textContent = "";
-    }
-  });
-}
+onAuthStateChanged(auth, user => {
+  const authBtn = document.getElementById("auth-btn");
+  const userNameEl = document.getElementById("user-name");
+  const profileForm = document.getElementById("profile-form");
+
+  if (user) {
+    currentUser = user;
+    const firstName = user.displayName?.split(" ")[0] || "Friend";
+    if (authBtn) authBtn.textContent = "Sign Out";
+    if (userNameEl) userNameEl.textContent = `${firstName}! Chase your dreams!`;
+    if (profileForm) profileForm.style.display = "block";
+    prefillProfile(user); // Fill form if data exists
+  } else {
+    currentUser = null;
+    if (authBtn) authBtn.textContent = "Sign in with Google";
+    if (userNameEl) userNameEl.textContent = "";
+    if (profileForm) profileForm.style.display = "none";
+  }
+});
+
