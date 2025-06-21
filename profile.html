@@ -7,7 +7,6 @@
   <link rel="stylesheet" href="./assets/style.css" />
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
 
-  <!-- Firebase SDKs -->
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
@@ -19,14 +18,12 @@
       color: white;
       padding: 40px;
     }
-
     h2 {
       font-size: 2.2rem;
       color: #f0c948;
       margin-bottom: 20px;
     }
-
-    form {
+    .profile-container {
       max-width: 700px;
       margin: auto;
       background-color: #121212;
@@ -35,49 +32,43 @@
       box-shadow: 0 0 20px rgba(255, 255, 255, 0.05);
       text-align: left;
     }
-
-    label {
-      display: block;
-      margin-top: 20px;
-      margin-bottom: 6px;
-      font-weight: 600;
-      font-size: 1.1rem;
+    .profile-field {
+      margin-bottom: 20px;
     }
-
-    input[type="text"],
-    select {
+    .profile-label {
+      font-weight: bold;
+      display: block;
+      margin-bottom: 5px;
+    }
+    .profile-value {
+      margin-left: 10px;
+    }
+    input[type="text"], select {
       width: 100%;
-      padding: 16px;
+      padding: 14px;
       font-size: 1rem;
       border: none;
       border-radius: 6px;
       background-color: #1a1a1a;
       color: white;
+      margin-top: 5px;
     }
-
-    button[type="submit"] {
-      margin-top: 30px;
-      padding: 16px 30px;
+    button {
+      margin-top: 20px;
+      padding: 14px 26px;
+      font-size: 1rem;
+      border: none;
+      border-radius: 25px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+    .edit-btn {
+      background-color: #f0c948;
+      color: black;
+    }
+    .save-btn {
       background-color: #3399ff;
       color: white;
-      font-size: 1.1rem;
-      font-weight: bold;
-      border: none;
-      border-radius: 30px;
-      cursor: pointer;
-      transition: background-color 0.3s ease, transform 0.2s ease;
-    }
-
-    button[type="submit"]:hover {
-      background-color: #2678c8;
-      transform: scale(1.03);
-    }
-
-    footer {
-      text-align: center;
-      margin-top: 50px;
-      color: #aaa;
-      font-size: 0.9rem;
     }
   </style>
 </head>
@@ -88,39 +79,56 @@
 
   <main>
     <h2>Your Profile</h2>
-    <form id="profile-form">
-      <label for="name">Nickname</label>
-      <input type="text" id="name" required />
+    <div class="profile-container">
+      <form id="profile-form">
+        <div class="profile-field">
+          <label class="profile-label" for="name">Nickname</label>
+          <input type="text" id="name" disabled />
+        </div>
 
-      <label for="gradYear">Graduation Year</label>
-      <select id="gradYear" required>
-        <option value="">Select Year</option>
-        <option value="2024">2024</option>
-        <option value="2025">2025</option>
-        <option value="2026">2026</option>
-        <option value="2027">2027</option>
-        <option value="2028">2028</option>
-        <option value="2029">2029</option>
-        <option value="2030">2030</option>
-      </select>
+        <div class="profile-field">
+          <label class="profile-label" for="gradYear">Graduation Year</label>
+          <select id="gradYear" disabled>
+            <option value="">Select Year</option>
+            <option value="2024">2024</option>
+            <option value="2025">2025</option>
+            <option value="2026">2026</option>
+            <option value="2027">2027</option>
+            <option value="2028">2028</option>
+            <option value="2029">2029</option>
+            <option value="2030">2030</option>
+          </select>
+        </div>
 
-      <label for="dreamSchools">Dream Schools</label>
-      <input type="text" id="dreamSchools" />
+        <div class="profile-field">
+          <label class="profile-label" for="dreamSchools">Dream Schools</label>
+          <input type="text" id="dreamSchools" disabled />
+        </div>
 
-      <label for="safetySchools">Safety Schools</label>
-      <input type="text" id="safetySchools" />
+        <div class="profile-field">
+          <label class="profile-label" for="safetySchools">Safety Schools</label>
+          <input type="text" id="safetySchools" disabled />
+        </div>
 
-      <label for="satGoal">SAT Goal</label>
-      <input type="text" id="satGoal" />
+        <div class="profile-field">
+          <label class="profile-label" for="satGoal">SAT Goal</label>
+          <input type="text" id="satGoal" disabled />
+        </div>
 
-      <label for="classes">Current Classes</label>
-      <input type="text" id="classes" />
+        <div class="profile-field">
+          <label class="profile-label" for="classes">Current Classes</label>
+          <input type="text" id="classes" disabled />
+        </div>
 
-      <label for="extracurriculars">Extracurriculars</label>
-      <input type="text" id="extracurriculars" />
+        <div class="profile-field">
+          <label class="profile-label" for="extracurriculars">Extracurriculars</label>
+          <input type="text" id="extracurriculars" disabled />
+        </div>
 
-      <button type="submit">💾 Save Profile</button>
-    </form>
+        <button type="button" id="edit-btn" class="edit-btn">✏️ Edit Profile</button>
+        <button type="submit" id="save-btn" class="save-btn" style="display: none;">💾 Save Changes</button>
+      </form>
+    </div>
   </main>
 
   <footer>
@@ -143,8 +151,17 @@
     const db = firebase.firestore();
 
     const form = document.getElementById("profile-form");
-
+    const editBtn = document.getElementById("edit-btn");
+    const saveBtn = document.getElementById("save-btn");
     let currentUserRef = null;
+
+    const toggleEditable = (editable) => {
+      document.querySelectorAll("input, select").forEach(el => {
+        el.disabled = !editable;
+      });
+      editBtn.style.display = editable ? "none" : "inline-block";
+      saveBtn.style.display = editable ? "inline-block" : "none";
+    };
 
     auth.onAuthStateChanged(user => {
       if (!user) {
@@ -168,9 +185,10 @@
       }
     });
 
+    editBtn.addEventListener("click", () => toggleEditable(true));
+
     form.addEventListener("submit", (e) => {
       e.preventDefault();
-
       if (!currentUserRef) return;
 
       currentUserRef.set({
@@ -182,10 +200,10 @@
         classes: document.getElementById("classes").value,
         extracurriculars: document.getElementById("extracurriculars").value
       }).then(() => {
-        // Reload the page with saved data reflected
-        location.reload();
+        toggleEditable(false);
+        alert("Profile updated!");
       }).catch(error => {
-        console.error("Error saving profile:", error);
+        console.error("Error updating profile:", error);
       });
     });
   </script>
