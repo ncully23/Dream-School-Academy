@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Your Profile - Dream School</title>
   <link rel="stylesheet" href="./assets/style.css" />
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet" />
 
   <!-- Firebase SDKs -->
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
@@ -19,6 +19,19 @@
   <!-- Babel for JSX -->
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 
+  <!-- Firebase Config -->
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyD7R7ZsmTpGojgLNt7w_R0tm_mWg_FZEYE",
+      authDomain: "dream-school-academy.firebaseapp.com",
+      projectId: "dream-school-academy",
+      storageBucket: "dream-school-academy.appspot.com",
+      messagingSenderId: "665412130733",
+      appId: "1:665412130733:web:c3d59ab2c2f065a2277324"
+    };
+    firebase.initializeApp(firebaseConfig);
+  </script>
+
   <style>
     body {
       font-family: 'Poppins', sans-serif;
@@ -26,13 +39,22 @@
       color: white;
       padding: 40px;
     }
+
     h1 a {
       text-decoration: none;
       color: #f0c948;
     }
+
     #root {
       max-width: 700px;
       margin: auto;
+    }
+
+    footer {
+      margin-top: 60px;
+      text-align: center;
+      font-size: 0.9rem;
+      color: #aaa;
     }
   </style>
 </head>
