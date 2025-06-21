@@ -160,6 +160,57 @@ button:hover {
   background-color: #003f9e;
 }
 
+/* ===== Bottom Bar ===== */
+.bottom-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 20px;
+  border-top: 2px dashed black;
+  background-color: #f0f4fb;
+  height: 60px;
+  font-size: 14px;
+}
+
+/* Left: Student Name */
+.student-name {
+  font-weight: 500;
+  color: #000;
+}
+
+/* Center: Question Counter */
+.question-counter {
+  font-size: 15px;
+  font-weight: bold;
+  background-color: #000;
+  color: white;
+  padding: 6px 14px;
+  border-radius: 6px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+/* Right: Navigation Buttons */
+.nav-buttons {
+  display: flex;
+  gap: 10px;
+}
+
+.nav-buttons button {
+  background-color: #0057d9;
+  color: white;
+  font-weight: bold;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background 0.2s ease-in-out;
+}
+
+.nav-buttons button:hover {
+  background-color: #003f9e;
+}
+
 .results {
   display: none;
 }
