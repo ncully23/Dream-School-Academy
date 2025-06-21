@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Your Profile - Dream School</title>
   <link rel="stylesheet" href="./assets/style.css" />
-  <script src="./profile.js"></script>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
 
   <!-- Firebase SDKs -->
@@ -92,19 +91,21 @@
   <main>
     <h2>Your Profile</h2>
     <div class="profile-container">
-      <div class="profile-field">
-        <label class="profile-label" for="name">Nickname</label>
+
+      <!-- Field Template -->
+      <div class="profile-field" data-field="name">
+        <label class="profile-label">Nickname</label>
         <input type="text" id="name" disabled />
         <div class="button-row">
-          <button id="name-edit" class="edit-btn">Edit</button>
-          <button id="name-save" class="save-btn" style="display:none;">Save</button>
-          <button id="name-cancel" class="cancel-btn" style="display:none;">Cancel</button>
-          <span id="name-status" class="status"></span>
+          <button class="edit-btn">Edit</button>
+          <button class="save-btn" style="display:none;">Save</button>
+          <button class="cancel-btn" style="display:none;">Cancel</button>
+          <span class="status" id="name-status"></span>
         </div>
       </div>
 
-      <div class="profile-field">
-        <label class="profile-label" for="gradYear">Graduation Year</label>
+      <div class="profile-field" data-field="gradYear">
+        <label class="profile-label">Graduation Year</label>
         <select id="gradYear" disabled>
           <option value="">Select Year</option>
           <option value="2024">2024</option>
@@ -116,67 +117,69 @@
           <option value="2030">2030</option>
         </select>
         <div class="button-row">
-          <button id="gradYear-edit" class="edit-btn">Edit</button>
-          <button id="gradYear-save" class="save-btn" style="display:none;">Save</button>
-          <button id="gradYear-cancel" class="cancel-btn" style="display:none;">Cancel</button>
-          <span id="gradYear-status" class="status"></span>
+          <button class="edit-btn">Edit</button>
+          <button class="save-btn" style="display:none;">Save</button>
+          <button class="cancel-btn" style="display:none;">Cancel</button>
+          <span class="status" id="gradYear-status"></span>
         </div>
       </div>
 
-      <div class="profile-field">
-        <label class="profile-label" for="dreamSchools">Dream Schools</label>
+      <!-- Add other fields in same structure -->
+      <div class="profile-field" data-field="dreamSchools">
+        <label class="profile-label">Dream Schools</label>
         <input type="text" id="dreamSchools" disabled />
         <div class="button-row">
-          <button id="dreamSchools-edit" class="edit-btn">Edit</button>
-          <button id="dreamSchools-save" class="save-btn" style="display:none;">Save</button>
-          <button id="dreamSchools-cancel" class="cancel-btn" style="display:none;">Cancel</button>
-          <span id="dreamSchools-status" class="status"></span>
+          <button class="edit-btn">Edit</button>
+          <button class="save-btn" style="display:none;">Save</button>
+          <button class="cancel-btn" style="display:none;">Cancel</button>
+          <span class="status" id="dreamSchools-status"></span>
         </div>
       </div>
 
-      <div class="profile-field">
-        <label class="profile-label" for="safetySchools">Safety Schools</label>
+      <div class="profile-field" data-field="safetySchools">
+        <label class="profile-label">Safety Schools</label>
         <input type="text" id="safetySchools" disabled />
         <div class="button-row">
-          <button id="safetySchools-edit" class="edit-btn">Edit</button>
-          <button id="safetySchools-save" class="save-btn" style="display:none;">Save</button>
-          <button id="safetySchools-cancel" class="cancel-btn" style="display:none;">Cancel</button>
-          <span id="safetySchools-status" class="status"></span>
+          <button class="edit-btn">Edit</button>
+          <button class="save-btn" style="display:none;">Save</button>
+          <button class="cancel-btn" style="display:none;">Cancel</button>
+          <span class="status" id="safetySchools-status"></span>
         </div>
       </div>
 
-      <div class="profile-field">
-        <label class="profile-label" for="satGoal">SAT Goal</label>
+      <div class="profile-field" data-field="satGoal">
+        <label class="profile-label">SAT Goal</label>
         <input type="text" id="satGoal" disabled />
         <div class="button-row">
-          <button id="satGoal-edit" class="edit-btn">Edit</button>
-          <button id="satGoal-save" class="save-btn" style="display:none;">Save</button>
-          <button id="satGoal-cancel" class="cancel-btn" style="display:none;">Cancel</button>
-          <span id="satGoal-status" class="status"></span>
+          <button class="edit-btn">Edit</button>
+          <button class="save-btn" style="display:none;">Save</button>
+          <button class="cancel-btn" style="display:none;">Cancel</button>
+          <span class="status" id="satGoal-status"></span>
         </div>
       </div>
 
-      <div class="profile-field">
-        <label class="profile-label" for="classes">Current Classes</label>
+      <div class="profile-field" data-field="classes">
+        <label class="profile-label">Current Classes</label>
         <input type="text" id="classes" disabled />
         <div class="button-row">
-          <button id="classes-edit" class="edit-btn">Edit</button>
-          <button id="classes-save" class="save-btn" style="display:none;">Save</button>
-          <button id="classes-cancel" class="cancel-btn" style="display:none;">Cancel</button>
-          <span id="classes-status" class="status"></span>
+          <button class="edit-btn">Edit</button>
+          <button class="save-btn" style="display:none;">Save</button>
+          <button class="cancel-btn" style="display:none;">Cancel</button>
+          <span class="status" id="classes-status"></span>
         </div>
       </div>
 
-      <div class="profile-field">
-        <label class="profile-label" for="extracurriculars">Extracurriculars</label>
+      <div class="profile-field" data-field="extracurriculars">
+        <label class="profile-label">Extracurriculars</label>
         <input type="text" id="extracurriculars" disabled />
         <div class="button-row">
-          <button id="extracurriculars-edit" class="edit-btn">Edit</button>
-          <button id="extracurriculars-save" class="save-btn" style="display:none;">Save</button>
-          <button id="extracurriculars-cancel" class="cancel-btn" style="display:none;">Cancel</button>
-          <span id="extracurriculars-status" class="status"></span>
+          <button class="edit-btn">Edit</button>
+          <button class="save-btn" style="display:none;">Save</button>
+          <button class="cancel-btn" style="display:none;">Cancel</button>
+          <span class="status" id="extracurriculars-status"></span>
         </div>
       </div>
+
     </div>
   </main>
 
@@ -184,7 +187,6 @@
     <p>&copy; 2025 Dream School. All rights reserved.</p>
   </footer>
 
-  <!-- Load external JavaScript -->
   <script src="./profile.js"></script>
 </body>
 </html>
