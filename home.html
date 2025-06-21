@@ -25,16 +25,19 @@
   firebase.initializeApp(firebaseConfig);
   const auth = firebase.auth();
 
-  function signInWithGoogle() {
-    const provider = new firebase.auth.GoogleAuthProvider();
-    auth.signInWithPopup(provider)
-      .then(result => {
-        const user = result.user;
-        document.getElementById("google-signin").style.display = "none";
-        document.getElementById("user-info").innerText = `Signed in as ${user.displayName}`;
-      })
-      .catch(error => console.error("Sign-in error:", error));
-  }
+function signInWithGoogle() {
+  console.log("Sign-in button clicked"); // <--- Add this
+  const provider = new firebase.auth.GoogleAuthProvider();
+  auth.signInWithPopup(provider)
+    .then(result => {
+      const user = result.user;
+      console.log("Signed in as:", user.displayName); // <--- Add this
+      document.getElementById("google-signin").style.display = "none";
+      document.getElementById("user-info").innerText = `Signed in as ${user.displayName}`;
+    })
+    .catch(error => console.error("Sign-in error:", error));
+}
+
 
   auth.onAuthStateChanged(user => {
     if (user) {
