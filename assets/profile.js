@@ -39,6 +39,35 @@ auth.onAuthStateChanged(user => {
   }
 });
 
+document.addEventListener("DOMContentLoaded", () => {
+  // Wait for auth and setup after Firebase initializes user
+  auth.onAuthStateChanged(user => {
+    if (!user) {
+      window.location.href = "/home.html";
+    } else {
+      currentUserRef = db.collection("userProfiles").doc(user.uid);
+      currentUserRef.get().then(doc => {
+        const data = doc.exists ? doc.data() : {
+          name: user.displayName || "",
+          gradYear: "",
+          dreamSchools: "",
+          safetySchools: "",
+          satGoal: "",
+          classes: "",
+          extracurriculars: ""
+        };
+
+        if (!doc.exists) {
+          currentUserRef.set(data);
+        }
+
+        loadProfile(data); // ← this calls setupFieldHandlers()
+      });
+    }
+  });
+});
+
+
 function loadProfile(data) {
   for (const key in data) {
     const el = document.getElementById(key);
