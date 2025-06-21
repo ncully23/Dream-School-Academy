@@ -39,7 +39,15 @@ auth.onAuthStateChanged(user => {
 });
 
 function setupFieldHandlers() {
-  const fields = ["name", "gradYear", "dreamSchools"];
+  const fields = [
+    "name",
+    "gradYear",
+    "dreamSchools",
+    "safetySchools",
+    "satGoal",
+    "classes",
+    "extracurriculars"
+  ];
 
   fields.forEach(field => {
     const input = document.getElementById(field);
@@ -48,39 +56,42 @@ function setupFieldHandlers() {
     const cancelBtn = document.getElementById(`${field}-cancel`);
     const status = document.getElementById(`${field}-status`);
 
-    editBtn.addEventListener("click", () => {
-      input.disabled = false;
-      editBtn.style.display = "none";
-      saveBtn.style.display = "inline-block";
-      cancelBtn.style.display = "inline-block";
-      status.textContent = "";
-    });
+    if (editBtn && saveBtn && cancelBtn && input) {
+      editBtn.addEventListener("click", () => {
+        input.disabled = false;
+        editBtn.style.display = "none";
+        saveBtn.style.display = "inline-block";
+        cancelBtn.style.display = "inline-block";
+        status.textContent = "";
+      });
 
-    cancelBtn.addEventListener("click", () => {
-      input.value = originalValues[field] || "";
-      input.disabled = true;
-      saveBtn.style.display = "none";
-      cancelBtn.style.display = "none";
-      editBtn.style.display = "inline-block";
-      status.textContent = "";
-    });
-
-    saveBtn.addEventListener("click", () => {
-      const newValue = input.value;
-      const updateObj = {};
-      updateObj[field] = newValue;
-      currentUserRef.update(updateObj).then(() => {
+      cancelBtn.addEventListener("click", () => {
+        input.value = originalValues[field] || "";
         input.disabled = true;
-        originalValues[field] = newValue;
         saveBtn.style.display = "none";
         cancelBtn.style.display = "none";
         editBtn.style.display = "inline-block";
-        status.textContent = "✅ Saved!";
-        setTimeout(() => status.textContent = "", 2000);
-      }).catch(err => {
-        console.error("Save error:", err);
-        status.textContent = "❌ Error saving";
+        status.textContent = "";
       });
-    });
+
+      saveBtn.addEventListener("click", () => {
+        const newValue = input.value;
+        const updateObj = {};
+        updateObj[field] = newValue;
+
+        currentUserRef.update(updateObj).then(() => {
+          input.disabled = true;
+          originalValues[field] = newValue;
+          saveBtn.style.display = "none";
+          cancelBtn.style.display = "none";
+          editBtn.style.display = "inline-block";
+          status.textContent = "✅ Saved!";
+          setTimeout(() => (status.textContent = ""), 2000);
+        }).catch(err => {
+          console.error(`Error saving ${field}:`, err);
+          status.textContent = "❌ Error saving";
+        });
+      });
+    }
   });
 }
