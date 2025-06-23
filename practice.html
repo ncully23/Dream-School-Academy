@@ -2,156 +2,120 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Your Profile - Dream School</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Study - Dream School</title>
   <link rel="stylesheet" href="./assets/style.css" />
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+  
+<div id="site-header"></div>
+
+    <style>
+    main {
+      padding: 50px 20px;
+      text-align: center;
+    }
+
+    .study-heading {
+      margin-bottom: 20px;
+    }
+
+    .study-cards {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 30px;
+      margin-top: 30px;
+    }
+
+    .card {
+      background-color: #1e1e1e;
+      border-radius: 12px;
+      padding: 30px;
+      width: 350px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+      transition: transform 0.3s, box-shadow 0.3s;
+    }
+
+    .card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 25px rgba(255, 215, 0, 0.2);
+    }
+
+    .card h2 {
+      color: gold;
+      font-size: 24px;
+      margin-bottom: 15px;
+    }
+
+    .card ul {
+      list-style: none;
+      padding: 0;
+      text-align: left;
+    }
+
+    .card ul li {
+      margin: 10px 0;
+    }
+
+    .card ul li a {
+      color: #3399ff;
+      text-decoration: none;
+      font-weight: 500;
+    }
+
+    .card ul li a:hover {
+      color: gold;
+      text-decoration: underline;
+    }
+  </style>
 </head>
-<style>
-  body {
-    font-family: 'Poppins', sans-serif;
-    background: linear-gradient(to bottom, #2c2c2c, #000000);
-    color: white;
-    padding: 40px;
-  }
-
-  h2 {
-    font-size: 2.2rem;
-    color: #f0c948;
-    margin-bottom: 30px;
-    text-align: center;
-  }
-
-  .profile-container {
-    max-width: 700px;
-    margin: auto;
-    background-color: #121212;
-    padding: 30px;
-    border-radius: 12px;
-    box-shadow: 0 0 20px rgba(255, 255, 255, 0.05);
-    text-align: left;
-  }
-
-  .profile-field {
-    margin-bottom: 25px;
-  }
-
-  .profile-label {
-    font-weight: bold;
-    display: block;
-    margin-bottom: 8px;
-  }
-
-  input[type="text"],
-  select {
-    width: 100%;
-    padding: 14px;
-    font-size: 1rem;
-    border: none;
-    border-radius: 6px;
-    background-color: #1a1a1a;
-    color: white;
-    margin-bottom: 8px;
-  }
-
-  .btn-row {
-    display: flex;
-    gap: 10px;
-    margin-top: 6px;
-  }
-
-  .edit-btn, .save-btn, .cancel-btn {
-    padding: 10px 16px;
-    border-radius: 6px;
-    border: none;
-    font-weight: bold;
-    cursor: pointer;
-  }
-
-  .edit-btn {
-    background-color: #f0c948;
-    color: black;
-  }
-
-  .save-btn {
-    background-color: #3399ff;
-    color: white;
-    display: none;
-  }
-
-  .cancel-btn {
-    background-color: #666;
-    color: white;
-    display: none;
-  }
-
-  .status-msg {
-    font-size: 0.9rem;
-    color: #ccc;
-    margin-top: 4px;
-  }
-
-  footer {
-    text-align: center;
-    margin-top: 60px;
-    color: #aaa;
-    font-size: 0.9rem;
-  }
-</style>
 <body>
-  <header>
-    <h1><a href="/home.html" style="text-decoration: none; color: #f0c948;">Dream School</a></h1>
-  </header>
-
   <main>
-    <h2>Your Profile</h2>
-    <div class="profile-container">
+    <div class="study-heading">
+      <h2>Study Topics</h2>
+      <p>CollegeBoard divides the SAT into 29 topics.</p>
+    </div>
 
-      <!-- Nickname -->
-      <div class="profile-field">
-        <label class="profile-label" for="name">Nickname</label>
-        <input type="text" id="name" disabled />
-        <div class="btn-row">
-          <button id="name-edit" class="edit-btn">✏️ Edit</button>
-          <button id="name-save" class="save-btn">💾 Save</button>
-          <button id="name-cancel" class="cancel-btn">Cancel</button>
-        </div>
-        <div id="name-status" class="status-msg"></div>
+    <div class="study-cards">
+      <!-- Reading Card -->
+      <div class="card">
+        <h2>Reading</h2>
+        <ul>
+          <li><a href="practice/words-in-context.html">Words in Context</a></li>
+          <li><a href="practice/structure-and-purpose.html">Structure & Purpose</a></li>
+          <li><a href="practice/cross-text.html">Cross Text</a></li>
+          <li><a href="practice/central-ideas.html">Central Ideas</a></li>
+          <li><a href="practice/command-of-evidence.html">Command of Evidence</a></li>
+          <li><a href="practice/inferences.html">Inferences</a></li>
+          <li><a href="practice/form-structure-sense.html">Form, Structure, & Sense</a></li>
+          <li><a href="practice/boundaries.html">Boundaries</a></li>
+          <li><a href="practice/transitions.html">Transitions</a></li>
+          <li><a href="practice/rhetoricalsynthesis.html">Rhetorical Synthesis</a></li>
+        </ul>
       </div>
 
-      <!-- Graduation Year -->
-      <div class="profile-field">
-        <label class="profile-label" for="gradYear">Graduation Year</label>
-        <select id="gradYear" disabled>
-          <option value="">Select Year</option>
-          <option value="2024">2024</option>
-          <option value="2025">2025</option>
-          <option value="2026">2026</option>
-          <option value="2027">2027</option>
-          <option value="2028">2028</option>
-          <option value="2029">2029</option>
-          <option value="2030">2030</option>
-        </select>
-        <div class="btn-row">
-          <button id="gradYear-edit" class="edit-btn">✏️ Edit</button>
-          <button id="gradYear-save" class="save-btn">💾 Save</button>
-          <button id="gradYear-cancel" class="cancel-btn">Cancel</button>
-        </div>
-        <div id="gradYear-status" class="status-msg"></div>
+      <!-- Math Card -->
+      <div class="card">
+        <h2>Math</h2>
+        <ul>
+          <li><a href="practice/rates-ratios-units.html">Rates, Ratios, & Units</a></li>
+          <li><a href="practice/percentages">Percentages</a></li>
+          <li><a href="practice/probability">Probability</a></li>
+          <li><a href="practice/statistical-claims.html">Statistical Claims</a></li>
+          <li><a href="practice/inferences-from-statistics.html">Inference from Statistics</a></li>
+          <li><a href="practice/1-Variable-Data.html">1 Variable Data</a></li>
+          <li><a href="practice/2-Variable-Data.html">2 Variable Data</a></li>
+          <li><a href="practice/equivalent-expressions.html">Equivalent Expressions</a></li>
+          <li><a href="practice/linear-functions.html">Linear Functions</a></li>
+          <li><a href="practice/linear-inequalities.html">Linear Inequalities</a></li>
+          <li><a href="practice/nonlinear-equations.html">Nonlinear Equations</a></li>
+          <li><a href="practice/nonlinear-in-1&systems-in-2.html">Nonlinear Equations in 1 Variable & Systems of Equations in 2 Variables</a><li>
+          <li><a href="practice/nonlinear-functions.html">Nonlinear Functions</a></li>
+          <li><a href="practice/lines-angles-triangles.html">Lines, Angles, Triangles</a></li>
+          <li><a href="practice/right-triangles&trigonometry">Right Triangles & Trigonometry</a></li>
+          <li><a href="practice/A&V.html">Area & Volume</a></li>
+          <li><a href="practice/circles.html">Circles</a></li>
+        </ul>
       </div>
-
-      <!-- Dream Schools -->
-      <div class="profile-field">
-        <label class="profile-label" for="dreamSchools">Dream Schools</label>
-        <input type="text" id="dreamSchools" disabled />
-        <div class="btn-row">
-          <button id="dreamSchools-edit" class="edit-btn">✏️ Edit</button>
-          <button id="dreamSchools-save" class="save-btn">💾 Save</button>
-          <button id="dreamSchools-cancel" class="cancel-btn">Cancel</button>
-        </div>
-        <div id="dreamSchools-status" class="status-msg"></div>
-      </div>
-
     </div>
   </main>
 
@@ -159,10 +123,11 @@
     <p>&copy; 2025 Dream School. All rights reserved.</p>
   </footer>
 
-  <!-- Firebase & JS -->
-  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
-  <script src="./assets/profile.js"></script>
+<script>
+  fetch('/assets/header.html')
+    .then(response => response.text())
+    .then(data => document.getElementById('site-header').innerHTML = data);
+</script>
+
 </body>
 </html>
