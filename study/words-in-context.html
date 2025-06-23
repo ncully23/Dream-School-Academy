@@ -3,169 +3,92 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Words in Context Practice</title>
+  <title>Words in Context - Dream School</title>
+  <link rel="stylesheet" href="../assets/style.css" />
   <style>
-    body {
-      font-family: 'Segoe UI', sans-serif;
-      background-color: #f4f6fa;
-      margin: 0;
-      padding: 0;
-    }
-
-    .top-bar {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 50px;
-      background-color: #dce6f5;
-      border-bottom: 2px dashed black;
-      font-weight: bold;
-      font-size: 16px;
-    }
-
-    .container {
+    main {
+      padding: 40px 20px;
       max-width: 800px;
-      margin: 40px auto;
-      background: white;
-      padding: 30px;
-      border-radius: 10px;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      margin: 0 auto;
     }
 
-    .passage {
-      font-size: 16px;
+    h2 {
+      color: gold;
+      border-bottom: 1px solid #333;
+      padding-bottom: 5px;
+      margin-top: 40px;
+    }
+
+    section ul {
+      list-style: disc;
+      padding-left: 20px;
+    }
+
+    section li {
+      color: #ddd;
+      margin: 8px 0;
       line-height: 1.6;
-      margin-bottom: 30px;
-    }
-
-    .question {
-      font-size: 18px;
-      margin-bottom: 20px;
-      font-weight: 500;
-    }
-
-    label {
-      display: block;
-      padding: 12px 16px;
-      margin-bottom: 12px;
-      border: 2px solid #ccc;
-      border-radius: 6px;
-      background-color: #f9f9f9;
-      cursor: pointer;
-    }
-
-    input[type="radio"] {
-      display: none;
-    }
-
-    input[type="radio"]:checked + label {
-      border-color: #1a73e8;
-      background-color: #e3f0ff;
-    }
-
-    .feedback {
-      font-weight: bold;
-      margin-top: 20px;
-    }
-
-    .correct {
-      color: green;
-    }
-
-    .incorrect {
-      color: red;
-    }
-
-    .timer {
-      position: absolute;
-      top: 12px;
-      right: 20px;
-      font-size: 15px;
-      font-weight: bold;
-    }
-
-    .submit-btn {
-      background-color: #1a73e8;
-      color: white;
-      font-weight: bold;
-      border: none;
-      padding: 10px 20px;
-      font-size: 15px;
-      border-radius: 6px;
-      cursor: pointer;
     }
   </style>
 </head>
 <body>
-  <div class="top-bar">
-    Words in Context – Practice Quiz
-    <div class="timer" id="timer">00:00</div>
-  </div>
 
-  <div class="container">
-    <div class="passage">
-      Here’s the real trick: Predict the word yourself before looking at choices.<br />
-      Read the sentence. Guess what word fits—use a simple word.<br />
-      Then match that guess to the closest choice.<br /><br />
-      If you skip this and go straight to the answer choices?<br />
-      You’ll find that all of them could <strong>work</strong>.
-      But only one keeps the same meaning and tone.
-    </div>
+  <header>
+    <h1>DREAM SCHOOL</h1>
+    <nav>
+      <ul class="nav-menu">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="study.html">Study</a></li>
+        <li><a href="#">Practice</a></li>
+        <li><a href="#">Tutoring</a></li>
+        <li><a href="#">Contact Us</a></li>
+      </ul>
+    </nav>
+  </header>
 
-    <div class="question">
-      In context, which choice best replaces the word <strong>"work"</strong>?
-    </div>
+  <main>
+    <h2>What Is Tested?</h2>
+    <ul>
+      <li>The SAT focuses on Tier 2 vocabulary — high-utility words found in school and nonfiction reading.</li>
+      <li>These words are not obscure or poetic. They are common in context-heavy academic writing.</li>
+      <li>The test pulls many of these words from past SATs. They repeat!</li>
+      <li>Use Quizlet sets like the “2400 Vocab List” to review common words.</li>
+    </ul>
 
-    <form id="quiz-form">
-      <input type="radio" name="vocab" id="choiceA" value="A">
-      <label for="choiceA">A. function correctly</label>
+    <h2>The Winning Move: Predict First</h2>
+    <ul>
+      <li><strong>Before looking at the answer choices, predict your own word</strong> that fits the blank or replaces the highlighted word.</li>
+      <li>Use a basic, simple word — not a fancy synonym.</li>
+      <li>Then, match your prediction to the closest answer choice.</li>
+      <li>This helps you avoid being tricked by choices that seem possible but change the meaning or tone.</li>
+    </ul>
 
-      <input type="radio" name="vocab" id="choiceB" value="B">
-      <label for="choiceB">B. require effort</label>
+    <h2>Why Predicting Works</h2>
+    <ul>
+      <li>If you look at the choices first, they can all “kind of” fit — but most will shift the point of the sentence.</li>
+      <li>Only one answer preserves the original meaning and tone of the sentence.</li>
+      <li>Predicting your own word helps you stay grounded in what the sentence is really saying.</li>
+    </ul>
 
-      <input type="radio" name="vocab" id="choiceC" value="C">
-      <label for="choiceC">C. get fixed</label>
+    <h2>Strategy Tips</h2>
+    <ul>
+      <li><strong>Keep your prediction simple:</strong> Basic words are easier to match to correct choices.</li>
+      <li><strong>Don’t overthink it:</strong> These questions are designed to be quick. Spending more than 30–45 seconds is usually a waste.</li>
+      <li><strong>Trust your first instinct:</strong> If a choice perfectly matches your prediction, go with it and move on.</li>
+    </ul>
 
-      <input type="radio" name="vocab" id="choiceD" value="D">
-      <label for="choiceD">D. result in a job</label>
+    <h2>Key Skills</h2>
+    <ul>
+      <li>Using context clues to define unfamiliar words</li>
+      <li>Matching tone and meaning</li>
+      <li>Eliminating extreme or off-topic choices</li>
+      <li>Quick, confident prediction and matching</li>
+    </ul>
+  </main>
 
-      <button type="submit" class="submit-btn">Submit</button>
-    </form>
+  <footer>
+    <p>&copy; 2025 Dream School. All rights reserved.</p>
+  </footer>
 
-    <div class="feedback" id="feedback"></div>
-  </div>
-
-  <script>
-    // Timer count up
-    let seconds = 0;
-    const timer = document.getElementById("timer");
-    setInterval(() => {
-      seconds++;
-      const min = String(Math.floor(seconds / 60)).padStart(2, '0');
-      const sec = String(seconds % 60).padStart(2, '0');
-      timer.textContent = `${min}:${sec}`;
-    }, 1000);
-
-    // Quiz logic
-    document.getElementById("quiz-form").addEventListener("submit", function (e) {
-      e.preventDefault();
-      const selected = document.querySelector('input[name="vocab"]:checked');
-      const feedback = document.getElementById("feedback");
-
-      if (!selected) {
-        feedback.textContent = "Please select an answer.";
-        feedback.className = "feedback incorrect";
-        return;
-      }
-
-      if (selected.nextElementSibling.textContent.includes("function correctly")) {
-        feedback.textContent = "✅ Correct! 'Work' means function correctly in this context.";
-        feedback.className = "feedback correct";
-      } else {
-        feedback.textContent = `❌ Incorrect. The best match is "function correctly" — all choices sound okay, but only one keeps the meaning and tone.`;
-        feedback.className = "feedback incorrect";
-      }
-    });
-  </script>
 </body>
 </html>
