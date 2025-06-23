@@ -14,6 +14,12 @@ function ProfilePage() {
   const [editing, setEditing] = React.useState({});
   const [status, setStatus] = React.useState({});
 
+  {user?.email && (
+  <div style={{ marginBottom: "20px", fontStyle: "italic", color: "#ccc" }}>
+    Signed in as: {user.email}
+  </div>
+)}
+
   React.useEffect(() => {
     const auth = firebase.auth();
     const db = firebase.firestore();
