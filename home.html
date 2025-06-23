@@ -10,6 +10,7 @@
   <!-- Firebase App (core) -->
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 
   <script>
     const firebaseConfig = {
@@ -25,42 +26,37 @@
     // Initialize Firebase
     firebase.initializeApp(firebaseConfig);
     const auth = firebase.auth();
-
-<script>
-  function signInWithGoogle() {
-    const provider = new firebase.auth.GoogleAuthProvider();
     const db = firebase.firestore();
 
-    auth.signInWithPopup(provider)
-      .then(async result => {
-        const user = result.user;
-        const firstName = user.displayName?.split(" ")[0] || "User";
-        const email = user.email;
-        const uid = user.uid;
+    function signInWithGoogle() {
+      const provider = new firebase.auth.GoogleAuthProvider();
+      auth.signInWithPopup(provider)
+        .then(async result => {
+          const user = result.user;
+          const firstName = user.displayName?.split(" ")[0] || "User";
+          const email = user.email;
+          const uid = user.uid;
 
-        // Save or update email in Firestore
-        const userRef = db.collection("userProfiles").doc(uid);
-        await userRef.set({ email }, { merge: true });
+          // Save email in Firestore
+          const userRef = db.collection("userProfiles").doc(uid);
+          await userRef.set({ email }, { merge: true });
 
-        document.getElementById("google-signin").style.display = "none";
-        document.getElementById("user-info").innerText = `${firstName}! Chase your dreams!`;
-        document.getElementById("user-menu").style.display = "block";
-      })
-      .catch(error => console.error("Sign-in error:", error));
-  }
-</script>
-
+          document.getElementById("google-signin").style.display = "none";
+          document.getElementById("user-info").innerText = `${firstName}! Chase your dreams!`;
+          document.getElementById("user-menu").style.display = "block";
+        })
+        .catch(error => console.error("Sign-in error:", error));
+    }
 
     auth.onAuthStateChanged(user => {
       if (user) {
-        const firstName = user.displayName.split(" ")[0];
+        const firstName = user.displayName?.split(" ")[0] || "User";
         document.getElementById("google-signin").style.display = "none";
         document.getElementById("user-info").innerText = `${firstName}! Chase your dreams!`;
         document.getElementById("user-menu").style.display = "block";
       }
     });
 
-    // Toggle dropdown on mobile click
     document.addEventListener("DOMContentLoaded", () => {
       const userInfo = document.getElementById("user-info");
       if (userInfo) {
@@ -116,61 +112,10 @@
     <section class="hero">
       <h2>Don't let the SAT get in the way of your dreams.</h2>
     </section>
-
-    <section class="cta-section">
-      <h2>Free Tutoring</h2>
-      <p>Click below and tell us your schedule — we’ll match you with free help.</p>
-      <button class="signup-button" onclick="openModal()">Get Free Tutoring</button>
-    </section>
   </main>
-
-  <!-- Netlify Form Modal -->
-  <div id="signupModal" class="modal">
-    <div class="modal-content">
-      <span class="close" onclick="closeModal()">&times;</span>
-      <h3>Get Free Tutoring</h3>
-      <form name="free-tutoring" method="POST" data-netlify="true" onsubmit="handleSubmit(event)">
-        <input type="hidden" name="form-name" value="free-tutoring" />
-        <!-- Form fields omitted for brevity -->
-        <button type="submit" id="submitBtn" tabindex="5">Sign Up</button>
-      </form>
-    </div>
-  </div>
 
   <footer>
     <p>&copy; 2025 Dream School. All rights reserved.</p>
   </footer>
-
-  <script>
-    function openModal() {
-      document.getElementById('signupModal').style.display = 'block';
-      document.body.classList.add('modal-open');
-      setTimeout(() => {
-        document.getElementById('first-name').focus();
-      }, 100);
-    }
-    function closeModal() {
-      document.getElementById('signupModal').style.display = 'none';
-      document.body.classList.remove('modal-open');
-    }
-    window.onclick = function(event) {
-      const modal = document.getElementById('signupModal');
-      if (event.target == modal) closeModal();
-    };
-    document.addEventListener("keydown", function(event) {
-      if (event.key === "Escape") closeModal();
-    });
-    function handleSubmit(event) {
-      event.preventDefault();
-      const btn = document.getElementById("submitBtn");
-      btn.innerText = "Submitting...";
-      btn.disabled = true;
-      event.target.submit();
-      setTimeout(() => {
-        alert("Thanks for signing up! Check your email soon.");
-        closeModal();
-      }, 500);
-    }
-  </script>
 </body>
 </html>
