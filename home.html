@@ -26,18 +26,30 @@
     firebase.initializeApp(firebaseConfig);
     const auth = firebase.auth();
 
-    function signInWithGoogle() {
-      const provider = new firebase.auth.GoogleAuthProvider();
-      auth.signInWithPopup(provider)
-        .then(result => {
-          const user = result.user;
-          const firstName = user.displayName.split(" ")[0];
-          document.getElementById("google-signin").style.display = "none";
-          document.getElementById("user-info").innerText = `${firstName}! Chase your dreams!`;
-          document.getElementById("user-menu").style.display = "block";
-        })
-        .catch(error => console.error("Sign-in error:", error));
-    }
+<script>
+  function signInWithGoogle() {
+    const provider = new firebase.auth.GoogleAuthProvider();
+    const db = firebase.firestore();
+
+    auth.signInWithPopup(provider)
+      .then(async result => {
+        const user = result.user;
+        const firstName = user.displayName?.split(" ")[0] || "User";
+        const email = user.email;
+        const uid = user.uid;
+
+        // Save or update email in Firestore
+        const userRef = db.collection("userProfiles").doc(uid);
+        await userRef.set({ email }, { merge: true });
+
+        document.getElementById("google-signin").style.display = "none";
+        document.getElementById("user-info").innerText = `${firstName}! Chase your dreams!`;
+        document.getElementById("user-menu").style.display = "block";
+      })
+      .catch(error => console.error("Sign-in error:", error));
+  }
+</script>
+
 
     auth.onAuthStateChanged(user => {
       if (user) {
