@@ -34,18 +34,15 @@
 </head>
 <body>
 
-  <header>
-    <h1>DREAM SCHOOL</h1>
-    <nav>
-      <ul class="nav-menu">
-        <li><a href="index.html">Home</a></li>
-        <li><a href="study.html">Study</a></li>
-        <li><a href="#">Practice</a></li>
-        <li><a href="#">Tutoring</a></li>
-        <li><a href="#">Contact Us</a></li>
-      </ul>
-    </nav>
-  </header>
+<div id="site-header"></div>
+<script>
+  fetch('/assets/header.html')
+    .then(response => response.text())
+    .then(data => {
+      document.getElementById('site-header').innerHTML = data;
+    });
+</script>
+
 
   <main>
     <h2>1. Nonlinear Equations in One Variable</h2>
