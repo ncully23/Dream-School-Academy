@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Inferences - Dream School</title>
+  <link rel="stylesheet" href="../assets/style.css" />
+  <style>
+    main {
+      padding: 40px 20px;
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
+    h2 {
+      color: gold;
+      border-bottom: 1px solid #333;
+      padding-bottom: 5px;
+      margin-top: 40px;
+    }
+
+    section ul {
+      list-style: disc;
+      padding-left: 20px;
+    }
+
+    section li {
+      color: #ddd;
+      margin: 8px 0;
+      line-height: 1.6;
+    }
+  </style>
+</head>
+<body>
+  <div id="site-header"></div>
+  <script>
+    fetch('/assets/header.html')
+      .then(response => response.text())
+      .then(data => {
+        document.getElementById('site-header').innerHTML = data;
+      });
+  </script>
+
+  <main>
+    <h2>What Inference Passages Usually Contain</h2>
+    <ul>
+      <li><strong>Observations or Data:</strong> Multiple findings that suggest a logical next step or conclusion.</li>
+      <li><strong>Contrasts or Surprises:</strong> Unexpected results often lead to correct inferences.</li>
+      <li><strong>Cause-Effect Gaps:</strong> You may need to infer the missing link or result.</li>
+      <li><strong>Missing Conclusions:</strong> Look for signals like “suggests that,” “therefore,” or “hence.”</li>
+      <li><strong>Assumption Checks:</strong> Understand logical implications, human behavior, or scientific method.</li>
+    </ul>
+
+    <h2>Common Inference Answer Types</h2>
+    <ul>
+      <li><strong>Confirmation:</strong> Reinforces unexpected results.</li>
+      <li><strong>Generalization:</strong> Broad takeaway from examples.</li>
+      <li><strong>Recommendation:</strong> Logical action based on findings.</li>
+      <li><strong>Prediction:</strong> Forecasting based on trend or data shift.</li>
+      <li><strong>Refutation or Complication:</strong> Disputes or adds nuance to accepted belief.</li>
+    </ul>
+
+    <h2>What to Eliminate in Wrong Answers</h2>
+    <ul>
+      <li>Extreme claims (e.g., “always,” “never”).</li>
+      <li>Outside knowledge or assumptions not found in the text.</li>
+      <li>Overly specific or narrow facts.</li>
+      <li>Emotional language when the passage is neutral.</li>
+      <li>Reversed logic or cause/effect inversion.</li>
+    </ul>
+
+    <h2>How to Approach Inference Questions</h2>
+    <ul>
+      <li>Ask: <strong>“If all this is true, what must logically follow?”</strong></li>
+      <li>Watch for surprising results that require takeaways.</li>
+      <li>Map evidence to conclusion (or vice versa).</li>
+      <li>Track subtle comparisons, reversals, or implications.</li>
+    </ul>
+
+    <h2>Category Examples</h2>
+    <ul>
+      <li><strong>Scientific Study:</strong> Unexpected result → New ecological/behavioral insight</li>
+      <li><strong>Historical:</strong> Forgotten records → Reconsideration of historical value</li>
+      <li><strong>Literary:</strong> Character/author detail → Rethinking their role</li>
+      <li><strong>Behavioral/Economic:</strong> Study behavior → Recommendation for business or policy</li>
+      <li><strong>Data-Driven:</strong> Inconsistency in data → New interpretation or classification</li>
+    </ul>
+
+    <h2>Inference Examples</h2>
+    <ul>
+      <li><strong>Logging Study:</strong> Limited logging may help forests → Conservation should be reevaluated.</li>
+      <li><strong>Zelda Fitzgerald:</strong> She was a writer → Viewing her only as a muse is incomplete.</li>
+      <li><strong>Work Interruptions:</strong> Social interruptions help morale → Not all interruptions should be banned.</li>
+      <li><strong>Sweet Potatoes:</strong> Genetics show earlier divergence → Natural dispersal or earlier human travel implied.</li>
+      <li><strong>Biodiversity Counts:</strong> Variability in microorganism data → Definitions are subjective.</li>
+    </ul>
+  </main>
+
+  <footer>
+    <p>&copy; 2025 Dream School. All rights reserved.</p>
+  </footer>
+</body>
+</html>
