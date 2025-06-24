@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Transitions - Dream School</title>
+  <link rel="stylesheet" href="../assets/style.css" />
+  <style>
+    main {
+      padding: 40px 20px;
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
+    h2 {
+      color: gold;
+      border-bottom: 1px solid #333;
+      padding-bottom: 5px;
+      margin-top: 40px;
+    }
+
+    section ul {
+      list-style: disc;
+      padding-left: 20px;
+    }
+
+    section li {
+      color: #ddd;
+      margin: 8px 0;
+      line-height: 1.6;
+    }
+  </style>
+</head>
+<body>
+  <div id="site-header"></div>
+  <script>
+    fetch('/assets/header.html')
+      .then(response => response.text())
+      .then(data => {
+        document.getElementById('site-header').innerHTML = data;
+      });
+  </script>
+
+  <main>
+    <h2>📘 Transition Types and Their Functions</h2>
+    <section>
+      <ul>
+        <li><strong>Additions:</strong> Add a new related idea to the previous statement.
+          <ul>
+            <li><em><strong>also</strong></em>, <em><strong>furthermore</strong></em>, <em><strong>moreover</strong></em>, <em><strong>too</strong></em>, <em><strong>besides</strong></em></li>
+          </ul>
+        </li>
+        <li><strong>Continuations:</strong> Maintain the same line of thought.
+          <ul>
+            <li><em><strong>in addition</strong></em>, <em><strong>additionally</strong></em>, <em><strong>on top of that</strong></em></li>
+          </ul>
+        </li>
+        <li><strong>Comparisons:</strong> Highlight similarity between two ideas.
+          <ul>
+            <li><em><strong>likewise</strong></em>, <em><strong>similarly</strong></em>, <em><strong>in the same way</strong></em></li>
+          </ul>
+        </li>
+        <li><strong>Examples:</strong> Provide a specific example to support the prior point.
+          <ul>
+            <li><em><strong>for example</strong></em>, <em><strong>for instance</strong></em>, <em><strong>such as</strong></em>, <em><strong>in particular</strong></em></li>
+          </ul>
+        </li>
+        <li><strong>Specific Emphasis:</strong> Call attention to a particularly important detail.
+          <ul>
+            <li><em><strong>especially</strong></em>, <em><strong>notably</strong></em>, <em><strong>above all</strong></em></li>
+          </ul>
+        </li>
+        <li><strong>Clarifications or Rephrasings:</strong> Restate the idea in simpler terms.
+          <ul>
+            <li><em><strong>in other words</strong></em>, <em><strong>that is</strong></em>, <em><strong>to put it differently</strong></em></li>
+          </ul>
+        </li>
+        <li><strong>Summative Conclusions:</strong> Conclude or encapsulate ideas discussed.
+          <ul>
+            <li><em><strong>in conclusion</strong></em>, <em><strong>overall</strong></em>, <em><strong>to sum up</strong></em>, <em><strong>ultimately</strong></em></li>
+          </ul>
+        </li>
+        <li><strong>Contrasts:</strong> Highlight a difference or opposition between ideas.
+          <ul>
+            <li><em><strong>however</strong></em>, <em><strong>on the other hand</strong></em>, <em><strong>nevertheless</strong></em>, <em><strong>in contrast</strong></em></li>
+          </ul>
+        </li>
+        <li><strong>Concessions:</strong> Acknowledge a point while maintaining a different stance.
+          <ul>
+            <li><em><strong>although</strong></em>, <em><strong>though</strong></em>, <em><strong>even though</strong></em>, <em><strong>while</strong></em></li>
+          </ul>
+        </li>
+        <li><strong>Sequence:</strong> Show chronological or logical progression.
+          <ul>
+            <li><em><strong>first</strong></em>, <em><strong>next</strong></em>, <em><strong>then</strong></em>, <em><strong>finally</strong></em></li>
+          </ul>
+        </li>
+        <li><strong>Emphasis:</strong> Reinforce an important point in new words.
+          <ul>
+            <li><em><strong>indeed</strong></em>, <em><strong>in fact</strong></em>, <em><strong>certainly</strong></em></li>
+          </ul>
+        </li>
+        <li><strong>Context-Based Transitions:</strong> Used to communicate a specific relationship or shift.
+          <ul>
+            <li><em><strong>meanwhile</strong></em> – at the same time as something else</li>
+            <li><em><strong>instead</strong></em> – in place of what was expected</li>
+            <li><em><strong>therefore</strong></em> – as a result</li>
+            <li><em><strong>otherwise</strong></em> – if not; or else</li>
+            <li><em><strong>consequently</strong></em> – as a logical result</li>
+          </ul>
+        </li>
+      </ul>
+    </section>
+  </main>
+
+  <footer>
+    <p>&copy; 2025 Dream School. All rights reserved.</p>
+  </footer>
+</body>
+</html>
