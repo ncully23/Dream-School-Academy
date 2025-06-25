@@ -9,8 +9,8 @@
     main {
       padding: 40px 20px;
       max-width: 900px;
-      margin: 0;
-      font-size: 1.1rem;
+      margin: 0 auto;
+      font-size: 1.2rem;
     }
 
     h2 {
@@ -21,24 +21,38 @@
       text-align: left;
     }
 
-    section ul {
+    ul {
       list-style: disc;
       padding-left: 20px;
+      margin-left: 0;
     }
 
-    section li {
+    li {
       color: #ddd;
-      margin: 8px 0;
-      line-height: 1.6;
+      line-height: 1.8;
+      margin-bottom: 12px;
       text-align: left;
     }
 
-    ul ul {
-      padding-left: 30px;
+    li strong {
+      display: block;
+      margin-bottom: 4px;
     }
 
-    ul ul ul {
-      padding-left: 40px;
+    li em {
+      display: block;
+      margin-left: 20px;
+    }
+
+    li ul {
+      list-style-type: circle;
+      padding-left: 25px;
+      margin-top: 4px;
+    }
+
+    li ul li {
+      margin-bottom: 0;
+      font-size: 1.05rem;
     }
   </style>
 </head>
@@ -55,109 +69,82 @@
   <main>
     <h2>🔗 Transition Types and Their Functions</h2>
     <ul>
-      <li><strong>Additions</strong>
-        <ul>
-          <li><em><strong>Also, Additionally, Moreover</strong></em>
-            <ul><li>Adds a new supporting point to the argument.</li></ul>
-          </li>
-        </ul>
+      <li>
+        <strong>Additions</strong>
+        <em>Also, Additionally, Moreover</em>
+        <ul><li>Adds a new supporting point to the argument.</li></ul>
       </li>
 
-      <li><strong>Continuations</strong>
-        <ul>
-          <li><em><strong>Furthermore, In addition</strong></em>
-            <ul><li>Continues or extends a prior point without shifting focus.</li></ul>
-          </li>
-        </ul>
+      <li>
+        <strong>Continuations</strong>
+        <em>Furthermore, In addition</em>
+        <ul><li>Continues or extends a prior point without shifting focus.</li></ul>
       </li>
 
-      <li><strong>Comparisons</strong>
-        <ul>
-          <li><em><strong>Likewise, Similarly</strong></em>
-            <ul><li>Highlights similarity or parallel between ideas.</li></ul>
-          </li>
-        </ul>
+      <li>
+        <strong>Comparisons</strong>
+        <em>Likewise, Similarly</em>
+        <ul><li>Highlights similarity or parallel between ideas.</li></ul>
       </li>
 
-      <li><strong>Examples</strong>
-        <ul>
-          <li><em><strong>For example, For instance</strong></em>
-            <ul><li>Introduces a specific case to illustrate a broader point.</li></ul>
-          </li>
-        </ul>
+      <li>
+        <strong>Examples</strong>
+        <em>For example, For instance</em>
+        <ul><li>Introduces a specific case to illustrate a broader point.</li></ul>
       </li>
 
-      <li><strong>Specific Emphasis</strong>
-        <ul>
-          <li><em><strong>Specifically, In particular</strong></em>
-            <ul><li>Highlights a narrowed or especially relevant detail.</li></ul>
-          </li>
-        </ul>
+      <li>
+        <strong>Specific Emphasis</strong>
+        <em>Specifically, In particular</em>
+        <ul><li>Highlights a narrowed or especially relevant detail.</li></ul>
       </li>
 
-      <li><strong>Clarifications or Rephrasings</strong>
-        <ul>
-          <li><em><strong>In other words, That is, That is to say</strong></em>
-            <ul><li>Restate the idea in simpler terms.</li></ul>
-          </li>
-        </ul>
+      <li>
+        <strong>Clarifications or Rephrasings</strong>
+        <em>In other words, That is, That is to say</em>
+        <ul><li>Restate the idea in simpler terms.</li></ul>
       </li>
 
-      <li><strong>Summative Conclusions</strong>
-        <ul>
-          <li><em><strong>Overall, In conclusion, To summarize</strong></em>
-            <ul><li>Conclude or encapsulate ideas discussed.</li></ul>
-          </li>
-        </ul>
+      <li>
+        <strong>Summative Conclusions</strong>
+        <em>Overall, In conclusion, To summarize</em>
+        <ul><li>Conclude or encapsulate ideas discussed.</li></ul>
       </li>
 
-      <li><strong>Contrasts</strong>
-        <ul>
-          <li><em><strong>However, On the other hand, In contrast</strong></em>
-            <ul><li>Highlight opposition or differences between ideas.</li></ul>
-          </li>
-        </ul>
+      <li>
+        <strong>Contrasts</strong>
+        <em>However, On the other hand, In contrast</em>
+        <ul><li>Highlight opposition or differences between ideas.</li></ul>
       </li>
 
-      <li><strong>Concessions</strong>
-        <ul>
-          <li><em><strong>Although, Even though, While</strong></em>
-            <ul><li>Admit a point or acknowledge a counterpoint.</li></ul>
-          </li>
-        </ul>
+      <li>
+        <strong>Concessions</strong>
+        <em>Although, Even though, While</em>
+        <ul><li>Admit a point or acknowledge a counterpoint.</li></ul>
       </li>
 
-      <li><strong>Sequence</strong>
-        <ul>
-          <li><em><strong>First, Next, Then, Finally</strong></em>
-            <ul><li>Indicate a step-by-step progression of ideas.</li></ul>
-          </li>
-        </ul>
+      <li>
+        <strong>Sequence</strong>
+        <em>First, Next, Then, Finally</em>
+        <ul><li>Indicate a step-by-step progression of ideas.</li></ul>
       </li>
 
-      <li><strong>Emphasis</strong>
-        <ul>
-          <li><em><strong>Indeed, In fact, Certainly</strong></em>
-            <ul><li>Reinforce an important point in new words.</li></ul>
-          </li>
-        </ul>
+      <li>
+        <strong>Emphasis</strong>
+        <em>Indeed, In fact, Certainly</em>
+        <ul><li>Reinforce an important point in new words.</li></ul>
       </li>
 
-      <li><strong>Context-Based Transitions</strong>
-        <ul>
-          <li><em><strong>Nevertheless</strong></em>
-            <ul><li>Even with that said, the point still stands.</li></ul>
-          </li>
-          <li><em><strong>Rather</strong></em>
-            <ul><li>The alternative is preferred or more accurate.</li></ul>
-          </li>
-          <li><em><strong>Instead</strong></em>
-            <ul><li>Something replaces what came before.</li></ul>
-          </li>
-          <li><em><strong>Still</strong></em>
-            <ul><li>Despite what's been said, this remains true.</li></ul>
-          </li>
-        </ul>
+      <li>
+        <strong>Context-Based Transitions</strong>
+        <em>Nevertheless</em>
+        <ul><li>Even with that said, the point still stands.</li></ul>
+        <em>Rather</em>
+        <ul><li>The alternative is preferred or more accurate.</li></ul>
+        <em>Instead</em>
+        <ul><li>Something replaces what came before.</li></ul>
+        <em>Still</em>
+        <ul><li>Despite what's been said, this remains true.</li></ul>
       </li>
     </ul>
   </main>
