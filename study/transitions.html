@@ -9,9 +9,8 @@
     main {
       padding: 40px 20px;
       max-width: 900px;
-      margin: 0 auto;
-      font-size: 18px;
-      line-height: 1.8;
+      margin: 0;
+      font-size: 1.1rem;
     }
 
     h2 {
@@ -19,34 +18,27 @@
       border-bottom: 1px solid #333;
       padding-bottom: 5px;
       margin-top: 40px;
+      text-align: left;
     }
 
-    ul.topic-list {
-      list-style: none;
-      padding-left: 0;
-    }
-
-    ul.topic-list > li {
-      margin: 20px 0;
-    }
-
-    .topic-title {
-      font-weight: bold;
-      color: white;
-    }
-
-    .topic-description {
-      color: #ddd;
-      margin: 5px 0 10px 0;
-    }
-
-    ul.sub-list {
+    section ul {
       list-style: disc;
+      padding-left: 20px;
+    }
+
+    section li {
+      color: #ddd;
+      margin: 8px 0;
+      line-height: 1.6;
+      text-align: left;
+    }
+
+    ul ul {
       padding-left: 30px;
     }
 
-    ul.sub-list li {
-      color: #ccc;
+    ul ul ul {
+      padding-left: 40px;
     }
   </style>
 </head>
@@ -61,123 +53,110 @@
   </script>
 
   <main>
-    <h2>📘 Transition Types and Their Functions</h2>
-    <ul class="topic-list">
-      <li>
-        <div class="topic-title">Additions</div>
-        <div class="topic-description">Add a new related idea to the previous statement.</div>
-        <ul class="sub-list">
-          <li><em><strong>also</strong></em></li>
-          <li><em><strong>furthermore</strong></em></li>
-          <li><em><strong>moreover</strong></em></li>
-          <li><em><strong>too</strong></em></li>
-          <li><em><strong>besides</strong></em></li>
+    <h2>🔗 Transition Types and Their Functions</h2>
+    <ul>
+      <li><strong>Additions</strong>
+        <ul>
+          <li><em><strong>Also, Additionally, Moreover</strong></em>
+            <ul><li>Adds a new supporting point to the argument.</li></ul>
+          </li>
         </ul>
       </li>
-      <li>
-        <div class="topic-title">Continuations</div>
-        <div class="topic-description">Maintain the same line of thought.</div>
-        <ul class="sub-list">
-          <li><em><strong>in addition</strong></em></li>
-          <li><em><strong>additionally</strong></em></li>
-          <li><em><strong>on top of that</strong></em></li>
+
+      <li><strong>Continuations</strong>
+        <ul>
+          <li><em><strong>Furthermore, In addition</strong></em>
+            <ul><li>Continues or extends a prior point without shifting focus.</li></ul>
+          </li>
         </ul>
       </li>
-      <li>
-        <div class="topic-title">Comparisons</div>
-        <div class="topic-description">Highlight similarity between two ideas.</div>
-        <ul class="sub-list">
-          <li><em><strong>likewise</strong></em></li>
-          <li><em><strong>similarly</strong></em></li>
-          <li><em><strong>in the same way</strong></em></li>
+
+      <li><strong>Comparisons</strong>
+        <ul>
+          <li><em><strong>Likewise, Similarly</strong></em>
+            <ul><li>Highlights similarity or parallel between ideas.</li></ul>
+          </li>
         </ul>
       </li>
-      <li>
-        <div class="topic-title">Examples</div>
-        <div class="topic-description">Provide a specific example to support the prior point.</div>
-        <ul class="sub-list">
-          <li><em><strong>for example</strong></em></li>
-          <li><em><strong>for instance</strong></em></li>
-          <li><em><strong>such as</strong></em></li>
-          <li><em><strong>in particular</strong></em></li>
+
+      <li><strong>Examples</strong>
+        <ul>
+          <li><em><strong>For example, For instance</strong></em>
+            <ul><li>Introduces a specific case to illustrate a broader point.</li></ul>
+          </li>
         </ul>
       </li>
-      <li>
-        <div class="topic-title">Specific Emphasis</div>
-        <div class="topic-description">Call attention to a particularly important detail.</div>
-        <ul class="sub-list">
-          <li><em><strong>especially</strong></em></li>
-          <li><em><strong>notably</strong></em></li>
-          <li><em><strong>above all</strong></em></li>
+
+      <li><strong>Specific Emphasis</strong>
+        <ul>
+          <li><em><strong>Specifically, In particular</strong></em>
+            <ul><li>Highlights a narrowed or especially relevant detail.</li></ul>
+          </li>
         </ul>
       </li>
-      <li>
-        <div class="topic-title">Clarifications or Rephrasings</div>
-        <div class="topic-description">Restate the idea in simpler terms.</div>
-        <ul class="sub-list">
-          <li><em><strong>in other words</strong></em></li>
-          <li><em><strong>that is</strong></em></li>
-          <li><em><strong>to put it differently</strong></em></li>
+
+      <li><strong>Clarifications or Rephrasings</strong>
+        <ul>
+          <li><em><strong>In other words, That is, That is to say</strong></em>
+            <ul><li>Restate the idea in simpler terms.</li></ul>
+          </li>
         </ul>
       </li>
-      <li>
-        <div class="topic-title">Summative Conclusions</div>
-        <div class="topic-description">Conclude or encapsulate ideas discussed.</div>
-        <ul class="sub-list">
-          <li><em><strong>in conclusion</strong></em></li>
-          <li><em><strong>overall</strong></em></li>
-          <li><em><strong>to sum up</strong></em></li>
-          <li><em><strong>ultimately</strong></em></li>
+
+      <li><strong>Summative Conclusions</strong>
+        <ul>
+          <li><em><strong>Overall, In conclusion, To summarize</strong></em>
+            <ul><li>Conclude or encapsulate ideas discussed.</li></ul>
+          </li>
         </ul>
       </li>
-      <li>
-        <div class="topic-title">Contrasts</div>
-        <div class="topic-description">Highlight a difference or opposition between ideas.</div>
-        <ul class="sub-list">
-          <li><em><strong>however</strong></em></li>
-          <li><em><strong>on the other hand</strong></em></li>
-          <li><em><strong>nevertheless</strong></em></li>
-          <li><em><strong>in contrast</strong></em></li>
+
+      <li><strong>Contrasts</strong>
+        <ul>
+          <li><em><strong>However, On the other hand, In contrast</strong></em>
+            <ul><li>Highlight opposition or differences between ideas.</li></ul>
+          </li>
         </ul>
       </li>
-      <li>
-        <div class="topic-title">Concessions</div>
-        <div class="topic-description">Acknowledge a point while maintaining a different stance.</div>
-        <ul class="sub-list">
-          <li><em><strong>although</strong></em></li>
-          <li><em><strong>though</strong></em></li>
-          <li><em><strong>even though</strong></em></li>
-          <li><em><strong>while</strong></em></li>
+
+      <li><strong>Concessions</strong>
+        <ul>
+          <li><em><strong>Although, Even though, While</strong></em>
+            <ul><li>Admit a point or acknowledge a counterpoint.</li></ul>
+          </li>
         </ul>
       </li>
-      <li>
-        <div class="topic-title">Sequence</div>
-        <div class="topic-description">Show chronological or logical progression.</div>
-        <ul class="sub-list">
-          <li><em><strong>first</strong></em></li>
-          <li><em><strong>next</strong></em></li>
-          <li><em><strong>then</strong></em></li>
-          <li><em><strong>finally</strong></em></li>
+
+      <li><strong>Sequence</strong>
+        <ul>
+          <li><em><strong>First, Next, Then, Finally</strong></em>
+            <ul><li>Indicate a step-by-step progression of ideas.</li></ul>
+          </li>
         </ul>
       </li>
-      <li>
-        <div class="topic-title">Emphasis</div>
-        <div class="topic-description">Reinforce an important point in new words.</div>
-        <ul class="sub-list">
-          <li><em><strong>indeed</strong></em></li>
-          <li><em><strong>in fact</strong></em></li>
-          <li><em><strong>certainly</strong></em></li>
+
+      <li><strong>Emphasis</strong>
+        <ul>
+          <li><em><strong>Indeed, In fact, Certainly</strong></em>
+            <ul><li>Reinforce an important point in new words.</li></ul>
+          </li>
         </ul>
       </li>
-      <li>
-        <div class="topic-title">Context-Based Transitions</div>
-        <div class="topic-description">Communicate a specific relationship or shift.</div>
-        <ul class="sub-list">
-          <li><em><strong>meanwhile</strong></em> – at the same time as something else</li>
-          <li><em><strong>instead</strong></em> – in place of what was expected</li>
-          <li><em><strong>therefore</strong></em> – as a result</li>
-          <li><em><strong>otherwise</strong></em> – if not; or else</li>
-          <li><em><strong>consequently</strong></em> – as a logical result</li>
+
+      <li><strong>Context-Based Transitions</strong>
+        <ul>
+          <li><em><strong>Nevertheless</strong></em>
+            <ul><li>Even with that said, the point still stands.</li></ul>
+          </li>
+          <li><em><strong>Rather</strong></em>
+            <ul><li>The alternative is preferred or more accurate.</li></ul>
+          </li>
+          <li><em><strong>Instead</strong></em>
+            <ul><li>Something replaces what came before.</li></ul>
+          </li>
+          <li><em><strong>Still</strong></em>
+            <ul><li>Despite what's been said, this remains true.</li></ul>
+          </li>
         </ul>
       </li>
     </ul>
