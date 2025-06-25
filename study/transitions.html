@@ -30,7 +30,7 @@
     li {
       color: #ddd;
       line-height: 1.8;
-      margin-bottom: 12px;
+      margin-bottom: 30px;
       text-align: left;
     }
 
@@ -40,6 +40,8 @@
     }
 
     li em {
+      font-style: italic;
+      font-weight: bold;
       display: block;
       margin-left: 20px;
     }
@@ -53,6 +55,17 @@
     li ul li {
       margin-bottom: 0;
       font-size: 1.05rem;
+    }
+
+    .context-entry {
+      margin-left: 20px;
+      margin-top: 6px;
+    }
+
+    .context-entry span.term {
+      font-weight: bold;
+      font-style: italic;
+      margin-right: 6px;
     }
   </style>
 </head>
@@ -137,14 +150,10 @@
 
       <li>
         <strong>Context-Based Transitions</strong>
-        <em>Nevertheless</em>
-        <ul><li>Even with that said, the point still stands.</li></ul>
-        <em>Rather</em>
-        <ul><li>The alternative is preferred or more accurate.</li></ul>
-        <em>Instead</em>
-        <ul><li>Something replaces what came before.</li></ul>
-        <em>Still</em>
-        <ul><li>Despite what's been said, this remains true.</li></ul>
+        <div class="context-entry"><span class="term">Nevertheless</span>Even with that said, the point still stands.</div>
+        <div class="context-entry"><span class="term">Rather</span>The alternative is preferred or more accurate.</div>
+        <div class="context-entry"><span class="term">Instead</span>Something replaces what came before.</div>
+        <div class="context-entry"><span class="term">Still</span>Despite what's been said, this remains true.</div>
       </li>
     </ul>
   </main>
