@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Triangle Tan A Problem - Dream School</title>
+  <link rel="stylesheet" href="../assets/style.css" />
+  <style>
+    main {
+      padding: 40px 20px;
+      max-width: 900px;
+      margin: 0 auto;
+      font-size: 1.2rem;
+    }
+
+    h2 {
+      color: gold;
+      border-bottom: 1px solid #333;
+      padding-bottom: 5px;
+      margin-top: 40px;
+      text-align: left;
+    }
+
+    ul {
+      list-style: disc;
+      padding-left: 20px;
+      margin-left: 0;
+    }
+
+    li {
+      color: #ddd;
+      line-height: 1.8;
+      margin-bottom: 60px;
+      text-align: left;
+    }
+
+    li strong {
+      display: block;
+      font-size: 1.4rem;
+      margin-bottom: 6px;
+    }
+
+    code {
+      background-color: #222;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 1rem;
+    }
+
+    .answer {
+      font-weight: bold;
+      color: lightgreen;
+    }
+
+    .step {
+      margin-bottom: 40px;
+    }
+  </style>
+</head>
+<body>
+  <div id="site-header"></div>
+  <script>
+    fetch('/assets/header.html')
+      .then(response => response.text())
+      .then(data => {
+        document.getElementById('site-header').innerHTML = data;
+      });
+  </script>
+
+  <main>
+    <h2>📐 Triangle Problem – What is <code>tan A</code>?</h2>
+
+    <p><strong>Question:</strong></p>
+    <p>Right triangle <strong>ABC</strong> is shown. What is the value of <code>tan A</code>?</p>
+
+    <p><strong>Answer choices:</strong></p>
+    <ul>
+      <li>A. <code>\(\frac{\sqrt{3}}{54}\)</code></li>
+      <li>B. <code>\(\frac{1}{\sqrt{3}}\)</code></li>
+      <li class="answer">C. <code>\(\sqrt{3}\)</code></li>
+      <li>D. <code>27\(\sqrt{3}\)</code></li>
+    </ul>
+
+    <h2>✅ Step-by-Step Solution</h2>
+
+    <div class="step">
+      <strong>Step 1: Understand the triangle</strong>
+      <ul>
+        <li>Triangle ABC is a right triangle with right angle at C.</li>
+        <li>Angle B is 30°, so angle A must be 60° because angles in a triangle sum to 180°.</li>
+        <li>The hypotenuse (side AB) is given as 54 units.</li>
+      </ul>
+    </div>
+
+    <div class="step">
+      <strong>Step 2: Use 30°-60°-90° triangle ratios</strong>
+      <ul>
+        <li>In a 30°-60°-90° triangle, side ratios are:</li>
+        <li>Opposite 30°: <code>x</code>, opposite 60°: <code>x√3</code>, hypotenuse: <code>2x</code></li>
+        <li>So if hypotenuse AB = 54, then <code>2x = 54</code> → <code>x = 27</code></li>
+        <li>This gives:
+          <ul>
+            <li>AC (opposite angle B or adjacent to A): <code>27</code></li>
+            <li>BC (opposite angle A): <code>27√3</code></li>
+          </ul>
+        </li>
+      </ul>
+    </div>
+
+    <div class="step">
+      <strong>Step 3: Apply the definition of tangent</strong>
+      <ul>
+        <li><code>tan(angle) = opposite / adjacent</code></li>
+        <li>So <code>tan A = BC / AC = (27√3) / 27 = √3</code></li>
+      </ul>
+    </div>
+
+    <div class="step">
+      <strong>✅ Final Answer:</strong> <span class="answer">Choice C. <code>√3</code></span>
+    </div>
+  </main>
+
+  <footer>
+    <p>&copy; 2025 Dream School. All rights reserved.</p>
+  </footer>
+</body>
+</html>
