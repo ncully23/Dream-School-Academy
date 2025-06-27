@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Triangle Tan A Problem - Dream School</title>
+  <title>tan A - Triangle Trig - Dream School</title>
   <link rel="stylesheet" href="../assets/style.css" />
   <style>
     main {
@@ -24,20 +24,22 @@
     ul {
       list-style: disc;
       padding-left: 20px;
-      margin-left: 0;
     }
 
     li {
       color: #ddd;
       line-height: 1.8;
-      margin-bottom: 60px;
+      margin-bottom: 20px;
       text-align: left;
     }
 
-    li strong {
-      display: block;
-      font-size: 1.4rem;
-      margin-bottom: 6px;
+    .choice {
+      margin: 10px 0;
+    }
+
+    .correct {
+      color: lightgreen;
+      font-weight: bold;
     }
 
     code {
@@ -47,13 +49,19 @@
       font-size: 1rem;
     }
 
-    .answer {
-      font-weight: bold;
-      color: lightgreen;
-    }
-
     .step {
       margin-bottom: 40px;
+    }
+
+    .img {
+      text-align: center;
+      margin: 30px 0;
+    }
+
+    footer {
+      text-align: center;
+      padding: 20px;
+      color: #aaa;
     }
   </style>
 </head>
@@ -68,55 +76,66 @@
   </script>
 
   <main>
-    <h2>📐 Triangle Problem – What is <code>tan A</code>?</h2>
+    <h2>📐 Triangle Trig — What is <code>tan A</code>?</h2>
 
-    <p><strong>Question:</strong></p>
-    <p>Right triangle <strong>ABC</strong> is shown. What is the value of <code>tan A</code>?</p>
+    <div class="img">
+      <img src="../assets/triangle-5307879f.png" alt="Triangle diagram showing ABC with AB = 54 and angle B = 30°" width="300">
+    </div>
 
-    <p><strong>Answer choices:</strong></p>
-    <ul>
-      <li>A. <code>\(\frac{\sqrt{3}}{54}\)</code></li>
-      <li>B. <code>\(\frac{1}{\sqrt{3}}\)</code></li>
-      <li class="answer">C. <code>\(\sqrt{3}\)</code></li>
-      <li>D. <code>27\(\sqrt{3}\)</code></li>
-    </ul>
+    <p><strong>Right triangle <code>ABC</code> is shown. What is the value of <code>tan A</code>?</strong></p>
+
+    <div class="choice">A. <code>\(\frac{\sqrt{3}}{54}\)</code></div>
+    <div class="choice">B. <code>\(\frac{1}{\sqrt{3}}\)</code></div>
+    <div class="choice correct">C. <code>\(\sqrt{3}\)</code></div>
+    <div class="choice">D. <code>27\(\sqrt{3}\)</code></div>
 
     <h2>✅ Step-by-Step Solution</h2>
 
     <div class="step">
-      <strong>Step 1: Understand the triangle</strong>
+      <strong>Step 1: Analyze the Triangle</strong>
       <ul>
-        <li>Triangle ABC is a right triangle with right angle at C.</li>
-        <li>Angle B is 30°, so angle A must be 60° because angles in a triangle sum to 180°.</li>
-        <li>The hypotenuse (side AB) is given as 54 units.</li>
+        <li>Right triangle <code>ABC</code> has a right angle at <code>C</code> and an angle of <code>30°</code> at <code>B</code>.</li>
+        <li>This means angle <code>A</code> is <code>60°</code> because the sum of angles in a triangle is <code>180°</code>.</li>
+        <li>We are given the hypotenuse <code>AB = 54</code>.</li>
       </ul>
     </div>
 
     <div class="step">
-      <strong>Step 2: Use 30°-60°-90° triangle ratios</strong>
+      <strong>Step 2: Use 30-60-90 Triangle Ratios</strong>
       <ul>
-        <li>In a 30°-60°-90° triangle, side ratios are:</li>
-        <li>Opposite 30°: <code>x</code>, opposite 60°: <code>x√3</code>, hypotenuse: <code>2x</code></li>
-        <li>So if hypotenuse AB = 54, then <code>2x = 54</code> → <code>x = 27</code></li>
+        <li>In a 30°-60°-90° triangle, side ratios are:
+          <ul>
+            <li>Opposite 30°: <code>x</code></li>
+            <li>Opposite 60°: <code>x√3</code></li>
+            <li>Hypotenuse: <code>2x</code></li>
+          </ul>
+        </li>
+        <li>Given <code>2x = 54</code>, we solve to get <code>x = 27</code>.</li>
         <li>This gives:
           <ul>
-            <li>AC (opposite angle B or adjacent to A): <code>27</code></li>
-            <li>BC (opposite angle A): <code>27√3</code></li>
+            <li><code>BC = 27</code> (opposite angle B = 30°)</li>
+            <li><code>AC = 27√3</code> (opposite angle A = 60°)</li>
           </ul>
         </li>
       </ul>
     </div>
 
     <div class="step">
-      <strong>Step 3: Apply the definition of tangent</strong>
+      <strong>Step 3: Apply the Tangent Definition</strong>
       <ul>
-        <li><code>tan(angle) = opposite / adjacent</code></li>
-        <li>So <code>tan A = BC / AC = (27√3) / 27 = √3</code></li>
+        <li><code>tan(θ) = opposite / adjacent</code></li>
+        <li>For angle <code>A = 60°</code>:
+          <ul>
+            <li>Opposite = <code>BC = 27√3</code></li>
+            <li>Adjacent = <code>AC = 27</code></li>
+          </ul>
+        </li>
+        <li>So, <code>tan A = (27√3) / 27 = √3</code></li>
       </ul>
     </div>
 
     <div class="step">
-      <strong>✅ Final Answer:</strong> <span class="answer">Choice C. <code>√3</code></span>
+      <strong>✅ Final Answer: <span class="correct">Choice C. <code>√3</code></span></strong>
     </div>
   </main>
 
