@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Practice Hub - Dream School</title>
+  <link rel="stylesheet" href="../assets/style.css" />
+  <style>
+    main {
+      padding: 60px 20px;
+      max-width: 800px;
+      margin: 0 auto;
+      font-size: 1.2rem;
+      text-align: center;
+    }
+
+    h1 {
+      font-size: 2.4rem;
+      color: gold;
+      margin-bottom: 40px;
+    }
+
+    .button-container {
+      display: flex;
+      flex-direction: column;
+      gap: 30px;
+      align-items: center;
+    }
+
+    .practice-button {
+      background-color: #004080;
+      color: white;
+      border: none;
+      padding: 16px 32px;
+      font-size: 1.3rem;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+      width: 60%;
+      max-width: 300px;
+    }
+
+    .practice-button:hover {
+      background-color: #0059b3;
+    }
+
+    footer {
+      text-align: center;
+      padding: 20px;
+      color: #aaa;
+      margin-top: 50px;
+    }
+  </style>
+</head>
+<body>
+  <div id="site-header"></div>
+  <script>
+    fetch('/assets/header.html')
+      .then(response => response.text())
+      .then(data => {
+        document.getElementById('site-header').innerHTML = data;
+      });
+  </script>
+
+  <main>
+    <h1>📝 Choose Your Practice Level</h1>
+    <div class="button-container">
+      <a href="psat8-9.html"><button class="practice-button">PSAT 8/9</button></a>
+      <a href="psat10.html"><button class="practice-button">PSAT 10</button></a>
+      <a href="sat.html"><button class="practice-button">SAT</button></a>
+    </div>
+  </main>
+
+  <footer>
+    <p>&copy; 2025 Dream School. All rights reserved.</p>
+  </footer>
+</body>
+</html>
