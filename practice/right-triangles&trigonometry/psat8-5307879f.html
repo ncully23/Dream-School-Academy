@@ -5,6 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>tan A - Triangle Trig - Dream School</title>
   <link rel="stylesheet" href="../assets/style.css" />
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
   <style>
     main {
       padding: 40px 20px;
@@ -34,19 +36,13 @@
     }
 
     .choice {
-      margin: 10px 0;
+      margin: 12px 0;
+      font-size: 1.2rem;
     }
 
     .correct {
       color: lightgreen;
       font-weight: bold;
-    }
-
-    code {
-      background-color: #222;
-      padding: 2px 6px;
-      border-radius: 4px;
-      font-size: 1rem;
     }
 
     .step {
@@ -58,10 +54,22 @@
       margin: 30px 0;
     }
 
+    .img img {
+      max-width: 100%;
+      height: auto;
+    }
+
     footer {
       text-align: center;
       padding: 20px;
       color: #aaa;
+    }
+
+    code {
+      background-color: #222;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 1rem;
     }
   </style>
 </head>
@@ -79,24 +87,24 @@
     <h2>📐 Triangle Trig — What is <code>tan A</code>?</h2>
 
     <div class="img">
-      <img src="../assets/triangle-5307879f.png" alt="Triangle diagram showing ABC with AB = 54 and angle B = 30°" width="300">
+      <img src="../assets/triangle-5307879f.png" alt="Triangle ABC with angle B = 30° and hypotenuse AB = 54" width="300">
     </div>
 
     <p><strong>Right triangle <code>ABC</code> is shown. What is the value of <code>tan A</code>?</strong></p>
 
-    <div class="choice">A. <code>\(\frac{\sqrt{3}}{54}\)</code></div>
-    <div class="choice">B. <code>\(\frac{1}{\sqrt{3}}\)</code></div>
-    <div class="choice correct">C. <code>\(\sqrt{3}\)</code></div>
-    <div class="choice">D. <code>27\(\sqrt{3}\)</code></div>
+    <div class="choice">A. \( \frac{\sqrt{3}}{54} \)</div>
+    <div class="choice">B. \( \frac{1}{\sqrt{3}} \)</div>
+    <div class="choice correct">C. \( \sqrt{3} \)</div>
+    <div class="choice">D. \( 27\sqrt{3} \)</div>
 
     <h2>✅ Step-by-Step Solution</h2>
 
     <div class="step">
       <strong>Step 1: Analyze the Triangle</strong>
       <ul>
-        <li>Right triangle <code>ABC</code> has a right angle at <code>C</code> and an angle of <code>30°</code> at <code>B</code>.</li>
-        <li>This means angle <code>A</code> is <code>60°</code> because the sum of angles in a triangle is <code>180°</code>.</li>
-        <li>We are given the hypotenuse <code>AB = 54</code>.</li>
+        <li>Triangle \( ABC \) has a right angle at \( C \), and angle \( B = 30^\circ \).</li>
+        <li>That means angle \( A = 60^\circ \), since the angles in a triangle sum to \( 180^\circ \).</li>
+        <li>The hypotenuse \( AB \) is given as 54.</li>
       </ul>
     </div>
 
@@ -105,16 +113,16 @@
       <ul>
         <li>In a 30°-60°-90° triangle, side ratios are:
           <ul>
-            <li>Opposite 30°: <code>x</code></li>
-            <li>Opposite 60°: <code>x√3</code></li>
-            <li>Hypotenuse: <code>2x</code></li>
+            <li>Opposite 30°: \( x \)</li>
+            <li>Opposite 60°: \( x\sqrt{3} \)</li>
+            <li>Hypotenuse: \( 2x \)</li>
           </ul>
         </li>
-        <li>Given <code>2x = 54</code>, we solve to get <code>x = 27</code>.</li>
+        <li>Since the hypotenuse is 54, set \( 2x = 54 \Rightarrow x = 27 \).</li>
         <li>This gives:
           <ul>
-            <li><code>BC = 27</code> (opposite angle B = 30°)</li>
-            <li><code>AC = 27√3</code> (opposite angle A = 60°)</li>
+            <li>\( BC = 27 \) (opposite 30°)</li>
+            <li>\( AC = 27\sqrt{3} \) (opposite 60°)</li>
           </ul>
         </li>
       </ul>
@@ -123,19 +131,19 @@
     <div class="step">
       <strong>Step 3: Apply the Tangent Definition</strong>
       <ul>
-        <li><code>tan(θ) = opposite / adjacent</code></li>
-        <li>For angle <code>A = 60°</code>:
+        <li>Recall: \( \tan(\theta) = \frac{\text{opposite}}{\text{adjacent}} \)</li>
+        <li>For angle \( A = 60^\circ \):
           <ul>
-            <li>Opposite = <code>BC = 27√3</code></li>
-            <li>Adjacent = <code>AC = 27</code></li>
+            <li>Opposite: \( BC = 27\sqrt{3} \)</li>
+            <li>Adjacent: \( AC = 27 \)</li>
           </ul>
         </li>
-        <li>So, <code>tan A = (27√3) / 27 = √3</code></li>
+        <li>\( \tan A = \frac{27\sqrt{3}}{27} = \sqrt{3} \)</li>
       </ul>
     </div>
 
     <div class="step">
-      <strong>✅ Final Answer: <span class="correct">Choice C. <code>√3</code></span></strong>
+      <strong>✅ Final Answer: <span class="correct">Choice C. \( \sqrt{3} \)</span></strong>
     </div>
   </main>
 
