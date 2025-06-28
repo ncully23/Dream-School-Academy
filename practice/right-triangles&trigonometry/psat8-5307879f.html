@@ -3,86 +3,61 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>tan A - Triangle Trig - Dream School</title>
-  <link rel="stylesheet" href="../assets/style.css" />
+  <title>5307879f – Triangle Problem – Dream School</title>
+  <link rel="stylesheet" href="/assets/style.css" />
   <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
   <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
   <style>
     body {
+      background: #111;
+      color: #eee;
+      font-family: "Segoe UI", sans-serif;
       margin: 0;
       padding: 0;
-      background: #111;
-      font-family: "Segoe UI", sans-serif;
-      color: #eee;
     }
-
     main {
-      padding: 40px 20px;
       max-width: 900px;
-      margin: 0 auto;
+      margin: 40px auto;
+      padding: 20px;
       font-size: 1.2rem;
     }
-
-    h2 {
-      color: gold;
-      border-bottom: 1px solid #333;
-      padding-bottom: 5px;
-      margin-top: 40px;
-      text-align: left;
+    .question-box {
+      background: #1a1a1a;
+      padding: 20px;
+      border-left: 5px solid #4267b2;
+      margin-bottom: 20px;
     }
-
-    ul {
-      list-style: disc;
-      padding-left: 20px;
+    .answer-box {
+      background: #1f1f1f;
+      padding: 20px;
+      border-left: 5px solid #2ecc71;
+      margin-bottom: 20px;
     }
-
-    li {
-      color: #ddd;
-      line-height: 1.8;
-      margin-bottom: 10px;
-      text-align: left;
-    }
-
-    .choice {
-      margin: 12px 0;
-      font-size: 1.2rem;
-    }
-
-    .correct {
-      color: lightgreen;
+    .correct-answer {
       font-weight: bold;
+      color: #2ecc71;
     }
-
-    .step {
-      margin-bottom: 40px;
+    .question-id {
+      background: #4267b2;
+      color: white;
+      padding: 6px 12px;
+      font-weight: bold;
+      display: inline-block;
+      margin-bottom: 10px;
     }
-
-    .img {
+    .figure {
       text-align: center;
-      margin: 30px 0;
+      margin: 20px 0;
     }
-
-    .img img {
+    .figure img {
       max-width: 100%;
       height: auto;
+      border: 1px solid #444;
     }
-
     footer {
       text-align: center;
-      padding: 20px;
       color: #aaa;
-    }
-
-    code {
-      background-color: #222;
-      padding: 2px 6px;
-      border-radius: 4px;
-      font-size: 1rem;
-      color: gold;
-    }
-
-    p strong {
-      color: #fff;
+      padding: 20px;
     }
   </style>
 </head>
@@ -97,71 +72,45 @@
   </script>
 
   <main>
-    <h2>📐 Triangle Trig — What is <code>tan A</code>?</h2>
+    <div class="question-box">
+      <div class="question-id">ID: 5307879f</div>
 
-    <div class="img">
-      <img src="../assets/triangle-5307879f.png" alt="Triangle ABC with angle B = 30° and hypotenuse AB = 54" width="300">
+      <div class="figure">
+        <img src="https://dreamschool.academy/practice/5307879f%20figure.png" alt="Triangle Diagram for Question 5307879f" />
+      </div>
+
+      <p>Right triangle \( \triangle ABC \) is shown. What is the value of \( \tan A \)?</p>
+
+      <p>
+        A. \( \frac{\sqrt{3}}{54} \) <br>
+        B. \( \frac{1}{\sqrt{3}} \) <br>
+        <span class="correct-answer">C. \( \sqrt{3} \)</span><br>
+        D. \( 27\sqrt{3} \)
+      </p>
     </div>
 
-    <p><strong>Right triangle <code>ABC</code> is shown. What is the value of <code>tan A</code>?</strong></p>
+    <div class="answer-box">
+      <div class="question-id">ID: 5307879f Answer</div>
+      <p><span class="correct-answer">Correct Answer:</span> \( \sqrt{3} \)</p>
 
-    <div class="choice">A. \( \frac{\sqrt{3}}{54} \)</div>
-    <div class="choice">B. \( \frac{1}{\sqrt{3}} \)</div>
-    <div class="choice correct">C. \( \sqrt{3} \)</div>
-    <div class="choice">D. \( 27\sqrt{3} \)</div>
+      <p><strong>Rationale</strong></p>
+      <p>
+        In right triangle \( \triangle ABC \), angle \( B = 30^\circ \) and hypotenuse \( AB = 54 \). Since angle \( A \) is adjacent to leg \( BC \) and opposite leg \( AC \), and the triangle is a 30-60-90 triangle, we can use trig ratios.
+      </p>
+      <p>
+        In a 30-60-90 triangle, the ratio of opposite to adjacent for angle \( A = 60^\circ \) is:
+        \[
+        \tan A = \frac{\text{opposite}}{\text{adjacent}} = \sqrt{3}
+        \]
+        So, the correct answer is \( \sqrt{3} \).
+      </p>
 
-    <h2>✅ Step-by-Step Solution</h2>
-
-    <div class="step">
-      <strong>Step 1: Analyze the Triangle</strong>
-      <ul>
-        <li>Triangle \( ABC \) has a right angle at \( C \), and angle \( B = 30^\circ \).</li>
-        <li>That means angle \( A = 60^\circ \), since the angles in a triangle sum to \( 180^\circ \).</li>
-        <li>The hypotenuse \( AB \) is given as 54.</li>
-      </ul>
-    </div>
-
-    <div class="step">
-      <strong>Step 2: Use 30-60-90 Triangle Ratios</strong>
-      <ul>
-        <li>In a 30°-60°-90° triangle, side ratios are:
-          <ul>
-            <li>Opposite 30°: \( x \)</li>
-            <li>Opposite 60°: \( x\sqrt{3} \)</li>
-            <li>Hypotenuse: \( 2x \)</li>
-          </ul>
-        </li>
-        <li>Since the hypotenuse is 54, set \( 2x = 54 \Rightarrow x = 27 \).</li>
-        <li>This gives:
-          <ul>
-            <li>\( BC = 27 \) (opposite 30°)</li>
-            <li>\( AC = 27\sqrt{3} \) (opposite 60°)</li>
-          </ul>
-        </li>
-      </ul>
-    </div>
-
-    <div class="step">
-      <strong>Step 3: Apply the Tangent Definition</strong>
-      <ul>
-        <li>Recall: \( \tan(\theta) = \frac{\text{opposite}}{\text{adjacent}} \)</li>
-        <li>For angle \( A = 60^\circ \):
-          <ul>
-            <li>Opposite: \( BC = 27\sqrt{3} \)</li>
-            <li>Adjacent: \( AC = 27 \)</li>
-          </ul>
-        </li>
-        <li>\( \tan A = \frac{27\sqrt{3}}{27} = \sqrt{3} \)</li>
-      </ul>
-    </div>
-
-    <div class="step">
-      <strong>✅ Final Answer: <span class="correct">Choice C. \( \sqrt{3} \)</span></strong>
+      <p><strong>Question Difficulty:</strong> Medium</p>
     </div>
   </main>
 
   <footer>
-    <p>&copy; 2025 Dream School. All rights reserved.</p>
+    &copy; 2025 Dream School. All rights reserved.
   </footer>
 </body>
 </html>
