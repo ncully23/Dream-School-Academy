@@ -29,6 +29,26 @@
       color: #ddd;
       line-height: 1.6;
     }
+
+    .rule {
+      border-left: 4px solid #3498db;
+      background: #1a1a1a;
+      padding: 1rem;
+      margin-bottom: 1rem;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+    }
+
+    .rule-title {
+      font-weight: bold;
+      color: #f2f2f2;
+      cursor: pointer;
+    }
+
+    .rule-content {
+      margin-top: 0.5rem;
+      color: #ccc;
+      display: none;
+    }
   </style>
 </head>
 <body>
@@ -42,69 +62,76 @@
     });
 </script>
 
+<main>
+  <h2>Lines, Angles, and Triangles: 11 Core Rules</h2>
 
-  <main>
-    <h2>1. Properties of Lines and Angles</h2>
-    <ul>
-      <li><strong>Vertical angles</strong> are congruent.</li>
-      <li><strong>Supplementary angles</strong> sum to 180&deg;.</li>
-      <li><strong>Complementary angles</strong> sum to 90&deg;.</li>
-      <li><strong>Parallel lines and transversals:</strong>
-        <ul>
-          <li>Corresponding angles are congruent.</li>
-          <li>Alternate interior angles are congruent.</li>
-          <li>Alternate exterior angles are congruent.</li>
-          <li>Same-side interior angles are supplementary.</li>
-        </ul>
-      </li>
-      <li><strong>Exterior Angle Theorem:</strong> An exterior angle of a triangle equals the sum of the two non-adjacent interior angles.</li>
-    </ul>
+  <div class="rule">
+    <div class="rule-title" onclick="toggle(this)">1. Interior Angles in a Triangle</div>
+    <div class="rule-content">The three interior angles of a triangle always add up to 180°.</div>
+  </div>
 
-    <h2>2. Triangle Properties and Theorems</h2>
-    <ul>
-      <li><strong>Triangle Sum Theorem:</strong> The interior angles of a triangle always sum to 180&deg;.</li>
-      <li><strong>Isosceles Triangle:</strong> Two equal sides and two equal base angles.</li>
-      <li><strong>Equilateral Triangle:</strong> All sides and all angles equal (each angle = 60&deg;).</li>
-      <li><strong>Triangle Similarity:</strong>
-        <ul>
-          <li><strong>AA:</strong> Two matching angles imply triangle similarity.</li>
-          <li><strong>SSS:</strong> Corresponding side ratios are equal.</li>
-          <li><strong>SAS:</strong> Two proportional sides and the included equal angle.</li>
-        </ul>
-      </li>
-      <li><strong>Triangle Congruence:</strong>
-        <ul>
-          <li><strong>SSS:</strong> All three sides are equal.</li>
-          <li><strong>SAS:</strong> Two sides and the included angle are equal.</li>
-          <li><strong>ASA:</strong> Two angles and the included side are equal.</li>
-          <li><strong>AAS:</strong> Two angles and a non-included side are equal.</li>
-        </ul>
-      </li>
-      <li><strong>Right Triangle Properties:</strong>
-        <ul>
-          <li>Pythagorean Theorem: \( a^2 + b^2 = c^2 \)</li>
-          <li>Special triangles: 30-60-90 and 45-45-90</li>
-        </ul>
-      </li>
-      <li><strong>Midsegments:</strong> Connect midpoints, parallel to the third side, and half its length.</li>
-      <li><strong>Medians:</strong> Line segments from a vertex to the midpoint of the opposite side.</li>
-    </ul>
+  <div class="rule">
+    <div class="rule-title" onclick="toggle(this)">2. Exterior Angles</div>
+    <div class="rule-content">An exterior angle of a triangle equals the sum of the two non-adjacent interior angles.</div>
+  </div>
 
-    <h2>3. Proportionality and Applications</h2>
-    <ul>
-      <li><strong>Triangle Similarity in Proportions:</strong> Use ratios to find missing side lengths.</li>
-      <li><strong>Trigonometric Applications:</strong> Use sine, cosine, and tangent with right triangles.</li>
-      <li><strong>Real-World Problems:</strong>
-        <ul>
-          <li>Find heights using shadows and triangle similarity.</li>
-          <li>Estimate distances using triangle properties and angle measures.</li>
-        </ul>
-      </li>
-    </ul>
-  </main>
+  <div class="rule">
+    <div class="rule-title" onclick="toggle(this)">3. Sides and Angles</div>
+    <div class="rule-content">Larger angles face longer sides. In isosceles triangles, the base angles are equal.</div>
+  </div>
 
-  <footer>
-    <p>&copy; 2025 Dream School. All rights reserved.</p>
-  </footer>
+  <div class="rule">
+    <div class="rule-title" onclick="toggle(this)">4. Alternate Interior Angles</div>
+    <div class="rule-content">Formed when a transversal crosses parallel lines. These angles are congruent (equal).</div>
+  </div>
+
+  <div class="rule">
+    <div class="rule-title" onclick="toggle(this)">5. Corresponding Angles</div>
+    <div class="rule-content">When a transversal cuts parallel lines, the angles in the same position are congruent.</div>
+  </div>
+
+  <div class="rule">
+    <div class="rule-title" onclick="toggle(this)">6. Supplementary Angles</div>
+    <div class="rule-content">Two angles that add up to 180°. Often seen when two angles form a straight line.</div>
+  </div>
+
+  <div class="rule">
+    <div class="rule-title" onclick="toggle(this)">7. Vertical Angles</div>
+    <div class="rule-content">When two lines cross, the opposite (vertical) angles are congruent.</div>
+  </div>
+
+  <div class="rule">
+    <div class="rule-title" onclick="toggle(this)">8. Complementary Angles</div>
+    <div class="rule-content">Two angles that add up to 90°. Seen in right angles or right triangles.</div>
+  </div>
+
+  <div class="rule">
+    <div class="rule-title" onclick="toggle(this)">9. Triangle Similarity</div>
+    <div class="rule-content">Use AA, SSS, or SAS to prove triangle similarity. Similar triangles have the same shape, and their sides are in proportion.</div>
+  </div>
+
+  <div class="rule">
+    <div class="rule-title" onclick="toggle(this)">10. Scaling Similar Triangles</div>
+    <div class="rule-content">Similar triangles have equal angles and proportional sides. Shared angles in interior and exterior triangles often indicate similarity.</div>
+  </div>
+
+  <div class="rule">
+    <div class="rule-title" onclick="toggle(this)">11. Using Proportions</div>
+    <div class="rule-content">Use ratios of corresponding sides in similar triangles to solve for unknown side lengths.</div>
+  </div>
+
+</main>
+
+<script>
+  function toggle(element) {
+    const content = element.nextElementSibling;
+    content.style.display = (content.style.display === "block") ? "none" : "block";
+  }
+</script>
+
+<footer>
+  <p style="text-align: center; color: #888;">&copy; 2025 Dream School. All rights reserved.</p>
+</footer>
+
 </body>
 </html>
