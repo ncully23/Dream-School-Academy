@@ -1,9 +1,15 @@
-// === Firebase Setup (Assumes Firebase scripts already loaded) ===
-let currentUser = null;
+// === Firebase Setup ===
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getAuth, onAuthStateChanged, signInWithPopup, GoogleAuthProvider, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import {
+  getAuth,
+  onAuthStateChanged,
+  signInWithPopup,
+  GoogleAuthProvider,
+  signOut
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
-// Your Firebase config object from Firebase console
+let currentUser = null;
+
 const firebaseConfig = {
   apiKey: "AIzaSyD7R7ZsmTpGojgLNt7w_R0tm_mWg_FZEYE",
   authDomain: "dream-school-academy.firebaseapp.com",
@@ -61,63 +67,55 @@ function closeModal(modal) {
 // === Auth Buttons ===
 function setupAuthButtons() {
   const authBtn = document.getElementById("auth-btn");
+  const signOutLink = document.getElementById("signout-link");
 
   if (authBtn) {
     authBtn.addEventListener("click", () => {
       if (auth.currentUser) {
-        signOut(auth);
+        signOut(auth).catch(err => console.error("Sign-out error:", err));
       } else {
-        signInWithPopup(auth, provider).catch(err => console.error("Login Error:", err));
+        signInWithPopup(auth, provider).catch(err => console.error("Sign-in error:", err));
       }
+    });
+  }
+
+  if (signOutLink) {
+    signOutLink.addEventListener("click", (e) => {
+      e.preventDefault();
+      signOut(auth).catch(err => console.error("Sign-out error:", err));
     });
   }
 }
 
 // === Monitor Auth State ===
 function monitorAuthState() {
-  const authBtn = document.getElementById("auth-btn");
-  const userNameEl = document.getElementById("user-name");
+  onAuthStateChanged(auth, user => {
+    const authBtn = document.getElementById("auth-btn");
+    const userNameEl = document.getElementById("user-name");
+    const profileForm = document.getElementById("profile-form");
 
-onAuthStateChanged(auth, user => {
-  const authBtn = document.getElementById("auth-btn");
-  const userNameEl = document.getElementById("user-name");
-  const profileForm = document.getElementById("profile-form");
-
-  if (user) {
-    currentUser = user;
-    const firstName = user.displayName?.split(" ")[0] || "Friend";
-    if (authBtn) authBtn.textContent = "Sign Out";
-    if (userNameEl) userNameEl.textContent = `${firstName}! Chase your dreams!`;
-    if (profileForm) profileForm.style.display = "block";
-    prefillProfile(user); // Fill form if data exists
-  } else {
-    currentUser = null;
-    if (authBtn) authBtn.textContent = "Sign in with Google";
-    if (userNameEl) userNameEl.textContent = "";
-    if (profileForm) profileForm.style.display = "none";
-  }
-});
-
-function handleProfileSubmit(event) {
-  event.preventDefault();
-
-  const profileData = {
-    name: document.getElementById("name").value,
-    gradYear: document.getElementById("grad-year").value,
-    dreamSchools: document.getElementById("dream-schools").value,
-    safetySchools: document.getElementById("safety-schools").value,
-    satGoal: document.getElementById("sat-goal").value,
-    classes: document.getElementById("classes").value,
-    extracurriculars: document.getElementById("extracurriculars").value
-  };
-
-  console.log("Profile Saved:", profileData);
-
-  // Optionally: Save to Firestore here
-  alert("Profile saved! (Not stored permanently yet)");
+    if (user) {
+      currentUser = user;
+      const firstName = user.displayName?.split(" ")[0] || "Friend";
+      if (authBtn) authBtn.textContent = "Sign Out";
+      if (userNameEl) userNameEl.textContent = `${firstName}! Chase your dreams!`;
+      if (profileForm) profileForm.style.display = "block";
+      prefillProfile(user);
+    } else {
+      currentUser = null;
+      if (authBtn) authBtn.textContent = "Sign in with Google";
+      if (userNameEl) userNameEl.textContent = "";
+      if (profileForm) profileForm.style.display = "none";
+    }
+  });
 }
 
+// === Optional: Prefill Profile Form ===
 function prefillProfile(user) {
-  document.getElementById("name").value = user.displayName || "";
-  document.getElementById("email").value = user.email || "";
+  if (!user) return;
+  const nameEl = document.getElementById("name");
+  const emailEl = document.getElementById("email");
+
+  if (nameEl) nameEl.value = user.displayName || "";
+  if (emailEl) emailEl.value = user.email || "";
 }
