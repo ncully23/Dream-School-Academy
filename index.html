@@ -5,6 +5,42 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Dream School Academy</title>
   <link rel="stylesheet" href="styles.css" />
+  <style>
+    /* Minimal tab styling — feel free to move this to styles.css */
+    .tabs {
+      display: flex;
+      border-bottom: 2px solid #ccc;
+      margin-top: 2rem;
+    }
+
+    .tab-button {
+      padding: 1rem 2rem;
+      cursor: pointer;
+      border: none;
+      background: #f5f5f5;
+      font-weight: bold;
+      border-top-left-radius: 8px;
+      border-top-right-radius: 8px;
+      margin-right: 1px;
+    }
+
+    .tab-button.active {
+      background: #fff;
+      border-bottom: 2px solid #fff;
+    }
+
+    .tab-content {
+      display: none;
+      background: #fff;
+      padding: 1.5rem;
+      border: 2px solid #ccc;
+      border-top: none;
+    }
+
+    .tab-content.active {
+      display: block;
+    }
+  </style>
 </head>
 <body>
   <header>
@@ -12,7 +48,7 @@
     <nav>
       <a href="#">Home</a>
       <a href="#about">About</a>
-      <a href="#test">Take the Test</a>
+      <a href="#tabs">Study & Practice</a>
       <a href="#contact">Contact</a>
     </nav>
   </header>
@@ -21,16 +57,44 @@
     <section class="hero">
       <h2>Get Into Your Dream School</h2>
       <p>Master the SAT with real practice, smart feedback, and pro-level strategy — all free.</p>
-      <a href="#test" class="cta-button">Take the Practice Test</a>
+      <a href="#tabs" class="cta-button">Take the Practice Test</a>
     </section>
 
     <section class="info" id="about">
       <h3>Why Dream School Academy?</h3>
       <ul>
-        <li>✅ Realistic, Bluebook-style pests</li>
+        <li>✅ Realistic, Bluebook-style tests</li>
         <li>✅ Smart scoring and answer feedback</li>
         <li>✅ No logins, no nonsense — just results</li>
       </ul>
+    </section>
+
+    <section id="tabs">
+      <div class="tabs">
+        <button class="tab-button active" data-tab="study">📚 Study</button>
+        <button class="tab-button" data-tab="practice">📝 Practice</button>
+      </div>
+
+      <div id="study" class="tab-content active">
+        <h3>Study Resources</h3>
+        <ul>
+          <li>📖 SAT Reading Strategy Guide</li>
+          <li>🧠 Math Concept Cheat Sheets</li>
+          <li>🎯 Grammar Rules & Tips</li>
+          <li>💡 Timing Strategies</li>
+        </ul>
+      </div>
+
+      <div id="practice" class="tab-content">
+        <h3>Practice Tests</h3>
+        <p>Start one of our realistic, timed SAT practice tests:</p>
+        <ul>
+          <li><a href="module1.html">Module 1</a> – 32 min Reading</li>
+          <li><a href="module2.html">Module 2</a> – 32 min Reading</li>
+          <li><a href="module3.html">Module 3</a> – 35 min Math</li>
+          <li><a href="module4.html">Module 4</a> – 35 min Math</li>
+        </ul>
+      </div>
     </section>
   </main>
 
@@ -38,5 +102,22 @@
     <p>Contact: info@dreamschool.academy</p>
     <p>© 2025 Dream School Academy. All rights reserved.</p>
   </footer>
+
+  <script>
+    const tabButtons = document.querySelectorAll('.tab-button');
+    const tabContents = document.querySelectorAll('.tab-content');
+
+    tabButtons.forEach(button => {
+      button.addEventListener('click', () => {
+        const tabId = button.getAttribute('data-tab');
+
+        tabButtons.forEach(btn => btn.classList.remove('active'));
+        tabContents.forEach(content => content.classList.remove('active'));
+
+        button.classList.add('active');
+        document.getElementById(tabId).classList.add('active');
+      });
+    });
+  </script>
 </body>
 </html>
