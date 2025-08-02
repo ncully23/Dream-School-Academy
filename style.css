@@ -15,22 +15,44 @@ body {
 
 /* Header */
 header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding-bottom: 20px;
   border-bottom: 1px solid #333;
+  padding: 20px 0;
 }
 
-header h1 {
-  font-size: 1.8rem;
-  color: #00d8ff;
+.header-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 40px;
+}
+
+.logo-button {
+  background-color: #00d8ff;
+  color: #000;
+  padding: 10px 18px;
+  text-decoration: none;
+  font-weight: bold;
+  border-radius: 6px;
+  font-size: 1.2rem;
+  transition: background-color 0.3s;
+}
+
+.logo-button:hover {
+  background-color: #00aacc;
+}
+
+nav {
+  display: flex;
+  gap: 20px;
+  align-items: center;
 }
 
 nav a {
-  margin-left: 20px;
   color: #ccc;
   text-decoration: none;
+  font-size: 1rem;
+  padding: 8px 12px;
   transition: color 0.3s;
 }
 
