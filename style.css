@@ -1,39 +1,144 @@
-/* Header layout with centered nav and left-aligned logo */
-.header-content {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 20px;
+/* Reset + base styles */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
 
-.logo-button {
+body {
+  font-family: 'Segoe UI', sans-serif;
+  background-color: #111;
+  color: #f0f0f0;
+  line-height: 1.6;
+  padding: 20px;
+}
+
+/* Header */
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 20px;
+  border-bottom: 1px solid #333;
+}
+
+header h1 {
+  font-size: 1.8rem;
+  color: #00d8ff;
+}
+
+nav a {
+  margin-left: 20px;
+  color: #ccc;
+  text-decoration: none;
+  transition: color 0.3s;
+}
+
+nav a:hover {
+  color: #00d8ff;
+}
+
+/* Hero section */
+.hero {
+  margin-top: 40px;
+  padding: 40px 0;
+  text-align: center;
+}
+
+.hero h2 {
+  font-size: 2.5rem;
+  color: #fff;
+  margin-bottom: 20px;
+}
+
+.hero p {
+  font-size: 1.2rem;
+  color: #ccc;
+  margin-bottom: 30px;
+}
+
+.cta-button {
+  padding: 12px 24px;
   background-color: #00d8ff;
   color: #000;
-  padding: 10px 18px;
   text-decoration: none;
   font-weight: bold;
   border-radius: 6px;
   transition: background-color 0.3s;
 }
 
-.logo-button:hover {
+.cta-button:hover {
   background-color: #00aacc;
 }
 
-.center-nav {
-  display: flex;
-  gap: 20px;
+/* Info section */
+.info {
+  max-width: 600px;
+  margin: 50px auto;
+  padding: 20px;
+  background-color: #1c1c1c;
+  border-radius: 8px;
 }
 
-.center-nav a {
-  color: #ccc;
-  text-decoration: none;
-  font-size: 1rem;
-  padding: 8px 12px;
-  transition: color 0.3s;
-}
-
-.center-nav a:hover {
+.info h3 {
+  font-size: 1.5rem;
+  margin-bottom: 15px;
   color: #00d8ff;
+}
+
+.info ul li {
+  margin-bottom: 10px;
+}
+
+/* Tabs */
+.tabs {
+  display: flex;
+  justify-content: center;
+  border-bottom: 2px solid #333;
+  margin-top: 40px;
+}
+
+.tab-button {
+  padding: 1rem 2rem;
+  background-color: #222;
+  border: none;
+  color: #ccc;
+  font-weight: bold;
+  cursor: pointer;
+  border-top-left-radius: 8px;
+  border-top-right-radius: 8px;
+  transition: background-color 0.3s, color 0.3s;
+}
+
+.tab-button:hover {
+  background-color: #333;
+  color: #00d8ff;
+}
+
+.tab-button.active {
+  background-color: #111;
+  color: #00d8ff;
+  border-bottom: 2px solid #111;
+}
+
+.tab-content {
+  display: none;
+  background-color: #1c1c1c;
+  padding: 20px;
+  border: 1px solid #333;
+  border-top: none;
+  border-radius: 0 0 8px 8px;
+  margin-bottom: 40px;
+}
+
+.tab-content.active {
+  display: block;
+}
+
+/* Footer */
+footer {
+  margin-top: 50px;
+  text-align: center;
+  font-size: 0.9rem;
+  color: #888;
 }
