@@ -5,6 +5,23 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Lines, Angles, and Triangles</title>
   <link rel="stylesheet" href="/style.css" />
+<!-- MathJax config + loader -->
+<script>
+  // Render inline math with \( ... \) and display math with $$ ... $$
+  window.MathJax = {
+    tex: { inlineMath: [['\\(','\\)']], displayMath: [['$$','$$']] },
+    options: { skipHtmlTags: ['script','noscript','style','textarea','pre','code'] }
+  };
+</script>
+<script id="MathJax-script" async
+  src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+<style>
+  /* Make MathJax text match your dark theme */
+  .mjx-container { color: #f0f0f0; }
+</style>
+
+  
   <style>
     .concept {
       margin-bottom: 40px;
