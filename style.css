@@ -79,6 +79,13 @@ nav a:hover {
   margin-bottom: 30px;
 }
 
+.half-size {
+  width: 50%;
+  height: auto;
+  display: block;
+  margin: 15px auto; /* keeps it centered */
+}
+
 .cta-button {
   padding: 12px 24px;
   background-color: #00d8ff;
