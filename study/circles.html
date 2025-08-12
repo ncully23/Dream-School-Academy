@@ -5,44 +5,30 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Circles | Dream School Academy</title>
 
-  <!-- Site-wide stylesheet -->
+  <!-- site CSS -->
   <link rel="stylesheet" href="/style.css" />
 
-  <!-- MathJax for inline math on this page only -->
+  <!-- MathJax for inline math -->
   <script>
     window.MathJax = { tex: { inlineMath: [['\\(','\\)'], ['$', '$']] } };
   </script>
   <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
 
-  <!-- Page-specific styles (scoped look-and-feel for lesson widgets) -->
+  <!-- page styles -->
   <style>
     :root{
       --bg:#0f1320; --panel:#151a2b; --panel2:#1b2240; --ink:#eaf1ff; --muted:#b8c3e6;
-      --accent:#4cc9f0; --ok:#74c69d; --warn:#ffd166; --bad:#ef476f; --radius:16px;
+      --accent:#4cc9f0; --radius:16px;
     }
     body{color:var(--ink); background:linear-gradient(160deg,#0b1020,#0f1320 45%,#0b1127)}
     .wrap{max-width:1200px; margin:0 auto; padding:18px 20px}
-    .pill{display:inline-flex; gap:6px; padding:6px 10px; border-radius:999px; background:rgba(255,255,255,.06);
-          border:1px solid rgba(255,255,255,.08); font-size:12px; color:var(--muted)}
-    .card{background:var(--panel); border:1px solid rgba(255,255,255,.08); border-radius:var(--radius); padding:16px}
+    h1{margin:0 0 6px}
+    h2{margin:0 0 10px}
     .note{color:var(--muted); font-size:13px}
-    h1{font-size:24px; margin:0}
-    h2{font-size:22px; margin:0 0 10px}
-    h3{font-size:16px; margin:0 0 8px; color:var(--muted); text-transform:uppercase; letter-spacing:.6px}
+    .card{background:var(--panel); border:1px solid rgba(255,255,255,.08); border-radius:var(--radius); padding:16px}
     .grid{display:grid; gap:16px}
-    @media(min-width:960px){ .cols-2{grid-template-columns:repeat(2,1fr)} .cols-3{grid-template-columns:repeat(3,1fr)}}
-    input[type="number"],input[type="text"],textarea,select{
-      width:100%; background:#0e1224; color:var(--ink); border:1px solid rgba(255,255,255,.12);
-      border-radius:12px; padding:10px 12px; outline:none
-    }
-    textarea{min-height:74px; resize:vertical}
-    .btn{display:inline-flex; align-items:center; gap:8px; background:var(--accent); color:#061018; border:0;
-         padding:9px 13px; border-radius:12px; font-weight:700; cursor:pointer}
-    .btn.ghost{background:transparent; color:var(--accent); border:1px solid var(--accent)}
-    details{background:var(--panel); border:1px solid rgba(255,255,255,.08); border-radius:12px; padding:12px 14px; margin:10px 0}
-    details[open]{background:var(--panel2)}
-    summary{cursor:pointer; font-weight:700}
-    ul.tight{margin:6px 0 0 18px}
+    @media(min-width:960px){ .cols-2{grid-template-columns:repeat(2,1fr)} }
+    ul.tight{margin:6px 0 0 20px}
     li{margin:6px 0}
     figure{margin:10px 0 0}
     figure img{width:100%; height:auto; border-radius:12px; border:1px solid rgba(255,255,255,.08)}
@@ -54,12 +40,11 @@
     .qcard .imgwrap{background:#0b1024}
     .qcard .imgwrap img{display:block; width:100%; height:auto}
     .qcard .bottom{padding:10px 12px}
-    .table{width:100%; border-collapse:collapse}
-    .table th,.table td{border-bottom:1px solid rgba(255,255,255,.08); padding:8px 6px; text-align:left; font-size:14px}
+    .pill{display:inline-flex; gap:6px; padding:6px 10px; border-radius:999px; background:rgba(255,255,255,.06);
+          border:1px solid rgba(255,255,255,.08); font-size:12px; color:var(--muted)}
     /* modal */
     .modal{position:fixed; inset:0; background:rgba(6,10,22,.85); display:grid; place-items:center; z-index:9999}
     .modal .inner{width:min(1000px,92vw); max-height:88vh; overflow:auto}
-    /* header from site.css already styles nav; we just adjust background for this page */
     header{background:rgba(10,14,30,.7)}
     .breadcrumb{margin:8px 0 0; font-size:14px}
     .breadcrumb a{color:#9ec3ff; text-decoration:none}
@@ -67,7 +52,7 @@
 </head>
 <body>
 
-  <!-- Site header / nav (same structure as study.html) -->
+  <!-- site header -->
   <header>
     <div class="header-container">
       <a href="/" class="logo-button">Dream School Academy</a>
@@ -82,181 +67,65 @@
   <main>
     <section class="wrap">
       <h1>Circles</h1>
-      <div class="breadcrumb">
-        <a href="/study">Study</a> › Circles
-      </div>
+      <div class="breadcrumb"><a href="/study">Study</a> › Circles</div>
       <div class="card" style="margin-top:12px">
-        <p><strong>Circle questions are one of the most intimidating questions, but there’s only a few things you have to master.</strong>
-          First off—what do circle questions look like?</p>
-        <p class="note">Many circle problems also require ideas from <strong>lines, angles, triangles/right triangles, and trigonometry</strong>.
-          We’ll flag those when relevant.</p>
+        <p><strong>Circle questions can feel intimidating, but there are only a few core ideas.</strong> First—what do SAT circle questions look like?</p>
+        <p class="note">Some problems also use <strong>lines, angles, triangles/right triangles, and trigonometry</strong>. We’ll call those out as needed.</p>
       </div>
     </section>
 
     <!-- I. Examples Gallery -->
     <section class="wrap">
       <h2>I. Examples (College Board-style)</h2>
-      <p class="note">Click a card for Presenter View. Add notes, concepts used, and your solution.</p>
+      <p class="note">Click a card to open Presenter View (add your notes/solution). All images are included below.</p>
       <div id="gallery" class="gallery"></div>
     </section>
 
-    <!-- II. Concepts -->
+    <!-- II. Notes & Concepts (no calculators) -->
     <section class="wrap">
-      <h2>II. The Concepts You Must Master</h2>
-
-      <details open>
-        <summary>1) Radius & Isosceles Triangle Fact</summary>
-        <div class="card">
-          <ul class="tight">
-            <li><em>Radius:</em> distance from the center to any point on the circle.</li>
-            <li>Two radii to different points + the chord between them form an <strong>isosceles triangle</strong>.</li>
-          </ul>
-        </div>
-      </details>
-
-      <details open>
-        <summary>2) Convert Radians ⇄ Degrees</summary>
-        <div class="card grid cols-2">
-          <div>
-            <ul class="tight">
-              <li>\\(\\theta_{\\text{deg}} = \\theta_{\\text{rad}}\\cdot \\dfrac{180^\\circ}{\\pi}\\)</li>
-              <li>\\(\\theta_{\\text{rad}} = \\theta_{\\text{deg}}\\cdot \\dfrac{\\pi}{180^\\circ}\\)</li>
-            </ul>
-          </div>
-          <div>
-            <h3>Quick Converter</h3>
-            <div class="grid cols-2">
-              <div>
-                <label class="note">Radians → Degrees</label>
-                <input id="radIn" type="number" step="any" placeholder="rad">
-                <button class="btn small" id="toDeg">Convert</button>
-                <div id="degOut" class="note"></div>
-              </div>
-              <div>
-                <label class="note">Degrees → Radians</label>
-                <input id="degIn" type="number" step="any" placeholder="deg">
-                <button class="btn small" id="toRad">Convert</button>
-                <div id="radOut" class="note"></div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </details>
-
-      <details open>
-        <summary>3) Circumference</summary>
-        <div class="card grid cols-2">
-          <div><ul class="tight"><li>\\(C = 2\\pi r\\)</li></ul></div>
-          <div>
-            <label class="note">r</label>
-            <input id="rC" type="number" step="any" placeholder="radius">
-            <button class="btn small" id="calcC">Compute C</button>
-            <div id="outC" class="note"></div>
-          </div>
-        </div>
-      </details>
-
-      <details open>
-        <summary>4) Area</summary>
-        <div class="card grid cols-2">
-          <div><ul class="tight"><li>\\(A = \\pi r^2\\)</li></ul></div>
-          <div>
-            <label class="note">r</label>
-            <input id="rA" type="number" step="any" placeholder="radius">
-            <button class="btn small" id="calcA">Compute A</button>
-            <div id="outA" class="note"></div>
-          </div>
-        </div>
-      </details>
-
-      <details open>
-        <summary>5) Arc Length</summary>
-        <div class="card">
-          <div class="grid cols-2">
-            <div>
-              <ul class="tight">
-                <li>Radians: \\(S = r\\theta\\) (\\(\\theta\\) in radians)</li>
-                <li>Degrees: \\(\\dfrac{S}{C} = \\dfrac{\\theta_{\\text{deg}}}{360^\\circ}\\) → \\(S = \\dfrac{\\theta_{\\text{deg}}}{360^\\circ}\\cdot 2\\pi r\\)</li>
-                <li>\\(\\theta\\) is the <em>central angle</em>.</li>
-              </ul>
-            </div>
-            <div>
-              <h3>Quick Arc Calculator</h3>
-              <div class="grid cols-2">
-                <div><label class="note">r</label><input id="rS" type="number" step="any"></div>
-                <div><label class="note">θ (deg)</label><input id="tS" type="number" step="any"></div>
-              </div>
-              <button class="btn small" id="calcS" style="margin-top:8px">Compute S</button>
-              <div id="outS" class="note"></div>
-            </div>
-          </div>
-        </div>
-      </details>
-
-      <details open>
-        <summary>6) Circle Equation & Completing the Square</summary>
-        <div class="card">
-          <div class="grid cols-2">
-            <div>
-              <ul class="tight">
-                <li>Standard: \\((x-h)^2 + (y-k)^2 = r^2\\)</li>
-                <li>Center: \\((h,k)\\); point on circle: \\((x,y)\\)</li>
-                <li>Complete the square to convert \\(x^2+y^2+Dx+Ey+F=0\\) to standard.</li>
-              </ul>
-            </div>
-            <div>
-              <h3>Mini CTS Helper</h3>
-              <div class="grid cols-3">
-                <input id="D" type="number" step="any" placeholder="D (x)">
-                <input id="E" type="number" step="any" placeholder="E (y)">
-                <input id="F" type="number" step="any" placeholder="F">
-              </div>
-              <button class="btn small" id="doCTS" style="margin-top:8px">Complete the Square</button>
-              <div id="ctsOut" class="note" style="margin-top:6px"></div>
-            </div>
-          </div>
-        </div>
-      </details>
-
-      <details open>
-        <summary>7) Tangents</summary>
-        <div class="card grid cols-2">
-          <div>
-            <ul class="tight">
-              <li>Tangent at \\(P\\) ⟂ radius \\(\\overline{CP}\\).</li>
-              <li>If slope of radius is \\(m_{\\text{rad}}\\), then (when defined) \\(m_{\\text{tan}} = -\\dfrac{1}{m_{\\text{rad}}}\\).</li>
-              <li>Vertical radius → horizontal tangent; horizontal radius → vertical tangent.</li>
-            </ul>
-          </div>
-          <div>
-            <h3>Slope Helper</h3>
-            <div class="grid cols-3">
-              <input id="h0" type="number" step="any" placeholder="h">
-              <input id="k0" type="number" step="any" placeholder="k">
-              <input id="px" type="number" step="any" placeholder="xₚ">
-              <input id="py" type="number" step="any" placeholder="yₚ">
-              <span class="note" style="grid-column:1/-1">Point P should be on the circle; we compute slopes only.</span>
-            </div>
-            <button class="btn small" id="tanBtn" style="margin-top:8px">Find m<sub>radius</sub> & m<sub>tangent</sub></button>
-            <div id="tanOut" class="note"></div>
-          </div>
-        </div>
-      </details>
-
+      <h2>II. Notes & Concepts (use these to explain any problem)</h2>
       <div class="card">
-        <h3>Don’t forget these prerequisites:</h3>
-        <ul class="tight">
-          <li><strong>Lines:</strong> slope, point–slope form, perpendicular/parallel, distance from point to line.</li>
-          <li><strong>Angles & Triangles:</strong> sums, isosceles facts, central vs. inscribed angles.</li>
-          <li><strong>Right Triangles & Trig:</strong> Pythagorean theorem, 30–60–90 & 45–45–90, SOH–CAH–TOA.</li>
-        </ul>
+        <div class="note" style="margin-bottom:8px">Sunday, July 6, 2025 &nbsp; 10:56 AM</div>
+        <ol>
+          <li><strong>Radius:</strong> distance from center to any point on circle.
+            <ul class="tight"><li>Two radii + the chord between them form an <em>isosceles triangle</em>.</li></ul>
+          </li>
+          <li><strong>Radians ↔ Degrees:</strong>
+            <ul class="tight">
+              <li>\\(\\theta_{\\text{deg}}=\\theta_{\\text{rad}}\\cdot\\dfrac{180^\\circ}{\\pi}\\)</li>
+              <li>\\(\\theta_{\\text{rad}}=\\theta_{\\text{deg}}\\cdot\\dfrac{\\pi}{180^\\circ}\\)</li>
+            </ul>
+          </li>
+          <li><strong>Circumference:</strong> \\(C=2\\pi r\\)</li>
+          <li><strong>Area:</strong> \\(A=\\pi r^2\\)</li>
+          <li><strong>Arc Length:</strong> fraction of circumference
+            <ul class="tight">
+              <li>Radians: \\(S=r\\,\\theta\\) (\\(\\theta\\) in radians)</li>
+              <li>Degrees: \\(\\dfrac{S}{C}=\\dfrac{\\theta_{\\text{deg}}}{360^\\circ}\\)</li>
+              <li>\\(\\theta\\) = central angle.</li>
+            </ul>
+          </li>
+          <li><strong>Circle Equation:</strong> \\((x-h)^2+(y-k)^2=r^2\\)
+            <ul class="tight">
+              <li>Center \\((h,k)\\); any point on circle \\((x,y)\\)</li>
+              <li><em>Complete the square</em> to convert \\(x^2+y^2+Dx+Ey+F=0\\) to standard form.</li>
+            </ul>
+          </li>
+          <li><strong>Tangents:</strong>
+            <ul class="tight">
+              <li>Tangent at a point is <em>perpendicular</em> to the radius to that point.</li>
+              <li>When slopes exist: \\(m_{\\text{tan}}=-\\dfrac{1}{m_{\\text{center}}}\\)</li>
+            </ul>
+          </li>
+        </ol>
+        <p class="note">Also lean on: line slopes/perpendiculars, triangle angle sums, 30-60-90 & 45-45-90, and SOH-CAH-TOA.</p>
       </div>
     </section>
 
     <!-- III. Apply concepts tracker -->
     <section class="wrap">
-      <h2>III. Apply Concepts (Tag & Track)</h2>
-      <p class="note">Use this after presenting and solving. It saves locally.</p>
+      <h2>III. Apply Concepts (tag each example)</h2>
+      <p class="note">Use this after you solve each example. Saves locally in this browser.</p>
       <table class="table" id="applyTbl"><thead>
         <tr><th>#</th><th>Concepts</th><th>Notes</th><th>Status</th></tr></thead><tbody></tbody></table>
     </section>
@@ -268,16 +137,16 @@
         <div>
           <h3>Self-check</h3>
           <ul class="tight">
-            <li>Read \\((h,k)\\) and \\(r\\) instantly?</li>
-            <li>CTS cleanly (no sign errors)?</li>
-            <li>Arc length in rad & deg?</li>
-            <li>Tangent vs. secant vs. none with a line?</li>
-            <li>Chord from distance to center?</li>
+            <li>Can you read \\((h,k)\\) and \\(r\\) instantly?</li>
+            <li>Can you CTS cleanly (no sign errors)?</li>
+            <li>Arc length in radians and degrees?</li>
+            <li>Tangent vs. secant vs. neither?</li>
+            <li>Chord length via distance to center?</li>
           </ul>
         </div>
         <div>
           <h3>Plan</h3>
-          <textarea id="plan" placeholder="e.g., 5 CTS reps + 3 line–circle intersections + 2 tangent slope drills"></textarea>
+          <textarea id="plan" placeholder="e.g., 5 CTS reps + 3 tangent slope drills + 2 arc-length mixes"></textarea>
           <button class="btn" id="savePlan" style="margin-top:8px">Save Plan</button>
           <span id="planSaved" class="note"></span>
         </div>
@@ -291,43 +160,44 @@
   </footer>
 
   <script>
-    /* --------- DATA: 13 examples (images assumed in /study/) ---------- */
+    /* ---- 13 example images (kept in /study/) ---- */
     const QUESTIONS = [
       {id:'69b0d79d', title:'Arc length from radius & central angle', img:'./circle-69b0d79d.png'},
       {id:'3e577e4a', title:'Slope of tangent from center & point', img:'./circle-3e577e4a.png'},
-      {id:'9e44284b', title:'Radius from non-standard equation', img:'./circle-9e44284b.png'},
-      {id:'0acfddb5', title:'Perimeter with tangents & radius', img:'./circle-0acfddb5.png'},
-      {id:'ca2235f6', title:'Circumference from arc length (deg)', img:'./circle-ca2235f6.png'},
-      {id:'89661424', title:'Find c in x²+y²+ax+by+c=0', img:'./circle-89661424.png'},
-      {id:'196e8e6e', title:'Chord length via right angle on circle', img:'./circle-196e8e6e.png'},
-      {id:'0815a5af', title:'Arc relations with two diameters', img:'./circle-0815a5af.png'},
-      {id:'e50afdd3', title:'Point on circle — possible x value', img:'./circle-e50afdd3.png'},
-      {id:'2266984b', title:'Center from completing the square', img:'./circle-2266984b.png'},
+      {id:'9e44284b', title:'Radius from non-standard equation',    img:'./circle-9e44284b.png'},
+      {id:'0acfddb5', title:'Perimeter with tangents & radius',      img:'./circle-0acfddb5.png'},
+      {id:'ca2235f6', title:'Circumference from arc length (deg)',   img:'./circle-ca2235f6.png'},
+      {id:'89661424', title:'Find c in x²+y²+ax+by+c=0',             img:'./circle-89661424.png'},
+      {id:'196e8e6e', title:'Chord length via right angle on circle',img:'./circle-196e8e6e.png'},
+      {id:'0815a5af', title:'Arc relations with two diameters',      img:'./circle-0815a5af.png'},
+      {id:'e50afdd3', title:'Point on circle — possible x value',    img:'./circle-e50afdd3.png'},
+      {id:'2266984b', title:'Center from completing the square',     img:'./circle-2266984b.png'},
       {id:'c8345903', title:'Arc-length composition with given arc', img:'./circle-c8345903.png'},
-      {id:'858fd1cf', title:'Which point lies on tangent line t', img:'./circle-858fd1cf.png'},
-      {id:'76c73dbf', title:'Radius from x²+x + y² + y = 199/2', img:'./circle-76c73dbf.png'}
+      {id:'858fd1cf', title:'Which point lies on tangent line t',    img:'./circle-858fd1cf.png'},
+      {id:'76c73dbf', title:'Radius from x²+x + y² + y = 199/2',     img:'./circle-76c73dbf.png'}
     ];
 
-    /* --------- Storage keys unique to /study/circles.html ---------- */
-    const LS_KEY_Q = 'sat_circle_gallery_study_v1';
-    const LS_KEY_APPLY = 'sat_circle_apply_study_v1';
+    /* ---- local storage keys (scoped to study/circles) ---- */
+    const LS_KEY_Q = 'sat_circle_gallery_study_v2';
+    const LS_KEY_APPLY = 'sat_circle_apply_study_v2';
 
     const store = {
       get(k, fb){ try{ const v = localStorage.getItem(k); return v? JSON.parse(v): fb }catch(e){ return fb }},
       set(k, v){ try{ localStorage.setItem(k, JSON.stringify(v)) }catch(e){} }
     };
-    const concepts = [
-      'Read center/radius',
-      'Complete the square',
-      'Arc length (rad/deg)',
-      'Chord length / distance',
+
+    const conceptList = [
+      'Radius & isosceles triangle',
+      'Radians↔Degrees conversion',
+      'Circumference C=2πr',
+      'Area A=πr²',
+      'Arc length S=rθ, or S/C=θ/360°',
+      'Circle equation / CTS',
       'Tangent ⟂ radius',
-      'Circle–line intersection',
-      'Inscribed/central angles',
-      'Right triangles / trig'
+      'Lines/Angles/Triangles/Trig support'
     ];
 
-    /* --------- Gallery render ---------- */
+    /* ---- render gallery ---- */
     const gallery = document.getElementById('gallery');
     const saved = store.get(LS_KEY_Q, QUESTIONS.map(q=>({...q, notes:'', answer:'', tags:[], explain:''})));
 
@@ -339,9 +209,9 @@
         card.innerHTML = `
           <div class="top">
             <div><strong>ID:</strong> ${q.id}</div>
-            <button class="btn ghost" data-open="${idx}">Presenter</button>
+            <button class="btn" data-open="${idx}">Presenter</button>
           </div>
-          <div class="imgwrap">${ q.img ? `<img src="${q.img}" alt="${q.title}">` : `<div class="note" style="padding:16px">Add an image path in Presenter View.</div>`}</div>
+          <div class="imgwrap"><img src="${q.img}" alt="${q.title}"></div>
           <div class="bottom">
             <div class="small">${q.title||''}</div>
             <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px">
@@ -360,7 +230,7 @@
       openPresenter(parseInt(idx,10));
     });
 
-    /* --------- Presenter modal ---------- */
+    /* ---- Presenter modal (now shows the concept notes, no calculators) ---- */
     function openPresenter(i){
       const q = saved[i];
       const m = document.createElement('div');
@@ -370,19 +240,22 @@
           <div style="display:flex; align-items:center; justify-content:space-between; gap:10px">
             <div><strong>Presenter — ${q.id}</strong> <span class="note">(${q.title||''})</span></div>
             <div style="display:flex; gap:8px">
-              <button class="btn ghost" id="closeM">Close</button>
               <button class="btn" id="saveM">Save</button>
+              <button class="btn" id="closeM" style="background:transparent;color:#fff;border:1px solid rgba(255,255,255,.25)">Close</button>
             </div>
           </div>
+
           <div class="grid cols-2" style="margin-top:10px">
             <div>
-              <label class="note">Image path (update if needed)</label>
+              <figure><img src="${q.img}" alt="large"></figure>
+              <label class="note">Image path (optional)</label>
               <input id="mImg" type="text" value="${q.img||''}" placeholder="./circle-xxxxx.png or https://...">
-              <figure style="margin-top:8px">${ q.img ? `<img src="${q.img}" alt="large">` : `<div class="note">No image yet.</div>`}</figure>
             </div>
+
             <div>
               <h3>Talk Track</h3>
-              <textarea id="mNotes" style="min-height:160px" placeholder="Ask → Notice → Decide → Execute">${q.notes||''}</textarea>
+              <textarea id="mNotes" style="min-height:140px" placeholder="Ask → Notice → Decide → Execute">${q.notes||''}</textarea>
+
               <div class="grid cols-2" style="margin-top:8px">
                 <div>
                   <label class="note">Answer (letter/value)</label>
@@ -391,21 +264,38 @@
                 <div>
                   <label class="note">Concept tags (Ctrl/Cmd-click)</label>
                   <select id="mTags" multiple size="6">
-                    ${concepts.map(c=>`<option value="${c}" ${(q.tags||[]).includes(c)?'selected':''}>${c}</option>`).join('')}
+                    ${conceptList.map(c=>`<option value="${c}" ${(q.tags||[]).includes(c)?'selected':''}>${c}</option>`).join('')}
                   </select>
                 </div>
               </div>
+
               <label class="note" style="margin-top:8px; display:block">Explanation (1–4 lines)</label>
-              <textarea id="mExp" style="min-height:120px" placeholder="Sketch the shortest solution path here.">${q.explain||''}</textarea>
-              <p class="note" style="margin-top:6px">Reminder: lines/angles/triangles/trig may also appear—call them out if used.</p>
+              <textarea id="mExp" style="min-height:100px" placeholder="Shortest solution path.">${q.explain||''}</textarea>
+
+              <details style="margin-top:10px">
+                <summary>Concept Notes (quick reference)</summary>
+                <div class="card" style="margin-top:10px">
+                  <ol>
+                    <li><strong>Radius</strong> → isosceles with two radii + chord.</li>
+                    <li>\\(\\theta_{\\text{deg}}=\\theta_{\\text{rad}}\\cdot\\dfrac{180^\\circ}{\\pi}\\), &nbsp; \\(\\theta_{\\text{rad}}=\\theta_{\\text{deg}}\\cdot\\dfrac{\\pi}{180^\\circ}\\)</li>
+                    <li>\\(C=2\\pi r\\)</li>
+                    <li>\\(A=\\pi r^2\\)</li>
+                    <li>Arc: \\(S=r\\theta\\) (rad), or \\(S/C=\\theta/360^\\circ\\) (deg)</li>
+                    <li>\\((x-h)^2+(y-k)^2=r^2\\); use CTS from general form.</li>
+                    <li>Tangent ⟂ radius (use negative reciprocal slopes when defined).</li>
+                  </ol>
+                </div>
+              </details>
             </div>
           </div>
         </div>
       `;
       document.body.appendChild(m);
+      if(window.MathJax) MathJax.typesetPromise();
+
       m.querySelector('#closeM').onclick = ()=> m.remove();
       m.querySelector('#saveM').onclick  = ()=>{
-        saved[i].img = m.querySelector('#mImg').value.trim();
+        saved[i].img = m.querySelector('#mImg').value.trim() || q.img;
         saved[i].notes = m.querySelector('#mNotes').value;
         saved[i].answer = m.querySelector('#mAns').value;
         saved[i].tags = Array.from(m.querySelector('#mTags').selectedOptions).map(o=>o.value);
@@ -417,9 +307,9 @@
       };
     }
 
-    /* --------- Apply Concepts table ---------- */
-    const LS_APPLY_INIT = QUESTIONS.map((q, i)=>({id:(i+1), ref:q.id, concepts:[], notes:'', status:'Unstarted'}));
-    const applyData = store.get(LS_KEY_APPLY, LS_APPLY_INIT);
+    /* ---- Apply Concepts table ---- */
+    const initApply = QUESTIONS.map((q, i)=>({id:(i+1), ref:q.id, concepts:[], notes:'', status:'Unstarted'}));
+    const applyData = store.get(LS_KEY_APPLY, initApply);
     const tbody = document.querySelector('#applyTbl tbody');
 
     function renderApply(){
@@ -430,7 +320,7 @@
           <td><strong>${idx+1}</strong><div class="note">${row.ref}</div></td>
           <td>
             <select multiple size="5" data-csel="${idx}">
-              ${concepts.map(c=>`<option value="${c}" ${(row.concepts||[]).includes(c)?'selected':''}>${c}</option>`).join('')}
+              ${conceptList.map(c=>`<option value="${c}" ${(row.concepts||[]).includes(c)?'selected':''}>${c}</option>`).join('')}
             </select>
           </td>
           <td><textarea data-notes="${idx}" placeholder="One-liner or trap.">${row.notes|| (saved[idx]?.explain || '')}</textarea></td>
@@ -438,7 +328,7 @@
             <select data-status="${idx}">
               ${['Unstarted','In progress','Solved'].map(s=>`<option ${row.status===s?'selected':''}>${s}</option>`).join('')}
             </select>
-            <div style="margin-top:6px"><button class="btn small" data-save="${idx}">Save</button></div>
+            <div style="margin-top:6px"><button class="btn" data-save="${idx}" style="padding:6px 10px">Save</button></div>
           </td>
         `;
         tbody.appendChild(tr);
@@ -458,70 +348,16 @@
       store.set(LS_KEY_APPLY, applyData);
     });
 
-    /* --------- Concept widgets ---------- */
-    const $ = (id)=> document.getElementById(id);
-
-    // rad↔deg
-    $('toDeg').onclick = ()=> { const r = parseFloat($('radIn').value||0); $('degOut').textContent = isFinite(r)? `${(r*180/Math.PI).toFixed(6)}°` : ''; };
-    $('toRad').onclick = ()=> { const d = parseFloat($('degIn').value||0); $('radOut').textContent = isFinite(d)? `${(d*Math.PI/180).toFixed(6)} rad` : ''; };
-
-    // C & A
-    $('calcC').onclick = ()=> { const r = parseFloat($('rC').value||0); $('outC').textContent = r>=0? `C = ${(2*Math.PI*r).toFixed(6)}` : ''; };
-    $('calcA').onclick = ()=> { const r = parseFloat($('rA').value||0); $('outA').textContent = r>=0? `A = ${(Math.PI*r*r).toFixed(6)}` : ''; };
-
-    // Arc length S (deg)
-    $('calcS').onclick = ()=> {
-      const r = parseFloat($('rS').value||0), t = parseFloat($('tS').value||0);
-      if(!(r>=0)) return $('outS').textContent='';
-      const S = (t/360)*2*Math.PI*r;
-      $('outS').textContent = `S = ${S.toFixed(6)}  (deg formula)  |  radians: r·θ`;
-    };
-
-    // Completing the square
-    $('doCTS').onclick = ()=> {
-      const D = parseFloat($('D').value||0), E = parseFloat($('E').value||0), F = parseFloat($('F').value||0);
-      const h = -D/2, k = -E/2, r2 = (D*D)/4 + (E*E)/4 - F;
-      const line = r2>=0 ? `\\((x-${fmt(h)})^2 + (y-${fmt(k)})^2 = ${fmt(r2)}\\)` : `No real circle (r² = ${fmt(r2)})`;
-      $('ctsOut').innerHTML = `
-        <div>Center: \\((${fmt(h)}, ${fmt(k)})\\)</div>
-        <div>Radius: ${r2>=0? `\\(\\sqrt{${fmt(r2)}}\\)` : '—'}</div>
-        <div>Standard form: ${line}</div>
-      `;
-      if(window.MathJax) MathJax.typesetPromise();
-    };
-    function fmt(n){ const s=Number(n.toFixed(6)); return (Math.abs(s)===0)? '0' : (''+s); }
-
-    // Tangent slope helper
-    $('tanBtn').onclick = ()=> {
-      const h = parseFloat($('h0').value||0), k = parseFloat($('k0').value||0);
-      const x = parseFloat($('px').value||0), y = parseFloat($('py').value||0);
-      const dx = x - h, dy = y - k;
-      let out = '';
-      if(Math.abs(dx) < 1e-12 && Math.abs(dy) < 1e-12){
-        out = '<span class="note">P equals center — radius undefined.</span>';
-      }else if(Math.abs(dx) < 1e-12){
-        out = 'm_rad = ∞ (vertical radius) → tangent is horizontal (m_tan = 0)';
-      }else if(Math.abs(dy) < 1e-12){
-        out = 'm_rad = 0 (horizontal radius) → tangent is vertical (m_tan = ∞)';
-      }else{
-        const mrad = dy/dx; const mtan = -1/mrad;
-        out = `m_rad = ${mrad.toFixed(6)},  m_tan = ${mtan.toFixed(6)}`;
-      }
-      document.getElementById('tanOut').innerHTML = out;
-    };
-
-    /* --------- Plan save ---------- */
+    /* ---- plan save ---- */
     document.getElementById('savePlan').onclick = ()=>{
-      localStorage.setItem('sat_circle_plan_study_v1', JSON.stringify({v:document.getElementById('plan').value||'', t:Date.now()}));
+      localStorage.setItem('sat_circle_plan_study_v2', JSON.stringify({v:document.getElementById('plan').value||'', t:Date.now()}));
       const s = document.getElementById('planSaved'); s.textContent='Saved!'; setTimeout(()=> s.textContent='', 1200);
     };
-    document.getElementById('plan').value = JSON.parse(localStorage.getItem('sat_circle_plan_study_v1')||'{"v":""}').v || '';
+    document.getElementById('plan').value = JSON.parse(localStorage.getItem('sat_circle_plan_study_v2')||'{"v":""}').v || '';
 
-    /* escape key closes any modal */
+    /* escape closes modal */
     document.addEventListener('keydown', e=>{
-      if(e.key==='Escape'){
-        document.querySelectorAll('.modal').forEach(m=>m.remove());
-      }
+      if(e.key==='Escape') document.querySelectorAll('.modal').forEach(m=>m.remove());
     });
   </script>
 </body>
