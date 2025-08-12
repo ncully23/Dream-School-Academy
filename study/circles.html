@@ -1,364 +1,274 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <title>Circles | Dream School Academy</title>
 
-  <!-- site CSS -->
-  <link rel="stylesheet" href="/style.css" />
+  <!-- Site stylesheet -->
+  <link rel="stylesheet" href="/style.css"/>
 
-  <!-- MathJax for inline math -->
+  <!-- MathJax -->
   <script>
-    window.MathJax = { tex: { inlineMath: [['\\(','\\)'], ['$', '$']] } };
+    window.MathJax = { tex: { inlineMath: [['\\(','\\)'], ['$', '$']] }, svg: { fontCache: 'global' } };
   </script>
   <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
 
-  <!-- page styles -->
+  <!-- Page styles -->
   <style>
     :root{
       --bg:#0f1320; --panel:#151a2b; --panel2:#1b2240; --ink:#eaf1ff; --muted:#b8c3e6;
       --accent:#4cc9f0; --radius:16px;
     }
     body{color:var(--ink); background:linear-gradient(160deg,#0b1020,#0f1320 45%,#0b1127)}
-    .wrap{max-width:1200px; margin:0 auto; padding:18px 20px}
-    h1{margin:0 0 6px}
-    h2{margin:0 0 10px}
+    header{background:rgba(10,14,30,.7)}
+    .wrap{max-width:1100px; margin:0 auto; padding:18px 20px}
+    h1{margin:0 0 8px}
+    h2{margin:24px 0 10px}
     .note{color:var(--muted); font-size:13px}
     .card{background:var(--panel); border:1px solid rgba(255,255,255,.08); border-radius:var(--radius); padding:16px}
-    .grid{display:grid; gap:16px}
-    @media(min-width:960px){ .cols-2{grid-template-columns:repeat(2,1fr)} }
-    ul.tight{margin:6px 0 0 20px}
+    details{background:var(--panel); border:1px solid rgba(255,255,255,.08); border-radius:12px; padding:14px; margin:10px 0}
+    details[open]{background:var(--panel2)}
+    summary{cursor:pointer; font-weight:700}
+    .q-meta{display:flex; gap:10px; flex-wrap:wrap; margin:6px 0 10px}
+    .pill{display:inline-flex; gap:6px; padding:4px 8px; border-radius:999px; background:rgba(255,255,255,.06);
+          border:1px solid rgba(255,255,255,.12); font-size:12px; color:var(--muted)}
+    .list{display:grid; gap:10px}
+    .concept h3{margin:14px 0 6px; font-size:16px; color:#cfe1ff; text-transform:uppercase; letter-spacing:.5px}
+    ol.tight, ul.tight{margin:6px 0 0 22px}
     li{margin:6px 0}
-    figure{margin:10px 0 0}
-    figure img{width:100%; height:auto; border-radius:12px; border:1px solid rgba(255,255,255,.08)}
-    .gallery{display:grid; gap:14px}
-    @media(min-width:760px){ .gallery{grid-template-columns:repeat(3, 1fr)} }
-    @media(min-width:1100px){ .gallery{grid-template-columns:repeat(4, 1fr)} }
-    .qcard{background:var(--panel); border:1px solid rgba(255,255,255,.08); border-radius:14px; overflow:hidden}
-    .qcard .top{padding:10px 12px; display:flex; align-items:center; justify-content:space-between}
-    .qcard .imgwrap{background:#0b1024}
-    .qcard .imgwrap img{display:block; width:100%; height:auto}
-    .qcard .bottom{padding:10px 12px}
-    .pill{display:inline-flex; gap:6px; padding:6px 10px; border-radius:999px; background:rgba(255,255,255,.06);
-          border:1px solid rgba(255,255,255,.08); font-size:12px; color:var(--muted)}
-    /* modal */
-    .modal{position:fixed; inset:0; background:rgba(6,10,22,.85); display:grid; place-items:center; z-index:9999}
-    .modal .inner{width:min(1000px,92vw); max-height:88vh; overflow:auto}
-    header{background:rgba(10,14,30,.7)}
     .breadcrumb{margin:8px 0 0; font-size:14px}
     .breadcrumb a{color:#9ec3ff; text-decoration:none}
+    .muted{color:#a8b7df}
   </style>
 </head>
 <body>
 
-  <!-- site header -->
-  <header>
-    <div class="header-container">
-      <a href="/" class="logo-button">Dream School Academy</a>
-      <nav>
-        <a href="/study">Study</a>
-        <a href="/practice">Practice</a>
-        <a href="/contactus">Contact Us</a>
-      </nav>
+<header>
+  <div class="header-container">
+    <a href="/" class="logo-button">Dream School Academy</a>
+    <nav>
+      <a href="/study">Study</a>
+      <a href="/practice">Practice</a>
+      <a href="/contactus">Contact Us</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <section class="wrap">
+    <h1>Circles</h1>
+    <div class="breadcrumb"><a href="/study">Study</a> › Circles</div>
+    <div class="card" style="margin-top:12px">
+      <p><strong>Circle questions can look scary, but there are only a handful of ideas to master.</strong> Below are 13 SAT-style prompts written in math-ready form, followed by a compact concept guide you’ll use to explain and solve them.</p>
+      <p class="note">Expect cross-links to <strong>lines, angles, triangles/right triangles, and trigonometry</strong> in several problems.</p>
     </div>
-  </header>
+  </section>
 
-  <main>
-    <section class="wrap">
-      <h1>Circles</h1>
-      <div class="breadcrumb"><a href="/study">Study</a> › Circles</div>
-      <div class="card" style="margin-top:12px">
-        <p><strong>Circle questions can feel intimidating, but there are only a few core ideas.</strong> First—what do SAT circle questions look like?</p>
-        <p class="note">Some problems also use <strong>lines, angles, triangles/right triangles, and trigonometry</strong>. We’ll call those out as needed.</p>
-      </div>
-    </section>
+  <!-- I. Questions (LaTeX/MathJax prompts) -->
+  <section class="wrap">
+    <h2>I. Questions</h2>
+    <div class="list" id="qList">
+      <!-- Filled by JS from QUESTIONS -->
+    </div>
+  </section>
 
-    <!-- I. Examples Gallery -->
-    <section class="wrap">
-      <h2>I. Examples (College Board-style)</h2>
-      <p class="note">Click a card to open Presenter View (add your notes/solution). All images are included below.</p>
-      <div id="gallery" class="gallery"></div>
-    </section>
+  <!-- II. Notes & Concepts (tightened explanations) -->
+  <section class="wrap">
+    <h2>II. Notes & Concepts (clean MathJax)</h2>
+    <div class="card concept">
+      <div class="note">Sunday, July 6, 2025 &nbsp; 10:56 AM</div>
 
-    <!-- II. Notes & Concepts (no calculators) -->
-    <section class="wrap">
-      <h2>II. Notes & Concepts (use these to explain any problem)</h2>
-      <div class="card">
-        <div class="note" style="margin-bottom:8px">Sunday, July 6, 2025 &nbsp; 10:56 AM</div>
-        <ol>
-          <li><strong>Radius:</strong> distance from center to any point on circle.
-            <ul class="tight"><li>Two radii + the chord between them form an <em>isosceles triangle</em>.</li></ul>
-          </li>
-          <li><strong>Radians ↔ Degrees:</strong>
-            <ul class="tight">
-              <li>\\(\\theta_{\\text{deg}}=\\theta_{\\text{rad}}\\cdot\\dfrac{180^\\circ}{\\pi}\\)</li>
-              <li>\\(\\theta_{\\text{rad}}=\\theta_{\\text{deg}}\\cdot\\dfrac{\\pi}{180^\\circ}\\)</li>
-            </ul>
-          </li>
-          <li><strong>Circumference:</strong> \\(C=2\\pi r\\)</li>
-          <li><strong>Area:</strong> \\(A=\\pi r^2\\)</li>
-          <li><strong>Arc Length:</strong> fraction of circumference
-            <ul class="tight">
-              <li>Radians: \\(S=r\\,\\theta\\) (\\(\\theta\\) in radians)</li>
-              <li>Degrees: \\(\\dfrac{S}{C}=\\dfrac{\\theta_{\\text{deg}}}{360^\\circ}\\)</li>
-              <li>\\(\\theta\\) = central angle.</li>
-            </ul>
-          </li>
-          <li><strong>Circle Equation:</strong> \\((x-h)^2+(y-k)^2=r^2\\)
-            <ul class="tight">
-              <li>Center \\((h,k)\\); any point on circle \\((x,y)\\)</li>
-              <li><em>Complete the square</em> to convert \\(x^2+y^2+Dx+Ey+F=0\\) to standard form.</li>
-            </ul>
-          </li>
-          <li><strong>Tangents:</strong>
-            <ul class="tight">
-              <li>Tangent at a point is <em>perpendicular</em> to the radius to that point.</li>
-              <li>When slopes exist: \\(m_{\\text{tan}}=-\\dfrac{1}{m_{\\text{center}}}\\)</li>
-            </ul>
-          </li>
-        </ol>
-        <p class="note">Also lean on: line slopes/perpendiculars, triangle angle sums, 30-60-90 & 45-45-90, and SOH-CAH-TOA.</p>
-      </div>
-    </section>
+      <h3>1) Radius & Isosceles Triangle</h3>
+      <ul class="tight">
+        <li><em>Radius:</em> distance from center \(C\) to any point \(P\) on the circle: \(\;CP=r\).</li>
+        <li>Any two radii \(CA\) and \(CB\) with chord \(\overline{AB}\) form \(\triangle CAB\) with \(CA=CB\) (isosceles).  
+            ⇒ Base angles at \(A\) and \(B\) are equal.</li>
+        <li>When a central angle \(\angle ACB\) is known, you instantly know the arc \(\widehat{AB}\) and often the base angles in \(\triangle CAB\).</li>
+      </ul>
 
-    <!-- III. Apply concepts tracker -->
-    <section class="wrap">
-      <h2>III. Apply Concepts (tag each example)</h2>
-      <p class="note">Use this after you solve each example. Saves locally in this browser.</p>
-      <table class="table" id="applyTbl"><thead>
-        <tr><th>#</th><th>Concepts</th><th>Notes</th><th>Status</th></tr></thead><tbody></tbody></table>
-    </section>
+      <h3>2) Radians \(\leftrightarrow\) Degrees</h3>
+      <ul class="tight">
+        <li>\(\theta_{\deg}=\theta_{\text{rad}}\cdot \dfrac{180^\circ}{\pi}\), &nbsp;
+            \(\theta_{\text{rad}}=\theta_{\deg}\cdot \dfrac{\pi}{180^\circ}\).</li>
+        <li>Use degrees when a problem gives a percentage of the circle (e.g., \(45^\circ\) is \(\tfrac18\) of the circle).  
+            Use radians when applying \(S=r\theta\) directly.</li>
+      </ul>
 
-    <!-- IV. Reflection -->
-    <section class="wrap">
-      <h2>IV. Reflection & Next Steps</h2>
-      <div class="card grid cols-2">
-        <div>
-          <h3>Self-check</h3>
-          <ul class="tight">
-            <li>Can you read \\((h,k)\\) and \\(r\\) instantly?</li>
-            <li>Can you CTS cleanly (no sign errors)?</li>
-            <li>Arc length in radians and degrees?</li>
-            <li>Tangent vs. secant vs. neither?</li>
-            <li>Chord length via distance to center?</li>
-          </ul>
-        </div>
-        <div>
-          <h3>Plan</h3>
-          <textarea id="plan" placeholder="e.g., 5 CTS reps + 3 tangent slope drills + 2 arc-length mixes"></textarea>
-          <button class="btn" id="savePlan" style="margin-top:8px">Save Plan</button>
-          <span id="planSaved" class="note"></span>
-        </div>
-      </div>
-    </section>
-  </main>
+      <h3>3) Circumference</h3>
+      <ul class="tight">
+        <li>\(C=2\pi r\). If diameter \(d\) is given, \(C=\pi d\).</li>
+        <li>Arc-length questions often reduce to finding the fraction of the full circumference.</li>
+      </ul>
 
-  <footer>
-    <p>Contact: info@dreamschool.academy</p>
-    <p>© 2025 Dream School Academy. All rights reserved.</p>
-  </footer>
+      <h3>4) Area</h3>
+      <ul class="tight">
+        <li>\(A=\pi r^2\). Less common on SAT circle items, but it appears in mixed-figure or sector problems.</li>
+      </ul>
 
-  <script>
-    /* ---- 13 example images (kept in /study/) ---- */
-    const QUESTIONS = [
-      {id:'69b0d79d', title:'Arc length from radius & central angle', img:'./circle-69b0d79d.png'},
-      {id:'3e577e4a', title:'Slope of tangent from center & point', img:'./circle-3e577e4a.png'},
-      {id:'9e44284b', title:'Radius from non-standard equation',    img:'./circle-9e44284b.png'},
-      {id:'0acfddb5', title:'Perimeter with tangents & radius',      img:'./circle-0acfddb5.png'},
-      {id:'ca2235f6', title:'Circumference from arc length (deg)',   img:'./circle-ca2235f6.png'},
-      {id:'89661424', title:'Find c in x²+y²+ax+by+c=0',             img:'./circle-89661424.png'},
-      {id:'196e8e6e', title:'Chord length via right angle on circle',img:'./circle-196e8e6e.png'},
-      {id:'0815a5af', title:'Arc relations with two diameters',      img:'./circle-0815a5af.png'},
-      {id:'e50afdd3', title:'Point on circle — possible x value',    img:'./circle-e50afdd3.png'},
-      {id:'2266984b', title:'Center from completing the square',     img:'./circle-2266984b.png'},
-      {id:'c8345903', title:'Arc-length composition with given arc', img:'./circle-c8345903.png'},
-      {id:'858fd1cf', title:'Which point lies on tangent line t',    img:'./circle-858fd1cf.png'},
-      {id:'76c73dbf', title:'Radius from x²+x + y² + y = 199/2',     img:'./circle-76c73dbf.png'}
-    ];
+      <h3>5) Arc Length</h3>
+      <ul class="tight">
+        <li>Radians: \(\displaystyle S=r\theta\) where \(\theta\) is the central angle in radians.</li>
+        <li>Degrees: \(\displaystyle \frac{S}{C}=\frac{\theta_{\deg}}{360^\circ}\) so \(S=\dfrac{\theta_{\deg}}{360^\circ}\cdot 2\pi r\).</li>
+        <li>The central angle \(\theta\) always measures the arc \(\widehat{AB}\) it intercepts.</li>
+      </ul>
 
-    /* ---- local storage keys (scoped to study/circles) ---- */
-    const LS_KEY_Q = 'sat_circle_gallery_study_v2';
-    const LS_KEY_APPLY = 'sat_circle_apply_study_v2';
+      <h3>6) Circle Equation</h3>
+      <ul class="tight">
+        <li>Standard form: \((x-h)^2+(y-k)^2=r^2\) with center \((h,k)\) and radius \(r\).</li>
+        <li>General form: \(x^2+y^2+Dx+Ey+F=0\). <em>Complete the square</em> in \(x\) and \(y\) to convert to standard:
+          \[
+            (x+\tfrac{D}{2})^2+(y+\tfrac{E}{2})^2=\tfrac{D^2+E^2}{4}-F,
+          \]
+          so \(\;h=-\tfrac{D}{2},\;k=-\tfrac{E}{2},\;r^2=\tfrac{D^2+E^2}{4}-F.\)
+        </li>
+      </ul>
 
-    const store = {
-      get(k, fb){ try{ const v = localStorage.getItem(k); return v? JSON.parse(v): fb }catch(e){ return fb }},
-      set(k, v){ try{ localStorage.setItem(k, JSON.stringify(v)) }catch(e){} }
-    };
+      <h3>7) Tangents</h3>
+      <ul class="tight">
+        <li>The tangent at \(P\) is perpendicular to radius \(\overline{CP}\):  
+            \(\overline{CP}\ \perp\ \text{tangent at }P\).</li>
+        <li>In slope terms (when defined): if \(m_{\text{rad}}\) is the slope of \(\overline{CP}\) then
+            \(m_{\text{tan}}=-\dfrac{1}{m_{\text{rad}}}\).  
+            Vertical radius \(\Rightarrow\) horizontal tangent; horizontal radius \(\Rightarrow\) vertical tangent.</li>
+      </ul>
 
-    const conceptList = [
-      'Radius & isosceles triangle',
-      'Radians↔Degrees conversion',
-      'Circumference C=2πr',
-      'Area A=πr²',
-      'Arc length S=rθ, or S/C=θ/360°',
-      'Circle equation / CTS',
-      'Tangent ⟂ radius',
-      'Lines/Angles/Triangles/Trig support'
-    ];
+      <p class="note">Prerequisites frequently used: perpendicular/parallel slopes, triangle angle sums, 30–60–90 and 45–45–90 triangles, and SOH–CAH–TOA.</p>
+    </div>
+  </section>
 
-    /* ---- render gallery ---- */
-    const gallery = document.getElementById('gallery');
-    const saved = store.get(LS_KEY_Q, QUESTIONS.map(q=>({...q, notes:'', answer:'', tags:[], explain:''})));
+  <!-- III. (Optional) Reflection -->
+  <section class="wrap">
+    <h2>III. Reflection</h2>
+    <div class="card">
+      <ul class="tight">
+        <li>Which of the 7 ideas unlocked most prompts above?</li>
+        <li>Where do you still hesitate—CTS steps, arc fractions, or tangent slopes?</li>
+        <li>Plan 10 minutes of targeted reps on just that bottleneck.</li>
+      </ul>
+    </div>
+  </section>
+</main>
 
-    function renderGallery(){
-      gallery.innerHTML='';
-      saved.forEach((q, idx)=>{
-        const card = document.createElement('div');
-        card.className = 'qcard';
-        card.innerHTML = `
-          <div class="top">
-            <div><strong>ID:</strong> ${q.id}</div>
-            <button class="btn" data-open="${idx}">Presenter</button>
-          </div>
-          <div class="imgwrap"><img src="${q.img}" alt="${q.title}"></div>
-          <div class="bottom">
-            <div class="small">${q.title||''}</div>
-            <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px">
-              ${ (q.tags||[]).slice(0,3).map(t=>`<span class="pill">${t}</span>`).join('') }
-            </div>
-          </div>
-        `;
-        gallery.appendChild(card);
-      });
-    }
-    renderGallery();
+<footer>
+  <p>Contact: info@dreamschool.academy</p>
+  <p>© 2025 Dream School Academy. All rights reserved.</p>
+</footer>
 
-    gallery.addEventListener('click', (e)=>{
-      const idx = e.target.dataset.open;
-      if(idx==null) return;
-      openPresenter(parseInt(idx,10));
-    });
+<script>
+/* -------------------- 13 LaTeX/MathJax prompts -------------------- */
+const QUESTIONS = [
+  {
+    id: '69b0d79d',
+    tags: ['Arc length','Central angle','Radius'],
+    latex: `
+      A circle has center \\(O\\). The measure of \\(\\angle OAB\\) is \\(30^\\circ\\).
+      If \\(\\overline{OC}=18\\), what is the length of arc \\(\\widehat{AB}\\)?`
+  },
+  {
+    id: '3e577e4a',
+    tags: ['Tangents','Slope','Perpendicular'],
+    latex: `
+      A circle in the \\(xy\\)-plane has center \\((-4,-6)\\). Line \\(k\\) is tangent to the circle
+      at the point \\((-7,-7)\\). What is the slope of \\(k\\)?`
+  },
+  {
+    id: '9e44284b',
+    tags: ['Complete the square','Radius'],
+    latex: `
+      In the \\(xy\\)-plane, the graph of \\(2x^2-6x+2y^2+2y=45\\) is a circle.
+      What is the radius of the circle?`
+  },
+  {
+    id: '0acfddb5',
+    tags: ['Tangents','Perimeter','Radius'],
+    latex: `
+      A circle has center \\(G\\), and points \\(M\\) and \\(N\\) lie on the circle.
+      Segments \\(\\overline{MH}\\) and \\(\\overline{NH}\\) are tangent to the circle at \\(M\\) and \\(N\\), respectively.
+      If the radius is \\(168\\,\\text{mm}\\) and the perimeter of quadrilateral \\(GMHN\\) is \\(3{,}856\\,\\text{mm}\\),
+      what is \\(GH\\) in millimeters?`
+  },
+  {
+    id: 'ca2235f6',
+    tags: ['Arc length','Circumference'],
+    latex: `
+      A circle has center \\(O\\). Points \\(A\\) and \\(B\\) lie on the circle. The measure of arc \\(\\widehat{AB}\\)
+      is \\(45^\\circ\\) and the length of arc \\(\\widehat{AB}\\) is \\(3\\) inches. What is the circumference of the circle?`
+  },
+  {
+    id: '89661424',
+    tags: ['Circle equation','Constant term'],
+    latex: `
+      A circle in the \\(xy\\)-plane has center \\((-5,2)\\) and radius \\(9\\).
+      An equation of this circle is \\(x^2+y^2+ax+by+c=0\\).
+      What is the value of \\(c\\)?`
+  },
+  {
+    id: '196e8e6e',
+    tags: ['Right triangle on circle','Chord length'],
+    latex: `
+      In the \\(xy\\)-plane, a circle has center \\(C=(h,k)\\).
+      Points \\(A\\) and \\(B\\) lie on the circle. Point \\(A\\) has coordinates \\((h+1,\\;k+\\sqrt{102})\\),
+      and \\(\\angle ACB\\) is a right angle. What is the length of \\(\\overline{AB}\\)?`
+  },
+  {
+    id: '0815a5af',
+    tags: ['Arcs','Diameters','Circumference'],
+    latex: `
+      The circle has center \\(O\\), circumference \\(144\\pi\\), and diameters \\(\\overline{PR}\\) and \\(\\overline{QS}\\).
+      The length of arc \\(\\widehat{PS}\\) is twice the length of arc \\(\\widehat{PQ}\\).
+      What is the length of arc \\(\\widehat{QR}\\)?`
+  },
+  {
+    id: 'e50afdd3',
+    tags: ['Point on circle','Feasible x'],
+    latex: `
+      The graph of \\((x+4)^2+(y-19)^2=121\\) is a circle in the \\(xy\\)-plane.
+      If \\((a,b)\\) lies on the circle, which of the following could be a value of \\(a\\)?`
+  },
+  {
+    id: '2266984b',
+    tags: ['Complete the square','Center'],
+    latex: `
+      The equation \\(x^2+20x+y^2+16y=-20\\) defines a circle in the \\(xy\\)-plane.
+      What are the coordinates of the center of the circle?`
+  },
+  {
+    id: 'c8345903',
+    tags: ['Arc composition','Central angle'],
+    latex: `
+      A circle has center \\(O\\). The length of arc \\(\\widehat{ADC}\\) is \\(5\\pi\\), and
+      the central angle labeled \\(x\\) satisfies \\(x=100\\). What is the length of arc \\(\\widehat{ABC}\\)?`
+  },
+  {
+    id: '858fd1cf',
+    tags: ['Tangents','Slope','Which point'],
+    latex: `
+      A circle in the \\(xy\\)-plane has center \\((-1,1)\\). Line \\(t\\) is tangent to this circle at the point \\((5,-4)\\).
+      Which of the following points also lies on line \\(t\\)?`
+  },
+  {
+    id: '76c73dbf',
+    tags: ['Complete the square','Radius'],
+    latex: `
+      The graph of \\(x^2+x+y^2+y=\\tfrac{199}{2}\\) in the \\(xy\\)-plane is a circle.
+      What is the length of the circle’s radius?`
+  }
+];
 
-    /* ---- Presenter modal (now shows the concept notes, no calculators) ---- */
-    function openPresenter(i){
-      const q = saved[i];
-      const m = document.createElement('div');
-      m.className = 'modal';
-      m.innerHTML = `
-        <div class="inner card">
-          <div style="display:flex; align-items:center; justify-content:space-between; gap:10px">
-            <div><strong>Presenter — ${q.id}</strong> <span class="note">(${q.title||''})</span></div>
-            <div style="display:flex; gap:8px">
-              <button class="btn" id="saveM">Save</button>
-              <button class="btn" id="closeM" style="background:transparent;color:#fff;border:1px solid rgba(255,255,255,.25)">Close</button>
-            </div>
-          </div>
-
-          <div class="grid cols-2" style="margin-top:10px">
-            <div>
-              <figure><img src="${q.img}" alt="large"></figure>
-              <label class="note">Image path (optional)</label>
-              <input id="mImg" type="text" value="${q.img||''}" placeholder="./circle-xxxxx.png or https://...">
-            </div>
-
-            <div>
-              <h3>Talk Track</h3>
-              <textarea id="mNotes" style="min-height:140px" placeholder="Ask → Notice → Decide → Execute">${q.notes||''}</textarea>
-
-              <div class="grid cols-2" style="margin-top:8px">
-                <div>
-                  <label class="note">Answer (letter/value)</label>
-                  <input id="mAns" type="text" value="${q.answer||''}">
-                </div>
-                <div>
-                  <label class="note">Concept tags (Ctrl/Cmd-click)</label>
-                  <select id="mTags" multiple size="6">
-                    ${conceptList.map(c=>`<option value="${c}" ${(q.tags||[]).includes(c)?'selected':''}>${c}</option>`).join('')}
-                  </select>
-                </div>
-              </div>
-
-              <label class="note" style="margin-top:8px; display:block">Explanation (1–4 lines)</label>
-              <textarea id="mExp" style="min-height:100px" placeholder="Shortest solution path.">${q.explain||''}</textarea>
-
-              <details style="margin-top:10px">
-                <summary>Concept Notes (quick reference)</summary>
-                <div class="card" style="margin-top:10px">
-                  <ol>
-                    <li><strong>Radius</strong> → isosceles with two radii + chord.</li>
-                    <li>\\(\\theta_{\\text{deg}}=\\theta_{\\text{rad}}\\cdot\\dfrac{180^\\circ}{\\pi}\\), &nbsp; \\(\\theta_{\\text{rad}}=\\theta_{\\text{deg}}\\cdot\\dfrac{\\pi}{180^\\circ}\\)</li>
-                    <li>\\(C=2\\pi r\\)</li>
-                    <li>\\(A=\\pi r^2\\)</li>
-                    <li>Arc: \\(S=r\\theta\\) (rad), or \\(S/C=\\theta/360^\\circ\\) (deg)</li>
-                    <li>\\((x-h)^2+(y-k)^2=r^2\\); use CTS from general form.</li>
-                    <li>Tangent ⟂ radius (use negative reciprocal slopes when defined).</li>
-                  </ol>
-                </div>
-              </details>
-            </div>
-          </div>
-        </div>
-      `;
-      document.body.appendChild(m);
-      if(window.MathJax) MathJax.typesetPromise();
-
-      m.querySelector('#closeM').onclick = ()=> m.remove();
-      m.querySelector('#saveM').onclick  = ()=>{
-        saved[i].img = m.querySelector('#mImg').value.trim() || q.img;
-        saved[i].notes = m.querySelector('#mNotes').value;
-        saved[i].answer = m.querySelector('#mAns').value;
-        saved[i].tags = Array.from(m.querySelector('#mTags').selectedOptions).map(o=>o.value);
-        saved[i].explain = m.querySelector('#mExp').value;
-        store.set(LS_KEY_Q, saved);
-        m.remove();
-        renderGallery();
-        renderApply();
-      };
-    }
-
-    /* ---- Apply Concepts table ---- */
-    const initApply = QUESTIONS.map((q, i)=>({id:(i+1), ref:q.id, concepts:[], notes:'', status:'Unstarted'}));
-    const applyData = store.get(LS_KEY_APPLY, initApply);
-    const tbody = document.querySelector('#applyTbl tbody');
-
-    function renderApply(){
-      tbody.innerHTML='';
-      applyData.forEach((row, idx)=>{
-        const tr = document.createElement('tr');
-        tr.innerHTML = `
-          <td><strong>${idx+1}</strong><div class="note">${row.ref}</div></td>
-          <td>
-            <select multiple size="5" data-csel="${idx}">
-              ${conceptList.map(c=>`<option value="${c}" ${(row.concepts||[]).includes(c)?'selected':''}>${c}</option>`).join('')}
-            </select>
-          </td>
-          <td><textarea data-notes="${idx}" placeholder="One-liner or trap.">${row.notes|| (saved[idx]?.explain || '')}</textarea></td>
-          <td>
-            <select data-status="${idx}">
-              ${['Unstarted','In progress','Solved'].map(s=>`<option ${row.status===s?'selected':''}>${s}</option>`).join('')}
-            </select>
-            <div style="margin-top:6px"><button class="btn" data-save="${idx}" style="padding:6px 10px">Save</button></div>
-          </td>
-        `;
-        tbody.appendChild(tr);
-      });
-    }
-    renderApply();
-
-    tbody.addEventListener('click', (e)=>{
-      const idx = e.target.dataset.save;
-      if(idx==null) return;
-      const i = parseInt(idx,10);
-      const sel = tbody.querySelector(`select[data-csel="${i}"]`);
-      const notes = tbody.querySelector(`textarea[data-notes="${i}"]`).value;
-      const status = tbody.querySelector(`select[data-status="${i}"]`).value;
-      applyData[i].concepts = Array.from(sel.selectedOptions).map(o=>o.value);
-      applyData[i].notes = notes; applyData[i].status = status;
-      store.set(LS_KEY_APPLY, applyData);
-    });
-
-    /* ---- plan save ---- */
-    document.getElementById('savePlan').onclick = ()=>{
-      localStorage.setItem('sat_circle_plan_study_v2', JSON.stringify({v:document.getElementById('plan').value||'', t:Date.now()}));
-      const s = document.getElementById('planSaved'); s.textContent='Saved!'; setTimeout(()=> s.textContent='', 1200);
-    };
-    document.getElementById('plan').value = JSON.parse(localStorage.getItem('sat_circle_plan_study_v2')||'{"v":""}').v || '';
-
-    /* escape closes modal */
-    document.addEventListener('keydown', e=>{
-      if(e.key==='Escape') document.querySelectorAll('.modal').forEach(m=>m.remove());
-    });
-  </script>
+/* ---------- Render questions as collapsible blocks ---------- */
+const list = document.getElementById('qList');
+QUESTIONS.forEach((q, i) => {
+  const el = document.createElement('details');
+  el.innerHTML = `
+    <summary>Q${i+1} &middot; <span class="muted">ID: ${q.id}</span></summary>
+    <div class="q-meta">
+      ${q.tags.map(t => `<span class="pill">${t}</span>`).join('')}
+    </div>
+    <div class="card">${q.latex}</div>
+  `;
+  list.appendChild(el);
+});
+</script>
 </body>
 </html>
