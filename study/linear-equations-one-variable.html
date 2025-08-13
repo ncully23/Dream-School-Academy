@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="description" content="SAT Linear Equations in One Variable: forms, translation blueprint, algebra tips, and solution classification." />
+  <title>SAT: Linear Equations in One Variable — Dream School Academy</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    /* Page-local styles (kept minimal to avoid conflicts with style.css) */
+    :root{
+      --ink:#e9ecff; --muted:#aab0d3; --accent:#6aa9ff;
+      --panel:#171a2b; --panel-2:#12162a; --border:#273050;
+      --good:#34d399; --warn:#f59e0b; --bad:#f87171; --chip:#212746;
+    }
+    main { padding: 24px 16px 56px; max-width: 1100px; margin-inline: auto; }
+    .page-title { margin: 8px 0 10px; }
+    .subtitle { color: var(--muted); margin: 0 0 20px; }
+
+    .section-card {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 16px 18px;
+      margin: 18px 0;
+    }
+
+    .two-col { display: grid; gap: 18px; }
+    @media (min-width: 900px){ .two-col { grid-template-columns: 1.1fr .9fr; } }
+
+    .kicker { font-size: .85rem; text-transform: uppercase; letter-spacing: .08em; color: var(--accent); margin: 0 0 6px; }
+    .lead { color: var(--muted); margin: 0 0 12px; }
+    .tight-list { margin: 8px 0 0 0; padding-left: 18px; }
+    .tight-list li { margin: 4px 0; }
+
+    .chip{
+      display:inline-block; padding:.15rem .55rem; border-radius:999px;
+      background:var(--chip); border:1px solid var(--border); font-size:.85rem; color:#d6dbff
+    }
+    .chip.good{background:rgba(52,211,153,.08); border-color:rgba(52,211,153,.35); color:#b7f7dc}
+    .chip.bad{background:rgba(248,113,113,.08); border-color:rgba(248,113,113,.35); color:#ffc7c7}
+    .chip.warn{background:rgba(245,158,11,.08); border-color:rgba(245,158,11,.35); color:#ffdba6}
+
+    /* Solution table */
+    .table-wrap{ overflow:auto; border-radius:12px; border:1px solid var(--border); }
+    table.solution-table{
+      width:100%; border-collapse:separate; border-spacing:0; background:var(--panel-2);
+    }
+    .solution-table th, .solution-table td { padding:12px 14px; text-align:left; vertical-align:top; }
+    .solution-table thead th { color:#cfe0ff; background:#0f1430; position:sticky; top:0; }
+    .solution-table tbody tr:nth-child(odd){ background:#141a32 }
+    .solution-table tbody tr:nth-child(even){ background:#11162c }
+    code { background:#0e1330; border:1px solid #263057; padding:.1rem .35rem; border-radius:6px }
+
+    /* Graphics */
+    .graphics{ display:grid; gap:18px; }
+    @media (min-width: 820px){ .graphics{ grid-template-columns: 1fr 1fr; } }
+    .gfx { background: var(--panel-2); border: 1px solid var(--border); border-radius: 12px; padding: 12px; }
+    .caption { color: var(--muted); font-size: .95rem; margin-top: 8px; }
+    .legend{display:flex; gap:10px; flex-wrap:wrap; margin:10px 0 0}
+    .dot{width:10px; height:10px; border-radius:50%}
+    .m-good{background:var(--good)} .m-warn{background:var(--warn)} .m-bad{background:var(--bad)}
+
+    /* Mini section headings spacing */
+    h2, h3 { margin: 6px 0 10px; }
+  </style>
+</head>
+<body>
+
+  <!-- Header (copied to match your site) -->
+  <header>
+    <div class="header-container">
+      <a href="https://www.dreamschool.academy" class="logo-button">Dream School Academy</a>
+      <nav>
+        <a href="https://www.dreamschool.academy/study">Study</a>
+        <a href="https://www.dreamschool.academy/practice">Practice</a>
+        <a href="https://www.dreamschool.academy/contactus">Contact Us</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <h1 class="page-title">Linear Equations in One Variable (SAT)</h1>
+    <p class="subtitle">Get in, get the points: forms → translation → clean algebra → instant solution checks.</p>
+
+    <!-- Forms + When to Use Each -->
+    <section class="section-card two-col">
+      <div>
+        <p class="kicker">1) Know the forms</p>
+        <h2>Slope–Intercept</h2>
+        <p class="lead"><code>y = m x + b</code> shows slope <code>m</code> and intercept <code>b</code> immediately.</p>
+        <ul class="tight-list">
+          <li><strong>Use when:</strong> you have a graph, or are given slope &amp; intercept directly.</li>
+          <li>Fast to compare slopes/intercepts to classify # of solutions.</li>
+          <li>Great for quick predictions/interpolations from a line.</li>
+        </ul>
+
+        <h2>Point–Slope</h2>
+        <p class="lead"><code>y - y₁ = m(x - x₁)</code> builds a line from one point and a slope with zero fluff.</p>
+        <ul class="tight-list">
+          <li><strong>Use when:</strong> given a single point and a slope.</li>
+          <li>Skip finding the intercept unless needed; convert to slope–intercept only if necessary.</li>
+        </ul>
+
+        <h2>Standard</h2>
+        <p class="lead"><code>A x + B y = C</code> keeps integers tidy and is great for combining equations cleanly.</p>
+        <ul class="tight-list">
+          <li><strong>Use when:</strong> you want elimination-friendly integers (avoid fractions).</li>
+          <li>Handy for quick coefficient comparisons and structured manipulation.</li>
+        </ul>
+      </div>
+
+      <!-- Translation Blueprint -->
+      <div>
+        <p class="kicker">2) Translate words → equation (Blueprint)</p>
+        <h3>Assign variables</h3>
+        <ul class="tight-list">
+          <li>Short, meaningful: <code>p</code> (pay rate), <code>h</code> (hours), <code>x</code> (unknown).</li>
+        </ul>
+        <h3>Keyword → operation</h3>
+        <ul class="tight-list">
+          <li>“plus”, “increased by”, “more than” → <strong>+</strong></li>
+          <li>“minus”, “decreased by”, “less than” → <strong>−</strong></li>
+          <li>“times”, “of” (as in % of) → <strong>×</strong></li>
+          <li>“per”, “each” → rate/division or multiplication by a unit rate</li>
+          <li>“is”, “are”, “equals” → <strong>=</strong></li>
+        </ul>
+        <h3>Units & rates</h3>
+        <ul class="tight-list">
+          <li>Match both sides: dollars with dollars, miles with miles, etc.</li>
+          <li>Convert rates properly: <code>($/gal) ÷ (mi/gal) = $/mi</code></li>
+        </ul>
+        <h3>Build step-by-step</h3>
+        <ul class="tight-list">
+          <li>Write math for each sentence chunk, then simplify.</li>
+          <li>Confirm the <em>target</em> before solving: do they want <code>x</code>, <code>x − 5</code>, time, or base rate?</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- Algebra Tips -->
+    <section class="section-card">
+      <p class="kicker">3) Execute algebra cleanly (advanced tips)</p>
+      <ul class="tight-list">
+        <li><strong>Clear fractions early:</strong> multiply both sides by LCM to simplify.</li>
+        <li><strong>Group first, isolate second:</strong> combine like terms before moving across the equals sign.</li>
+        <li><strong>Target expressions directly:</strong> if they want <code>x − 5</code>, isolate <em>that</em> expression (don’t solve for <code>x</code> unless needed).</li>
+        <li><strong>Control negatives:</strong> rewrite subtraction as “add a negative” to reduce sign errors.</li>
+        <li><strong>Mirror operations:</strong> whatever you do to one side, do immediately to the other.</li>
+        <li><strong>Scan for structure:</strong> factor common terms once to save multiple steps later.</li>
+        <li><strong>Quick system check:</strong> if two linear equations appear, compare slopes/intercepts first; don’t solve blindly.</li>
+      </ul>
+    </section>
+
+    <!-- Number of Solutions: Table + Graphics -->
+    <section class="section-card">
+      <p class="kicker">4) Number of solutions (fast classification)</p>
+      <h2 style="margin-top:4px">Use slope–intercept: <code>y = m x + b</code></h2>
+      <div class="table-wrap" style="margin:10px 0 14px;">
+        <table class="solution-table" aria-label="Solution classification table">
+          <thead>
+            <tr>
+              <th style="width:18ch">Case</th>
+              <th>Condition (in <em>y = mx + b</em>)</th>
+              <th>Geometry</th>
+              <th># of Solutions</th>
+              <th>Example Pair</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><span class="chip good">Different slopes</span></td>
+              <td><code>m₁ ≠ m₂</code></td>
+              <td>Lines meet once</td>
+              <td><strong>One</strong></td>
+              <td><code>y = 2x + 3</code> and <code>y = −x + 4</code></td>
+            </tr>
+            <tr>
+              <td><span class="chip bad">Same slope, different intercept</span></td>
+              <td><code>m₁ = m₂</code> and <code>b₁ ≠ b₂</code></td>
+              <td>Parallel, never meet</td>
+              <td><strong>None</strong></td>
+              <td><code>y = 2x + 3</code> and <code>y = 2x − 5</code></td>
+            </tr>
+            <tr>
+              <td><span class="chip warn">Same line</span></td>
+              <td><code>m₁ = m₂</code> and <code>b₁ = b₂</code> (or one is a scaled version of the other)</td>
+              <td>Overlap completely</td>
+              <td><strong>Infinitely many</strong></td>
+              <td><code>y = 2x + 3</code> and <code>2y = 4x + 6</code></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="graphics">
+        <!-- Decision Tree SVG -->
+        <div class="gfx">
+          <svg viewBox="0 0 540 360" width="100%" height="auto" role="img" aria-label="Decision tree for classifying number of solutions">
+            <defs>
+              <style>
+                .box{fill:#0f1430; stroke:#2c3968; stroke-width:2; rx:10; ry:10}
+                .txt{fill:#e9ecff; font:600 14px/1.3 system-ui, sans-serif}
+                .edge{stroke:#3852a3; stroke-width:2; marker-end:url(#arrow)}
+                .label{fill:#b8c6ff; font:13px system-ui, sans-serif}
+                .pill{font:700 12px system-ui, sans-serif}
+              </style>
+              <marker id="arrow" markerWidth="12" markerHeight="8" refX="10" refY="4" orient="auto">
+                <polygon points="0,0 12,4 0,8" fill="#3852a3"/>
+              </marker>
+            </defs>
+
+            <!-- Nodes -->
+            <rect class="box" x="195" y="16"  width="150" height="46"/>
+            <text class="txt" x="270" y="46" text-anchor="middle">Start</text>
+
+            <rect class="box" x="185" y="92"  width="170" height="62"/>
+            <text class="txt" x="270" y="120" text-anchor="middle">Are slopes equal? (m₁ ?= m₂)</text>
+
+            <rect class="box" x="30"  y="190" width="170" height="62"/>
+            <text class="txt" x="115" y="218" text-anchor="middle">Different slopes</text>
+            <text class="pill" x="115" y="238" text-anchor="middle" fill="#34d399">→ One solution</text>
+
+            <rect class="box" x="330" y="190" width="180" height="62"/>
+            <text class="txt" x="420" y="208" text-anchor="middle">Same slopes</text>
+            <text class="label" x="420" y="228" text-anchor="middle">check intercepts</text>
+
+            <rect class="box" x="312" y="288" width="180" height="62"/>
+            <text class="txt" x="402" y="306" text-anchor="middle">b₁ = b₂</text>
+            <text class="pill" x="402" y="326" text-anchor="middle" fill="#f59e0b">→ Infinitely many</text>
+
+            <rect class="box" x="104" y="288" width="180" height="62"/>
+            <text class="txt" x="194" y="306" text-anchor="middle">b₁ ≠ b₂</text>
+            <text class="pill" x="194" y="326" text-anchor="middle" fill="#f87171">→ No solution</text>
+
+            <!-- Edges -->
+            <line class="edge" x1="270" y1="62" x2="270" y2="92"/>
+            <line class="edge" x1="270" y1="154" x2="115" y2="190"/>
+            <line class="edge" x1="270" y1="154" x2="420" y2="190"/>
+            <line class="edge" x1="420" y1="252" x2="402" y2="288"/>
+            <line class="edge" x1="420" y1="252" x2="194" y2="288"/>
+
+            <!-- Edge labels -->
+            <text class="label" x="185" y="176">No</text>
+            <text class="label" x="345" y="176">Yes</text>
+            <text class="label" x="285" y="278">different b’s</text>
+            <text class="label" x="436" y="278">same b’s</text>
+          </svg>
+          <div class="caption">Decision flow: check slopes first; if equal, compare intercepts.</div>
+        </div>
+
+        <!-- Mini geometry sketches -->
+        <div class="gfx">
+          <svg viewBox="0 0 520 320" width="100%" height="auto" role="img" aria-label="Geometry of one/no/infinite solutions">
+            <defs>
+              <style>
+                .frame{fill:#0f1430; stroke:#2c3968; stroke-width:2; rx:10; ry:10}
+                .axes{stroke:#3a467b; stroke-width:1.5}
+                .l1{stroke:#34d399; stroke-width:3}
+                .l2{stroke:#f59e0b; stroke-width:3}
+                .l3{stroke:#f87171; stroke-width:3}
+                .label{fill:#cfe0ff; font:600 13px system-ui, sans-serif}
+              </style>
+            </defs>
+
+            <!-- One solution -->
+            <rect class="frame" x="16" y="16" width="152" height="130"/>
+            <line class="axes" x1="24" y1="126" x2="160" y2="126"/><line class="axes" x1="40" y1="24" x2="40" y2="138"/>
+            <line class="l1" x1="24" y1="118" x2="160" y2="28"/>
+            <line class="l3" x1="24" y1="40" x2="160" y2="112"/>
+            <text class="label" x="92" y="152" text-anchor="middle">One solution (different slopes)</text>
+
+            <!-- Infinite solutions -->
+            <rect class="frame" x="184" y="16" width="152" height="130"/>
+            <line class="axes" x1="192" y1="126" x2="328" y2="126"/><line class="axes" x1="208" y1="24" x2="208" y2="138"/>
+            <line class="l2" x1="192" y1="116" x2="328" y2="36"/>
+            <line class="l2" x1="192" y1="116" x2="328" y2="36"/>
+            <text class="label" x="260" y="152" text-anchor="middle">Infinitely many (same line)</text>
+
+            <!-- No solution -->
+            <rect class="frame" x="352" y="16" width="152" height="130"/>
+            <line class="axes" x1="360" y1="126" x2="496" y2="126"/><line class="axes" x1="376" y1="24" x2="376" y2="138"/>
+            <line class="l3" x1="360" y1="116" x2="496" y2="36"/>
+            <line class="l3" x1="360" y1="132" x2="496" y2="52"/>
+            <text class="label" x="428" y="152" text-anchor="middle">No solution (parallel)</text>
+
+            <!-- Examples -->
+            <text class="label" x="260" y="190" text-anchor="middle">Example equations</text>
+            <text class="label" x="36" y="214">• One solution:</text>
+            <text class="label" x="36" y="236">y = 2x + 3   and   y = −x + 4</text>
+            <text class="label" x="36" y="266">• No solution:</text>
+            <text class="label" x="36" y="288">y = 2x + 3   and   y = 2x − 5</text>
+            <text class="label" x="36" y="318">• Infinite:</text>
+            <text class="label" x="120" y="318">y = 2x + 3   and   2y = 4x + 6</text>
+          </svg>
+          <div class="caption">Sketches mirror the three cases. Colors match the table chips.</div>
+          <div class="legend">
+            <span class="dot m-good"></span><span class="caption">One solution</span>
+            <span class="dot m-bad" style="margin-left:12px"></span><span class="caption">No solution</span>
+            <span class="dot m-warn" style="margin-left:12px"></span><span class="caption">Infinitely many</span>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Footer -->
+  <footer id="contact">
+    <p>Contact: info@dreamschool.academy</p>
+    <p>© 2025 Dream School Academy. All rights reserved.</p>
+  </footer>
+
+</body>
+</html>
