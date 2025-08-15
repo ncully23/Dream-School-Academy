@@ -2,36 +2,112 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <title>Dream School Academy — Free SAT Practice & Smart Feedback</title>
   <meta name="description" content="Master the SAT with real practice, smart feedback, and pro-level strategy — all free.">
-  <title>Dream School Academy</title>
+
+  <!-- Canonical -->
+  <link rel="canonical" href="https://www.dreamschool.academy/" />
+
+  <!-- Favicon -->
+  <link rel="icon" href="/favicon.ico" sizes="any">
+  <link rel="icon" href="/icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+  <meta name="theme-color" content="#0b5cff" />
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://www.dreamschool.academy/">
+  <meta property="og:title" content="Dream School Academy — Free SAT Practice">
+  <meta property="og:description" content="Learn the SAT from a 99th percentile scorer. Practice tests, smart feedback, and strategy — free.">
+  <meta property="og:image" content="https://www.dreamschool.academy/og-image.jpg">
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Dream School Academy — Free SAT Practice">
+  <meta name="twitter:description" content="Learn the SAT from a 99th percentile scorer. Practice tests, smart feedback, and strategy — free.">
+  <meta name="twitter:image" content="https://www.dreamschool.academy/og-image.jpg">
+
   <link rel="stylesheet" href="style.css" />
+
+  <!-- Minimal helpers for active link + mobile menu (keep styles in style.css) -->
+  <script>
+    // Highlight active nav link
+    document.addEventListener('DOMContentLoaded', function () {
+      var links = document.querySelectorAll('nav a[data-nav]');
+      var here = location.href.replace(/\/$/, '');
+      links.forEach(function (a) {
+        var href = a.href.replace(/\/$/, '');
+        if (here === href) {
+          a.classList.add('active');
+          a.setAttribute('aria-current', 'page');
+        }
+      });
+
+      // Mobile menu toggle
+      var toggle = document.getElementById('nav-toggle');
+      var menu = document.getElementById('primary-nav');
+      if (toggle && menu) {
+        toggle.addEventListener('click', function () {
+          var expanded = this.getAttribute('aria-expanded') === 'true';
+          this.setAttribute('aria-expanded', String(!expanded));
+          menu.classList.toggle('open', !expanded);
+        });
+      }
+    });
+  </script>
 </head>
 <body>
 
-  <!-- Header with centered nav and brand on left -->
-<header>
-  <div class="header-container">
-    <a href="#home" class="logo-button">Dream School Academy</a>
-    <nav>
-      <a href="https://www.dreamschool.academy/study">Study</a>
-      <a href="https://www.dreamschool.academy/practice">Practice</a>
-      <a href="https://www.dreamschool.academy/contactus">Contact Us</a>
-    </nav>
-  </div>
-</header>
+  <!-- Skip link for keyboard users -->
+  <a class="skip-link" href="#main">Skip to content</a>
 
-  <main id="home">
-    <!-- Hero Section -->
-    <section class="hero">
-      <h2>Don't let the SAT get in the way of your dreams</h2>
-      <p>Learn the SAT from a 99th percentile scorer.</p>
+  <!-- Header -->
+  <header class="site-header">
+    <div class="header-container">
+      <a href="/" class="logo-button" aria-label="Dream School Academy home">Dream School Academy</a>
+
+      <button id="nav-toggle" class="nav-toggle" aria-label="Toggle navigation" aria-controls="primary-nav" aria-expanded="false">
+        ☰
+      </button>
+
+      <nav id="primary-nav" class="primary-nav" aria-label="Primary">
+        <a data-nav href="https://www.dreamschool.academy/study">Study</a>
+        <a data-nav href="https://www.dreamschool.academy/practice">Practice</a>
+        <a data-nav href="https://www.dreamschool.academy/contactus">Contact Us</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main">
+    <!-- Hero -->
+    <section class="hero" role="region" aria-label="Hero">
+      <div class="hero-inner">
+        <h1>Don’t let the SAT get in the way of your dreams</h1>
+        <p class="subhead">Learn the SAT from a 99th-percentile scorer with focused practice and smart feedback.</p>
+        <div class="hero-ctas">
+          <a class="btn btn-primary" href="https://www.dreamschool.academy/practice">Start Practicing — It’s Free</a>
+          <a class="btn btn-secondary" href="https://www.dreamschool.academy/study">See the Study Plan</a>
+        </div>
+      </div>
+      <!-- Optional decorative background image handled in CSS (e.g., .hero { background-image: url(...); }) -->
     </section>
 
-  <!-- Footer / Contact -->
-  <footer id="contact">
-    <p>Contact: info@dreamschool.academy</p>
-    <p>© 2025 Dream School Academy. All rights reserved.</p>
+    <!-- (Optional) Trust/benefits strip could go here -->
+  </main>
+
+  <!-- Footer -->
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <p>Contact: <a href="mailto:info@dreamschool.academy">info@dreamschool.academy</a></p>
+      <ul class="social-links" aria-label="Social links">
+        <li><a href="https://www.youtube.com/@dreamschoolacademy" target="_blank" rel="noopener">YouTube</a></li>
+        <li><a href="https://www.instagram.com/dreamschoolacademy" target="_blank" rel="noopener">Instagram</a></li>
+        <li><a href="https://x.com/dreamschoolacad" target="_blank" rel="noopener">X</a></li>
+      </ul>
+      <p>© 2025 Dream School Academy. All rights reserved.</p>
+    </div>
   </footer>
 
 </body>
