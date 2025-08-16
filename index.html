@@ -1,52 +1,40 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-page="home">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Dream School Academy — SAT Prep</title>
   <meta name="description" content="Master the SAT with real practice, smart feedback, and pro-level strategy — all free.">
-  <link rel="stylesheet" href="style.css" />
-  <style>
-    /* Minimal styles for the header/hero; keep your existing CSS */
-    header { border-bottom: 1px solid #eee; }
-    .header-container { max-width: 1100px; margin:0 auto; padding:12px 16px; display:flex; align-items:center; justify-content:space-between; }
-    .logo-button { font-weight:700; text-decoration:none; color:#111; }
-    nav a { margin-left:16px; text-decoration:none; color:#111; }
-    .hero { padding:72px 16px; background: radial-gradient(1200px 600px at 70% -10%, #eaf0ff 0%, transparent 60%); text-align:center; }
-    .hero h2 { margin:0 0 8px; font-size:clamp(24px, 4vw, 40px); }
-    .hero p { margin:8px 0 24px; }
-    .btn { display:inline-block; padding:12px 16px; border-radius:10px; text-decoration:none; font-weight:600; border:1px solid #0b5cff; color:#fff; background:#0b5cff; }
-    .btn.secondary { background:#fff; color:#0b5cff; }
-    footer { border-top:1px solid #eee; margin-top:56px; }
-    footer .inner { max-width:1100px; margin:0 auto; padding:24px 16px; text-align:center; }
-  </style>
+  <link rel="stylesheet" href="/assets/site.css" />
+  <script defer src="/assets/nav.js"></script>
 </head>
 <body>
 
-<header>
-  <div class="header-container">
-    <a href="/" class="logo-button">Dream School Academy</a>
-    <nav>
-      <a href="contact.html">Contact</a>
-      <a class="btn secondary" href="auth.html">Login / Sign up</a>
-    </nav>
-  </div>
-</header>
+  <!-- Shared header injected -->
+  <div id="site-header"></div>
+  <script>
+    fetch('/assets/header.html')
+      .then(r => r.text())
+      .then(html => document.getElementById('site-header').innerHTML = html);
+  </script>
 
-<main id="home">
-  <section class="hero">
-    <h2>Don't let the SAT get in the way of your dreams</h2>
-    <p>Learn the SAT from a 99th percentile scorer.</p>
-    <a class="btn" href="auth.html">Get early access</a>
-  </section>
-</main>
+  <main id="home">
+    <section class="hero">
+      <div class="container center">
+        <h1 class="hero-title">Don’t let the SAT get in the way of your dreams</h1>
+        <p class="hero-subtitle">Learn the SAT from a 99th percentile scorer.</p>
+        <!-- Intentionally removed CTA button per your request -->
+      </div>
+    </section>
+  </main>
 
-<footer>
-  <div class="inner">
-    <p>Contact: <a href="mailto:info@dreamschool.academy">info@dreamschool.academy</a></p>
-    <p>© 2025 Dream School Academy. All rights reserved.</p>
-  </div>
-</footer>
+  <!-- Shared footer injected -->
+  <div id="site-footer"></div>
+  <script>
+    fetch('/assets/footer.html')
+      .then(r => r.text())
+      .then(html => document.getElementById('site-footer').innerHTML = html);
+  </script>
 
 </body>
 </html>
