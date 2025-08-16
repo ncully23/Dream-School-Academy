@@ -3,228 +3,50 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-
-  <title>Dream School Academy — Sign up for SAT Prep Updates</title>
-  <meta name="description" content="Join Dream School Academy to get SAT updates, early access, and expert tips. Google or email sign-up.">
-
-  <link rel="canonical" href="https://www.dreamschool.academy/" />
-  <link rel="icon" href="/favicon.ico" sizes="any">
-  <link rel="icon" href="/icon.svg" type="image/svg+xml">
-  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
-  <meta name="theme-color" content="#0b5cff" />
-
-  <!-- Open Graph / Twitter (social share) -->
-  <meta property="og:type" content="website">
-  <meta property="og:url" content="https://www.dreamschool.academy/">
-  <meta property="og:title" content="Dream School Academy — SAT Prep Sign Up">
-  <meta property="og:description" content="Join to get early access, SAT updates, and expert tips.">
-  <meta property="og:image" content="https://www.dreamschool.academy/og-image.jpg">
-  <meta name="twitter:card" content="summary_large_image">
-
+  <title>Dream School Academy — SAT Prep</title>
+  <meta name="description" content="Master the SAT with real practice, smart feedback, and pro-level strategy — all free.">
   <link rel="stylesheet" href="style.css" />
   <style>
-    /* Minimal in-page styles for the signup hero; keep most in style.css */
-    .site-header { border-bottom: 1px solid #eee; }
-    .header-container { max-width: 1100px; margin: 0 auto; padding: 12px 16px; display:flex; align-items:center; justify-content:space-between; }
-    .logo-button { font-weight: 700; text-decoration: none; }
-    .nav-toggle { display:none; }
-    .primary-nav a { margin-left: 16px; text-decoration: none; }
-    .hero { padding: 72px 16px; background: radial-gradient(1200px 600px at 70% -10%, #eaf0ff 0%, transparent 60%); }
-    .hero-inner { max-width: 780px; margin: 0 auto; text-align:center; }
-    .hero h1 { font-size: clamp(28px, 4vw, 44px); margin: 0 0 8px; }
-    .subhead { font-size: clamp(16px, 2.2vw, 20px); color: #333; margin: 0 0 24px; }
-    .signup-card { max-width: 520px; margin: 0 auto; background: #fff; border: 1px solid #e5e9f2; border-radius: 14px; padding: 20px; box-shadow: 0 8px 24px rgba(0,0,0,.06); }
-    .btn { display:inline-flex; align-items:center; justify-content:center; gap:10px; padding: 12px 16px; border-radius: 10px; border: 1px solid transparent; text-decoration:none; cursor:pointer; font-weight:600; width:100%; }
-    .btn-primary { background:#0b5cff; color:#fff; }
-    .btn-secondary { background:#fff; color:#111; border-color:#d5d9e6; }
-    .providers { display:grid; gap:10px; margin: 12px 0; }
-    .provider-icon { width:18px; height:18px; }
-    .hr-or { display:flex; align-items:center; gap:10px; margin: 10px 0; color:#666; }
-    .hr-or::before, .hr-or::after { content:""; height:1px; background:#e6e6e6; flex:1; }
-    form.signup-form { display:grid; gap:10px; margin-top: 10px; }
-    .input { width:100%; padding:12px 14px; border:1px solid #d5d9e6; border-radius:10px; }
-    .small { font-size: 12px; color:#666; }
-    .muted { color:#666; }
-    .site-footer { border-top: 1px solid #eee; margin-top: 56px; }
-    .footer-inner { max-width: 1100px; margin: 0 auto; padding: 24px 16px; text-align:center; }
-    .hidden { display:none !important; }
-    @media (max-width: 780px) {
-      .primary-nav { display:none; }
-      .nav-toggle { display:block; }
-      .primary-nav.open { display:block; position:absolute; right:16px; top:56px; background:#fff; border:1px solid #eee; border-radius:10px; padding:8px; }
-      .primary-nav.open a { display:block; padding:8px 10px; }
-    }
+    /* Minimal styles for the header/hero; keep your existing CSS */
+    header { border-bottom: 1px solid #eee; }
+    .header-container { max-width: 1100px; margin:0 auto; padding:12px 16px; display:flex; align-items:center; justify-content:space-between; }
+    .logo-button { font-weight:700; text-decoration:none; color:#111; }
+    nav a { margin-left:16px; text-decoration:none; color:#111; }
+    .hero { padding:72px 16px; background: radial-gradient(1200px 600px at 70% -10%, #eaf0ff 0%, transparent 60%); text-align:center; }
+    .hero h2 { margin:0 0 8px; font-size:clamp(24px, 4vw, 40px); }
+    .hero p { margin:8px 0 24px; }
+    .btn { display:inline-block; padding:12px 16px; border-radius:10px; text-decoration:none; font-weight:600; border:1px solid #0b5cff; color:#fff; background:#0b5cff; }
+    .btn.secondary { background:#fff; color:#0b5cff; }
+    footer { border-top:1px solid #eee; margin-top:56px; }
+    footer .inner { max-width:1100px; margin:0 auto; padding:24px 16px; text-align:center; }
   </style>
-
-  <!-- OPTIONAL: Firebase Auth (Google sign-up) — fill in your config below to enable -->
-  <!-- Remove these three scripts if you choose Auth0/Clerk/Supabase instead -->
-  <script defer src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
-  <script defer src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
-
-  <script>
-    // Nav enhancements
-    document.addEventListener('DOMContentLoaded', function () {
-      const toggle = document.getElementById('nav-toggle');
-      const menu = document.getElementById('primary-nav');
-      if (toggle && menu) {
-        toggle.addEventListener('click', () => {
-          const open = toggle.getAttribute('aria-expanded') === 'true';
-          toggle.setAttribute('aria-expanded', String(!open));
-          menu.classList.toggle('open', !open);
-        });
-      }
-    });
-
-    // --- Firebase Auth bootstrap (optional) ---
-    // 1) Replace the firebaseConfig placeholders with your project’s values.
-    // 2) Set window.ENABLE_GOOGLE_SIGNIN = true to show Google button.
-    // 3) (Optional) Add Apple/Microsoft/Yahoo providers similarly.
-
-    window.ENABLE_GOOGLE_SIGNIN = false; // flip to true after you add your config
-
-    window.addEventListener('DOMContentLoaded', function () {
-      const googleBtn = document.getElementById('btn-google');
-      if (!window.ENABLE_GOOGLE_SIGNIN) {
-        // Hide Google button until configured
-        if (googleBtn) googleBtn.classList.add('hidden');
-        return;
-      }
-
-      // Paste your Firebase config here
-      const firebaseConfig = {
-        apiKey: "YOUR_API_KEY",
-        authDomain: "YOUR_PROJECT.firebaseapp.com",
-        projectId: "YOUR_PROJECT_ID",
-        appId: "YOUR_APP_ID",
-      };
-
-      try {
-        const app = firebase.initializeApp(firebaseConfig);
-        const auth = firebase.auth();
-        const provider = new firebase.auth.GoogleAuthProvider();
-
-        googleBtn?.addEventListener('click', async () => {
-          try {
-            const result = await auth.signInWithPopup(provider);
-            // (A) Save the user or token in your backend (recommended)
-            // (B) Or just redirect to a "Welcome" page for now
-            window.location.href = "/welcome";
-          } catch (err) {
-            alert("Google sign-in failed. Please try again.");
-            console.error(err);
-          }
-        });
-      } catch (e) {
-        console.warn('Firebase not initialized:', e);
-        googleBtn?.classList.add('hidden');
-      }
-    });
-
-    // Basic email capture (no backend): Formspree-style example.
-    // Replace action URL with your Formspree endpoint or your /api/subscribe route.
-    async function handleEmailSignup(e) {
-      e.preventDefault();
-      const form = e.currentTarget;
-      const email = form.email.value.trim();
-      const name = form.name.value.trim();
-      const consent = form.consent.checked;
-
-      if (!email) return alert("Please enter your email.");
-      if (!consent) return alert("Please accept the terms.");
-
-      // Example: Formspree endpoint (replace with your own)
-      const ACTION_URL = "https://formspree.io/f/yourFormId";
-
-      try {
-        const res = await fetch(ACTION_URL, {
-          method: "POST",
-          headers: { "Content-Type": "application/json", "Accept": "application/json" },
-          body: JSON.stringify({ email, name, source: "landing" })
-        });
-        if (res.ok) {
-          form.reset();
-          alert("Thanks! You’re on the list.");
-        } else {
-          alert("Sorry, something went wrong. Please try again.");
-        }
-      } catch (err) {
-        console.error(err);
-        alert("Network error. Please try again.");
-      }
-    }
-    window.handleEmailSignup = handleEmailSignup;
-  </script>
 </head>
 <body>
 
-  <a class="skip-link" href="#main">Skip to content</a>
+<header>
+  <div class="header-container">
+    <a href="/" class="logo-button">Dream School Academy</a>
+    <nav>
+      <a href="contact.html">Contact</a>
+      <a class="btn secondary" href="auth.html">Login / Sign up</a>
+    </nav>
+  </div>
+</header>
 
-  <header class="site-header">
-    <div class="header-container">
-      <a href="/" class="logo-button" aria-label="Dream School Academy home">Dream School Academy</a>
+<main id="home">
+  <section class="hero">
+    <h2>Don't let the SAT get in the way of your dreams</h2>
+    <p>Learn the SAT from a 99th percentile scorer.</p>
+    <a class="btn" href="auth.html">Get early access</a>
+  </section>
+</main>
 
-      <button id="nav-toggle" class="nav-toggle" aria-label="Toggle navigation" aria-controls="primary-nav" aria-expanded="false">
-        ☰
-      </button>
-
-      <nav id="primary-nav" class="primary-nav" aria-label="Primary">
-        <!-- Keep nav minimal until product is live -->
-        <a href="https://www.dreamschool.academy/contactus">Contact</a>
-      </nav>
-    </div>
-  </header>
-
-  <main id="main">
-    <section class="hero" role="region" aria-label="Sign up">
-      <div class="hero-inner">
-        <h1>Be first to get Dream School Academy</h1>
-        <p class="subhead">We’re launching focused SAT practice with smart feedback. Join the list or sign up with Google to get early access.</p>
-
-        <div class="signup-card" aria-label="Sign up options">
-          <div class="providers" aria-live="polite">
-            <!-- Google Sign-up (hidden until Firebase is configured) -->
-            <button id="btn-google" class="btn btn-secondary" type="button">
-              <img class="provider-icon" src="https://assets.testinnovators.com/common-images/google_logo.png" alt="" aria-hidden="true">
-              Continue with Google
-            </button>
-
-            <!-- Add more providers later (Auth0/Clerk/Supabase handle these nicely) -->
-            <!--
-            <button class="btn btn-secondary" type="button">
-              <img class="provider-icon" src="/icons/apple.svg" alt="">
-              Continue with Apple
-            </button>
-            <button class="btn btn-secondary" type="button">
-              <img class="provider-icon" src="/icons/microsoft.svg" alt="">
-              Continue with Microsoft
-            </button>
-            -->
-          </div>
-
-          <div class="hr-or"><span>or</span></div>
-
-          <!-- Email sign-up form (works without any JS backend using Formspree-style endpoint) -->
-          <form class="signup-form" onsubmit="handleEmailSignup(event)">
-            <input class="input" type="text" name="name" placeholder="Your name (optional)" autocomplete="name">
-            <input class="input" type="email" name="email" placeholder="Email address" autocomplete="email" required>
-            <label class="small">
-              <input type="checkbox" name="consent" required>
-              I agree to receive emails from Dream School Academy and accept the <a href="/terms" target="_blank" rel="noopener">Terms</a> & <a href="/privacy" target="_blank" rel="noopener">Privacy Policy</a>.
-            </label>
-            <button class="btn btn-primary" type="submit">Join the Waitlist</button>
-            <p class="small muted">No spam. Unsubscribe anytime.</p>
-          </form>
-        </div>
-      </div>
-    </section>
-  </main>
-
-  <footer class="site-footer">
-    <div class="footer-inner">
-      <p>Contact: <a href="mailto:info@dreamschool.academy">info@dreamschool.academy</a></p>
-      <p>© 2025 Dream School Academy. All rights reserved.</p>
-    </div>
-  </footer>
+<footer>
+  <div class="inner">
+    <p>Contact: <a href="mailto:info@dreamschool.academy">info@dreamschool.academy</a></p>
+    <p>© 2025 Dream School Academy. All rights reserved.</p>
+  </div>
+</footer>
 
 </body>
 </html>
