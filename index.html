@@ -6,35 +6,30 @@
   <title>Dream School Academy — SAT Prep</title>
   <meta name="description" content="Master the SAT with real practice, smart feedback, and pro-level strategy — all free.">
   <link rel="stylesheet" href="/assets/site.css" />
-  <script defer src="/assets/nav.js"></script>
+  <script defer src="/assets/shell.js"></script>
+  <script defer src="/assets/utils.js"></script>
 </head>
 <body>
-
-  <!-- Shared header injected -->
-  <div id="site-header"></div>
-  <script>
-    fetch('/assets/header.html')
-      .then(r => r.text())
-      .then(html => document.getElementById('site-header').innerHTML = html);
-  </script>
+  <!-- site-header/footer will be injected by shell.js -->
 
   <main id="home">
     <section class="hero">
       <div class="container center">
-        <h1 class="hero-title">Don’t let the SAT get in the way of your dreams</h1>
-        <p class="hero-subtitle">Learn the SAT from a 99th percentile scorer.</p>
-        <!-- Intentionally removed CTA button per your request -->
+        <h1>Don’t let the SAT get in the way of your dreams</h1>
+        <p>Learn the SAT from a 99th percentile scorer.</p>
+        <!-- CTA intentionally removed -->
       </div>
     </section>
-  </main>
 
-  <!-- Shared footer injected -->
-  <div id="site-footer"></div>
-  <script>
-    fetch('/assets/footer.html')
-      .then(r => r.text())
-      .then(html => document.getElementById('site-footer').innerHTML = html);
-  </script>
+    <section class="panel">
+      <h3>What you’ll get</h3>
+      <ul>
+        <li>Targeted reading & math review</li>
+        <li>Realistic practice modules</li>
+        <li>Clear, concise explanations</li>
+      </ul>
+    </section>
+  </main>
 
 </body>
 </html>
