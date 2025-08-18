@@ -41,3 +41,28 @@
   // Optional: if you later add internal navigation without page reloads,
   // you can re-run the highlight logic here after route changes.
 })();
+
+(async function initShell() {
+  const mount = document.getElementById('site-header');
+  try {
+    const res = await fetch('/assets/header.html', { cache: 'no-store' });
+    const html = await res.text();
+
+    if (mount) {
+      mount.innerHTML = html;
+    } else {
+      // fallback: prepend to body if mount not found
+      document.body.insertAdjacentHTML('afterbegin', html);
+    }
+
+    // highlight active tab
+    const page = document.documentElement.getAttribute('data-page'); // e.g., "home"
+    if (page) {
+      const active = document.querySelector(`.site-nav a[data-nav="${page}"]`);
+      active?.classList.add('active');
+    }
+  } catch (e) {
+    console.error('Header inject failed:', e);
+  }
+})();
+
