@@ -100,148 +100,136 @@
   </main>
 
   <!-- Single, unified Firebase script -->
-  <script type="module">
-    (async () => {
-      try {
-        const { initializeApp, getApps } = await import("https://www.gstatic.com/firebasejs/10.12.4/firebase-app.js");
-        const {
-          getAuth, setPersistence, browserLocalPersistence, onAuthStateChanged,
-          signInWithEmailAndPassword, createUserWithEmailAndPassword,
-          sendPasswordResetEmail, GoogleAuthProvider, signInWithPopup,
-          signInWithRedirect, getRedirectResult
-        } = await import("https://www.gstatic.com/firebasejs/10.12.4/firebase-auth.js");
+<script type="module">
+  (async () => {
+    const { initializeApp, getApps } = await import("https://www.gstatic.com/firebasejs/10.12.4/firebase-app.js");
+    const {
+      getAuth, setPersistence, browserLocalPersistence, onAuthStateChanged,
+      signInWithEmailAndPassword, createUserWithEmailAndPassword,
+      sendPasswordResetEmail, GoogleAuthProvider, signInWithPopup,
+      signInWithRedirect, getRedirectResult
+    } = await import("https://www.gstatic.com/firebasejs/10.12.4/firebase-auth.js");
 
-const firebaseConfig = {
-  apiKey: "AIzaSyD7RZsmTpG0jgLNt7w_R0tm_mWg_FZEYE",   // ← correct key
-  authDomain: "dream-school-academy.firebaseapp.com",
-  projectId: "dream-school-academy",
-  storageBucket: "dream-school-academy.firebasestorage.app",
-  messagingSenderId: "665412130733",
-  appId: "1:665412130733:web:fc73…277324",            // copy EXACT from console
-  measurementId: "G-7LZY…H4QG"                         // copy EXACT from console (optional)
-};
+    // Your real config
+    const firebaseConfig = {
+      apiKey: "AIzaSyD7RZsmTpG0jgLNt7w_R0tm_mWg_FZEYE",
+      authDomain: "dream-school-academy.firebaseapp.com",
+      projectId: "dream-school-academy",
+      storageBucket: "dream-school-academy.firebasestorage.app",
+      messagingSenderId: "665412130733",
+      appId: "1:665412130733:web:fc73ed574ffb6d277324",
+      measurementId: "G-7LZY2W4H4QG"
+    };
 
+    // Init once
+    const app = getApps().length ? getApps()[0] : initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    await setPersistence(auth, browserLocalPersistence);
+    const provider = new GoogleAuthProvider();
 
-        // Guard against malformed key (I vs l typo)
-        if (!/^AIza[0-9A-Za-z_\-]{35}$/.test(firebaseConfig.apiKey)) {
-          throw new Error("Malformed API key. It must start with AIza… (capital I).");
-        }
+    console.log("Firebase init:", {
+      authDomain: auth.config?.authDomain,
+      apiKeyPrefix: firebaseConfig.apiKey.slice(0,4) // "AIza"
+    });
 
-        // Initialize exactly once
-        const app = getApps().length ? getApps()[0] : initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        await setPersistence(auth, browserLocalPersistence);
-        const provider = new GoogleAuthProvider();
+    // Handle redirect result (popup fallback)
+    try {
+      const r = await getRedirectResult(auth);
+      if (r?.user) location.href = "/";
+    } catch (e) { console.warn("Redirect sign-in failed:", e); }
 
-        // Debug: confirm correct app at runtime
-        console.log("Firebase init:", { authDomain: auth.config?.authDomain, apiKeyPrefix: firebaseConfig.apiKey.slice(0,4) });
+    // Tabs
+    const tabLogin   = document.getElementById('tab-login');
+    const tabSignup  = document.getElementById('tab-signup');
+    const loginForm  = document.getElementById('login-form');
+    const signupForm = document.getElementById('signup-form');
+    function showLogin(){ tabLogin.classList.add('active'); tabLogin.setAttribute('aria-selected','true'); tabSignup.classList.remove('active'); tabSignup.setAttribute('aria-selected','false'); loginForm.style.display='grid'; signupForm.style.display='none'; }
+    function showSignup(){ tabSignup.classList.add('active'); tabSignup.setAttribute('aria-selected','true'); tabLogin.classList.remove('active'); tabLogin.setAttribute('aria-selected','false'); signupForm.style.display='grid'; loginForm.style.display='none'; }
+    tabLogin.addEventListener('click', showLogin);
+    tabSignup.addEventListener('click', showSignup);
 
-        // Handle Google redirect result (fallback if popup was blocked)
-        try {
-          const r = await getRedirectResult(auth);
-          if (r?.user) location.href = "/";
-        } catch (e) {
-          console.warn("Redirect sign-in failed:", e);
-        }
+    // Helpers
+    const setBusy = (el, busy) => { if(!el) return; el.disabled = !!busy; el.setAttribute('aria-busy', busy ? 'true' : 'false'); };
+    const friendlyError = (err) => ({
+      'auth/invalid-email':'That email looks invalid.',
+      'auth/missing-password':'Enter your password.',
+      'auth/weak-password':'Use 6+ characters for your password.',
+      'auth/email-already-in-use':'That email is already registered. Try logging in.',
+      'auth/user-not-found':'No account with that email. Try signing up.',
+      'auth/wrong-password':'Incorrect password.',
+      'auth/popup-blocked':'Your browser blocked the popup. We’ll try a full-page redirect.',
+      'auth/unauthorized-domain':'This domain is not authorized in Firebase Authentication settings.',
+      'auth/api-key-not-valid':'API key rejected. Check API key restrictions and config.'
+    }[err?.code] || err?.message || 'Something went wrong.');
 
-        // ----- Tabs -----
-        const tabLogin   = document.getElementById('tab-login');
-        const tabSignup  = document.getElementById('tab-signup');
-        const loginForm  = document.getElementById('login-form');
-        const signupForm = document.getElementById('signup-form');
-        function showLogin(){ tabLogin.classList.add('active'); tabLogin.setAttribute('aria-selected','true'); tabSignup.classList.remove('active'); tabSignup.setAttribute('aria-selected','false'); loginForm.style.display='grid'; signupForm.style.display='none'; }
-        function showSignup(){ tabSignup.classList.add('active'); tabSignup.setAttribute('aria-selected','true'); tabLogin.classList.remove('active'); tabLogin.setAttribute('aria-selected','false'); signupForm.style.display='grid'; loginForm.style.display='none'; }
-        tabLogin.addEventListener('click', showLogin);
-        tabSignup.addEventListener('click', showSignup);
+    // Login (email/password)
+    const loginStatus = document.getElementById('login-status');
+    const loginBtn = document.getElementById('login-submit');
+    loginForm.addEventListener('submit', async (e)=>{
+      e.preventDefault(); loginStatus.textContent = 'Signing in...'; setBusy(loginBtn,true);
+      try{
+        const email = document.getElementById('login-email').value.trim();
+        const password = document.getElementById('login-password').value;
+        await signInWithEmailAndPassword(auth, email, password);
+        location.href = '/';
+      }catch(err){ loginStatus.textContent = friendlyError(err); }
+      finally{ setBusy(loginBtn,false); }
+    });
 
-        // ----- Helpers -----
-        const setBusy = (el, busy) => { if(!el) return; el.disabled = !!busy; el.setAttribute('aria-busy', busy ? 'true' : 'false'); };
-        const friendlyError = (err) => ({
-          'auth/invalid-email':'That email looks invalid.',
-          'auth/missing-password':'Enter your password.',
-          'auth/weak-password':'Use 6+ characters for your password.',
-          'auth/email-already-in-use':'That email is already registered. Try logging in.',
-          'auth/user-not-found':'No account with that email. Try signing up.',
-          'auth/wrong-password':'Incorrect password.',
-          'auth/popup-blocked':'Your browser blocked the popup. We’ll try a full-page redirect.',
-          'auth/unauthorized-domain':'This domain is not authorized in Firebase Authentication settings.',
-          'auth/api-key-not-valid':'API key rejected. Check API key restrictions and config.'
-        }[err?.code] || err?.message || 'Something went wrong.');
+    // Forgot password
+    document.getElementById('reset-password').addEventListener('click', async ()=>{
+      const email = (document.getElementById('login-email').value || '').trim();
+      if(!email){ loginStatus.textContent = 'Enter your email first.'; return; }
+      try{ await sendPasswordResetEmail(auth, email); loginStatus.textContent = 'Password reset email sent.'; }
+      catch(err){ loginStatus.textContent = friendlyError(err); }
+    });
 
-        // ----- Login (email/password) -----
-        const loginStatus = document.getElementById('login-status');
-        const loginBtn = document.getElementById('login-submit');
-        loginForm.addEventListener('submit', async (e)=>{
-          e.preventDefault(); loginStatus.textContent = 'Signing in...'; setBusy(loginBtn,true);
-          try{
-            const email = document.getElementById('login-email').value.trim();
-            const password = document.getElementById('login-password').value;
-            await signInWithEmailAndPassword(auth, email, password);
-            location.href = '/';
-          }catch(err){ loginStatus.textContent = friendlyError(err); }
-          finally{ setBusy(loginBtn,false); }
-        });
+    // Google login (popup with redirect fallback)
+    const googleLoginBtn = document.getElementById('google-login');
+    googleLoginBtn.addEventListener('click', async ()=>{
+      loginStatus.textContent = 'Opening Google...'; setBusy(googleLoginBtn,true);
+      try{
+        await signInWithPopup(auth, provider); location.href = '/';
+      }catch(err){
+        if (['auth/popup-blocked','auth/popup-closed-by-user','auth/unauthorized-domain'].includes(err.code)) {
+          try { await signInWithRedirect(auth, provider); }
+          catch(e){ loginStatus.textContent = friendlyError(e); }
+        } else { loginStatus.textContent = friendlyError(err); }
+      }finally{ setBusy(googleLoginBtn,false); }
+    });
 
-        // ----- Forgot password -----
-        document.getElementById('reset-password').addEventListener('click', async ()=>{
-          const email = (document.getElementById('login-email').value || '').trim();
-          if(!email){ loginStatus.textContent = 'Enter your email first.'; return; }
-          try{ await sendPasswordResetEmail(auth, email); loginStatus.textContent = 'Password reset email sent.'; }
-          catch(err){ loginStatus.textContent = friendlyError(err); }
-        });
+    // Sign up (email/password)
+    const signupStatus = document.getElementById('signup-status');
+    const signupBtn = document.getElementById('signup-submit');
+    signupForm.addEventListener('submit', async (e)=>{
+      e.preventDefault(); signupStatus.textContent = 'Creating account...'; setBusy(signupBtn,true);
+      try{
+        const email = document.getElementById('signup-email').value.trim();
+        const password = document.getElementById('signup-password').value;
+        await createUserWithEmailAndPassword(auth, email, password);
+        location.href = '/';
+      }catch(err){ signupStatus.textContent = friendlyError(err); }
+      finally{ setBusy(signupBtn,false); }
+    });
 
-        // ----- Google login (popup with redirect fallback) -----
-        const googleLoginBtn = document.getElementById('google-login');
-        googleLoginBtn.addEventListener('click', async ()=>{
-          loginStatus.textContent = 'Opening Google...'; setBusy(googleLoginBtn,true);
-          try{
-            await signInWithPopup(auth, provider); location.href = '/';
-          }catch(err){
-            if (['auth/popup-blocked','auth/popup-closed-by-user','auth/unauthorized-domain'].includes(err.code)) {
-              try { await signInWithRedirect(auth, provider); }
-              catch(e){ loginStatus.textContent = friendlyError(e); }
-            } else { loginStatus.textContent = friendlyError(err); }
-          }finally{ setBusy(googleLoginBtn,false); }
-        });
+    // Google sign up (same as login)
+    const googleSignupBtn = document.getElementById('google-signup');
+    googleSignupBtn.addEventListener('click', async ()=>{
+      signupStatus.textContent = 'Opening Google...'; setBusy(googleSignupBtn,true);
+      try{
+        await signInWithPopup(auth, provider); location.href = '/';
+      }catch(err){
+        if (['auth/popup-blocked','auth/popup-closed-by-user','auth/unauthorized-domain'].includes(err.code)) {
+          try { await signInWithRedirect(auth, provider); }
+          catch(e){ signupStatus.textContent = friendlyError(e); }
+        } else { signupStatus.textContent = friendlyError(err); }
+      }finally{ setBusy(googleSignupBtn,false); }
+    });
 
-        // ----- Sign up (email/password) -----
-        const signupStatus = document.getElementById('signup-status');
-        const signupBtn = document.getElementById('signup-submit');
-        signupForm.addEventListener('submit', async (e)=>{
-          e.preventDefault(); signupStatus.textContent = 'Creating account...'; setBusy(signupBtn,true);
-          try{
-            const email = document.getElementById('signup-email').value.trim();
-            const password = document.getElementById('signup-password').value;
-            await createUserWithEmailAndPassword(auth, email, password);
-            location.href = '/';
-          }catch(err){ signupStatus.textContent = friendlyError(err); }
-          finally{ setBusy(signupBtn,false); }
-        });
+    onAuthStateChanged(auth, (user)=>{ /* if(user){ ... } */ });
+  })();
+</script>
 
-        // ----- Google sign up (same as login) -----
-        const googleSignupBtn = document.getElementById('google-signup');
-        googleSignupBtn.addEventListener('click', async ()=>{
-          signupStatus.textContent = 'Opening Google...'; setBusy(googleSignupBtn,true);
-          try{
-            await signInWithPopup(auth, provider); location.href = '/';
-          }catch(err){
-            if (['auth/popup-blocked','auth/popup-closed-by-user','auth/unauthorized-domain'].includes(err.code)) {
-              try { await signInWithRedirect(auth, provider); }
-              catch(e){ signupStatus.textContent = friendlyError(e); }
-            } else { signupStatus.textContent = friendlyError(err); }
-          }finally{ setBusy(googleSignupBtn,false); }
-        });
-
-        // Optional: observe session
-        onAuthStateChanged(auth, (user)=>{ /* if(user){ ... } */ });
-
-      } catch (fatal) {
-        console.error(fatal);
-        const gs = document.getElementById('global-status');
-        if (gs) gs.textContent = "Failed to load auth. " + (fatal?.message || fatal);
-      }
-    })();
-  </script>
 
   <noscript>
     <p style="text-align:center;color:#ffb4b4">This page requires JavaScript to sign in.</p>
