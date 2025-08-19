@@ -40,6 +40,14 @@
     sendPasswordResetEmail, signInWithPopup, signInWithRedirect, getRedirectResult
   } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-auth.js";
 
+
+  // Which Firebase apps are initialized?
+import("https://www.gstatic.com/firebasejs/10.12.4/firebase-app.js").then(m=>{
+  const apps = m.getApps();
+  console.log("Apps:", apps.map(a=>a.name));
+  console.log("Options:", apps[0]?.options); // should show your apiKey and authDomain
+});
+
   // ✅ DO NOT declare firebaseConfig or call initializeApp() here anymore.
 
   // ... keep all your existing tab and button handlers unchanged ...
