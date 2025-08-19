@@ -5,62 +5,31 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Login / Sign Up — Dream School Academy</title>
 
-  <!-- Font to match site -->
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;800&display=swap" rel="stylesheet">
 
   <link rel="stylesheet" href="/assets/site.css" />
   <style>
-    .auth-wrap{
-      min-height: 72vh; display: grid; place-items: center; padding: 3rem 1rem;
-    }
-    .card{
-      width: min(520px, 92vw);
-      background: var(--surface);
-      border: 1px solid color-mix(in oklab, var(--surface-2) 85%, #fff 0%);
-      border-radius: 18px; padding: 1.2rem;
-      box-shadow: 0 12px 30px rgba(0,0,0,.25);
-    }
-    .tabs{ display:flex; gap:.4rem; background: var(--surface-2); padding:.4rem; border-radius: 12px; }
-    .tabs button{
-      flex:1; padding:.7rem 1rem; border:0; border-radius:10px; cursor:pointer;
-      background: transparent; color: var(--text); font-weight: 700; letter-spacing:.2px;
-      transition: background .15s ease, transform .12s ease;
-    }
-    .tabs button.active{ background: var(--brand); color: var(--brand-ink); }
-    .tabs button:hover{ transform: translateY(-1px); }
-
+    .auth-wrap{ min-height:72vh; display:grid; place-items:center; padding:3rem 1rem; }
+    .card{ width:min(520px,92vw); background:var(--surface); border:1px solid color-mix(in oklab,var(--surface-2)85%,#fff 0%); border-radius:18px; padding:1.2rem; box-shadow:0 12px 30px rgba(0,0,0,.25); }
+    .tabs{ display:flex; gap:.4rem; background:var(--surface-2); padding:.4rem; border-radius:12px; }
+    .tabs button{ flex:1; padding:.7rem 1rem; border:0; border-radius:10px; cursor:pointer; background:transparent; color:var(--text); font-weight:700; letter-spacing:.2px; transition:background .15s ease, transform .12s ease; }
+    .tabs button.active{ background:var(--brand); color:var(--brand-ink); }
+    .tabs button:hover{ transform:translateY(-1px); }
     form{ display:grid; gap:.9rem; margin-top:1rem; }
-    label{ font-size:.95rem; color: var(--muted); }
-    input{
-      width:100%; padding:.85rem 1rem; border-radius:12px; border:1px solid color-mix(in oklab, var(--surface-2) 85%, #fff 0%);
-      background:#0f1420; color: var(--text);
-    }
+    label{ font-size:.95rem; color:var(--muted); }
+    input{ width:100%; padding:.85rem 1rem; border-radius:12px; border:1px solid color-mix(in oklab,var(--surface-2)85%,#fff 0%); background:#0f1420; color:var(--text); }
     .actions{ display:flex; gap:.6rem; align-items:center; flex-wrap:wrap; }
-    .btn{
-      display:inline-flex; align-items:center; justify-content:center; gap:.5rem;
-      padding:.8rem 1rem; border-radius:999px; border:0; cursor:pointer;
-      background: var(--brand); color: var(--brand-ink); font-weight:800; letter-spacing:.2px;
-      box-shadow: 0 6px 14px rgba(105,229,255,.22);
-      transition: transform .12s ease;
-    }
-    .btn:hover{ transform: translateY(-1px) }
-    .btn.secondary{
-      background: transparent; color: var(--text);
-      box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--surface-2) 85%, #fff 0%);
-    }
-    .muted{ color: var(--muted); font-size:.95rem; }
+    .btn{ display:inline-flex; align-items:center; justify-content:center; gap:.5rem; padding:.8rem 1rem; border-radius:999px; border:0; cursor:pointer; background:var(--brand); color:var(--brand-ink); font-weight:800; letter-spacing:.2px; box-shadow:0 6px 14px rgba(105,229,255,.22); transition:transform .12s ease; }
+    .btn[disabled]{ opacity:.6; cursor:not-allowed; }
+    .btn:hover{ transform:translateY(-1px) }
+    .btn.secondary{ background:transparent; color:var(--text); box-shadow:inset 0 0 0 1px color-mix(in oklab,var(--surface-2)85%,#fff 0%); }
+    .muted{ color:var(--muted); font-size:.95rem; }
     .status{ margin-top:.75rem; min-height:1.1rem; font-size:.95rem; }
-    .hr{
-      display:flex; align-items:center; gap:.8rem; margin:1rem 0;
-    }
-    .hr::before, .hr::after{
-      content:""; height:1px; flex:1; background: color-mix(in oklab, var(--surface-2) 85%, #fff 0%);
-    }
-    .google{
-      display:inline-flex; align-items:center; gap:.6rem;
-      background: #fff; color:#111; border-radius:999px; padding:.8rem 1rem; border:0; cursor:pointer;
-    }
+    .hr{ display:flex; align-items:center; gap:.8rem; margin:1rem 0; }
+    .hr::before,.hr::after{ content:""; height:1px; flex:1; background:color-mix(in oklab,var(--surface-2)85%,#fff 0%); }
+    .google{ display:inline-flex; align-items:center; gap:.6rem; background:#fff; color:#111; border-radius:999px; padding:.8rem 1rem; border:0; cursor:pointer; }
+    .google[disabled]{ opacity:.6; cursor:not-allowed; }
     .google img{ width:18px; height:18px; }
   </style>
 
@@ -71,7 +40,7 @@
   <main class="auth-wrap">
     <div class="card">
       <div class="container">
-        <h1 style="margin: .5rem 0 1rem;">Welcome back</h1>
+        <h1 style="margin:.5rem 0 1rem;">Welcome back</h1>
         <p class="muted">Log in or create your account to save progress, track scores, and get personalized practice.</p>
 
         <div class="tabs" role="tablist" aria-label="Auth tabs">
@@ -90,7 +59,7 @@
             <input id="login-password" type="password" placeholder="••••••••" required />
           </div>
           <div class="actions">
-            <button type="submit" class="btn">Log In</button>
+            <button type="submit" class="btn" id="login-submit">Log In</button>
             <button type="button" class="btn secondary" id="reset-password">Forgot password?</button>
           </div>
           <div class="hr"><span class="muted">or</span></div>
@@ -112,7 +81,7 @@
             <input id="signup-password" type="password" placeholder="Minimum 6 characters" minlength="6" required />
           </div>
           <div class="actions">
-            <button type="submit" class="btn">Create account</button>
+            <button type="submit" class="btn" id="signup-submit">Create account</button>
           </div>
           <div class="hr"><span class="muted">or</span></div>
           <button type="button" class="google" id="google-signup" aria-label="Sign up with Google">
@@ -127,120 +96,133 @@
 
   <!-- Firebase Auth (Modular) -->
   <script type="module">
-    // --- Replace with your Firebase config ---
-    const firebaseConfig = {
-      apiKey: "YOUR_API_KEY",
-      authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
-      projectId: "YOUR_PROJECT_ID",
-      storageBucket: "YOUR_PROJECT_ID.appspot.com",
-      messagingSenderId: "YOUR_SENDER_ID",
-      appId: "YOUR_APP_ID"
-    };
-    // ----------------------------------------
-
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-app.js";
     import {
       getAuth,
+      setPersistence,
+      browserLocalPersistence,
       onAuthStateChanged,
       signInWithEmailAndPassword,
       createUserWithEmailAndPassword,
       sendPasswordResetEmail,
       GoogleAuthProvider,
-      signInWithPopup
+      signInWithPopup,
+      signInWithRedirect,
+      getRedirectResult
     } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-auth.js";
+
+    // ----- YOUR REAL CONFIG (from your screenshots) -----
+    const firebaseConfig = {
+      apiKey: "AIzaSyD7R7ZsmTpG0jgLNt7w_R0tm_mWg_FZEYE",
+      authDomain: "dream-school-academy.firebaseapp.com",
+      projectId: "dream-school-academy",
+      storageBucket: "dream-school-academy.firebasestorage.app",
+      messagingSenderId: "665412130733",
+      appId: "1:665412130733:web:c3d59ab2c20f65a2277324",
+      measurementId: "G-HCJWBWZXKZ"
+    };
+    // ----------------------------------------------------
 
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
+    await setPersistence(auth, browserLocalPersistence); // stay signed in
     const provider = new GoogleAuthProvider();
 
-    // Tabs
-    const tabLogin = document.getElementById('tab-login');
-    const tabSignup = document.getElementById('tab-signup');
-    const loginForm = document.getElementById('login-form');
-    const signupForm = document.getElementById('signup-form');
+    // Handle Google redirect result (fallback if popup blocked)
+    try {
+      const redirectCred = await getRedirectResult(auth);
+      if (redirectCred?.user) window.location.href = "/";
+    } catch (e) { console.warn("Redirect sign-in failed:", e); }
 
-    function showLogin(){
-      tabLogin.classList.add('active'); tabLogin.setAttribute('aria-selected','true');
-      tabSignup.classList.remove('active'); tabSignup.setAttribute('aria-selected','false');
-      loginForm.style.display='grid'; signupForm.style.display='none';
-    }
-    function showSignup(){
-      tabSignup.classList.add('active'); tabSignup.setAttribute('aria-selected','true');
-      tabLogin.classList.remove('active'); tabLogin.setAttribute('aria-selected','false');
-      signupForm.style.display='grid'; loginForm.style.display='none';
-    }
+    // Tabs
+    const tabLogin   = document.getElementById('tab-login');
+    const tabSignup  = document.getElementById('tab-signup');
+    const loginForm  = document.getElementById('login-form');
+    const signupForm = document.getElementById('signup-form');
+    function showLogin(){ tabLogin.classList.add('active'); tabLogin.setAttribute('aria-selected','true'); tabSignup.classList.remove('active'); tabSignup.setAttribute('aria-selected','false'); loginForm.style.display='grid'; signupForm.style.display='none'; }
+    function showSignup(){ tabSignup.classList.add('active'); tabSignup.setAttribute('aria-selected','true'); tabLogin.classList.remove('active'); tabLogin.setAttribute('aria-selected','false'); signupForm.style.display='grid'; loginForm.style.display='none'; }
     tabLogin.addEventListener('click', showLogin);
     tabSignup.addEventListener('click', showSignup);
 
-    // Login handlers
+    // Helpers
+    const setBusy = (el, busy) => { if(!el) return; el.disabled = !!busy; el.setAttribute('aria-busy', busy ? 'true' : 'false'); };
+    const friendlyError = (err) => ({
+      'auth/invalid-email':'That email looks invalid.',
+      'auth/missing-password':'Enter your password.',
+      'auth/weak-password':'Use 6+ characters for your password.',
+      'auth/email-already-in-use':'That email is already registered. Try logging in.',
+      'auth/user-not-found':'No account with that email. Try signing up.',
+      'auth/wrong-password':'Incorrect password.',
+      'auth/popup-blocked':'Your browser blocked the popup. We’ll try a full-page redirect.',
+      'auth/unauthorized-domain':'This domain is not authorized in Firebase Authentication settings.'
+    }[err?.code] || err?.message || 'Something went wrong.');
+
+    // Login (email/password)
     const loginStatus = document.getElementById('login-status');
+    const loginBtn = document.getElementById('login-submit');
     loginForm.addEventListener('submit', async (e)=>{
-      e.preventDefault();
-      loginStatus.textContent = 'Signing in...';
+      e.preventDefault(); loginStatus.textContent = 'Signing in...'; setBusy(loginBtn,true);
       try{
         const email = document.getElementById('login-email').value.trim();
         const password = document.getElementById('login-password').value;
         await signInWithEmailAndPassword(auth, email, password);
-        loginStatus.textContent = 'Success! Redirecting...';
-        window.location.href = '/'; // change if you want a dashboard
-      }catch(err){
-        loginStatus.textContent = err.message;
-      }
+        window.location.href = '/';
+      }catch(err){ loginStatus.textContent = friendlyError(err); }
+      finally{ setBusy(loginBtn,false); }
     });
 
+    // Forgot password
     document.getElementById('reset-password').addEventListener('click', async ()=>{
       const email = (document.getElementById('login-email').value || '').trim();
       if(!email){ loginStatus.textContent = 'Enter your email first.'; return; }
-      try{
-        await sendPasswordResetEmail(auth, email);
-        loginStatus.textContent = 'Password reset email sent.';
-      }catch(err){
-        loginStatus.textContent = err.message;
-      }
+      try{ await sendPasswordResetEmail(auth, email); loginStatus.textContent = 'Password reset email sent.'; }
+      catch(err){ loginStatus.textContent = friendlyError(err); }
     });
 
-    document.getElementById('google-login').addEventListener('click', async ()=>{
-      loginStatus.textContent = 'Opening Google...';
+    // Google login (popup with redirect fallback)
+    const googleLoginBtn = document.getElementById('google-login');
+    googleLoginBtn.addEventListener('click', async ()=>{
+      loginStatus.textContent = 'Opening Google...'; setBusy(googleLoginBtn,true);
       try{
-        await signInWithPopup(auth, provider);
-        window.location.href = '/';
+        await signInWithPopup(auth, provider); window.location.href = '/';
       }catch(err){
-        loginStatus.textContent = err.message;
-      }
+        if (['auth/popup-blocked','auth/popup-closed-by-user','auth/unauthorized-domain'].includes(err.code)) {
+          try { await signInWithRedirect(auth, provider); }
+          catch(e){ loginStatus.textContent = friendlyError(e); }
+        } else { loginStatus.textContent = friendlyError(err); }
+      }finally{ setBusy(googleLoginBtn,false); }
     });
 
-    // Sign up handlers
+    // Sign up (email/password)
     const signupStatus = document.getElementById('signup-status');
+    const signupBtn = document.getElementById('signup-submit');
     signupForm.addEventListener('submit', async (e)=>{
-      e.preventDefault();
-      signupStatus.textContent = 'Creating account...';
+      e.preventDefault(); signupStatus.textContent = 'Creating account...'; setBusy(signupBtn,true);
       try{
         const email = document.getElementById('signup-email').value.trim();
         const password = document.getElementById('signup-password').value;
         await createUserWithEmailAndPassword(auth, email, password);
-        signupStatus.textContent = 'Account created! Redirecting...';
         window.location.href = '/';
-      }catch(err){
-        signupStatus.textContent = err.message;
-      }
+      }catch(err){ signupStatus.textContent = friendlyError(err); }
+      finally{ setBusy(signupBtn,false); }
     });
 
-    document.getElementById('google-signup').addEventListener('click', async ()=>{
-      signupStatus.textContent = 'Opening Google...';
+    // Google sign up (same SDK call as login)
+    const googleSignupBtn = document.getElementById('google-signup');
+    googleSignupBtn.addEventListener('click', async ()=>{
+      signupStatus.textContent = 'Opening Google...'; setBusy(googleSignupBtn,true);
       try{
-        await signInWithPopup(auth, provider);
-        window.location.href = '/';
+        await signInWithPopup(auth, provider); window.location.href = '/';
       }catch(err){
-        signupStatus.textContent = err.message;
-      }
+        if (['auth/popup-blocked','auth/popup-closed-by-user','auth/unauthorized-domain'].includes(err.code)) {
+          try { await signInWithRedirect(auth, provider); }
+          catch(e){ signupStatus.textContent = friendlyError(e); }
+        } else { signupStatus.textContent = friendlyError(err); }
+      }finally{ setBusy(googleSignupBtn,false); }
     });
 
-    // Optional: react if already signed in
-    onAuthStateChanged(auth, (user)=>{
-      if(user){
-        // You could redirect to /profile.html or preload user data here
-      }
-    });
+    // Optional: act if already signed in
+    onAuthStateChanged(auth, (user)=>{ /* if(user){ ... } */ });
   </script>
 </body>
 </html>
