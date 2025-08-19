@@ -34,16 +34,19 @@
   </style>
 
 <script type="module">
-  import { auth, googleProvider } from "/assets/firebase-init.js?v=2";
+  import { auth, googleProvider } from "/assets/firebase-init.js?v=3";  // cache-bust
   import {
     onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword,
     sendPasswordResetEmail, signInWithPopup, signInWithRedirect, getRedirectResult
   } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-auth.js";
 
-  // ...keep the rest of your existing login/signup code exactly as-is...
-  // (handlers for tabs, email login/signup, reset password, and Google popup+redirect fallback)
+  // ✅ DO NOT declare firebaseConfig or call initializeApp() here anymore.
+
+  // ... keep all your existing tab and button handlers unchanged ...
 </script>
 
+
+  
   
 </head>
 <body>
