@@ -33,7 +33,18 @@
     .google img{ width:18px; height:18px; }
   </style>
 
-  <script defer src="/assets/shell.js"></script>
+<script type="module">
+  import { auth, googleProvider } from "/assets/firebase-init.js?v=2";
+  import {
+    onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword,
+    sendPasswordResetEmail, signInWithPopup, signInWithRedirect, getRedirectResult
+  } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-auth.js";
+
+  // ...keep the rest of your existing login/signup code exactly as-is...
+  // (handlers for tabs, email login/signup, reset password, and Google popup+redirect fallback)
+</script>
+
+  
 </head>
 <body>
 
