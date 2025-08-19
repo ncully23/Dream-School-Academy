@@ -111,16 +111,16 @@
           signInWithRedirect, getRedirectResult
         } = await import("https://www.gstatic.com/firebasejs/10.12.4/firebase-auth.js");
 
-        // --- Your real config (from Firebase console) ---
-        const firebaseConfig = {
-          apiKey: "AIzaSyD7R7ZsmTpG0jgLNt7w_R0tm_mWg_FZEYE",
-          authDomain: "dream-school-academy.firebaseapp.com",
-          projectId: "dream-school-academy",
-          storageBucket: "dream-school-academy.firebasestorage.app",
-          messagingSenderId: "665412130733",
-          appId: "1:665412130733:web:c3d59ab2c20f65a2277324",
-          measurementId: "G-HCJWBWZXKZ"
-        };
+const firebaseConfig = {
+  apiKey: "AIzaSyD7RZsmTpG0jgLNt7w_R0tm_mWg_FZEYE",   // ← correct key
+  authDomain: "dream-school-academy.firebaseapp.com",
+  projectId: "dream-school-academy",
+  storageBucket: "dream-school-academy.firebasestorage.app",
+  messagingSenderId: "665412130733",
+  appId: "1:665412130733:web:fc73…277324",            // copy EXACT from console
+  measurementId: "G-7LZY…H4QG"                         // copy EXACT from console (optional)
+};
+
 
         // Guard against malformed key (I vs l typo)
         if (!/^AIza[0-9A-Za-z_\-]{35}$/.test(firebaseConfig.apiKey)) {
