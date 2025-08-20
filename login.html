@@ -112,16 +112,16 @@
 
     // Your real config
 // replace ONLY this object in your current file
-const firebaseConfig = {
-  apiKey: "AIzaSyD7RZsmTpG0jgLNt7w_R0tm_mWg_FZEYE",
-  authDomain: "dream-school-academy.firebaseapp.com",
-  projectId: "dream-school-academy",
-  storageBucket: "dream-school-academy.firebasestorage.app",
-  messagingSenderId: "665412130733",
-  appId: "1:665412130733:web:fc73f3ed574ffb6d277324", // <-- note the extra '3'
-  measurementId: "G-7LZY2W4H4QG"
-};
-
+    
+    const firebaseConfig = {
+      apiKey: "AIzaSyCBUbqdnDz1TfLv4Vrn5GNw09fiYrkJ5mA",   // ← NEW KEY
+      authDomain: "dream-school-academy.firebaseapp.com",
+      projectId: "dream-school-academy",
+      storageBucket: "dream-school-academy.firebasestorage.app",
+      messagingSenderId: "665412130733",
+      appId: "1:665412130733:web:fc73f3ed574ffb6d277324",  // ← correct appId
+      measurementId: "G-7LZY2W4H4QG"
+    };
 
     // Init once
     const app = getApps().length ? getApps()[0] : initializeApp(firebaseConfig);
