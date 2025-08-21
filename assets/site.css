@@ -106,3 +106,15 @@ p { color: var(--muted); font-weight: 400; }
   letter-spacing: .2px;
 }
 
+/* Auth visibility toggles (default hidden for signed-in elements until JS reveals) */
+[data-when="signed-in"] { display: none; }
+[data-when="signed-out"] { display: inline-block; }
+
+/* Greeting styling */
+.site-nav .greeting {
+  margin-left: .4rem;
+  font-weight: 700;
+  letter-spacing: .2px;
+}
+.site-nav .greeting strong { color: var(--brand); }
+
