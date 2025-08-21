@@ -5,13 +5,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Login / Sign Up — Dream School Academy</title>
 
+  <!-- Font & site styles -->
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;800&display=swap" rel="stylesheet">
-
   <link rel="stylesheet" href="/assets/site.css" />
-``<script defer src="/assets/shell.js"></script>
 
-  
+  <!-- Inject header/footer + greeting everywhere -->
+  <script defer src="/assets/shell.js"></script>
+
   <style>
     .auth-wrap{ min-height:72vh; display:grid; place-items:center; padding:3rem 1rem; }
     .card{ width:min(520px,92vw); background:var(--surface); border:1px solid color-mix(in oklab,var(--surface-2)85%,#fff 0%); border-radius:18px; padding:1.2rem; box-shadow:0 12px 30px rgba(0,0,0,.25); }
@@ -34,10 +35,10 @@
     .google{ display:inline-flex; align-items:center; gap:.6rem; background:#fff; color:#111; border-radius:999px; padding:.8rem 1rem; border:0; cursor:pointer; }
     .google[disabled]{ opacity:.6; cursor:not-allowed; }
     .google img{ width:18px; height:18px; }
-    .fatal{ margin-top:1rem; color:#ffb4b4; }
   </style>
 </head>
 <body>
+
   <main class="auth-wrap">
     <div class="card">
       <div class="container">
@@ -75,7 +76,7 @@
         <form id="signup-form" style="display:none" autocomplete="on">
           <div>
             <label for="signup-first">First name (optional)</label>
-            <input id="signup-first" type="text" placeholder="Alex" />
+            <input id="signup-first" type="text" placeholder="e.g., Alex" />
           </div>
           <div>
             <label for="signup-email">Email</label>
@@ -95,148 +96,168 @@
           </button>
           <div class="status" id="signup-status"></div>
         </form>
-
-        <div id="global-status" class="fatal"></div>
       </div>
     </div>
   </main>
 
-  <!-- Firebase Auth -->
+  <!-- Firebase Auth (Modular) -->
   <script type="module">
-    (async () => {
-      const { initializeApp, getApps } = await import("https://www.gstatic.com/firebasejs/10.12.4/firebase-app.js");
-      const {
-        getAuth, setPersistence, browserLocalPersistence, onAuthStateChanged,
-        signInWithEmailAndPassword, createUserWithEmailAndPassword,
-        sendPasswordResetEmail, GoogleAuthProvider, signInWithPopup,
-        signInWithRedirect, getRedirectResult, updateProfile
-      } = await import("https://www.gstatic.com/firebasejs/10.12.4/firebase-auth.js");
+    import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-app.js";
+    import {
+      getAuth,
+      setPersistence,
+      browserLocalPersistence,
+      onAuthStateChanged,
+      signInWithEmailAndPassword,
+      createUserWithEmailAndPassword,
+      sendPasswordResetEmail,
+      updateProfile,
+      GoogleAuthProvider,
+      signInWithPopup,
+      signInWithRedirect,
+      getRedirectResult
+    } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-auth.js";
 
-      const firebaseConfig = {
-        apiKey: "AIzaSyCBUbqdnDz1TfLv4Vrn5GNw09fiYrkJ5mA",
-        authDomain: "dream-school-academy.firebaseapp.com",
-        projectId: "dream-school-academy",
-        storageBucket: "dream-school-academy.firebasestorage.app",
-        messagingSenderId: "665412130733",
-        appId: "1:665412130733:web:fc73f3ed574ffb6d277324",
-        measurementId: "G-7LZY2W4H4QG"
-      };
+    // ---- CONFIG (same as shell.js) ----
+    const firebaseConfig = {
+      apiKey: "AIzaSyCBUbqdnDz1TfLv4Vrn5GNw09fiYrkJ5mA",
+      authDomain: "dream-school-academy.firebaseapp.com",
+      projectId: "dream-school-academy",
+      storageBucket: "dream-school-academy.firebasestorage.app",
+      messagingSenderId: "665412130733",
+      appId: "1:665412130733:web:fc73f3ed574ffb6d277324"
+    };
 
-      const app = getApps().length ? getApps()[0] : initializeApp(firebaseConfig);
-      const auth = getAuth(app);
-      await setPersistence(auth, browserLocalPersistence);
-      const provider = new GoogleAuthProvider();
+    // Init
+    const app = getApps().length ? getApps()[0] : initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    await setPersistence(auth, browserLocalPersistence);
+    const provider = new GoogleAuthProvider();
 
-      // -------- First-name helpers --------
-      const firstFromString = (s) => (s || "").trim().split(/\s+/)[0] || "";
-      const deriveFirstFromEmail = (email) =>
-        (email || "").split("@")[0].split(/[._-]/)[0].replace(/^\w/, c => c.toUpperCase()) || "there";
+    // ----- utilities -----
+    const firstFromString = (s) => (s || "").trim().split(/\s+/)[0] || "";
+    const deriveFromEmail = (email) =>
+      (email || "").split("@")[0].split(/[._-]/)[0].replace(/^\w/, c => c.toUpperCase()) || "there";
 
-      const rememberFirstName = async (user, typedFirst = "") => {
-        const fromProfile = firstFromString(user?.displayName);
-        const fromTyped   = firstFromString(typedFirst);
-        const first = fromProfile || fromTyped || deriveFirstFromEmail(user?.email);
-        try {
-          if (!user.displayName && first) { await updateProfile(user, { displayName: first }); }
-        } catch {}
-        localStorage.setItem("dsa:firstName", first); // read by shell.js site header
-      };
-      // ------------------------------------
+    async function rememberFirstName(user, typedFirst = "") {
+      const fromProfile = firstFromString(user?.displayName);
+      const fromTyped   = firstFromString(typedFirst);
+      const chosen      = fromProfile || fromTyped || deriveFromEmail(user?.email);
+      localStorage.setItem("dsa:firstName", chosen);
+      return chosen;
+    }
 
-      // Handle redirect result (popup fallback)
-      try {
-        const r = await getRedirectResult(auth);
-        if (r?.user) {
-          await rememberFirstName(r.user);
-          location.href = "/";
-          return;
+    // ----- tabs -----
+    const tabLogin   = document.getElementById('tab-login');
+    const tabSignup  = document.getElementById('tab-signup');
+    const loginForm  = document.getElementById('login-form');
+    const signupForm = document.getElementById('signup-form');
+    function showLogin(){ tabLogin.classList.add('active'); tabLogin.setAttribute('aria-selected','true'); tabSignup.classList.remove('active'); tabSignup.setAttribute('aria-selected','false'); loginForm.style.display='grid'; signupForm.style.display='none'; }
+    function showSignup(){ tabSignup.classList.add('active'); tabSignup.setAttribute('aria-selected','true'); tabLogin.classList.remove('active'); tabLogin.setAttribute('aria-selected','false'); signupForm.style.display='grid'; loginForm.style.display='none'; }
+    tabLogin.addEventListener('click', showLogin);
+    tabSignup.addEventListener('click', showSignup);
+
+    // ----- friendly errors -----
+    const friendlyError = (err) => ({
+      'auth/invalid-email':'That email looks invalid.',
+      'auth/missing-password':'Enter your password.',
+      'auth/weak-password':'Use 6+ characters for your password.',
+      'auth/email-already-in-use':'That email is already registered. Try logging in.',
+      'auth/user-not-found':'No account with that email. Try signing up.',
+      'auth/wrong-password':'Incorrect password.',
+      'auth/popup-blocked':'Your browser blocked the popup. We’ll try a full-page redirect.',
+      'auth/unauthorized-domain':'This domain is not authorized in Firebase Authentication settings.'
+    }[err?.code] || err?.message || 'Something went wrong.');
+
+    const setBusy = (el, busy) => { if(el){ el.disabled = !!busy; el.setAttribute('aria-busy', busy ? 'true' : 'false'); } };
+
+    // ----- login (email) -----
+    const loginStatus = document.getElementById('login-status');
+    const loginBtn = document.getElementById('login-submit');
+    loginForm.addEventListener('submit', async (e)=>{
+      e.preventDefault(); loginStatus.textContent = 'Signing in...'; setBusy(loginBtn,true);
+      try{
+        const email = document.getElementById('login-email').value.trim();
+        const password = document.getElementById('login-password').value;
+        const cred = await signInWithEmailAndPassword(auth, email, password);
+        await rememberFirstName(cred.user);       // <-- keep greeting consistent
+        location.href = '/';
+      }catch(err){ loginStatus.textContent = friendlyError(err); }
+      finally{ setBusy(loginBtn,false); }
+    });
+
+    // ----- reset password -----
+    document.getElementById('reset-password').addEventListener('click', async ()=>{
+      const email = (document.getElementById('login-email').value || '').trim();
+      if(!email){ loginStatus.textContent = 'Enter your email first.'; return; }
+      try{ await sendPasswordResetEmail(auth, email); loginStatus.textContent = 'Password reset email sent.'; }
+      catch(err){ loginStatus.textContent = friendlyError(err); }
+    });
+
+    // ----- Google login -----
+    document.getElementById('google-login').addEventListener('click', async ()=>{
+      loginStatus.textContent = 'Opening Google...'; setBusy(document.getElementById('google-login'),true);
+      try{
+        const res = await signInWithPopup(auth, provider);
+        await rememberFirstName(res.user);
+        location.href = '/';
+      }catch(err){
+        if (['auth/popup-blocked','auth/popup-closed-by-user','auth/unauthorized-domain'].includes(err.code)) {
+          try { await signInWithRedirect(auth, provider); }
+          catch(e){ loginStatus.textContent = friendlyError(e); }
+        } else { loginStatus.textContent = friendlyError(err); }
+      }finally{ setBusy(document.getElementById('google-login'),false); }
+    });
+
+    // ----- sign up (email) -----
+    const signupStatus = document.getElementById('signup-status');
+    const signupBtn = document.getElementById('signup-submit');
+    signupForm.addEventListener('submit', async (e)=>{
+      e.preventDefault(); signupStatus.textContent = 'Creating account...'; setBusy(signupBtn,true);
+      try{
+        const first = document.getElementById('signup-first').value.trim();
+        const email = document.getElementById('signup-email').value.trim();
+        const password = document.getElementById('signup-password').value;
+        const cred = await createUserWithEmailAndPassword(auth, email, password);
+
+        // If the new user has no displayName, set it
+        if (!cred.user.displayName && first) {
+          try { await updateProfile(cred.user, { displayName: first }); } catch {}
         }
-      } catch (e) { console.warn("Redirect sign-in failed:", e); }
+        await rememberFirstName(cred.user, first);
+        location.href = '/';
+      }catch(err){ signupStatus.textContent = friendlyError(err); }
+      finally{ setBusy(signupBtn,false); }
+    });
 
-      // Tabs
-      const tabLogin   = document.getElementById('tab-login');
-      const tabSignup  = document.getElementById('tab-signup');
-      const loginForm  = document.getElementById('login-form');
-      const signupForm = document.getElementById('signup-form');
-      function showLogin(){ tabLogin.classList.add('active'); tabLogin.setAttribute('aria-selected','true'); tabSignup.classList.remove('active'); tabSignup.setAttribute('aria-selected','false'); loginForm.style.display='grid'; signupForm.style.display='none'; }
-      function showSignup(){ tabSignup.classList.add('active'); tabSignup.setAttribute('aria-selected','true'); tabLogin.classList.remove('active'); tabLogin.setAttribute('aria-selected','false'); signupForm.style.display='grid'; loginForm.style.display='none'; }
-      tabLogin.addEventListener('click', showLogin);
-      tabSignup.addEventListener('click', showSignup);
+    // ----- Google sign up uses the same flow as login -----
+    document.getElementById('google-signup').addEventListener('click', async ()=>{
+      signupStatus.textContent = 'Opening Google...'; setBusy(document.getElementById('google-signup'),true);
+      try{
+        const res = await signInWithPopup(auth, provider);
+        await rememberFirstName(res.user);
+        location.href = '/';
+      }catch(err){
+        if (['auth/popup-blocked','auth/popup-closed-by-user','auth/unauthorized-domain'].includes(err.code)) {
+          try { await signInWithRedirect(auth, provider); }
+          catch(e){ signupStatus.textContent = friendlyError(e); }
+        } else { signupStatus.textContent = friendlyError(err); }
+      }finally{ setBusy(document.getElementById('google-signup'),false); }
+    });
 
-      // Helpers
-      const setBusy = (el, busy) => { if(!el) return; el.disabled = !!busy; el.setAttribute('aria-busy', busy ? 'true' : 'false'); };
-      const ERR = {
-        'auth/invalid-email':'That email looks invalid.',
-        'auth/missing-password':'Enter your password.',
-        'auth/weak-password':'Use 6+ characters for your password.',
-        'auth/email-already-in-use':'That email is already registered. Try logging in.',
-        'auth/user-not-found':'No account with that email. Try signing up.',
-        'auth/wrong-password':'Incorrect password.',
-        'auth/popup-blocked':'Your browser blocked the popup. We’ll try a full-page redirect.',
-        'auth/unauthorized-domain':'This domain is not authorized in Firebase Authentication settings.'
-      };
-      const friendlyError = (err) => ERR[err?.code] || err?.message || 'Something went wrong.';
-
-      // Login (email/password)
-      const loginStatus = document.getElementById('login-status');
-      const loginBtn = document.getElementById('login-submit');
-      loginForm.addEventListener('submit', async (e)=>{
-        e.preventDefault(); loginStatus.textContent = 'Signing in...'; setBusy(loginBtn,true);
-        try{
-          const email = document.getElementById('login-email').value.trim();
-          const password = document.getElementById('login-password').value;
-          const cred = await signInWithEmailAndPassword(auth, email, password);
-          await rememberFirstName(cred.user);
-          location.href = '/';
-        }catch(err){ loginStatus.textContent = friendlyError(err); }
-        finally{ setBusy(loginBtn,false); }
-      });
-
-      // Forgot password
-      document.getElementById('reset-password').addEventListener('click', async ()=>{
-        const email = (document.getElementById('login-email').value || '').trim();
-        if(!email){ loginStatus.textContent = 'Enter your email first.'; return; }
-        try{ await sendPasswordResetEmail(auth, email); loginStatus.textContent = 'Password reset email sent.'; }
-        catch(err){ loginStatus.textContent = friendlyError(err); }
-      });
-
-      // Google (login/signup)
-      const googleLoginBtn  = document.getElementById('google-login');
-      const googleSignupBtn = document.getElementById('google-signup');
-      async function googleFlow(statusEl){
-        statusEl.textContent = 'Opening Google...';
-        try{
-          const res = await signInWithPopup(auth, provider);
-          await rememberFirstName(res.user);
-          location.href = '/';
-        }catch(err){
-          if (['auth/popup-blocked','auth/popup-closed-by-user','auth/unauthorized-domain'].includes(err.code)) {
-            try { await signInWithRedirect(auth, provider); }
-            catch(e){ statusEl.textContent = friendlyError(e); }
-          } else { statusEl.textContent = friendlyError(err); }
-        }
+    // ----- handle Google redirect result if popup was blocked -----
+    try {
+      const r = await getRedirectResult(auth);
+      if (r?.user) {
+        await rememberFirstName(r.user);
+        location.href = '/';
       }
-      googleLoginBtn.addEventListener('click', ()=>googleFlow(loginStatus));
-      googleSignupBtn.addEventListener('click', ()=>googleFlow(document.getElementById('signup-status')));
+    } catch(e) {
+      console.warn('Redirect sign-in failed:', e);
+    }
 
-      // Sign up (email/password)
-      const signupStatus = document.getElementById('signup-status');
-      const signupBtn = document.getElementById('signup-submit');
-      signupForm.addEventListener('submit', async (e)=>{
-        e.preventDefault(); signupStatus.textContent = 'Creating account...'; setBusy(signupBtn,true);
-        try{
-          const first = document.getElementById('signup-first').value;
-          const email = document.getElementById('signup-email').value.trim();
-          const password = document.getElementById('signup-password').value;
-          const cred = await createUserWithEmailAndPassword(auth, email, password);
-          await rememberFirstName(cred.user, first);
-          location.href = '/';
-        }catch(err){ signupStatus.textContent = friendlyError(err); }
-        finally{ setBusy(signupBtn,false); }
-      });
-
-      onAuthStateChanged(auth, ()=>{ /* optional pre-fill or redirect */ });
-    })();
+    // (optional) just a no-op listener
+    onAuthStateChanged(auth, () => {});
   </script>
 
   <noscript>
