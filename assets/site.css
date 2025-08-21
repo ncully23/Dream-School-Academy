@@ -97,3 +97,12 @@ p { color: var(--muted); font-weight: 400; }
   font-weight: 700;
 }
 .site-nav a.cta:hover{ transform: translateY(-1px) scale(1.01); }
+
+/* Auth-aware header bits */
+[data-when="signed-in"] { display: none; } /* hidden by default until JS confirms auth */
+.site-nav .greeting {
+  margin-left: .25rem;
+  font-weight: 700;
+  letter-spacing: .2px;
+}
+
