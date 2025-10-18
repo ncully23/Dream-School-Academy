@@ -3,42 +3,31 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Topic Quiz | Dream School Academy</title>
-  <!-- this file is inside /practice/, so use ../ -->
+  <title>Topic Practice | Dream School Academy</title>
+  <!-- file is inside /practice/, so use ../ -->
   <link rel="stylesheet" href="../style.css" />
   <style>
-    :root{ --bg:#0f1420; --card:#1b2231; --ink:#e8eefc; --muted:#a9b5cc; --brand:#00d8ff; --border:rgba(255,255,255,.08); --good:#29c46d; --bad:#ff6b6b; }
+    :root{ --bg:#0f1420; --card:#1b2231; --ink:#e8eefc; --muted:#a9b5cc; --brand:#00d8ff; --border:rgba(255,255,255,.08); }
     body{ background:var(--bg); color:var(--ink); }
     main{ max-width:900px; margin:0 auto; padding:24px; }
     .card{ background:var(--card); border:1px solid var(--border); border-radius:14px; padding:20px; }
     .bar{ display:flex; justify-content:space-between; align-items:center; gap:12px; margin-bottom:16px; }
     h1{ font-size:1.4rem; margin:0; }
     .muted{ color:var(--muted); }
-    .dots{ display:flex; gap:6px; flex-wrap:wrap; margin-bottom:8px; }
-    .dot{ width:10px; height:10px; border-radius:999px; background:#44506a; opacity:.7 }
-    .dot.active{ background:var(--brand); opacity:1 }
-    .dot.answered{ background:#67c1ff }
     .q-stem{ font-size:1.05rem; line-height:1.55; margin-bottom:14px; }
     .choices{ display:grid; gap:10px; }
     .choice{ display:flex; gap:10px; align-items:flex-start; padding:10px 12px; border:1px solid var(--border); border-radius:10px; cursor:pointer; }
-    .nav{ display:flex; gap:8px; margin-top:16px; }
+    .nav{ display:flex; gap:8px; margin-top:16px; flex-wrap:wrap; }
     .btn{ background:var(--brand); color:#051018; border:0; border-radius:999px; padding:10px 14px; font-weight:700; cursor:pointer; }
     .btn.secondary{ background:transparent; color:var(--ink); border:1px solid var(--border); }
     .btn[disabled]{ opacity:.6; cursor:not-allowed; }
-    .results h2{ margin:.3rem 0 1rem }
-    .result-item{ border:1px solid var(--border); border-radius:12px; padding:14px; margin-bottom:12px; background:#141b29; }
-    .ok{ color:var(--good); font-weight:800 }
-    .bad{ color:var(--bad); font-weight:800 }
-    .idtag{ font-size:.85rem; color:#cdd7ee; background:#223152; padding:3px 8px; border-radius:6px; }
-    .explain{ color:#d5def3 }
-    .hr{ height:1px; background:var(--border); margin:16px 0; }
-    a.cta { color:#00d8ff; }
+    .saved{ margin-top:10px; color:#9be7ff; display:none; }
+    .footer-note{ margin-top:8px }
   </style>
 </head>
 <body>
   <header>
     <div class="header-container">
-      <!-- these are one level up now -->
       <a href="../index.html" class="logo-button">Dream School Academy</a>
       <nav>
         <a href="../study.html">Study</a>
@@ -49,200 +38,149 @@
   </header>
 
   <main>
-    <!-- Quiz card -->
-    <div class="card" id="quiz-card" style="display:none">
+    <div class="card" id="practice-card" style="display:none">
       <div class="bar">
-        <h1 id="quiz-title">Topic Quiz</h1>
-        <div class="muted"><span id="progress-count">1</span>/<span id="total-count">0</span></div>
+        <h1 id="title">Topic Practice</h1>
+        <div class="muted"><span id="count">1</span>/<span id="total">0</span></div>
       </div>
 
-      <div class="dots" id="dots"></div>
-      <div id="q-stem" class="q-stem"></div>
-      <div id="q-choices" class="choices"></div>
+      <div id="stem" class="q-stem"></div>
+      <div id="choices" class="choices"></div>
 
       <div class="nav">
-        <button id="prev" class="btn secondary">Back</button>
+        <button id="back" class="btn secondary">Back</button>
         <button id="next" class="btn secondary">Next</button>
-        <button id="submit" class="btn">Submit</button>
+        <button id="finish" class="btn">Finish</button>
       </div>
-      <p class="muted" style="margin-top:8px">One question at a time. You can change answers before you submit.</p>
+      <p class="muted footer-note">You can change answers any time before you click Finish. We do not grade this page.</p>
+      <p id="saved" class="saved">Saved ✔ Your responses are stored on this device.</p>
     </div>
 
-    <!-- Missing/invalid topic -->
     <div class="card" id="missing" style="display:none">
-      <h2>Pick a topic from Practice</h2>
-      <p class="muted">This page expects a topic from the URL (either <code>?topic=...</code> or the filename).</p>
-      <p><a class="cta" href="../practice.html">Go to Practice</a></p>
-    </div>
-
-    <!-- Results -->
-    <div class="card" id="results" style="display:none">
-      <h2 id="results-title">Results</h2>
-      <p id="score" style="font-weight:800"></p>
-      <div class="hr"></div>
-      <div id="review"></div>
-      <div class="nav">
-        <a href="../practice.html" class="btn secondary">Back to Practice</a>
-        <button id="retry" class="btn">Retry Topic</button>
-      </div>
+      <h2>Pick a topic</h2>
+      <p class="muted">This page expects a topic from the URL (either <code>?topic=...</code> or the filename like <code>/practice/linear-equations-one-variable.html</code>).</p>
+      <p><a class="btn secondary" href="../practice.html">Go to Practice</a></p>
     </div>
   </main>
 
   <script>
-    // --- Topic datasets (add more topics here) ---
+    /* ===============================
+       DATA (only the topic you need)
+       =============================== */
     const DATASETS = {
       "linear-equations-one-variable": {
-        title: "Linear Equations in One Variable — Quiz",
+        title: "Linear Equations in One Variable — Practice",
         questions: [
-          { id:"26fac581", stem:"If 2(x − 5) + 3(x − 5) = 10, what is the value of x − 5?", choices:["2","5","7","12"], answer:0, rationale:"Combine like terms: 2(x−5)+3(x−5)=5(x−5)=10 ⇒ divide by 5 ⇒ x−5=2." },
-          { id:"48bad848", stem:"Megan worked 10 hours. She earns p per hour for the first 8 hours and 1.5p per hour after 8 hours. Her total pay was $137.50. What is p?", choices:["$11.75","$12.50","$13.25","$13.75"], answer:1, rationale:"Pay = 8p + 2(1.5p)=11p. 137.50=11p ⇒ p=12.50." },
-          { id:"f0581e16", stem:"Gas is $4/gal and car averages 25 mpg. Alan wants to reduce weekly gas spending by $5. Let m be miles fewer per week. Which equation is correct?", choices:["(25/4)m = 95","(25/4)m = 5","(4/25)m = 95","(4/25)m = 5"], answer:3, rationale:"Cost per mile = 4/25 dollars. Desired savings $5 ⇒ (4/25)m = 5." },
-          { id:"6e706172", stem:"Cost $65; price $100; 20% commission on price. Profit per unit = price − (cost + commission). Equation for profit $6,840 over u units?", choices:["(100(1−0.2) − 65)u = 6840","(100 − 65)(1−0.2)u = 6840","0.8(100) − 65u = 6840","(0.2(100) + 65)u = 6840"], answer:0, rationale:"Commission = 0.2·100; net after commission = 100(1−0.2). Profit/unit = 100(0.8)−65." },
-          { id:"509cb1a6", stem:"4x + 12 = a(x + 3)/2 has infinitely many solutions. Find a.", choices:["0","3","8","12"], answer:2, rationale:"Multiply by 2: 8x+24=a(x+3). Identity requires a=8 so both sides match for all x." }
+          { id:"26fac581", stem:"If 2(x − 5) + 3(x − 5) = 10, what is the value of x − 5?", choices:["2","5","7","12"] },
+          { id:"48bad848", stem:"Megan worked 10 hours. She earns p per hour for the first 8 hours and 1.5p per hour after 8 hours. Her total pay was $137.50. What is p?", choices:["$11.75","$12.50","$13.25","$13.75"] },
+          { id:"f0581e16", stem:"Gas is $4/gal and car averages 25 mpg. Alan wants to reduce weekly gas spending by $5. Let m be miles fewer per week. Which equation is correct?", choices:["(25/4)m = 95","(25/4)m = 5","(4/25)m = 95","(4/25)m = 5"] },
+          { id:"6e706172", stem:"Cost $65; price $100; 20% commission on price. Profit per unit = price − (cost + commission). Equation for profit $6,840 over u units?", choices:["(100(1−0.2) − 65)u = 6840","(100 − 65)(1−0.2)u = 6840","0.8(100) − 65u = 6840","(0.2(100) + 65)u = 6840"] },
+          { id:"509cb1a6", stem:"4x + 12 = a(x + 3)/2 has infinitely many solutions. Find a.", choices:["0","3","8","12"] }
         ]
       }
-      // Add more topics here as you create them...
     };
 
-    // --- Router: accept ?topic=... OR infer from filename /practice/<slug>.html ---
+    /* ===============================
+       ROUTER (topic from ?topic or filename)
+       =============================== */
     const params = new URLSearchParams(window.location.search);
     let topic = params.get('topic');
-
     if (!topic) {
-      const match = window.location.pathname.match(/\/practice\/([^\/]+)\.html$/);
-      if (match) topic = match[1]; // e.g., "linear-equations-one-variable"
+      const m = window.location.pathname.match(/\/practice\/([^\/]+)\.html$/);
+      if (m) topic = m[1];
     }
-
     const data = topic && DATASETS[topic];
 
-    const quizCard = document.getElementById('quiz-card');
-    const missingCard = document.getElementById('missing');
-    const resultsCard = document.getElementById('results');
-
-    if(!data){ missingCard.style.display='block'; }
-    else{
-      quizCard.style.display='block';
-      runQuiz(data);
+    const practiceCard = document.getElementById('practice-card');
+    const missingCard  = document.getElementById('missing');
+    if (!data) { missingCard.style.display = 'block'; }
+    else {
+      practiceCard.style.display = 'block';
+      runPractice(data);
     }
 
-    // --- Quiz runner ---
-    function runQuiz(dataset){
-      const QUESTIONS = dataset.questions;
-      const titleEl = document.getElementById('quiz-title');
-      titleEl.textContent = dataset.title;
-      document.getElementById('results-title').textContent = dataset.title + " — Results";
-
-      const dotsEl = document.getElementById('dots');
-      const stemEl = document.getElementById('q-stem');
-      const choicesEl = document.getElementById('q-choices');
-      const prevBtn = document.getElementById('prev');
+    /* ===============================
+       PRACTICE (no grading)
+       =============================== */
+    function runPractice(dataset){
+      const titleEl = document.getElementById('title');
+      const stemEl  = document.getElementById('stem');
+      const choicesEl = document.getElementById('choices');
+      const backBtn = document.getElementById('back');
       const nextBtn = document.getElementById('next');
-      const submitBtn = document.getElementById('submit');
-      const progressCount = document.getElementById('progress-count');
-      const totalCount = document.getElementById('total-count');
-      const scoreEl = document.getElementById('score');
-      const reviewEl = document.getElementById('review');
-      const retryBtn = document.getElementById('retry');
+      const finishBtn = document.getElementById('finish');
+      const countEl = document.getElementById('count');
+      const totalEl = document.getElementById('total');
+      const savedEl = document.getElementById('saved');
 
-      totalCount.textContent = QUESTIONS.length.toString();
+      const QUESTIONS = dataset.questions;
+      titleEl.textContent = dataset.title;
+      totalEl.textContent = QUESTIONS.length.toString();
+
+      // restore any saved responses
+      const STORAGE_KEY = `dsa:resp:${topic}`;
+      let responses = [];
+      try {
+        const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+        if (Array.isArray(saved)) responses = saved;
+      } catch {}
+      if (responses.length !== QUESTIONS.length) {
+        responses = new Array(QUESTIONS.length).fill(null);
+      }
 
       let idx = 0;
-      const answers = new Array(QUESTIONS.length).fill(null);
+      render();
 
-      function buildDots(){
-        dotsEl.innerHTML = '';
-        QUESTIONS.forEach((_,i)=>{
-          const d = document.createElement('span');
-          d.className = 'dot' + (i===idx ? ' active':'') + (answers[i]!=null ? ' answered':'' );
-          dotsEl.appendChild(d);
-        });
-      }
+      backBtn.addEventListener('click', ()=>{ if(idx>0){ idx--; render(); }});
+      nextBtn.addEventListener('click', ()=>{ if(idx<QUESTIONS.length-1){ idx++; render(); }});
+      finishBtn.addEventListener('click', ()=>{
+        // persist one last time
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(responses));
+        savedEl.style.display = 'block';
+        window.scrollTo({top:0, behavior:'smooth'});
+      });
 
       function render(){
         const q = QUESTIONS[idx];
-        progressCount.textContent = (idx+1).toString();
-        buildDots();
+        countEl.textContent = (idx+1).toString();
+        savedEl.style.display = 'none';
 
+        // stem
         stemEl.textContent = q.stem;
+
+        // choices
         choicesEl.innerHTML = '';
         q.choices.forEach((text, i)=>{
           const id = `q${idx}_c${i}`;
-          const wrap = document.createElement('label');
-          wrap.className = 'choice';
-          wrap.setAttribute('for', id);
+          const label = document.createElement('label');
+          label.className = 'choice';
+          label.setAttribute('for', id);
 
           const radio = document.createElement('input');
           radio.type = 'radio';
           radio.name = `q${idx}`;
           radio.id = id;
           radio.value = i;
-          if (answers[idx] === i) radio.checked = true;
+          if (responses[idx] === i) radio.checked = true;
+
           radio.addEventListener('change', ()=>{
-            answers[idx] = i; buildDots(); updateButtons();
+            responses[idx] = i;
+            // save as you go
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(responses));
           });
 
           const txt = document.createElement('div');
           txt.textContent = text;
 
-          wrap.appendChild(radio);
-          wrap.appendChild(txt);
-          choicesEl.appendChild(wrap);
+          label.appendChild(radio);
+          label.appendChild(txt);
+          choicesEl.appendChild(label);
         });
 
-        updateButtons();
-      }
-
-      function updateButtons(){
-        prevBtn.disabled = idx === 0;
+        // nav button states
+        backBtn.disabled = idx === 0;
         nextBtn.disabled = idx === QUESTIONS.length-1;
-        submitBtn.textContent = answers.every(a=>a!==null) ? 'Submit' : 'Submit (skip blanks)';
       }
-
-      prevBtn.addEventListener('click', ()=>{ if(idx>0){ idx--; render(); }});
-      nextBtn.addEventListener('click', ()=>{ if(idx<QUESTIONS.length-1){ idx++; render(); }});
-      submitBtn.addEventListener('click', submitQuiz);
-      retryBtn.addEventListener('click', ()=>{
-        for(let i=0;i<answers.length;i++) answers[i]=null;
-        idx=0; render();
-        resultsCard.style.display='none';
-        quizCard.style.display='block';
-        window.scrollTo({top:0,behavior:'smooth'});
-      });
-
-      function submitQuiz(){
-        let correct = 0;
-        const items = [];
-        QUESTIONS.forEach((q, i)=>{
-          const user = answers[i];
-          const ok = user === q.answer;
-          if(ok) correct++;
-          items.push({ ...q, userIndex:user, ok });
-        });
-
-        quizCard.style.display='none';
-        resultsCard.style.display='block';
-        scoreEl.textContent = `Score: ${correct} / ${QUESTIONS.length} (${Math.round(100*correct/QUESTIONS.length)}%)`;
-
-        reviewEl.innerHTML = '';
-        items.forEach((it, n)=>{
-          const box = document.createElement('div');
-          box.className = 'result-item';
-          box.innerHTML = `
-            <div><strong>Q${n+1}.</strong> ${it.stem}</div>
-            <div>${it.ok ? '<span class="ok">Correct</span>' : '<span class="bad">Incorrect</span>'}</div>
-            <div><strong>Your answer:</strong> ${it.userIndex==null ? '<em>no answer</em>' : it.choices[it.userIndex]}</div>
-            <div><strong>Correct answer:</strong> ${it.choices[it.answer]}</div>
-            <div style="margin:8px 0"><span class="idtag">ID: ${it.id}</span></div>
-            <div class="explain"><strong>Why:</strong> ${it.rationale}</div>
-          `;
-          reviewEl.appendChild(box);
-        });
-
-        window.scrollTo({top:0,behavior:'smooth'});
-      }
-
-      // init
-      render();
     }
   </script>
 </body>
