@@ -4,7 +4,6 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Topic Practice | Dream School Academy</title>
-  <!-- file is inside /practice/, so use ../ -->
   <link rel="stylesheet" href="../style.css" />
   <style>
     :root{ --bg:#0f1420; --card:#1b2231; --ink:#e8eefc; --muted:#a9b5cc; --brand:#00d8ff; --border:rgba(255,255,255,.08); }
@@ -28,17 +27,17 @@
 <body>
   <header>
     <div class="header-container">
-      <a href="../index.html" class="logo-button">Dream School Academy</a>
+      <a class="logo-button" href="/">Dream School Academy</a>
       <nav>
-        <a href="../study.html">Study</a>
-        <a href="../practice.html">Practice</a>
-        <a href="../contactus.html">Contact Us</a>
+        <a href="/study">Study</a>
+        <a href="/practice">Practice</a>
+        <a href="/contactus">Contact Us</a>
       </nav>
     </div>
   </header>
 
   <main>
-    <div class="card" id="practice-card" style="display:none">
+    <div class="card" id="practice-card">
       <div class="bar">
         <h1 id="title">Topic Practice</h1>
         <div class="muted"><span id="count">1</span>/<span id="total">0</span></div>
@@ -55,18 +54,13 @@
       <p class="muted footer-note">You can change answers any time before you click Finish. We do not grade this page.</p>
       <p id="saved" class="saved">Saved ✔ Your responses are stored on this device.</p>
     </div>
-
-    <div class="card" id="missing" style="display:none">
-      <h2>Pick a topic</h2>
-      <p class="muted">This page expects a topic from the URL (either <code>?topic=...</code> or the filename like <code>/practice/linear-equations-one-variable.html</code>).</p>
-      <p><a class="btn secondary" href="../practice.html">Go to Practice</a></p>
-    </div>
   </main>
 
   <script>
-    /* ===============================
-       DATA (only the topic you need)
-       =============================== */
+    // Fixed topic for this page
+    const TOPIC = "linear-equations-one-variable";
+
+    // Data for this page’s topic
     const DATASETS = {
       "linear-equations-one-variable": {
         title: "Linear Equations in One Variable — Practice",
@@ -80,45 +74,26 @@
       }
     };
 
-    /* ===============================
-       ROUTER (topic from ?topic or filename)
-       =============================== */
-    const params = new URLSearchParams(window.location.search);
-    let topic = params.get('topic');
-    if (!topic) {
-      const m = window.location.pathname.match(/\/practice\/([^\/]+)\.html$/);
-      if (m) topic = m[1];
-    }
-    const data = topic && DATASETS[topic];
+    // Always run the practice for this page’s topic
+    runPractice(DATASETS[TOPIC]);
 
-    const practiceCard = document.getElementById('practice-card');
-    const missingCard  = document.getElementById('missing');
-    if (!data) { missingCard.style.display = 'block'; }
-    else {
-      practiceCard.style.display = 'block';
-      runPractice(data);
-    }
-
-    /* ===============================
-       PRACTICE (no grading)
-       =============================== */
+    // Practice (no grading)
     function runPractice(dataset){
-      const titleEl = document.getElementById('title');
-      const stemEl  = document.getElementById('stem');
+      const titleEl   = document.getElementById('title');
+      const stemEl    = document.getElementById('stem');
       const choicesEl = document.getElementById('choices');
-      const backBtn = document.getElementById('back');
-      const nextBtn = document.getElementById('next');
+      const backBtn   = document.getElementById('back');
+      const nextBtn   = document.getElementById('next');
       const finishBtn = document.getElementById('finish');
-      const countEl = document.getElementById('count');
-      const totalEl = document.getElementById('total');
-      const savedEl = document.getElementById('saved');
+      const countEl   = document.getElementById('count');
+      const totalEl   = document.getElementById('total');
+      const savedEl   = document.getElementById('saved');
 
       const QUESTIONS = dataset.questions;
       titleEl.textContent = dataset.title;
       totalEl.textContent = QUESTIONS.length.toString();
 
-      // restore any saved responses
-      const STORAGE_KEY = `dsa:resp:${topic}`;
+      const STORAGE_KEY = `dsa:resp:${TOPIC}`;
       let responses = [];
       try {
         const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
@@ -134,7 +109,6 @@
       backBtn.addEventListener('click', ()=>{ if(idx>0){ idx--; render(); }});
       nextBtn.addEventListener('click', ()=>{ if(idx<QUESTIONS.length-1){ idx++; render(); }});
       finishBtn.addEventListener('click', ()=>{
-        // persist one last time
         localStorage.setItem(STORAGE_KEY, JSON.stringify(responses));
         savedEl.style.display = 'block';
         window.scrollTo({top:0, behavior:'smooth'});
@@ -145,10 +119,8 @@
         countEl.textContent = (idx+1).toString();
         savedEl.style.display = 'none';
 
-        // stem
         stemEl.textContent = q.stem;
 
-        // choices
         choicesEl.innerHTML = '';
         q.choices.forEach((text, i)=>{
           const id = `q${idx}_c${i}`;
@@ -159,13 +131,12 @@
           const radio = document.createElement('input');
           radio.type = 'radio';
           radio.name = `q${idx}`;
-          radio.id = id;
+          radio.id   = id;
           radio.value = i;
           if (responses[idx] === i) radio.checked = true;
 
           radio.addEventListener('change', ()=>{
             responses[idx] = i;
-            // save as you go
             localStorage.setItem(STORAGE_KEY, JSON.stringify(responses));
           });
 
@@ -177,7 +148,6 @@
           choicesEl.appendChild(label);
         });
 
-        // nav button states
         backBtn.disabled = idx === 0;
         nextBtn.disabled = idx === QUESTIONS.length-1;
       }
