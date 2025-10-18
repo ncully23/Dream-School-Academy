@@ -5,6 +5,54 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Practice – Dream School Academy</title>
   <link rel="stylesheet" href="style.css" />
+  <style>
+    main {
+      padding: 40px 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 40px;
+    }
+
+    section {
+      width: 100%;
+      max-width: 800px;
+      background-color: #1c1c1c;
+      padding: 25px 30px;
+      border-radius: 8px;
+    }
+
+    section h3 {
+      color: #00d8ff;
+      font-size: 1.4rem;
+      margin-bottom: 1rem;
+    }
+
+    section p {
+      color: #ccc;
+      margin-bottom: 1rem;
+    }
+
+    ul.practice-list {
+      list-style-type: disc;
+      padding-left: 25px;
+      color: #ccc;
+    }
+
+    ul.practice-list li {
+      margin-bottom: 10px;
+    }
+
+    ul.practice-list a {
+      color: #ccc;
+      text-decoration: none;
+      transition: color 0.3s;
+    }
+
+    ul.practice-list a:hover {
+      color: #00d8ff;
+    }
+  </style>
 </head>
 <body>
   <header>
@@ -12,21 +60,63 @@
       <a href="index.html" class="logo-button">Dream School Academy</a>
       <nav>
         <a href="study.html">Study</a>
-        <a href="practice.html">Practice</a>
+        <a href="practice.html" class="active">Practice</a>
         <a href="contactus.html">Contact Us</a>
       </nav>
     </div>
   </header>
 
   <main>
-    <section class="info">
-      <h3>📝 Practice Tests</h3>
+    <!-- Full-length practice modules -->
+    <section>
+      <h3>📝 Full Practice Tests</h3>
       <p>Choose from realistic, timed modules:</p>
-      <ul>
+      <ul class="practice-list">
         <li><a href="module1.html">Module 1 – Reading (32 mins)</a></li>
         <li><a href="module2.html">Module 2 – Reading (32 mins)</a></li>
         <li><a href="module3.html">Module 3 – Math (35 mins)</a></li>
         <li><a href="module4.html">Module 4 – Math (35 mins)</a></li>
+      </ul>
+    </section>
+
+    <!-- Topic-based quizzes -->
+    <section>
+      <h3>🎯 Practice by Topic</h3>
+      <p>Select a topic to practice 10 targeted questions:</p>
+
+      <ul class="practice-list">
+        <!-- Reading & Writing -->
+        <li><a href="quiz.html?topic=central-ideas">Central Ideas and Details</a></li>
+        <li><a href="quiz.html?topic=inferences">Inferences</a></li>
+        <li><a href="quiz.html?topic=command-evidence">Command of Evidence</a></li>
+        <li><a href="quiz.html?topic=words-context">Words in Context</a></li>
+        <li><a href="quiz.html?topic=text-structure">Text Structure and Purpose</a></li>
+        <li><a href="quiz.html?topic=cross-text">Cross-Text Connections</a></li>
+        <li><a href="quiz.html?topic=rhetorical-synthesis">Rhetorical Synthesis</a></li>
+        <li><a href="quiz.html?topic=transitions">Transitions</a></li>
+        <li><a href="quiz.html?topic=boundaries">Boundaries</a></li>
+        <li><a href="quiz.html?topic=form-structure-sense">Form, Structure, and Sense</a></li>
+
+        <!-- Math -->
+        <li><a href="quiz.html?topic=linear-equations-one-variable">Linear Equations in One Variable</a></li>
+        <li><a href="quiz.html?topic=linear-functions">Linear Functions</a></li>
+        <li><a href="quiz.html?topic=linear-equations-two-variables">Linear Equations in Two Variables</a></li>
+        <li><a href="quiz.html?topic=systems-linear-equations">Systems of Two Linear Equations in Two Variables</a></li>
+        <li><a href="quiz.html?topic=linear-inequalities">Linear Inequalities in One or Two Variables</a></li>
+        <li><a href="quiz.html?topic=nonlinear-functions">Nonlinear Functions</a></li>
+        <li><a href="quiz.html?topic=nonlinear-equations">Nonlinear Equations and Systems</a></li>
+        <li><a href="quiz.html?topic=equivalent-expressions">Equivalent Expressions</a></li>
+        <li><a href="quiz.html?topic=ratios-units">Ratios, Rates, Proportional Relationships, and Units</a></li>
+        <li><a href="quiz.html?topic=percentages">Percentages</a></li>
+        <li><a href="quiz.html?topic=one-variable-data">One-Variable Data</a></li>
+        <li><a href="quiz.html?topic=two-variable-data">Two-Variable Data</a></li>
+        <li><a href="quiz.html?topic=probability">Probability and Conditional Probability</a></li>
+        <li><a href="quiz.html?topic=inference-statistics">Inference from Sample Statistics</a></li>
+        <li><a href="quiz.html?topic=statistical-claims">Evaluating Statistical Claims</a></li>
+        <li><a href="quiz.html?topic=area-volume">Area and Volume</a></li>
+        <li><a href="quiz.html?topic=lines-angles-triangles">Lines, Angles, and Triangles</a></li>
+        <li><a href="quiz.html?topic=right-triangles">Right Triangles and Trigonometry</a></li>
+        <li><a href="quiz.html?topic=circles">Circles</a></li>
       </ul>
     </section>
   </main>
