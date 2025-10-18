@@ -4,7 +4,8 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Topic Quiz | Dream School Academy</title>
-  <link rel="stylesheet" href="style.css" />
+  <!-- this file is inside /practice/, so use ../ -->
+  <link rel="stylesheet" href="../style.css" />
   <style>
     :root{ --bg:#0f1420; --card:#1b2231; --ink:#e8eefc; --muted:#a9b5cc; --brand:#00d8ff; --border:rgba(255,255,255,.08); --good:#29c46d; --bad:#ff6b6b; }
     body{ background:var(--bg); color:var(--ink); }
@@ -37,11 +38,12 @@
 <body>
   <header>
     <div class="header-container">
-      <a href="index.html" class="logo-button">Dream School Academy</a>
+      <!-- these are one level up now -->
+      <a href="../index.html" class="logo-button">Dream School Academy</a>
       <nav>
-        <a href="study.html">Study</a>
-        <a href="practice.html">Practice</a>
-        <a href="contactus.html">Contact Us</a>
+        <a href="../study.html">Study</a>
+        <a href="../practice.html">Practice</a>
+        <a href="../contactus.html">Contact Us</a>
       </nav>
     </div>
   </header>
@@ -69,8 +71,8 @@
     <!-- Missing/invalid topic -->
     <div class="card" id="missing" style="display:none">
       <h2>Pick a topic from Practice</h2>
-      <p class="muted">This page expects a <code>?topic=...</code> parameter.</p>
-      <p><a class="cta" href="practice.html">Go to Practice</a></p>
+      <p class="muted">This page expects a topic from the URL (either <code>?topic=...</code> or the filename).</p>
+      <p><a class="cta" href="../practice.html">Go to Practice</a></p>
     </div>
 
     <!-- Results -->
@@ -80,7 +82,7 @@
       <div class="hr"></div>
       <div id="review"></div>
       <div class="nav">
-        <a href="practice.html" class="btn secondary">Back to Practice</a>
+        <a href="../practice.html" class="btn secondary">Back to Practice</a>
         <button id="retry" class="btn">Retry Topic</button>
       </div>
     </div>
@@ -88,56 +90,29 @@
 
   <script>
     // --- Topic datasets (add more topics here) ---
-    // Each topic has: title, questions[{id, stem, choices[], answer (0-based), rationale}]
     const DATASETS = {
       "linear-equations-one-variable": {
         title: "Linear Equations in One Variable — Quiz",
         questions: [
-          {
-            id:"26fac581",
-            stem:"If 2(x − 5) + 3(x − 5) = 10, what is the value of x − 5?",
-            choices:["2","5","7","12"],
-            answer:0,
-            rationale:"Combine like terms: 2(x−5)+3(x−5)=5(x−5)=10 ⇒ divide by 5 ⇒ x−5=2."
-          },
-          {
-            id:"48bad848",
-            stem:"Megan worked 10 hours. She earns p per hour for the first 8 hours and 1.5p per hour after 8 hours. Her total pay was $137.50. What is p?",
-            choices:["$11.75","$12.50","$13.25","$13.75"],
-            answer:1,
-            rationale:"Pay = 8p + 2(1.5p)=11p. 137.50=11p ⇒ p=12.50."
-          },
-          {
-            id:"f0581e16",
-            stem:"Gas is $4/gal and car averages 25 mpg. Alan wants to reduce weekly gas spending by $5. Let m be miles fewer per week. Which equation is correct?",
-            choices:["(25/4)m = 95","(25/4)m = 5","(4/25)m = 95","(4/25)m = 5"],
-            answer:3,
-            rationale:"Cost per mile = 4/25 dollars. Desired savings $5 ⇒ (4/25)m = 5."
-          },
-          {
-            id:"6e706172",
-            stem:"Cost $65; price $100; 20% commission on price. Profit per unit = price − (cost + commission). Equation for profit $6,840 over u units?",
-            choices:["(100(1−0.2) − 65)u = 6840","(100 − 65)(1−0.2)u = 6840","0.8(100) − 65u = 6840","(0.2(100) + 65)u = 6840"],
-            answer:0,
-            rationale:"Commission = 0.2·100; net after commission = 100(1−0.2). Profit/unit = 100(0.8)−65."
-          },
-          {
-            id:"509cb1a6",
-            stem:"4x + 12 = a(x + 3)/2 has infinitely many solutions. Find a.",
-            choices:["0","3","8","12"],
-            answer:2,
-            rationale:"Multiply by 2: 8x+24=a(x+3). Identity requires a=8 so both sides match for all x."
-          }
+          { id:"26fac581", stem:"If 2(x − 5) + 3(x − 5) = 10, what is the value of x − 5?", choices:["2","5","7","12"], answer:0, rationale:"Combine like terms: 2(x−5)+3(x−5)=5(x−5)=10 ⇒ divide by 5 ⇒ x−5=2." },
+          { id:"48bad848", stem:"Megan worked 10 hours. She earns p per hour for the first 8 hours and 1.5p per hour after 8 hours. Her total pay was $137.50. What is p?", choices:["$11.75","$12.50","$13.25","$13.75"], answer:1, rationale:"Pay = 8p + 2(1.5p)=11p. 137.50=11p ⇒ p=12.50." },
+          { id:"f0581e16", stem:"Gas is $4/gal and car averages 25 mpg. Alan wants to reduce weekly gas spending by $5. Let m be miles fewer per week. Which equation is correct?", choices:["(25/4)m = 95","(25/4)m = 5","(4/25)m = 95","(4/25)m = 5"], answer:3, rationale:"Cost per mile = 4/25 dollars. Desired savings $5 ⇒ (4/25)m = 5." },
+          { id:"6e706172", stem:"Cost $65; price $100; 20% commission on price. Profit per unit = price − (cost + commission). Equation for profit $6,840 over u units?", choices:["(100(1−0.2) − 65)u = 6840","(100 − 65)(1−0.2)u = 6840","0.8(100) − 65u = 6840","(0.2(100) + 65)u = 6840"], answer:0, rationale:"Commission = 0.2·100; net after commission = 100(1−0.2). Profit/unit = 100(0.8)−65." },
+          { id:"509cb1a6", stem:"4x + 12 = a(x + 3)/2 has infinitely many solutions. Find a.", choices:["0","3","8","12"], answer:2, rationale:"Multiply by 2: 8x+24=a(x+3). Identity requires a=8 so both sides match for all x." }
         ]
       }
-
-      // Example to add another later:
-      // "linear-functions": { title:"Linear Functions — Quiz", questions:[ ... ] }
+      // Add more topics here as you create them...
     };
 
-    // --- Router: read topic param ---
+    // --- Router: accept ?topic=... OR infer from filename /practice/<slug>.html ---
     const params = new URLSearchParams(window.location.search);
-    const topic = params.get('topic');
+    let topic = params.get('topic');
+
+    if (!topic) {
+      const match = window.location.pathname.match(/\/practice\/([^\/]+)\.html$/);
+      if (match) topic = match[1]; // e.g., "linear-equations-one-variable"
+    }
+
     const data = topic && DATASETS[topic];
 
     const quizCard = document.getElementById('quiz-card');
