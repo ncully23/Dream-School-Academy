@@ -6,52 +6,14 @@
   <title>Practice – Dream School Academy</title>
   <link rel="stylesheet" href="style.css" />
   <style>
-    main {
-      padding: 40px 20px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 40px;
-    }
-
-    section {
-      width: 100%;
-      max-width: 800px;
-      background-color: #1c1c1c;
-      padding: 25px 30px;
-      border-radius: 8px;
-    }
-
-    section h3 {
-      color: #00d8ff;
-      font-size: 1.4rem;
-      margin-bottom: 1rem;
-    }
-
-    section p {
-      color: #ccc;
-      margin-bottom: 1rem;
-    }
-
-    ul.practice-list {
-      list-style-type: disc;
-      padding-left: 25px;
-      color: #ccc;
-    }
-
-    ul.practice-list li {
-      margin-bottom: 10px;
-    }
-
-    ul.practice-list a {
-      color: #ccc;
-      text-decoration: none;
-      transition: color 0.3s;
-    }
-
-    ul.practice-list a:hover {
-      color: #00d8ff;
-    }
+    main { padding: 40px 20px; display: grid; gap: 40px; max-width: 960px; margin: 0 auto; }
+    section { background: #1c1c1c; border-radius: 8px; padding: 24px; }
+    h3 { color: #00d8ff; margin: 0 0 12px; }
+    p { color:#ccc; }
+    ul.practice-list { list-style: disc; padding-left: 22px; color:#ccc; }
+    ul.practice-list li { margin-bottom: 10px; }
+    ul.practice-list a { color:#ccc; text-decoration:none; }
+    ul.practice-list a:hover { color:#00d8ff; }
   </style>
 </head>
 <body>
@@ -79,11 +41,10 @@
       </ul>
     </section>
 
-    <!-- Topic-based quizzes -->
+    <!-- Topic-based quizzes (links use ?topic=) -->
     <section>
       <h3>🎯 Practice by Topic</h3>
-      <p>Select a topic to practice 10 targeted questions:</p>
-
+      <p>Select a topic for a 10-question (or smaller pilot) quiz. The quiz page reads the topic from the URL.</p>
       <ul class="practice-list">
         <!-- Reading & Writing -->
         <li><a href="quiz.html?topic=central-ideas">Central Ideas and Details</a></li>
