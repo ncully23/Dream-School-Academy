@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Circles – Practice | Dream School Academy</title>
+  <link rel="stylesheet" href="../style.css" />
+  <style>
+    body { background:#0f1420; color:#e8eefc; font-family: 'Outfit', sans-serif; }
+    main { max-width:900px; margin:0 auto; padding:24px; }
+    .card{background:#1b2231;border:1px solid rgba(255,255,255,.1);
+      border-radius:12px;padding:24px;margin-bottom:20px;}
+    button{background:#00d8ff;color:#04101e;border:0;padding:10px 16px;
+      border-radius:8px;cursor:pointer;font-weight:600;}
+    .choice{margin:6px 0;padding:6px;border:1px solid rgba(255,255,255,.1);
+      border-radius:6px;cursor:pointer;}
+    .choice.correct{background:rgba(46,204,113,.1);border-color:#2ecc71;}
+    .choice.incorrect{background:rgba(255,107,107,.1);border-color:#ff6b6b;}
+    .explanation{font-size:14px;color:#a9b5cc;margin-top:6px;display:none;}
+    .explanation.show{display:block;}
+  </style>
+</head>
+<body>
+  <header>
+    <a href="../practice.html" style="color:#00d8ff;text-decoration:none;">← Back to Practice</a>
+  </header>
+  <main>
+    <h1>Circles – SAT Practice</h1>
+    <div id="quiz"></div>
+    <button id="checkBtn">Check Answers</button>
+    <p id="score" style="margin-top:12px;font-weight:600;"></p>
+  </main>
+
+  <script>
+    const QUESTIONS = [
+      {
+        prompt: "A circle has a radius of 5 cm. What is its circumference?",
+        choices: ["10π cm", "25π cm", "5π cm", "50π cm"],
+        answer: 0,
+        explanation: "Circumference = 2πr = 2 × π × 5 = 10π cm."
+      },
+      {
+        prompt: "If a circle’s area is 49π, what is its radius?",
+        choices: ["3", "7", "14", "24.5"],
+        answer: 1,
+        explanation: "Area = πr² → r² = 49 → r = 7."
+      },
+      {
+        prompt: "A circle passes through points (0,0) and (0,6) and has center at (0,3). What is its equation?",
+        choices: [
+          "(x - 0)² + (y - 3)² = 9",
+          "(x - 3)² + (y - 0)² = 9",
+          "(x - 3)² + (y - 3)² = 6",
+          "(x - 0)² + (y - 6)² = 3"
+        ],
+        answer: 0,
+        explanation: "Radius = 3, center = (0,3) → (x - 0)² + (y - 3)² = 9."
+      }
+    ];
+
+    const quiz = document.getElementById("quiz");
+    QUESTIONS.forEach((q, i) => {
+      const div = document.createElement("div");
+      div.className = "card";
+      div.innerHTML = `
+        <h3>Q${i+1}. ${q.prompt}</h3>
+        ${q.choices.map((c, j)=>
+          `<label class='choice'><input type='radio' name='q${i}' value='${j}'> ${c}</label>`
+        ).join("")}
+        <div class='explanation'>${q.explanation}</div>
+      `;
+      quiz.appendChild(div);
+    });
+
+    document.getElementById("checkBtn").addEventListener("click", ()=>{
+      let correct = 0;
+      QUESTIONS.forEach((q, i)=>{
+        const selected = document.querySelector(`input[name="q${i}"]:checked`);
+        const exp = quiz.children[i].querySelector(".explanation");
+        exp.classList.add("show");
+        if (selected){
+          const choice = selected.closest(".choice");
+          if (Number(selected.value) === q.answer){
+            choice.classList.add("correct");
+            correct++;
+          } else choice.classList.add("incorrect");
+        }
+      });
+      document.getElementById("score").textContent = 
+        `Score: ${correct}/${QUESTIONS.length}`;
+    });
+  </script>
+</body>
+</html>
