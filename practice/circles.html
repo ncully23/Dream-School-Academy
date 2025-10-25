@@ -6,88 +6,220 @@
   <title>Circles – Practice | Dream School Academy</title>
   <link rel="stylesheet" href="../style.css" />
   <style>
-    body { background:#0f1420; color:#e8eefc; font-family: 'Outfit', sans-serif; }
+    body { background:#0f1420; color:#e8eefc; font-family:'Outfit',sans-serif; }
     main { max-width:900px; margin:0 auto; padding:24px; }
-    .card{background:#1b2231;border:1px solid rgba(255,255,255,.1);
-      border-radius:12px;padding:24px;margin-bottom:20px;}
-    button{background:#00d8ff;color:#04101e;border:0;padding:10px 16px;
-      border-radius:8px;cursor:pointer;font-weight:600;}
-    .choice{margin:6px 0;padding:6px;border:1px solid rgba(255,255,255,.1);
-      border-radius:6px;cursor:pointer;}
-    .choice.correct{background:rgba(46,204,113,.1);border-color:#2ecc71;}
-    .choice.incorrect{background:rgba(255,107,107,.1);border-color:#ff6b6b;}
-    .explanation{font-size:14px;color:#a9b5cc;margin-top:6px;display:none;}
-    .explanation.show{display:block;}
+    .card{background:#1b2231;border:1px solid rgba(255,255,255,.1);border-radius:12px;padding:18px;margin-bottom:16px}
+    button{background:#00d8ff;color:#04101e;border:0;padding:10px 16px;border-radius:8px;cursor:pointer;font-weight:700}
+    button[disabled]{opacity:.6;cursor:not-allowed}
+    .choice{display:block;margin:8px 0;padding:8px;border:1px solid rgba(255,255,255,.1);border-radius:8px;cursor:pointer}
+    .choice input{margin-right:8px}
+    .correct{background:rgba(46,204,113,.12);border-color:#2ecc71}
+    .incorrect{background:rgba(255,107,107,.12);border-color:#ff6b6b}
+    .explanation{font-size:14px;color:#a9b5cc;margin-top:6px;display:none}
+    .explanation.show{display:block}
+    .toolbar{display:flex;gap:12px;align-items:center;margin:8px 0 16px}
+    .muted{color:#a9b5cc}
+    .pill{background:#121a2a;padding:6px 10px;border-radius:999px;border:1px solid rgba(255,255,255,.08)}
   </style>
 </head>
 <body>
-  <header>
+  <header style="padding:16px">
     <a href="../practice.html" style="color:#00d8ff;text-decoration:none;">← Back to Practice</a>
   </header>
+
   <main>
-    <h1>Circles – SAT Practice</h1>
+    <h1>Circles — SAT Practice</h1>
+
+    <!-- Controls -->
+    <div class="toolbar">
+      <label class="pill">
+        # Questions:
+        <select id="count">
+          <option>3</option>
+          <option selected>10</option>
+          <option>15</option>
+          <option>20</option>
+        </select>
+      </label>
+      <label class="pill">
+        <input type="checkbox" id="shuffle" checked> Shuffle
+      </label>
+      <button id="start">Start</button>
+      <span id="status" class="muted"></span>
+    </div>
+
     <div id="quiz"></div>
-    <button id="checkBtn">Check Answers</button>
-    <p id="score" style="margin-top:12px;font-weight:600;"></p>
+
+    <div class="toolbar">
+      <button id="finish" disabled>Finish</button>
+      <button id="retake" disabled class="pill" style="background:transparent;color:#e8eefc">Retake</button>
+      <span id="score" class="muted"></span>
+    </div>
   </main>
 
   <script>
-    const QUESTIONS = [
-      {
-        prompt: "A circle has a radius of 5 cm. What is its circumference?",
-        choices: ["10π cm", "25π cm", "5π cm", "50π cm"],
-        answer: 0,
-        explanation: "Circumference = 2πr = 2 × π × 5 = 10π cm."
-      },
-      {
-        prompt: "If a circle’s area is 49π, what is its radius?",
-        choices: ["3", "7", "14", "24.5"],
-        answer: 1,
-        explanation: "Area = πr² → r² = 49 → r = 7."
-      },
-      {
-        prompt: "A circle passes through points (0,0) and (0,6) and has center at (0,3). What is its equation?",
-        choices: [
-          "(x - 0)² + (y - 3)² = 9",
-          "(x - 3)² + (y - 0)² = 9",
-          "(x - 3)² + (y - 3)² = 6",
-          "(x - 0)² + (y - 6)² = 3"
-        ],
-        answer: 0,
-        explanation: "Radius = 3, center = (0,3) → (x - 0)² + (y - 3)² = 9."
-      }
+    // --- Data (texts are plain strings; we’ll set via textContent) ---
+    const BANK = [
+      { prompt:"A circle has a radius of 5 cm. What is its circumference?",
+        choices:["10π cm","25π cm","5π cm","50π cm"],
+        answer:0, explanation:"Circumference = 2πr = 2 × π × 5 = 10π cm." },
+      { prompt:"If a circle’s area is 49π, what is its radius?",
+        choices:["3","7","14","24.5"], answer:1,
+        explanation:"Area = πr² ⇒ r² = 49 ⇒ r = 7." },
+      { prompt:"A circle passes through (0,0) and (0,6) and has center at (0,3). What is its equation?",
+        choices:["(x - 0)² + (y - 3)² = 9","(x - 3)² + (y - 0)² = 9","(x - 3)² + (y - 3)² = 6","(x - 0)² + (y - 6)² = 3"],
+        answer:0, explanation:"Radius = 3, center = (0,3) ⇒ (x - 0)² + (y - 3)² = 9." },
+      // add more here...
     ];
 
-    const quiz = document.getElementById("quiz");
-    QUESTIONS.forEach((q, i) => {
-      const div = document.createElement("div");
-      div.className = "card";
-      div.innerHTML = `
-        <h3>Q${i+1}. ${q.prompt}</h3>
-        ${q.choices.map((c, j)=>
-          `<label class='choice'><input type='radio' name='q${i}' value='${j}'> ${c}</label>`
-        ).join("")}
-        <div class='explanation'>${q.explanation}</div>
-      `;
-      quiz.appendChild(div);
-    });
+    // --- Utilities ---
+    const $ = (s, r=document) => r.querySelector(s);
+    const $$ = (s, r=document) => Array.from(r.querySelectorAll(s));
+    const shuffle = arr => arr.map(v=>[Math.random(),v]).sort((a,b)=>a[0]-b[0]).map(x=>x[1]);
+    const sample = (arr, n) => arr.slice(0, n);
 
-    document.getElementById("checkBtn").addEventListener("click", ()=>{
-      let correct = 0;
-      QUESTIONS.forEach((q, i)=>{
-        const selected = document.querySelector(`input[name="q${i}"]:checked`);
-        const exp = quiz.children[i].querySelector(".explanation");
+    // --- State ---
+    let current = [];       // active question set
+    let answered = 0;       // how many questions submitted (for enabling Finish)
+    let results = [];       // per-question results
+
+    // --- DOM refs ---
+    const quiz   = $("#quiz");
+    const start  = $("#start");
+    const finish = $("#finish");
+    const retake = $("#retake");
+    const scoreEl= $("#score");
+    const status = $("#status");
+
+    // --- Render one question card ---
+    function renderQuestion(q, index) {
+      const card = document.createElement("fieldset");
+      card.className = "card";
+      card.setAttribute("role","group");
+
+      const legend = document.createElement("legend");
+      legend.textContent = `Q${index+1}. ${q.prompt}`;
+      legend.style.fontWeight = "600";
+      card.appendChild(legend);
+
+      q.choices.forEach((text, j)=>{
+        const label = document.createElement("label");
+        label.className = "choice";
+        const input = document.createElement("input");
+        input.type = "radio"; input.name = `q${index}`; input.value = String(j);
+        label.appendChild(input);
+        const span = document.createElement("span");
+        span.textContent = " " + text;
+        label.appendChild(span);
+        card.appendChild(label);
+      });
+
+      const exp = document.createElement("div");
+      exp.className = "explanation";
+      exp.textContent = q.explanation;
+      card.appendChild(exp);
+
+      // Immediate feedback on selection
+      card.addEventListener("change", (e)=>{
+        const selected = card.querySelector('input[type="radio"]:checked');
+        if (!selected) return;
+
+        // Clear prior styles
+        $$(".choice", card).forEach(c => c.classList.remove("correct","incorrect"));
+
+        const chosen = Number(selected.value);
+        const choiceEl = selected.closest(".choice");
+
+        if (chosen === q.answer) {
+          choiceEl.classList.add("correct");
+        } else {
+          choiceEl.classList.add("incorrect");
+        }
+
+        // Show explanation
         exp.classList.add("show");
-        if (selected){
-          const choice = selected.closest(".choice");
-          if (Number(selected.value) === q.answer){
-            choice.classList.add("correct");
-            correct++;
-          } else choice.classList.add("incorrect");
+
+        // Record result only on first commit for this question
+        if (!results[index]) {
+          results[index] = {
+            questionId: index, choiceIndex: chosen, correct: (chosen===q.answer)
+          };
+          answered++;
+          if (answered === current.length) finish.disabled = false;
+        } else {
+          // allow change before finishing: update correctness
+          results[index].choiceIndex = chosen;
+          results[index].correct = (chosen===q.answer);
         }
       });
-      document.getElementById("score").textContent = 
-        `Score: ${correct}/${QUESTIONS.length}`;
+
+      return card;
+    }
+
+    function resetUI() {
+      quiz.innerHTML = "";
+      scoreEl.textContent = "";
+      status.textContent = "";
+      finish.disabled = true;
+      retake.disabled = true;
+      answered = 0;
+      results = [];
+    }
+
+    // --- Start / Retake ---
+    start.addEventListener("click", ()=>{
+      resetUI();
+      const N = Number($("#count").value) || BANK.length;
+      current = $("#shuffle").checked ? sample(shuffle(BANK.slice()), N)
+                                      : sample(BANK.slice(), N);
+      current.forEach((q,i)=> quiz.appendChild(renderQuestion(q, i)));
+      status.textContent = `Loaded ${current.length} questions. Click an answer to see feedback.`;
+      retake.disabled = false;
+    });
+
+    retake.addEventListener("click", ()=> start.click());
+
+    // --- Finish & score ---
+    finish.addEventListener("click", async ()=>{
+      if (!current.length) return;
+
+      // score
+      const correct = results.filter(r => r?.correct).length;
+      scoreEl.textContent = `Score: ${correct}/${current.length} (${Math.round(100*correct/current.length)}%)`;
+
+      // Optional: save to Firestore if Firebase helpers are available
+      if (window.FB?.auth && window.FB?.db && window.FB?.addDoc && window.FB?.collection && window.FB?.serverTimestamp) {
+        try {
+          const u = window.FB.auth.currentUser;
+          if (u) {
+            await window.FB.addDoc(window.FB.collection(window.FB.db,"attempts"), {
+              userId: u.uid,
+              section: "Math",
+              topicFilters: ["Circles"],
+              countRequested: current.length,
+              timerEnabled: false,
+              timeLimitSec: null,
+              timeUsedSec: null,
+              scoreRaw: correct,
+              scorePct: Math.round(100*correct/current.length),
+              startedAt: window.FB.serverTimestamp(),
+              finishedAt: window.FB.serverTimestamp(),
+              items: results.map((r,i)=> ({
+                questionId: `circles-${i}`,
+                choiceIndex: r?.choiceIndex ?? null,
+                correct: !!r?.correct,
+                timeSpentSec: null
+              }))
+            });
+            status.textContent = "Saved to your account.";
+          } else {
+            status.textContent = "Not signed in — score not saved.";
+          }
+        } catch (e) {
+          console.warn("Save failed:", e);
+          status.textContent = "Couldn’t save (offline or rules).";
+        }
+      }
     });
   </script>
 </body>
