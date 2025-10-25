@@ -3,265 +3,228 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Login / Sign Up — Dream School Academy</title>
+  <title>Login — Dream School Academy</title>
 
-  <!-- Font & site styles -->
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/assets/site.css" />
-
-  <!-- Inject header/footer + greeting everywhere -->
-  <script defer src="/assets/shell.js"></script>
 
   <style>
-    .auth-wrap{ min-height:72vh; display:grid; place-items:center; padding:3rem 1rem; }
-    .card{ width:min(520px,92vw); background:var(--surface); border:1px solid color-mix(in oklab,var(--surface-2)85%,#fff 0%); border-radius:18px; padding:1.2rem; box-shadow:0 12px 30px rgba(0,0,0,.25); }
-    .tabs{ display:flex; gap:.4rem; background:var(--surface-2); padding:.4rem; border-radius:12px; }
-    .tabs button{ flex:1; padding:.7rem 1rem; border:0; border-radius:10px; cursor:pointer; background:transparent; color:var(--text); font-weight:700; letter-spacing:.2px; transition:background .15s ease, transform .12s ease; }
-    .tabs button.active{ background:var(--brand); color:var(--brand-ink); }
-    .tabs button:hover{ transform:translateY(-1px); }
-    form{ display:grid; gap:.9rem; margin-top:1rem; }
-    label{ font-size:.95rem; color:var(--muted); }
-    input{ width:100%; padding:.85rem 1rem; border-radius:12px; border:1px solid color-mix(in oklab,var(--surface-2)85%,#fff 0%); background:#0f1420; color:var(--text); }
-    .actions{ display:flex; gap:.6rem; align-items:center; flex-wrap:wrap; }
-    .btn{ display:inline-flex; align-items:center; justify-content:center; gap:.5rem; padding:.8rem 1rem; border-radius:999px; border:0; cursor:pointer; background:var(--brand); color:var(--brand-ink); font-weight:800; letter-spacing:.2px; box-shadow:0 6px 14px rgba(105,229,255,.22); transition:transform .12s ease; }
-    .btn[disabled]{ opacity:.6; cursor:not-allowed; }
-    .btn:hover{ transform:translateY(-1px) }
-    .btn.secondary{ background:transparent; color:var(--text); box-shadow:inset 0 0 0 1px color-mix(in oklab,var(--surface-2)85%,#fff 0%); }
-    .muted{ color:var(--muted); font-size:.95rem; }
-    .status{ margin-top:.75rem; min-height:1.1rem; font-size:.95rem; }
-    .hr{ display:flex; align-items:center; gap:.8rem; margin:1rem 0; }
-    .hr::before,.hr::after{ content:""; height:1px; flex:1; background:color-mix(in oklab,var(--surface-2)85%,#fff 0%); }
-    .google{ display:inline-flex; align-items:center; gap:.6rem; background:#fff; color:#111; border-radius:999px; padding:.8rem 1rem; border:0; cursor:pointer; }
-    .google[disabled]{ opacity:.6; cursor:not-allowed; }
-    .google img{ width:18px; height:18px; }
+    :root{
+      --bg:#0f1420; --surface:#1b2231; --ink:#e8eefc; --muted:#a9b5cc; --brand:#00d8ff; --brand-ink:#001018;
+      --border:rgba(255,255,255,.08);
+    }
+    *{box-sizing:border-box} body{margin:0;background:var(--bg);color:var(--ink);font-family:Outfit,system-ui,sans-serif}
+    main{min-height:100dvh;display:grid;place-items:center;padding:24px}
+    .card{width:min(520px,92vw);background:var(--surface);border:1px solid var(--border);border-radius:18px;padding:20px;box-shadow:0 12px 30px rgba(0,0,0,.25)}
+    h1{margin:.25rem 0 1rem}
+    label{display:block;font-size:.95rem;color:var(--muted);margin:.5rem 0 .25rem}
+    input{width:100%;padding:.85rem 1rem;border-radius:12px;border:1px solid var(--border);background:#0f1420;color:var(--ink)}
+    .row{display:flex;gap:.6rem;flex-wrap:wrap;margin-top:1rem}
+    .btn{appearance:none;border:0;border-radius:999px;padding:.8rem 1rem;font-weight:800;letter-spacing:.2px;cursor:pointer}
+    .primary{background:var(--brand);color:var(--brand-ink);box-shadow:0 6px 14px rgba(105,229,255,.22)}
+    .ghost{background:transparent;color:var(--ink);box-shadow:inset 0 0 0 1px var(--border)}
+    .google{display:inline-flex;align-items:center;gap:.6rem;background:#fff;color:#111;border:0;border-radius:999px;padding:.8rem 1rem;cursor:pointer}
+    .hr{display:flex;align-items:center;gap:.8rem;margin:1rem 0}
+    .hr::before,.hr::after{content:"";height:1px;flex:1;background:var(--border)}
+    .muted{color:var(--muted)} .status{min-height:1.1rem;margin-top:.6rem}
+    .tabs{display:flex;gap:.4rem;background:#121826;padding:.4rem;border-radius:12px;margin:.75rem 0 0}
+    .tabs button{flex:1;padding:.7rem 1rem;border:0;border-radius:10px;background:transparent;color:var(--ink);font-weight:700;cursor:pointer}
+    .tabs button.active{background:var(--brand);color:var(--brand-ink)}
   </style>
 </head>
 <body>
-
-  <main class="auth-wrap">
+  <main>
     <div class="card">
-      <div class="container">
-        <h1 style="margin:.5rem 0 1rem;">Welcome back</h1>
-        <p class="muted">Log in or create your account to save progress, track scores, and get personalized practice.</p>
+      <h1>Welcome back</h1>
+      <p class="muted">Sign in to save progress and track scores.</p>
 
-        <div class="tabs" role="tablist" aria-label="Auth tabs">
-          <button id="tab-login" class="active" role="tab" aria-selected="true">Log In</button>
-          <button id="tab-signup" role="tab" aria-selected="false">Sign Up</button>
-        </div>
-
-        <!-- Login form -->
-        <form id="login-form" autocomplete="on">
-          <div>
-            <label for="login-email">Email</label>
-            <input id="login-email" type="email" placeholder="you@example.com" required />
-          </div>
-          <div>
-            <label for="login-password">Password</label>
-            <input id="login-password" type="password" placeholder="••••••••" required />
-          </div>
-          <div class="actions">
-            <button type="submit" class="btn" id="login-submit">Log In</button>
-            <button type="button" class="btn secondary" id="reset-password">Forgot password?</button>
-          </div>
-          <div class="hr"><span class="muted">or</span></div>
-          <button type="button" class="google" id="google-login" aria-label="Sign in with Google">
-            <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="" />
-            Continue with Google
-          </button>
-          <div class="status" id="login-status"></div>
-        </form>
-
-        <!-- Sign Up form -->
-        <form id="signup-form" style="display:none" autocomplete="on">
-          <div>
-            <label for="signup-first">First name (optional)</label>
-            <input id="signup-first" type="text" placeholder="e.g., Alex" />
-          </div>
-          <div>
-            <label for="signup-email">Email</label>
-            <input id="signup-email" type="email" placeholder="you@example.com" required />
-          </div>
-          <div>
-            <label for="signup-password">Password</label>
-            <input id="signup-password" type="password" placeholder="Minimum 6 characters" minlength="6" required />
-          </div>
-          <div class="actions">
-            <button type="submit" class="btn" id="signup-submit">Create account</button>
-          </div>
-          <div class="hr"><span class="muted">or</span></div>
-          <button type="button" class="google" id="google-signup" aria-label="Sign up with Google">
-            <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="" />
-            Continue with Google
-          </button>
-          <div class="status" id="signup-status"></div>
-        </form>
+      <div class="tabs" role="tablist">
+        <button id="tab-login" class="active" aria-selected="true">Log In</button>
+        <button id="tab-signup" aria-selected="false">Sign Up</button>
       </div>
+
+      <!-- Login -->
+      <form id="login-form" autocomplete="on">
+        <label for="login-email">Email</label>
+        <input id="login-email" type="email" placeholder="you@example.com" required />
+        <label for="login-password">Password</label>
+        <input id="login-password" type="password" placeholder="••••••••" required />
+        <div class="row">
+          <button id="login-submit" class="btn primary" type="submit">Log In</button>
+          <button id="reset" class="btn ghost" type="button">Forgot password?</button>
+        </div>
+        <div class="hr"><span class="muted">or</span></div>
+        <button id="google-login" class="google" type="button">
+          <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="" width="18" height="18"> Continue with Google
+        </button>
+        <div id="login-status" class="status"></div>
+      </form>
+
+      <!-- Signup -->
+      <form id="signup-form" autocomplete="on" style="display:none">
+        <label for="signup-first">First name (optional)</label>
+        <input id="signup-first" type="text" placeholder="e.g., Alex" />
+        <label for="signup-email">Email</label>
+        <input id="signup-email" type="email" placeholder="you@example.com" required />
+        <label for="signup-password">Password</label>
+        <input id="signup-password" type="password" placeholder="Minimum 6 characters" minlength="6" required />
+        <div class="row">
+          <button id="signup-submit" class="btn primary" type="submit">Create account</button>
+        </div>
+        <div class="hr"><span class="muted">or</span></div>
+        <button id="google-signup" class="google" type="button">
+          <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="" width="18" height="18"> Continue with Google
+        </button>
+        <div id="signup-status" class="status"></div>
+      </form>
     </div>
   </main>
 
-  <!-- Firebase Auth (Modular) -->
+  <!-- Firebase (CDN, one version everywhere) -->
   <script type="module">
-    import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-app.js";
+    // 1) SDKs
+    import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-app.js";
     import {
-      getAuth,
-      setPersistence,
-      browserLocalPersistence,
-      onAuthStateChanged,
-      signInWithEmailAndPassword,
-      createUserWithEmailAndPassword,
-      sendPasswordResetEmail,
-      updateProfile,
-      GoogleAuthProvider,
-      signInWithPopup,
-      signInWithRedirect,
-      getRedirectResult
-    } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-auth.js";
+      getAuth, setPersistence, browserLocalPersistence, onAuthStateChanged,
+      signInWithEmailAndPassword, createUserWithEmailAndPassword, sendPasswordResetEmail,
+      updateProfile, GoogleAuthProvider, signInWithPopup, signInWithRedirect, getRedirectResult
+    } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-auth.js";
+    import {
+      getFirestore, doc, getDoc, setDoc, serverTimestamp
+    } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-firestore.js";
 
-    // ---- CONFIG (same as shell.js) ----
+    // 2) YOUR CONFIG — copy exactly from Firebase Console → Project settings → Web app
     const firebaseConfig = {
-      apiKey: "AIzaSyCBUbqdnDz1TfLv4Vrn5GNw09fiYrkJ5mA",
-      authDomain: "dream-school-academy.firebaseapp.com",
-      projectId: "dream-school-academy",
-      storageBucket: "dream-school-academy.firebasestorage.app",
-      messagingSenderId: "665412130733",
-      appId: "1:665412130733:web:fc73f3ed574ffb6d277324"
+      apiKey: "PASTE_API_KEY",
+      authDomain: "PASTE_AUTH_DOMAIN",
+      projectId: "PASTE_PROJECT_ID",
+      storageBucket: "PASTE_STORAGE_BUCKET",
+      messagingSenderId: "PASTE_SENDER_ID",
+      appId: "PASTE_APP_ID"
     };
 
-    // Init
-    const app = getApps().length ? getApps()[0] : initializeApp(firebaseConfig);
+    // 3) Init
+    const app  = getApps().length ? getApps()[0] : initializeApp(firebaseConfig);
     const auth = getAuth(app);
+    const db   = getFirestore(app);
     await setPersistence(auth, browserLocalPersistence);
     const provider = new GoogleAuthProvider();
 
-    // ----- utilities -----
-    const firstFromString = (s) => (s || "").trim().split(/\s+/)[0] || "";
-    const deriveFromEmail = (email) =>
-      (email || "").split("@")[0].split(/[._-]/)[0].replace(/^\w/, c => c.toUpperCase()) || "there";
+    // --- helper: friendly errors
+    const nice = (e) => ({
+      'auth/invalid-email':'That email looks invalid.',
+      'auth/missing-password':'Enter your password.',
+      'auth/weak-password':'Use 6+ characters for your password.',
+      'auth/email-already-in-use':'That email is already registered.',
+      'auth/user-not-found':'No account with that email.',
+      'auth/wrong-password':'Incorrect password.',
+      'auth/popup-blocked':'Popup blocked—trying redirect…',
+      'auth/unauthorized-domain':'This domain must be added in Firebase → Auth → Authorized domains.'
+    }[e?.code] || e?.message || 'Something went wrong.');
 
-    async function rememberFirstName(user, typedFirst = "") {
-      const fromProfile = firstFromString(user?.displayName);
-      const fromTyped   = firstFromString(typedFirst);
-      const chosen      = fromProfile || fromTyped || deriveFromEmail(user?.email);
-      localStorage.setItem("dsa:firstName", chosen);
-      return chosen;
+    // --- helper: create minimal profile doc if missing
+    async function ensureProfile(u, first = "") {
+      if (!u) return;
+      const ref  = doc(db, "profiles", u.uid);
+      const snap = await getDoc(ref);
+      if (!snap.exists()) {
+        await setDoc(ref, {
+          userId: u.uid,
+          email:  u.email || "",
+          name:   (u.displayName || first || "").trim(),
+          createdAt: serverTimestamp()
+        });
+      }
     }
 
-    // ----- tabs -----
+    // --- tabs
     const tabLogin   = document.getElementById('tab-login');
     const tabSignup  = document.getElementById('tab-signup');
     const loginForm  = document.getElementById('login-form');
     const signupForm = document.getElementById('signup-form');
-    function showLogin(){ tabLogin.classList.add('active'); tabLogin.setAttribute('aria-selected','true'); tabSignup.classList.remove('active'); tabSignup.setAttribute('aria-selected','false'); loginForm.style.display='grid'; signupForm.style.display='none'; }
-    function showSignup(){ tabSignup.classList.add('active'); tabSignup.setAttribute('aria-selected','true'); tabLogin.classList.remove('active'); tabLogin.setAttribute('aria-selected','false'); signupForm.style.display='grid'; loginForm.style.display='none'; }
+    const showLogin  = () => { tabLogin.classList.add('active'); tabLogin.setAttribute('aria-selected','true'); tabSignup.classList.remove('active'); tabSignup.setAttribute('aria-selected','false'); loginForm.style.display='block'; signupForm.style.display='none'; };
+    const showSignup = () => { tabSignup.classList.add('active'); tabSignup.setAttribute('aria-selected','true'); tabLogin.classList.remove('active'); tabLogin.setAttribute('aria-selected','false'); signupForm.style.display='block'; loginForm.style.display='none'; };
     tabLogin.addEventListener('click', showLogin);
     tabSignup.addEventListener('click', showSignup);
 
-    // ----- friendly errors -----
-    const friendlyError = (err) => ({
-      'auth/invalid-email':'That email looks invalid.',
-      'auth/missing-password':'Enter your password.',
-      'auth/weak-password':'Use 6+ characters for your password.',
-      'auth/email-already-in-use':'That email is already registered. Try logging in.',
-      'auth/user-not-found':'No account with that email. Try signing up.',
-      'auth/wrong-password':'Incorrect password.',
-      'auth/popup-blocked':'Your browser blocked the popup. We’ll try a full-page redirect.',
-      'auth/unauthorized-domain':'This domain is not authorized in Firebase Authentication settings.'
-    }[err?.code] || err?.message || 'Something went wrong.');
-
-    const setBusy = (el, busy) => { if(el){ el.disabled = !!busy; el.setAttribute('aria-busy', busy ? 'true' : 'false'); } };
-
-    // ----- login (email) -----
+    // --- login (email/password)
     const loginStatus = document.getElementById('login-status');
-    const loginBtn = document.getElementById('login-submit');
-    loginForm.addEventListener('submit', async (e)=>{
-      e.preventDefault(); loginStatus.textContent = 'Signing in...'; setBusy(loginBtn,true);
+    document.getElementById('login-submit').addEventListener('click', async (e)=>{
+      e.preventDefault();
+      loginStatus.textContent = 'Signing in…';
       try{
         const email = document.getElementById('login-email').value.trim();
-        const password = document.getElementById('login-password').value;
-        const cred = await signInWithEmailAndPassword(auth, email, password);
-        await rememberFirstName(cred.user);       // <-- keep greeting consistent
+        const pass  = document.getElementById('login-password').value;
+        const cred  = await signInWithEmailAndPassword(auth, email, pass);
+        await ensureProfile(cred.user);
         location.href = '/';
-      }catch(err){ loginStatus.textContent = friendlyError(err); }
-      finally{ setBusy(loginBtn,false); }
+      }catch(err){ loginStatus.textContent = nice(err); }
     });
 
-    // ----- reset password -----
-    document.getElementById('reset-password').addEventListener('click', async ()=>{
-      const email = (document.getElementById('login-email').value || '').trim();
+    // --- reset password
+    document.getElementById('reset').addEventListener('click', async ()=>{
+      const email = document.getElementById('login-email').value.trim();
       if(!email){ loginStatus.textContent = 'Enter your email first.'; return; }
       try{ await sendPasswordResetEmail(auth, email); loginStatus.textContent = 'Password reset email sent.'; }
-      catch(err){ loginStatus.textContent = friendlyError(err); }
+      catch(err){ loginStatus.textContent = nice(err); }
     });
 
-    // ----- Google login -----
+    // --- Google login
     document.getElementById('google-login').addEventListener('click', async ()=>{
-      loginStatus.textContent = 'Opening Google...'; setBusy(document.getElementById('google-login'),true);
+      loginStatus.textContent = 'Opening Google…';
       try{
         const res = await signInWithPopup(auth, provider);
-        await rememberFirstName(res.user);
+        await ensureProfile(res.user);
         location.href = '/';
       }catch(err){
         if (['auth/popup-blocked','auth/popup-closed-by-user','auth/unauthorized-domain'].includes(err.code)) {
-          try { await signInWithRedirect(auth, provider); }
-          catch(e){ loginStatus.textContent = friendlyError(e); }
-        } else { loginStatus.textContent = friendlyError(err); }
-      }finally{ setBusy(document.getElementById('google-login'),false); }
+          loginStatus.textContent = nice(err);
+          try { await signInWithRedirect(auth, provider); } catch(e){ loginStatus.textContent = nice(e); }
+        } else { loginStatus.textContent = nice(err); }
+      }
     });
 
-    // ----- sign up (email) -----
+    // --- signup (email/password)
     const signupStatus = document.getElementById('signup-status');
-    const signupBtn = document.getElementById('signup-submit');
-    signupForm.addEventListener('submit', async (e)=>{
-      e.preventDefault(); signupStatus.textContent = 'Creating account...'; setBusy(signupBtn,true);
+    document.getElementById('signup-submit').addEventListener('click', async (e)=>{
+      e.preventDefault();
+      signupStatus.textContent = 'Creating account…';
       try{
         const first = document.getElementById('signup-first').value.trim();
         const email = document.getElementById('signup-email').value.trim();
-        const password = document.getElementById('signup-password').value;
-        const cred = await createUserWithEmailAndPassword(auth, email, password);
-
-        // If the new user has no displayName, set it
-        if (!cred.user.displayName && first) {
-          try { await updateProfile(cred.user, { displayName: first }); } catch {}
-        }
-        await rememberFirstName(cred.user, first);
+        const pass  = document.getElementById('signup-password').value;
+        const cred  = await createUserWithEmailAndPassword(auth, email, pass);
+        if (first) { try { await updateProfile(cred.user, { displayName:first }); } catch {} }
+        await ensureProfile(cred.user, first);
         location.href = '/';
-      }catch(err){ signupStatus.textContent = friendlyError(err); }
-      finally{ setBusy(signupBtn,false); }
+      }catch(err){ signupStatus.textContent = nice(err); }
     });
 
-    // ----- Google sign up uses the same flow as login -----
+    // --- Google signup (same)
     document.getElementById('google-signup').addEventListener('click', async ()=>{
-      signupStatus.textContent = 'Opening Google...'; setBusy(document.getElementById('google-signup'),true);
+      signupStatus.textContent = 'Opening Google…';
       try{
         const res = await signInWithPopup(auth, provider);
-        await rememberFirstName(res.user);
+        await ensureProfile(res.user);
         location.href = '/';
       }catch(err){
         if (['auth/popup-blocked','auth/popup-closed-by-user','auth/unauthorized-domain'].includes(err.code)) {
-          try { await signInWithRedirect(auth, provider); }
-          catch(e){ signupStatus.textContent = friendlyError(e); }
-        } else { signupStatus.textContent = friendlyError(err); }
-      }finally{ setBusy(document.getElementById('google-signup'),false); }
+          signupStatus.textContent = nice(err);
+          try { await signInWithRedirect(auth, provider); } catch(e){ signupStatus.textContent = nice(e); }
+        } else { signupStatus.textContent = nice(err); }
+      }
     });
 
-    // ----- handle Google redirect result if popup was blocked -----
-    try {
+    // --- handle Google redirect (if popup blocked)
+    try{
       const r = await getRedirectResult(auth);
-      if (r?.user) {
-        await rememberFirstName(r.user);
-        location.href = '/';
-      }
-    } catch(e) {
-      console.warn('Redirect sign-in failed:', e);
-    }
+      if (r?.user) { await ensureProfile(r.user); location.href = '/'; }
+    }catch(e){ console.warn('Redirect sign-in failed:', e); }
 
-    // (optional) just a no-op listener
-    onAuthStateChanged(auth, () => {});
+    // optional: listen for state (you can show "already logged in" UI here)
+    onAuthStateChanged(auth, (u)=>{ /* no-op */ });
   </script>
 
-  <noscript>
-    <p style="text-align:center;color:#ffb4b4">This page requires JavaScript to sign in.</p>
-  </noscript>
+  <noscript><p style="text-align:center;color:#ffb4b4">JavaScript is required to sign in.</p></noscript>
 </body>
 </html>
