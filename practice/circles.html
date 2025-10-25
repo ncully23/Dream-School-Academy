@@ -1,146 +1,167 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Circles — Practice Exam</title>
-  <style>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Section 1, Module 1: Math — Circles (Practice)</title>
+<style>
   :root{
-    --bg:#f8f9fb;--surface:#ffffff;--ink:#1d1f23;--muted:#5c6270;
-    --line:#e5e7ef;--line-strong:#c9ccd6;--blue:#3b6cf4;--blue-dark:#2449b5;
-    --accent-yellow:#fedb00;--accent-cyan:#009cde;--accent-gray:#bdbdbd;
-    --shadow:0 1px 2px rgba(16,24,40,.06),0 2px 8px rgba(16,24,40,.06);
-    --radius:12px
+    --bb-bg:#eef2fb;            /* Bluebook page bg */
+    --bb-rail:#e7edf9;          /* bottom rail */
+    --bb-surface:#fff;
+    --bb-ink:#111827;
+    --bb-muted:#4b5563;
+    --bb-line:#cfd7ea;
+    --bb-strong:#aab6d6;
+    --bb-blue:#1f4dd8;
+    --bb-blue-dark:#1437a8;
+    --bb-pill:#0b1227;
+    --bb-green:#06d6a0;
+    --radius:12px;
+    --shadow:0 1px 2px rgba(16,24,40,.06), 0 6px 14px rgba(16,24,40,.08);
   }
   html,body{height:100%}
-  body{margin:0;background:var(--bg);color:var(--ink);
-       font:16px/1.5 Inter,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial}
-  .app{max-width:1200px;margin:0 auto;padding:16px 20px 96px}
+  body{
+    margin:0;background:var(--bb-bg);color:var(--bb-ink);
+    font:16px/1.5 Inter, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+  }
+  .app{max-width:1280px;margin:0 auto;padding:12px 16px 120px}
 
   /* HEADER */
-  .header{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:16px;
-          padding:10px 12px;background:var(--surface);border:1px solid var(--line);
-          border-radius:var(--radius);box-shadow:var(--shadow);position:sticky;top:10px;z-index:2}
-  .title{font-weight:700;font-size:20px}
-  .subtle-link{display:inline-block;margin-top:2px;color:var(--muted);font-weight:600;font-size:14px;text-decoration:none}
-  .right-tools{justify-self:end;display:flex;gap:12px}
-  .tool{display:flex;gap:6px;align-items:center;color:var(--ink);font-weight:600}
-
+  .header{
+    display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:16px;
+    background:var(--bb-surface);border:1px solid var(--bb-line);
+    border-radius:10px;padding:10px 14px;box-shadow:var(--shadow);position:sticky;top:8px;z-index:5;
+  }
+  .title{font-weight:700;font-size:18px}
+  .directions{display:inline-flex;gap:6px;align-items:center;color:#111;background:transparent;border:0;font-weight:600}
   .timer{display:flex;flex-direction:column;align-items:center;justify-content:center}
-  .timer b{font-size:28px;letter-spacing:.5px;font-variant-numeric:tabular-nums}
-  .timer .hide{margin-top:6px}
-
-  .btn{cursor:pointer;border:1px solid var(--line);background:#fff;border-radius:999px;padding:6px 12px;font-weight:600}
-  .btn.primary{background:var(--blue);border-color:var(--blue);color:#fff}
-  .btn.primary:hover{background:var(--blue-dark);border-color:var(--blue-dark)}
+  .timer b{font-size:26px;letter-spacing:.5px;font-variant-numeric:tabular-nums}
+  .btn{border-radius:999px;border:1px solid var(--bb-line);background:#fff;padding:6px 12px;font-weight:600;cursor:pointer}
   .btn.ghost{background:#fff}
+  .btn.primary{background:var(--bb-blue);border-color:var(--bb-blue);color:#fff}
+  .btn.primary:hover{background:var(--bb-blue-dark);border-color:var(--bb-blue-dark)}
+  .tools{justify-self:end;display:flex;gap:10px}
 
-  /* color dash bar below header */
-  .color-dash{display:grid;grid-template-columns:repeat(54,1fr);gap:3px;margin:10px 2px 0}
-  .dash{height:6px;background:#000;border-radius:2px}
-  .dash.gray{background:var(--accent-gray)}
-  .dash.yellow{background:var(--accent-yellow)}
-  .dash.cyan{background:var(--accent-cyan)}
+  /* “THIS IS A PRACTICE TEST” banner + tick marks row */
+  .ticks{
+    margin:8px 2px 0; background:#0d1a5a; color:#fff; border-radius:10px; 
+    height:22px; display:flex; align-items:center; justify-content:center;
+    font-size:12px; font-weight:800; letter-spacing:.6px; box-shadow:var(--shadow);
+  }
+  .dashrow{display:grid;grid-template-columns:repeat(54,1fr);gap:3px;margin:6px 4px}
+  .dash{height:5px;border-radius:2px;background:#000;opacity:.95}
 
-  /* SPLIT SCREEN */
-  .screen{display:grid;grid-template-columns:1fr 1fr;gap:0;margin-top:12px;
-          border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;
-          background:var(--surface);box-shadow:var(--shadow)}
-  .pane{padding:16px;min-height:380px}
-  .pane + .pane{border-left:4px solid var(--line-strong)}
-  .tag{display:inline-block;padding:2px 8px;border-radius:999px;border:1px solid var(--line);font-size:12px;color:var(--muted);background:#fff}
-  .question h3{margin:0 0 8px;font-size:18px}
-  .choices{display:grid;gap:10px;margin-top:10px}
-  .choice{display:flex;gap:10px;align-items:flex-start;background:#f6f7fb;border:1px solid var(--line);border-radius:10px;padding:10px}
-  .choice input{margin-top:3px}
-  .notice{color:var(--muted);font-size:14px}
+  /* MAIN SPLIT */
+  .screen{
+    margin-top:8px;border:1px solid var(--bb-line);border-radius:10px;overflow:hidden;background:var(--bb-surface);box-shadow:var(--shadow);
+    display:grid;grid-template-columns:1fr 1fr;position:relative;
+  }
+  .pane{min-height:420px;padding:18px}
+  .divider{position:absolute;left:50%;top:0;bottom:0;width:1px;background:var(--bb-strong)}
+  .handle{position:absolute;left:calc(50% - 10px);top:50%;transform:translateY(-50%);width:20px;height:26px;border-radius:6px;background:#0d1a5a}
+  .tag{display:inline-block;font-size:12px;color:#111;border:1px solid var(--bb-line);border-radius:999px;padding:2px 8px;background:#fff}
+  .passage{max-width:90ch}
+  .question h3{margin:10px 0;font-size:18px}
+  .prompt{color:var(--bb-ink);margin-bottom:10px}
 
-  /* FOOTER NAV */
-  .footer{display:flex;gap:8px;justify-content:space-between;margin-top:10px}
-  .footer .left,.footer .right{display:flex;gap:8px}
-  .btn.nav{min-width:88px;border-radius:10px}
-  .btn.nav.primary{background:#2f54eb;border-color:#2f54eb;color:#fff}
+  /* choices */
+  .choices{display:grid;gap:12px}
+  .choice{
+    display:flex;align-items:center;gap:10px;border:1px solid var(--bb-line);border-radius:10px;background:#f7f8fd; padding:12px 14px;
+  }
+  .choice input{transform:scale(1.1)}
+  .letter{
+    margin-left:auto; /* float to right like Bluebook’s circle letters */
+    width:28px;height:28px;border-radius:50%;border:2px solid #b7c1dd;display:grid;place-items:center;color:#1f2a44;font-weight:700;
+  }
 
-  /* REVIEW */
-  .review{margin-top:12px;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);
-          padding:12px;box-shadow:var(--shadow);display:none}
-  .review-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(80px,1fr));gap:8px;margin-top:8px}
-  .pill{border:1px solid var(--line);background:#fff;border-radius:999px;padding:8px 10px;display:flex;
-        justify-content:space-between;align-items:center;gap:8px;cursor:pointer;color:var(--muted)}
-  .pill span{font-weight:700;color:var(--ink)}
+  /* FOOTER rail */
+  .rail{
+    position:fixed;left:0;right:0;bottom:0;background:var(--bb-rail);border-top:1px solid var(--bb-line);
+    padding:12px 0; z-index:4;
+  }
+  .rail-inner{max-width:1280px;margin:0 auto;position:relative}
+  .progress{display:grid;grid-template-columns:repeat(var(--seg,24),1fr);gap:8px;padding:0 16px}
+  .seg{height:6px;border-radius:3px;background:#0b0b0b}
+  .seg.active{background:#00a6e7}
+  .center-pill{
+    position:absolute;left:50%;transform:translateX(-50%);bottom:8px;background:var(--bb-pill);color:#fff;border-radius:999px;
+    padding:8px 12px;font-weight:800;box-shadow:0 4px 12px rgba(0,0,0,.25)
+  }
+  .rail-actions{
+    position:absolute;right:16px;bottom:4px;display:flex;gap:10px;align-items:center;
+  }
+  .rail-left{
+    position:absolute;left:16px;bottom:4px;display:flex;gap:10px;align-items:center;
+  }
+
+  /* Review tray & Score */
+  .review, .score{
+    margin-top:10px;background:#fff;border:1px solid var(--bb-line);border-radius:10px;box-shadow:var(--shadow);padding:12px;display:none;
+  }
+  .review-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(72px,1fr));gap:8px;margin-top:8px}
+  .pill{border:1px solid var(--bb-line);border-radius:999px;background:#fff;padding:8px 10px;display:flex;justify-content:space-between;align-items:center;gap:8px;cursor:pointer}
   .dot{width:10px;height:10px;border-radius:50%;background:#d4d7e3}
-  .dot.answered{background:#06d6a0}
-  .dot.flagged{background:var(--accent-yellow);box-shadow:0 0 0 2px rgba(254,219,0,.25)}
-
-  /* PROGRESS STRIP + CENTER PILL */
-  .progress-wrap{position:fixed;left:0;right:0;bottom:16px;pointer-events:none}
-  .progress-inner{max-width:1200px;margin:0 auto;position:relative}
-  .progress-dash{display:grid;grid-template-columns:repeat(var(--segments,24),1fr);gap:6px;margin:6px 10px}
-  .progress-dash .seg{height:6px;background:#000;border-radius:2px;opacity:.9}
-  .progress-dash .seg.active{background:var(--accent-cyan)}
-  .center-pill{position:absolute;left:50%;transform:translateX(-50%);bottom:12px;background:#111;color:#fff;border-radius:999px;padding:6px 10px;font-weight:700;box-shadow:0 4px 12px rgba(0,0,0,.2)}
-
-  /* SCORE / SUBMIT PAGE */
-  .score{margin-top:16px;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:16px;box-shadow:var(--shadow);display:none}
-  </style>
+  .dot.answered{background:var(--bb-green)}
+  .dot.flagged{background:#fedb00;box-shadow:0 0 0 2px rgba(254,219,0,.25)}
+  .muted{color:var(--bb-muted);font-size:14px}
+  .qnum{
+    display:inline-grid;place-items:center;width:28px;height:24px;border-radius:6px;border:2px dashed #2b3350;color:#111;font-weight:800;background:#f9fbff;margin-right:8px;
+  }
+</style>
 </head>
 <body>
-  <div class="app" id="app">
+  <div class="app">
     <!-- Header -->
     <div class="header" role="banner">
       <div>
-        <div class="title" id="sectionTitle">Section 1, Module 1: Math — Circles</div>
-        <a class="subtle-link" href="#" aria-label="Directions">Directions ▾</a>
+        <div class="title" id="sectionTitle">Section 1, Module 1: Math — Circles (Practice)</div>
+        <button class="directions" aria-label="Directions">Directions ▾</button>
       </div>
       <div class="timer" aria-live="polite">
         <b id="timeLeft">30:00</b>
-        <button class="btn hide" id="toggleTimer" aria-pressed="false" title="Hide timer">Hide</button>
+        <button id="toggleTimer" class="btn ghost" aria-pressed="false">Hide</button>
       </div>
-      <div class="right-tools">
-        <button class="btn ghost tool" id="btnReview">Review</button>
-        <button class="btn ghost tool" id="btnMore">More</button>
+      <div class="tools">
+        <button id="btnReview" class="btn ghost">Review</button>
+        <button id="btnMore" class="btn ghost">More</button>
       </div>
     </div>
 
-    <!-- Color dash -->
-    <div class="color-dash" aria-hidden="true">
-      <div class="dash"></div><div class="dash gray"></div><div class="dash yellow"></div><div class="dash cyan"></div>
-      <!-- repeating blocks just for appearance -->
-      ${Array.from({length:40}).map(()=>'<div class="dash"></div>').join('')}
-    </div>
+    <!-- Dark banner + tick row -->
+    <div class="ticks">THIS IS A PRACTICE TEST</div>
+    <div class="dashrow" id="dashrow"></div>
 
     <!-- Split screen -->
-    <div class="screen" id="screen">
-      <section class="pane" id="passagePane" aria-label="Passage"></section>
+    <div class="screen">
+      <div class="divider"></div><div class="handle" aria-hidden="true" title="Drag handle"></div>
+      <section class="pane passage" id="passagePane" aria-label="Passage"></section>
       <section class="pane question" id="questionPane" aria-label="Question"></section>
-    </div>
-
-    <!-- Footer nav -->
-    <div class="footer">
-      <div class="left">
-        <button class="btn nav" id="btnBack">Back</button>
-        <button class="btn nav" id="btnNext">Next</button>
-      </div>
-      <div class="right">
-        <button class="btn ghost" id="btnFlag" aria-pressed="false">Mark for review</button>
-        <button class="btn primary" id="btnFinish">End & Score</button>
-      </div>
     </div>
 
     <!-- Review tray -->
     <div class="review" id="review">
-      <div class="notice">Click a question to jump.</div>
+      <div class="muted">Click a number to jump.</div>
       <div class="review-grid" id="reviewGrid"></div>
     </div>
 
-    <!-- Submit/Score page -->
+    <!-- Score / submit page -->
     <div class="score" id="score"></div>
+  </div>
 
-    <!-- Bottom progress strip -->
-    <div class="progress-wrap">
-      <div class="progress-inner">
-        <div class="progress-dash" id="progressDash" style="--segments:24"></div>
-        <div class="center-pill" id="qCounter">Question 1 of 1</div>
+  <!-- Bottom rail -->
+  <div class="rail" role="contentinfo">
+    <div class="rail-inner">
+      <div class="progress" id="progress"></div>
+      <div class="center-pill" id="qCounter">Question 1 of 1</div>
+      <div class="rail-left">
+        <button id="btnBack" class="btn">Back</button>
+      </div>
+      <div class="rail-actions">
+        <button id="btnFlag" class="btn">Mark for review</button>
+        <button id="btnNext" class="btn primary">Next</button>
+        <button id="btnFinish" class="btn primary" style="display:none">End &amp; Score</button>
       </div>
     </div>
   </div>
@@ -148,9 +169,9 @@
 <script>
 /* ===================== Exam Data ===================== */
 const exam = {
-  storageKey: 'dsa-circles-v1',
+  storageKey: 'dsa-circles-bluebook-v2',
   sectionTitle: 'Section 1, Module 1: Math — Circles (Practice)',
-  timeLimitSec: 30 * 60, // 30-minute demo
+  timeLimitSec: 30 * 60,
   questions: [
     { id:'q1',
       passage:'Use circle formulas where necessary. Assume π is pi.',
@@ -163,17 +184,17 @@ const exam = {
       choices:['3','7','14','24.5'],
       answerIndex:1 },
     { id:'q3',
-      passage:'Center-radius form: (x-h)²+(y-k)²=r².',
+      passage:'Center–radius form: (x−h)² + (y−k)² = r².',
       prompt:'A circle passes through (0,0) and (0,6) with center at (0,3). What is its equation?',
-      choices:['(x-0)²+(y-3)²=9','(x-3)²+(y-0)²=9','(x-3)²+(y-3)²=6','(x-0)²+(y-6)²=3'],
+      choices:['(x − 0)² + (y − 3)² = 9','(x − 3)² + (y − 0)² = 9','(x − 3)² + (y − 3)² = 6','(x − 0)² + (y − 6)² = 3'],
       answerIndex:0 },
     { id:'q4',
-      passage:'Arc length s = rθ (θ in radians).',
-      prompt:'For r = 10 and θ = π/3, arc length s equals',
+      passage:'Arc length formula: s = rθ (θ in radians).',
+      prompt:'For r = 10 and θ = π/3, what is the arc length s?',
       choices:['10π/3','20π/3','30π','10','π/3'],
       answerIndex:0 },
     { id:'q5',
-      passage:'Sector area = (θ/2)r² (θ in radians).',
+      passage:'Sector area formula: (θ/2)r² (θ in radians).',
       prompt:'Sector area for r = 6 and θ = π/2 is',
       choices:['9π','18π','36π','3π'],
       answerIndex:1 },
@@ -188,8 +209,8 @@ const exam = {
 /* ===================== State ===================== */
 const state = {
   index: 0,
-  answers: {},   // { qid: choiceIndex }
-  flags: {},     // { qid: true }
+  answers: {},        // { qid: choiceIndex }
+  flags: {},          // { qid: true }
   remaining: exam.timeLimitSec,
   timerId: null,
   timerHidden: false,
@@ -203,221 +224,213 @@ const el = {
   toggleTimer: document.getElementById('toggleTimer'),
   passage: document.getElementById('passagePane'),
   question: document.getElementById('questionPane'),
-  back: document.getElementById('btnBack'),
-  next: document.getElementById('btnNext'),
-  flag: document.getElementById('btnFlag'),
   reviewBtn: document.getElementById('btnReview'),
   review: document.getElementById('review'),
   reviewGrid: document.getElementById('reviewGrid'),
   score: document.getElementById('score'),
+  back: document.getElementById('btnBack'),
+  next: document.getElementById('btnNext'),
+  flag: document.getElementById('btnFlag'),
   finish: document.getElementById('btnFinish'),
-  progressDash: document.getElementById('progressDash'),
-  qCounter: document.getElementById('qCounter')
+  progress: document.getElementById('progress'),
+  qCounter: document.getElementById('qCounter'),
+  dashrow: document.getElementById('dashrow')
 };
 
+/* ===================== Build static rows ===================== */
+(function buildDash(){
+  // top dashed tick row (just repeating blocks)
+  const total = 54;
+  for(let i=0;i<total;i++){
+    const d=document.createElement('div');
+    d.className='dash';
+    el.dashrow.appendChild(d);
+  }
+})();
+(function buildProgress(){
+  const seg = Math.max(24, exam.questions.length * 2);
+  el.progress.style.setProperty('--seg', seg);
+  el.progress.innerHTML='';
+  for(let i=0;i<seg;i++){
+    const s=document.createElement('div');
+    s.className='seg'; el.progress.appendChild(s);
+  }
+})();
+
 /* ===================== Storage ===================== */
-function loadSaved() {
-  try {
-    const raw = localStorage.getItem(exam.storageKey);
-    if (!raw) return;
-    const saved = JSON.parse(raw);
-    if (saved && saved.answers) {
-      Object.assign(state.answers, saved.answers);
-      Object.assign(state.flags, saved.flags || {});
-      if (typeof saved.remaining === 'number') state.remaining = saved.remaining;
-      if (typeof saved.index === 'number') state.index = Math.max(0, Math.min(saved.index, exam.questions.length-1));
-    }
-  } catch {}
+function loadSaved(){
+  try{
+    const data = JSON.parse(localStorage.getItem(exam.storageKey)||'null');
+    if(!data) return;
+    Object.assign(state.answers, data.answers||{});
+    Object.assign(state.flags, data.flags||{});
+    if (typeof data.remaining==='number') state.remaining = data.remaining;
+    if (typeof data.index==='number') state.index = Math.max(0, Math.min(data.index, exam.questions.length-1));
+  }catch(e){}
 }
-function save() {
-  const payload = {
-    answers: state.answers,
-    flags: state.flags,
-    remaining: state.remaining,
-    index: state.index
-  };
-  localStorage.setItem(exam.storageKey, JSON.stringify(payload));
+function save(){
+  localStorage.setItem(exam.storageKey, JSON.stringify({
+    answers: state.answers, flags: state.flags, remaining: state.remaining, index: state.index
+  }));
 }
 
 /* ===================== Timer ===================== */
-function startTimer() {
-  if (state.timerId || state.finished) return;
-  tick();
-  state.timerId = setInterval(tick, 1000);
+function startTimer(){
+  if(state.timerId || state.finished) return;
+  tick(); state.timerId=setInterval(tick,1000);
 }
-function tick() {
-  if (state.remaining <= 0) return finishExam();
-  state.remaining -= 1;
-  const m = String(Math.floor(state.remaining / 60)).padStart(2,'0');
-  const s = String(state.remaining % 60).padStart(2,'0');
-  if (!state.timerHidden) el.timeLeft.textContent = `${m}:${s}`;
+function tick(){
+  if (state.remaining<=0) return finishExam();
+  state.remaining--;
+  const m=String(Math.floor(state.remaining/60)).padStart(2,'0');
+  const s=String(state.remaining%60).padStart(2,'0');
+  if(!state.timerHidden) el.timeLeft.textContent=`${m}:${s}`;
   save();
-  if (state.remaining <= 0) finishExam();
+  if(state.remaining<=0) finishExam();
 }
-function toggleTimer() {
-  state.timerHidden = !state.timerHidden;
-  el.toggleTimer.setAttribute('aria-pressed', String(state.timerHidden));
+el.toggleTimer.addEventListener('click', ()=>{
+  state.timerHidden=!state.timerHidden;
   el.toggleTimer.textContent = state.timerHidden ? 'Show' : 'Hide';
   el.timeLeft.style.visibility = state.timerHidden ? 'hidden' : 'visible';
-}
+});
 
 /* ===================== Render ===================== */
-function render() {
+function render(){
   el.sectionTitle.textContent = exam.sectionTitle;
-  renderScreen();
-  renderReviewGrid();
-  updateNavButtons();
-  updateFlagButton();
-  renderProgress();
-  const m = String(Math.floor(state.remaining / 60)).padStart(2,'0');
-  const s = String(state.remaining % 60).padStart(2,'0');
-  el.timeLeft.textContent = `${m}:${s}`;
+  renderScreen(); renderReviewGrid(); renderProgress();
+  updateNavs(); updateFlagButton();
+
+  const m=String(Math.floor(state.remaining/60)).padStart(2,'0');
+  const s=String(state.remaining%60).padStart(2,'0');
+  el.timeLeft.textContent=`${m}:${s}`;
 }
 
-function renderScreen() {
+function renderScreen(){
   const q = exam.questions[state.index];
-  // left pane (passage/info)
+
   el.passage.innerHTML = `
-    <div class="tag">Info</div>
-    <p style="margin-top:8px">${q.passage}</p>
+    <span class="tag">Info</span>
+    <p style="margin-top:10px">${q.passage}</p>
   `;
 
-  // right pane (question)
-  const choiceHtml = q.choices.map((text, i) => {
-    const checked = state.answers[q.id] === i ? 'checked' : '';
-    const choiceId = `${q.id}_c${i}`;
-    // Letter badges A/B/C/D
-    const letter = String.fromCharCode(65 + i);
+  const letter = idx => String.fromCharCode(65+idx);
+  const choices = q.choices.map((t,i)=>{
+    const id=`${q.id}_c${i}`;
+    const checked = state.answers[q.id]===i ? 'checked':'';
     return `
-      <label class="choice" for="${choiceId}">
-        <input type="radio" name="${q.id}" id="${choiceId}" value="${i}" ${checked} />
-        <div><b>${letter}.</b> ${text}</div>
+      <label class="choice" for="${id}">
+        <input id="${id}" type="radio" name="${q.id}" value="${i}" ${checked} />
+        <div><b>${letter(i)}.</b> ${t}</div>
+        <div class="letter">${letter(i)}</div>
       </label>
     `;
   }).join('');
 
   el.question.innerHTML = `
-    <div style="display:flex;align-items:center;gap:8px">
-      <div class="tag">Question</div>
-      <div class="tag">Mark for Review</div>
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px">
+      <div class="qnum">${state.index+1}</div>
+      <span class="tag">Question</span>
+      <span class="tag" style="margin-left:6px">Mark for Review</span>
     </div>
-    <h3 style="margin-top:8px">Question ${state.index + 1} of ${exam.questions.length}</h3>
-    <div class="notice">${q.prompt}</div>
-    <div class="choices" role="radiogroup" aria-label="Choices">${choiceHtml}</div>
+    <h3 class="prompt">${q.prompt}</h3>
+    <div class="choices" role="radiogroup" aria-label="Choices">${choices}</div>
   `;
 
-  // listeners
-  el.question.querySelectorAll('input[type=radio]').forEach(inp => {
-    inp.addEventListener('change', () => {
+  el.question.querySelectorAll('input[type=radio]').forEach(inp=>{
+    inp.addEventListener('change', ()=>{
       state.answers[q.id] = Number(inp.value);
-      save();
-      renderReviewGrid();
-      renderProgress();
+      save(); renderReviewGrid(); renderProgress();
     });
   });
 }
 
-function renderReviewGrid() {
-  el.reviewGrid.innerHTML = '';
-  exam.questions.forEach((q, idx) => {
-    const answered = typeof state.answers[q.id] === 'number';
+function renderReviewGrid(){
+  el.reviewGrid.innerHTML='';
+  exam.questions.forEach((q,i)=>{
+    const answered = typeof state.answers[q.id]==='number';
     const flagged  = !!state.flags[q.id];
-    const pill = document.createElement('button');
-    pill.className = 'pill';
-    pill.innerHTML = `<span>${idx + 1}</span><div class="dot ${answered ? 'answered' : ''} ${flagged ? 'flagged' : ''}"></div>`;
-    pill.setAttribute('aria-label', `Question ${idx + 1}${answered ? ', answered' : ', unanswered'}${flagged ? ', flagged' : ''}`);
-    pill.addEventListener('click', () => { state.index = idx; render(); });
-    el.reviewGrid.appendChild(pill);
+    const b=document.createElement('button');
+    b.className='pill';
+    b.innerHTML=`<span>${i+1}</span><div class="dot ${answered?'answered':''} ${flagged?'flagged':''}"></div>`;
+    b.addEventListener('click', ()=>{ state.index=i; render(); });
+    el.reviewGrid.appendChild(b);
   });
 }
 
 function renderProgress(){
-  const N = Math.max(24, exam.questions.length * 2); // visual density
-  el.progressDash.style.setProperty('--segments', N);
-  el.progressDash.innerHTML = '';
-  for (let i=0;i<N;i++){
-    const seg = document.createElement('div');
-    seg.className = 'seg' + (i < Math.ceil(((state.index+1)/exam.questions.length)*N) ? ' active' : '');
-    el.progressDash.appendChild(seg);
+  const segs = el.progress.children.length;
+  const active = Math.ceil(((state.index+1)/exam.questions.length)*segs);
+  for(let i=0;i<segs;i++){
+    el.progress.children[i].classList.toggle('active', i<active);
   }
   el.qCounter.textContent = `Question ${state.index+1} of ${exam.questions.length}`;
 }
 
-function updateNavButtons() {
-  el.back.disabled = state.index === 0;
-  el.next.disabled = state.index === exam.questions.length - 1;
+/* ===================== Nav / Actions ===================== */
+function updateNavs(){
+  el.back.disabled = state.index===0;
+  // show Finish on last question; otherwise Next
+  const last = state.index===exam.questions.length-1;
+  el.next.style.display = last ? 'none':'inline-block';
+  el.finish.style.display = last ? 'inline-block':'none';
 }
-function updateFlagButton() {
-  const q = exam.questions[state.index];
-  const flagged = !!state.flags[q.id];
-  el.flag.setAttribute('aria-pressed', String(flagged));
+function go(delta){
+  const k = state.index + delta;
+  if (k<0 || k>exam.questions.length-1) return;
+  state.index = k; save(); render();
+}
+function toggleFlag(){
+  const q=exam.questions[state.index];
+  state.flags[q.id]=!state.flags[q.id]; save(); renderReviewGrid(); updateFlagButton();
+}
+function updateFlagButton(){
+  const q=exam.questions[state.index]; const flagged=!!state.flags[q.id];
   el.flag.textContent = flagged ? 'Unmark review' : 'Mark for review';
 }
 
-/* ===================== Actions ===================== */
-function go(delta){
-  const next = state.index + delta;
-  if (next < 0 || next > exam.questions.length - 1) return;
-  state.index = next;
-  save();
-  render();
-}
-function toggleFlag() {
-  const q = exam.questions[state.index];
-  state.flags[q.id] = !state.flags[q.id];
-  save();
-  updateFlagButton();
-  renderReviewGrid();
-}
-function finishExam() {
-  if (state.finished) return;
-  state.finished = true;
-  clearInterval(state.timerId);
-  el.review.style.display = 'none';
+function finishExam(){
+  if(state.finished) return;
+  state.finished=true; clearInterval(state.timerId);
+  el.review.style.display='none';
 
-  // Grade
-  let correct = 0; let answered = 0;
-  const lines = exam.questions.map((q,i)=>{
+  // grade
+  let correct=0, answered=0;
+  const rows = exam.questions.map((q,i)=>{
     const chosen = state.answers[q.id];
-    const isAnswered = typeof chosen === 'number';
-    const isCorrect  = isAnswered && chosen === q.answerIndex;
-    if (isAnswered) answered++;
-    if (isCorrect) correct++;
-    const status = isCorrect ? '✅ Correct' : (isAnswered ? '❌ Incorrect' : '⚠️ Unanswered');
-    const detail = isAnswered ? `You chose “${q.choices[chosen]}”.` : '';
-    return `<div style="padding:10px;border:1px solid #26314b;border-radius:12px;margin-bottom:8px">
-              <div><b>Q${i+1}</b> — ${status}</div>
-              <div class="notice">Correct answer: “${q.choices[q.answerIndex]}”. ${detail}</div>
-            </div>`;
+    const done = typeof chosen==='number';
+    const ok = done && chosen===q.answerIndex;
+    if(done) answered++; if(ok) correct++;
+    const status = ok ? '✅ Correct' : (done?'❌ Incorrect':'⚠️ Unanswered');
+    const detail = done ? `You chose “${q.choices[chosen]}”.` : '';
+    return `<div style="padding:10px;border:1px solid var(--bb-line);border-radius:10px;margin-bottom:8px">
+      <b>Q${i+1}</b> — ${status}<div class="muted">Correct answer: “${q.choices[q.answerIndex]}”. ${detail}</div>
+    </div>`;
   }).join('');
 
-  const scorePct = Math.round((correct / exam.questions.length) * 100);
+  const pct = Math.round(100*correct/exam.questions.length);
   el.score.innerHTML = `
     <h2 style="margin:0 0 8px">Results</h2>
-    <p class="notice">Answered: <b>${answered}/${exam.questions.length}</b> • Correct: <b>${correct}</b> • Score: <b>${scorePct}%</b></p>
-    <div style="margin-top:10px">${lines}</div>
+    <div class="muted">Answered: <b>${answered}/${exam.questions.length}</b> • Correct: <b>${correct}</b> • Score: <b>${pct}%</b></div>
+    <div style="margin-top:10px">${rows}</div>
   `;
-  el.score.style.display = 'block';
-
-  // Optionally clear saved progress after finish:
-  // localStorage.removeItem(exam.storageKey);
+  el.score.style.display='block';
 }
 
 /* ===================== Wire up ===================== */
-el.back.addEventListener('click', () => go(-1));
-el.next.addEventListener('click', () => go(1));
-el.flag.addEventListener('click', toggleFlag);
-el.reviewBtn.addEventListener('click', () => {
-  const open = el.review.style.display === 'block';
-  el.review.style.display = open ? 'none' : 'block';
+document.getElementById('btnReview').addEventListener('click', ()=>{
+  el.review.style.display = el.review.style.display==='block' ? 'none' : 'block';
 });
+el.back.addEventListener('click', ()=>go(-1));
+el.next.addEventListener('click', ()=>go(1));
 el.finish.addEventListener('click', finishExam);
-el.toggleTimer.addEventListener('click', toggleTimer);
+el.flag.addEventListener('click', toggleFlag);
 
 /* ===================== Init ===================== */
-loadSaved();
-render();
-startTimer();
+(function init(){
+  loadSaved();
+  render();
+  startTimer();
+})();
 </script>
 </body>
 </html>
