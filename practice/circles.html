@@ -6,7 +6,7 @@
 <title>Section 1, Module 1: Math — Circles (Practice)</title>
 <style>
   :root{
-    --bb-bg:#eef2fb;            /* Bluebook page bg */
+    --bb-bg:#eef2fb;            /* page bg */
     --bb-rail:#e7edf9;          /* bottom rail */
     --bb-surface:#fff;
     --bb-ink:#111827;
@@ -40,9 +40,9 @@
   .timer{display:flex;flex-direction:column;align-items:center;justify-content:center}
   .timer b{font-size:26px;letter-spacing:.5px;font-variant-numeric:tabular-nums}
   .btn{border-radius:999px;border:1px solid var(--bb-line);background:#fff;padding:6px 12px;font-weight:600;cursor:pointer}
-  .btn.ghost{background:#fff}
   .btn.primary{background:var(--bb-blue);border-color:var(--bb-blue);color:#fff}
   .btn.primary:hover{background:var(--bb-blue-dark);border-color:var(--bb-blue-dark)}
+  .btn.ghost{background:#fff}
   .tools{justify-self:end;display:flex;gap:10px}
 
   /* PRACTICE banner + ticks */
@@ -54,48 +54,66 @@
   .dashrow{display:grid;grid-template-columns:repeat(54,1fr);gap:3px;margin:6px 4px}
   .dash{height:5px;border-radius:2px;background:#000;opacity:.95}
 
-  /* MAIN SPLIT */
-  .screen{
-    margin-top:8px;border:1px solid var(--bb-line);border-radius:10px;overflow:hidden;background:var(--bb-surface);box-shadow:var(--shadow);
-    display:grid;grid-template-columns:1fr 1fr;position:relative;
+  /* ----- ONE-COLUMN CENTERED QUESTION CARD ----- */
+  .qwrap{
+    margin-top:10px;display:flex;justify-content:center;
   }
-  .pane{min-height:420px;padding:18px}
-  .divider{position:absolute;left:50%;top:0;bottom:0;width:1px;background:var(--bb-strong)}
-  .handle{position:absolute;left:calc(50% - 10px);top:50%;transform:translateY(-50%);width:20px;height:26px;border-radius:6px;background:#0d1a5a}
-  .tag{display:inline-block;font-size:12px;color:#111;border:1px solid var(--bb-line);border-radius:999px;padding:2px 8px;background:#fff}
-  .passage{max-width:90ch}
+  .qcard{
+    width:min(980px, 96vw);
+    background:#fff;border:1px solid var(--bb-line);border-radius:12px;box-shadow:var(--shadow);
+    padding:16px;
+  }
 
-  /* RIGHT PANE HEADER (question number + flag) */
-  .qheader{
-    display:flex;align-items:center;justify-content:space-between;margin-bottom:8px
+  /* Top row: number, dashed rule, actions */
+  .qtop{
+    display:grid;grid-template-columns:auto 1fr auto auto;align-items:center;gap:10px
   }
   .qbadge{
-    width:30px;height:30px;background:#000;color:#fff;display:grid;place-items:center;
-    border-radius:6px;font-weight:800
+    width:34px;height:34px;background:#000;color:#fff;display:grid;place-items:center;border-radius:6px;font-weight:800
+  }
+  .qdash{
+    border-bottom:4px dashed #111; height:0; margin:0 6px;
   }
   .flagbtn{
     display:inline-flex;align-items:center;gap:8px;border-radius:999px;border:1px solid var(--bb-line);
-    background:#fff;color:#111;padding:6px 10px;font-weight:700;cursor:pointer;
+    background:#fff;color:#111;padding:6px 10px;font-weight:700;cursor:pointer
   }
   .flagbtn .flagicon{
     width:0;height:0;border-left:8px solid var(--flag);border-top:6px solid transparent;border-bottom:6px solid transparent;display:inline-block;opacity:.25
   }
   .flagbtn.on{border-color:var(--flag);background:var(--flag-soft)}
   .flagbtn.on .flagicon{opacity:1}
-  .flagbtn .label{font-weight:700}
+  .elimbtn{
+    margin-left:8px;display:inline-flex;align-items:center;gap:8px;border-radius:8px;border:1px solid var(--bb-line);
+    background:#fff;color:#111;padding:6px 10px;font-weight:700;cursor:pointer
+  }
+  .elimicon{
+    width:20px;height:20px;border:2px solid #1f2a44;border-radius:50%;position:relative;display:inline-block
+  }
+  .elimicon::after{
+    content:"";position:absolute;left:2px;right:2px;top:9px;height:2px;background:#1f2a44;transform:rotate(-20deg)
+  }
+  .elimbtn.on{border-color:#1f2a44;background:#f1f4ff}
 
-  /* Question text & choices */
-  .question h3{margin:6px 0 10px;font-size:18px}
-  .prompt{color:var(--bb-ink);margin-bottom:10px}
-  .choices{display:grid;gap:12px}
+  /* Question body */
+  .qtitle{margin:14px 0 10px;font-size:20px;font-weight:800}
+  .choices{display:grid;gap:12px;margin-top:8px}
   .choice{
-    display:flex;align-items:center;gap:10px;border:1px solid var(--bb-line);border-radius:10px;background:#f7f8fd; padding:12px 14px;
+    display:flex;align-items:center;gap:10px;border:1px solid var(--bb-line);border-radius:10px;background:#f7f8fd; padding:12px 14px; position:relative;
+    transition:opacity .12s ease
   }
   .choice input{transform:scale(1.1)}
   .letter{
-    margin-left:auto;
-    width:28px;height:28px;border-radius:50%;border:2px solid #b7c1dd;display:grid;place-items:center;color:#1f2a44;font-weight:700;
+    margin-left:auto;width:32px;height:32px;border-radius:50%;border:2px solid #b7c1dd;display:grid;place-items:center;color:#1f2a44;font-weight:700;
   }
+  /* Eliminated styling */
+  .choice.eliminated{opacity:.4}
+  .choice.eliminated .text{ text-decoration:line-through 2px }
+  .choice.eliminated .letter{ position:relative }
+  .choice.eliminated .letter::after{
+    content:""; position:absolute; left:4px; right:4px; top:15px; height:2px; background:#1f2a44; transform:rotate(-20deg)
+  }
+  .hint{color:var(--bb-muted);font-size:14px;margin-top:4px}
 
   /* BOTTOM RAIL */
   .rail{
@@ -116,6 +134,7 @@
 
   .rail-actions{position:absolute;right:16px;bottom:4px;display:flex;gap:10px;align-items:center;}
   .rail-left{position:absolute;left:16px;bottom:4px;display:flex;gap:10px;align-items:center;}
+  .btn.nav{min-width:78px}
 
   /* REVIEW POPOVER */
   .popover{
@@ -136,11 +155,12 @@
   .pin{position:absolute;right:-6px;top:-8px;font-size:16px}
   .nbtn.answered{border-style:solid;border-color:#5b74d5}
   .nbtn.review{background:var(--flag-soft);border-color:var(--flag);border-style:solid}
+  .nbtn .elimdot{width:8px;height:8px;border-radius:50%;background:#1f2a44;margin-left:6px}
 
   .popover .go-review{display:block;margin:14px auto 4px;background:#fff;border:2px solid #7da2ff;color:#1f4dd8;border-radius:24px;padding:8px 14px;font-weight:800;cursor:pointer}
   .popover .close{position:absolute;right:12px;top:8px;border:0;background:transparent;font-size:20px;cursor:pointer}
 
-  /* REVIEW PAGE (“Check your work”) */
+  /* REVIEW PAGE */
   .check-wrap{display:none;margin-top:18px}
   .check-head{font-size:28px;font-weight:800;text-align:center;margin:8px 0 6px}
   .check-sub{color:var(--bb-muted);text-align:center;margin-bottom:12px}
@@ -150,9 +170,8 @@
   .grid-nums{display:grid;grid-template-columns:repeat(10,1fr);gap:10px;margin-top:12px}
   .grid-nums .nbtn{height:44px}
 
-  /* RESULT */
+  /* RESULTS */
   .score{margin-top:10px;background:#fff;border:1px solid var(--bb-line);border-radius:10px;box-shadow:var(--shadow);padding:12px;display:none;}
-
   .muted{color:var(--bb-muted);font-size:14px}
 </style>
 </head>
@@ -178,11 +197,24 @@
     <div class="ticks">THIS IS A PRACTICE TEST</div>
     <div class="dashrow" id="dashrow"></div>
 
-    <!-- Split screen (hidden during full review) -->
-    <div class="screen" id="screen">
-      <div class="divider"></div><div class="handle" aria-hidden="true" title="Drag handle"></div>
-      <section class="pane passage" id="passagePane" aria-label="Passage"></section>
-      <section class="pane question" id="questionPane" aria-label="Question"></section>
+    <!-- ONE-COLUMN QUESTION CARD -->
+    <div class="qwrap">
+      <article class="qcard" id="qcard">
+        <header class="qtop">
+          <div class="qbadge" id="qbadge">1</div>
+          <div class="qdash" aria-hidden="true"></div>
+          <button id="flagTop" class="flagbtn" aria-pressed="false">
+            <span class="flagicon"></span><span id="flagLabel">Mark for review</span>
+          </button>
+          <button id="elimToggle" class="elimbtn" aria-pressed="false" title="Eliminate answers">
+            <span class="elimicon" aria-hidden="true"></span> Eliminate
+          </button>
+        </header>
+
+        <h2 class="qtitle" id="qtitle">Question text</h2>
+        <div class="choices" id="choices" role="radiogroup" aria-label="Choices"></div>
+        <div class="hint" id="elimHint" style="display:none">Eliminate mode is on — click an answer to gray it out. Click again to restore.</div>
+      </article>
     </div>
 
     <!-- Review page -->
@@ -214,12 +246,11 @@
         <span id="pillText">Question 1 of 1</span><span class="caret">▾</span>
       </button>
       <div class="rail-left">
-        <button id="btnBack" class="btn">Back</button>
+        <button id="btnBack" class="btn nav">Back</button>
       </div>
       <div class="rail-actions">
-        <button id="btnFlag" class="btn">Mark for review</button>
-        <button id="btnNext" class="btn primary">Next</button>
-        <button id="btnFinish" class="btn primary" style="display:none">End &amp; Score</button>
+        <button id="btnNext" class="btn nav primary">Next</button>
+        <button id="btnFinish" class="btn nav primary" style="display:none">End &amp; Score</button>
       </div>
     </div>
   </div>
@@ -240,37 +271,31 @@
 <script>
 /* ===================== Exam Data ===================== */
 const exam = {
-  storageKey: 'dsa-circles-bluebook-v4',
+  storageKey: 'dsa-circles-bluebook-v5',
   sectionTitle: 'Section 1, Module 1: Math — Circles (Practice)',
   timeLimitSec: 30 * 60,
   questions: [
     { id:'q1',
-      passage:'Use circle formulas where necessary. Assume π is pi.',
       prompt:'A circle has radius 5 cm. What is its circumference?',
       choices:['10π cm','25π cm','5π cm','50π cm'],
       answerIndex:0 },
     { id:'q2',
-      passage:'Area formula: A = πr².',
       prompt:'If a circle’s area is 49π, what is its radius?',
       choices:['3','7','14','24.5'],
       answerIndex:1 },
     { id:'q3',
-      passage:'Center–radius form: (x−h)² + (y−k)² = r².',
       prompt:'A circle passes through (0,0) and (0,6) with center at (0,3). What is its equation?',
       choices:['(x − 0)² + (y − 3)² = 9','(x − 3)² + (y − 0)² = 9','(x − 3)² + (y − 3)² = 6','(x − 0)² + (y − 6)² = 3'],
       answerIndex:0 },
     { id:'q4',
-      passage:'Arc length formula: s = rθ (θ in radians).',
       prompt:'For r = 10 and θ = π/3, what is the arc length s?',
       choices:['10π/3','20π/3','30π','10','π/3'],
       answerIndex:0 },
     { id:'q5',
-      passage:'Sector area formula: (θ/2)r² (θ in radians).',
       prompt:'Sector area for r = 6 and θ = π/2 is',
       choices:['9π','18π','36π','3π'],
       answerIndex:1 },
     { id:'q6',
-      passage:'Diameter d = 2r.',
       prompt:'If the diameter is 18, the area is',
       choices:['81π','36π','18π','9π'],
       answerIndex:0 }
@@ -282,11 +307,13 @@ const state = {
   index: 0,
   answers: {},        // { qid: choiceIndex }
   flags: {},          // { qid: true }
+  elims: {},          // { qid: Set([choiceIndex,...]) }
+  eliminateMode: false,
   remaining: exam.timeLimitSec,
   timerId: null,
   timerHidden: false,
   finished: false,
-  reviewMode: false   // full “Check Your Work” page
+  reviewMode: false
 };
 
 /* ===================== DOM ===================== */
@@ -294,26 +321,34 @@ const el = {
   sectionTitle: document.getElementById('sectionTitle'),
   timeLeft: document.getElementById('timeLeft'),
   toggleTimer: document.getElementById('toggleTimer'),
-  passage: document.getElementById('passagePane'),
-  question: document.getElementById('questionPane'),
+  qbadge: document.getElementById('qbadge'),
+  qtitle: document.getElementById('qtitle'),
+  choices: document.getElementById('choices'),
+  flagTop: document.getElementById('flagTop'),
+  flagLabel: document.getElementById('flagLabel'),
+  elimToggle: document.getElementById('elimToggle'),
+  elimHint: document.getElementById('elimHint'),
+
   back: document.getElementById('btnBack'),
   next: document.getElementById('btnNext'),
-  flag: document.getElementById('btnFlag'),
   finish: document.getElementById('btnFinish'),
+
   progress: document.getElementById('progress'),
   pill: document.getElementById('centerPill'),
   pillText: document.getElementById('pillText'),
   pillFlag: document.getElementById('pillFlag'),
-  dashrow: document.getElementById('dashrow'),
+
   pop: document.getElementById('popover'),
   popGrid: document.getElementById('popGrid'),
   popClose: document.getElementById('popClose'),
   goReview: document.getElementById('goReview'),
   reviewBtn: document.getElementById('btnReview'),
-  screen: document.getElementById('screen'),
+
   checkPage: document.getElementById('checkPage'),
   checkGrid: document.getElementById('checkGrid'),
-  score: document.getElementById('score')
+
+  score: document.getElementById('score'),
+  dashrow: document.getElementById('dashrow')
 };
 
 /* ===================== Static rows ===================== */
@@ -334,13 +369,22 @@ function loadSaved(){
     if(!data) return;
     Object.assign(state.answers, data.answers||{});
     Object.assign(state.flags, data.flags||{});
+    // restore elims
+    if (data.elims) {
+      Object.keys(data.elims).forEach(q=>{
+        state.elims[q] = new Set(data.elims[q]);
+      });
+    }
     if (typeof data.remaining==='number') state.remaining = data.remaining;
     if (typeof data.index==='number') state.index = clamp(data.index, 0, exam.questions.length-1);
   }catch(e){}
 }
 function save(){
+  // persist Sets as arrays
+  const elimsObj = {};
+  Object.keys(state.elims).forEach(q=>{ elimsObj[q] = Array.from(state.elims[q]||[]); });
   localStorage.setItem(exam.storageKey, JSON.stringify({
-    answers: state.answers, flags: state.flags, remaining: state.remaining, index: state.index
+    answers: state.answers, flags: state.flags, elims: elimsObj, remaining: state.remaining, index: state.index
   }));
 }
 
@@ -366,67 +410,74 @@ function clamp(n,min,max){ return Math.max(min, Math.min(max, n)); }
 
 function render(){
   el.sectionTitle.textContent = exam.sectionTitle;
-  renderScreen();
+  renderQuestion();
   renderProgress();
   buildPopGrid();
   buildCheckGrid();
-  updateNavs(); updateFlagButton(); updatePillFlag();
+  updateNavs(); updateFlagVisuals(); updatePillFlag();
   const m=String(Math.floor(state.remaining/60)).padStart(2,'0');
   const s=String(state.remaining%60).padStart(2,'0');
   el.timeLeft.textContent=`${m}:${s}`;
 }
 
-function renderScreen(){
-  // toggle screen vs review page
-  el.screen.style.display = state.reviewMode ? 'none' : 'grid';
-  el.checkPage.style.display = state.reviewMode ? 'block' : 'none';
-  if (state.reviewMode) return;
-
+function renderQuestion(){
   const q = exam.questions[state.index];
 
-  // Left pane remains informational
-  el.passage.innerHTML = `<span class="tag">Info</span><p style="margin-top:10px">${q.passage}</p>`;
+  // top meta
+  el.qbadge.textContent = state.index + 1;
+  el.qtitle.textContent = q.prompt;
 
+  // choices
   const letter = i => String.fromCharCode(65+i);
-  const choices = q.choices.map((t,i)=>{
+  const elimSet = state.elims[q.id] || new Set();
+  el.choices.innerHTML = q.choices.map((t,i)=>{
     const id=`${q.id}_c${i}`;
     const checked = state.answers[q.id]===i ? 'checked':'';
+    const elimClass = elimSet.has(i) ? 'eliminated' : '';
     return `
-      <label class="choice" for="${id}">
+      <label class="choice ${elimClass}" data-choice="${i}" for="${id}">
         <input id="${id}" type="radio" name="${q.id}" value="${i}" ${checked} />
-        <div><b>${letter(i)}.</b> ${t}</div>
+        <div class="text"><b>${letter(i)}.</b> ${t}</div>
         <div class="letter">${letter(i)}</div>
       </label>
     `;
   }).join('');
 
-  // RIGHT pane header: black square number + flag button
-  const flagged = !!state.flags[q.id];
-  el.question.innerHTML = `
-    <div class="qheader">
-      <div style="display:flex;align-items:center;gap:10px">
-        <div class="qbadge">${state.index+1}</div>
-        <div style="font-weight:800">Question ${state.index+1} of ${exam.questions.length}</div>
-      </div>
-      <button id="flagBtnTop" class="flagbtn ${flagged?'on':''}" aria-pressed="${flagged}">
-        <span class="flagicon"></span><span class="label">${flagged?'For review':'Mark for review'}</span>
-      </button>
-    </div>
-    <h3 class="prompt">${q.prompt}</h3>
-    <div class="choices" role="radiogroup" aria-label="Choices">${choices}</div>
-  `;
-
-  // listeners
-  el.question.querySelectorAll('input[type=radio]').forEach(inp=>{
-    inp.addEventListener('change', ()=>{
-      state.answers[q.id] = Number(inp.value);
-      save(); renderProgress(); buildPopGrid(); buildCheckGrid();
+  // handlers
+  el.choices.querySelectorAll('.choice').forEach(choice=>{
+    const idx = Number(choice.dataset.choice);
+    const input = choice.querySelector('input');
+    // toggle elimination when in eliminate mode (click anywhere on the choice area except the radio circle)
+    choice.addEventListener('click', (ev)=>{
+      if (!state.eliminateMode) return; // normal
+      if (ev.target.tagName.toLowerCase()==='input') return; // allow selecting via radio
+      ev.preventDefault();
+      toggleElimination(q.id, idx);
+      choice.classList.toggle('eliminated');
+      // persist
+      save();
+    });
+    // normal selection
+    input.addEventListener('change', ()=>{
+      state.answers[q.id] = idx; save(); renderProgress(); buildPopGrid(); buildCheckGrid();
     });
   });
-  // top flag button
-  el.question.querySelector('#flagBtnTop').addEventListener('click', ()=>{
-    toggleFlag();
-  });
+
+  // flag & eliminate controls
+  const flagged = !!state.flags[q.id];
+  el.flagTop.classList.toggle('on', flagged);
+  el.flagTop.setAttribute('aria-pressed', String(flagged));
+  el.flagLabel.textContent = flagged ? 'For review' : 'Mark for review';
+
+  el.elimToggle.classList.toggle('on', state.eliminateMode);
+  el.elimToggle.setAttribute('aria-pressed', String(state.eliminateMode));
+  el.elimHint.style.display = state.eliminateMode ? 'block' : 'none';
+}
+
+function toggleElimination(qid, idx){
+  if (!state.elims[qid]) state.elims[qid] = new Set();
+  const s = state.elims[qid];
+  if (s.has(idx)) s.delete(idx); else s.add(idx);
 }
 
 function renderProgress(){
@@ -440,6 +491,13 @@ function updatePillFlag(){
   const q = exam.questions[state.index];
   const flagged = !!state.flags[q.id];
   el.pillFlag.style.display = flagged ? 'block' : 'none';
+}
+function updateFlagVisuals(){
+  const q = exam.questions[state.index];
+  const flagged = !!state.flags[q.id];
+  el.flagTop.classList.toggle('on', flagged);
+  el.flagTop.setAttribute('aria-pressed', String(flagged));
+  el.flagLabel.textContent = flagged ? 'For review' : 'Mark for review';
 }
 
 /* ---------- Review popover & page grids ---------- */
@@ -477,7 +535,6 @@ function buildCheckGrid(){
 
 /* ===================== Actions ===================== */
 function updateNavs(){
-  el.back.disabled = state.index===0 && !state.reviewMode;
   const last = state.index===exam.questions.length-1 && !state.reviewMode;
   el.next.style.display = last ? 'none':'inline-block';
   el.finish.style.display = last ? 'inline-block':'none';
@@ -492,18 +549,24 @@ function toggleFlag(){
   if (state.reviewMode){ return; }
   const q=exam.questions[state.index];
   state.flags[q.id]=!state.flags[q.id]; save();
-  updateFlagButton(); updatePillFlag(); buildPopGrid(); buildCheckGrid();
+  updateFlagVisuals(); updatePillFlag(); buildPopGrid(); buildCheckGrid();
 }
-function updateFlagButton(){
-  if (state.reviewMode){ el.flag.textContent='Mark for review'; return; }
-  const q=exam.questions[state.index]; const flagged=!!state.flags[q.id];
-  el.flag.textContent = flagged ? 'Unmark review' : 'Mark for review';
-}
+
+/* Eliminate toggle */
+el.elimToggle.addEventListener('click', ()=>{
+  state.eliminateMode = !state.eliminateMode;
+  el.elimToggle.classList.toggle('on', state.eliminateMode);
+  el.elimToggle.setAttribute('aria-pressed', String(state.eliminateMode));
+  el.elimHint.style.display = state.eliminateMode ? 'block' : 'none';
+});
+
+/* Flag button at top */
+el.flagTop.addEventListener('click', toggleFlag);
 
 function finishExam(){
   if(state.finished) return;
   state.finished=true; clearInterval(state.timerId);
-  state.reviewMode=false; el.pop.style.display='none';
+  closePopover();
 
   // grade
   let correct=0, answered=0;
@@ -525,27 +588,20 @@ function finishExam(){
     <div class="muted">Answered: <b>${answered}/${exam.questions.length}</b> • Correct: <b>${correct}</b> • Score: <b>${pct}%</b></div>
     <div style="margin-top:10px">${rows}</div>
   `;
-  el.screen.style.display='none';
+  document.getElementById('qcard').style.display='none';
   el.checkPage.style.display='none';
   el.score.style.display='block';
 }
 
 /* ---------- Popover controls ---------- */
-function openPopover(){
-  el.pop.style.display='block';
-  el.pill.setAttribute('aria-expanded','true');
-}
-function closePopover(){
-  el.pop.style.display='none';
-  el.pill.setAttribute('aria-expanded','false');
-}
+function openPopover(){ el.pop.style.display='block'; el.pill.setAttribute('aria-expanded','true'); }
+function closePopover(){ el.pop.style.display='none'; el.pill.setAttribute('aria-expanded','false'); }
 
 /* ===================== Wire up ===================== */
 document.getElementById('btnMore').addEventListener('click', ()=>alert('More menu placeholder'));
 el.back.addEventListener('click', ()=>go(-1));
 el.next.addEventListener('click', ()=>go(1));
 el.finish.addEventListener('click', finishExam);
-el.flag.addEventListener('click', toggleFlag);
 
 el.pill.addEventListener('click', ()=>{ if (el.pop.style.display==='block') closePopover(); else openPopover(); });
 el.popClose.addEventListener('click', closePopover);
@@ -560,7 +616,6 @@ document.addEventListener('click', (e)=>{
 
 /* ===================== Init ===================== */
 (function init(){
-  // ticks built above
   loadSaved();
   render();
   startTimer();
