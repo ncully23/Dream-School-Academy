@@ -1,226 +1,423 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Circles – Practice | Dream School Academy</title>
-  <link rel="stylesheet" href="../style.css" />
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Circles — Practice Exam</title>
   <style>
-    body { background:#0f1420; color:#e8eefc; font-family:'Outfit',sans-serif; }
-    main { max-width:900px; margin:0 auto; padding:24px; }
-    .card{background:#1b2231;border:1px solid rgba(255,255,255,.1);border-radius:12px;padding:18px;margin-bottom:16px}
-    button{background:#00d8ff;color:#04101e;border:0;padding:10px 16px;border-radius:8px;cursor:pointer;font-weight:700}
-    button[disabled]{opacity:.6;cursor:not-allowed}
-    .choice{display:block;margin:8px 0;padding:8px;border:1px solid rgba(255,255,255,.1);border-radius:8px;cursor:pointer}
-    .choice input{margin-right:8px}
-    .correct{background:rgba(46,204,113,.12);border-color:#2ecc71}
-    .incorrect{background:rgba(255,107,107,.12);border-color:#ff6b6b}
-    .explanation{font-size:14px;color:#a9b5cc;margin-top:6px;display:none}
-    .explanation.show{display:block}
-    .toolbar{display:flex;gap:12px;align-items:center;margin:8px 0 16px}
-    .muted{color:#a9b5cc}
-    .pill{background:#121a2a;padding:6px 10px;border-radius:999px;border:1px solid rgba(255,255,255,.08)}
+  :root{
+    --bg:#f8f9fb;--surface:#ffffff;--ink:#1d1f23;--muted:#5c6270;
+    --line:#e5e7ef;--line-strong:#c9ccd6;--blue:#3b6cf4;--blue-dark:#2449b5;
+    --accent-yellow:#fedb00;--accent-cyan:#009cde;--accent-gray:#bdbdbd;
+    --shadow:0 1px 2px rgba(16,24,40,.06),0 2px 8px rgba(16,24,40,.06);
+    --radius:12px
+  }
+  html,body{height:100%}
+  body{margin:0;background:var(--bg);color:var(--ink);
+       font:16px/1.5 Inter,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial}
+  .app{max-width:1200px;margin:0 auto;padding:16px 20px 96px}
+
+  /* HEADER */
+  .header{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:16px;
+          padding:10px 12px;background:var(--surface);border:1px solid var(--line);
+          border-radius:var(--radius);box-shadow:var(--shadow);position:sticky;top:10px;z-index:2}
+  .title{font-weight:700;font-size:20px}
+  .subtle-link{display:inline-block;margin-top:2px;color:var(--muted);font-weight:600;font-size:14px;text-decoration:none}
+  .right-tools{justify-self:end;display:flex;gap:12px}
+  .tool{display:flex;gap:6px;align-items:center;color:var(--ink);font-weight:600}
+
+  .timer{display:flex;flex-direction:column;align-items:center;justify-content:center}
+  .timer b{font-size:28px;letter-spacing:.5px;font-variant-numeric:tabular-nums}
+  .timer .hide{margin-top:6px}
+
+  .btn{cursor:pointer;border:1px solid var(--line);background:#fff;border-radius:999px;padding:6px 12px;font-weight:600}
+  .btn.primary{background:var(--blue);border-color:var(--blue);color:#fff}
+  .btn.primary:hover{background:var(--blue-dark);border-color:var(--blue-dark)}
+  .btn.ghost{background:#fff}
+
+  /* color dash bar below header */
+  .color-dash{display:grid;grid-template-columns:repeat(54,1fr);gap:3px;margin:10px 2px 0}
+  .dash{height:6px;background:#000;border-radius:2px}
+  .dash.gray{background:var(--accent-gray)}
+  .dash.yellow{background:var(--accent-yellow)}
+  .dash.cyan{background:var(--accent-cyan)}
+
+  /* SPLIT SCREEN */
+  .screen{display:grid;grid-template-columns:1fr 1fr;gap:0;margin-top:12px;
+          border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;
+          background:var(--surface);box-shadow:var(--shadow)}
+  .pane{padding:16px;min-height:380px}
+  .pane + .pane{border-left:4px solid var(--line-strong)}
+  .tag{display:inline-block;padding:2px 8px;border-radius:999px;border:1px solid var(--line);font-size:12px;color:var(--muted);background:#fff}
+  .question h3{margin:0 0 8px;font-size:18px}
+  .choices{display:grid;gap:10px;margin-top:10px}
+  .choice{display:flex;gap:10px;align-items:flex-start;background:#f6f7fb;border:1px solid var(--line);border-radius:10px;padding:10px}
+  .choice input{margin-top:3px}
+  .notice{color:var(--muted);font-size:14px}
+
+  /* FOOTER NAV */
+  .footer{display:flex;gap:8px;justify-content:space-between;margin-top:10px}
+  .footer .left,.footer .right{display:flex;gap:8px}
+  .btn.nav{min-width:88px;border-radius:10px}
+  .btn.nav.primary{background:#2f54eb;border-color:#2f54eb;color:#fff}
+
+  /* REVIEW */
+  .review{margin-top:12px;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);
+          padding:12px;box-shadow:var(--shadow);display:none}
+  .review-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(80px,1fr));gap:8px;margin-top:8px}
+  .pill{border:1px solid var(--line);background:#fff;border-radius:999px;padding:8px 10px;display:flex;
+        justify-content:space-between;align-items:center;gap:8px;cursor:pointer;color:var(--muted)}
+  .pill span{font-weight:700;color:var(--ink)}
+  .dot{width:10px;height:10px;border-radius:50%;background:#d4d7e3}
+  .dot.answered{background:#06d6a0}
+  .dot.flagged{background:var(--accent-yellow);box-shadow:0 0 0 2px rgba(254,219,0,.25)}
+
+  /* PROGRESS STRIP + CENTER PILL */
+  .progress-wrap{position:fixed;left:0;right:0;bottom:16px;pointer-events:none}
+  .progress-inner{max-width:1200px;margin:0 auto;position:relative}
+  .progress-dash{display:grid;grid-template-columns:repeat(var(--segments,24),1fr);gap:6px;margin:6px 10px}
+  .progress-dash .seg{height:6px;background:#000;border-radius:2px;opacity:.9}
+  .progress-dash .seg.active{background:var(--accent-cyan)}
+  .center-pill{position:absolute;left:50%;transform:translateX(-50%);bottom:12px;background:#111;color:#fff;border-radius:999px;padding:6px 10px;font-weight:700;box-shadow:0 4px 12px rgba(0,0,0,.2)}
+
+  /* SCORE / SUBMIT PAGE */
+  .score{margin-top:16px;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:16px;box-shadow:var(--shadow);display:none}
   </style>
 </head>
 <body>
-  <header style="padding:16px">
-    <a href="../practice.html" style="color:#00d8ff;text-decoration:none;">← Back to Practice</a>
-  </header>
-
-  <main>
-    <h1>Circles — SAT Practice</h1>
-
-    <!-- Controls -->
-    <div class="toolbar">
-      <label class="pill">
-        # Questions:
-        <select id="count">
-          <option>3</option>
-          <option selected>10</option>
-          <option>15</option>
-          <option>20</option>
-        </select>
-      </label>
-      <label class="pill">
-        <input type="checkbox" id="shuffle" checked> Shuffle
-      </label>
-      <button id="start">Start</button>
-      <span id="status" class="muted"></span>
+  <div class="app" id="app">
+    <!-- Header -->
+    <div class="header" role="banner">
+      <div>
+        <div class="title" id="sectionTitle">Section 1, Module 1: Math — Circles</div>
+        <a class="subtle-link" href="#" aria-label="Directions">Directions ▾</a>
+      </div>
+      <div class="timer" aria-live="polite">
+        <b id="timeLeft">30:00</b>
+        <button class="btn hide" id="toggleTimer" aria-pressed="false" title="Hide timer">Hide</button>
+      </div>
+      <div class="right-tools">
+        <button class="btn ghost tool" id="btnReview">Review</button>
+        <button class="btn ghost tool" id="btnMore">More</button>
+      </div>
     </div>
 
-    <div id="quiz"></div>
-
-    <div class="toolbar">
-      <button id="finish" disabled>Finish</button>
-      <button id="retake" disabled class="pill" style="background:transparent;color:#e8eefc">Retake</button>
-      <span id="score" class="muted"></span>
+    <!-- Color dash -->
+    <div class="color-dash" aria-hidden="true">
+      <div class="dash"></div><div class="dash gray"></div><div class="dash yellow"></div><div class="dash cyan"></div>
+      <!-- repeating blocks just for appearance -->
+      ${Array.from({length:40}).map(()=>'<div class="dash"></div>').join('')}
     </div>
-  </main>
 
-  <script>
-    // --- Data (texts are plain strings; we’ll set via textContent) ---
-    const BANK = [
-      { prompt:"A circle has a radius of 5 cm. What is its circumference?",
-        choices:["10π cm","25π cm","5π cm","50π cm"],
-        answer:0, explanation:"Circumference = 2πr = 2 × π × 5 = 10π cm." },
-      { prompt:"If a circle’s area is 49π, what is its radius?",
-        choices:["3","7","14","24.5"], answer:1,
-        explanation:"Area = πr² ⇒ r² = 49 ⇒ r = 7." },
-      { prompt:"A circle passes through (0,0) and (0,6) and has center at (0,3). What is its equation?",
-        choices:["(x - 0)² + (y - 3)² = 9","(x - 3)² + (y - 0)² = 9","(x - 3)² + (y - 3)² = 6","(x - 0)² + (y - 6)² = 3"],
-        answer:0, explanation:"Radius = 3, center = (0,3) ⇒ (x - 0)² + (y - 3)² = 9." },
-      // add more here...
-    ];
+    <!-- Split screen -->
+    <div class="screen" id="screen">
+      <section class="pane" id="passagePane" aria-label="Passage"></section>
+      <section class="pane question" id="questionPane" aria-label="Question"></section>
+    </div>
 
-    // --- Utilities ---
-    const $ = (s, r=document) => r.querySelector(s);
-    const $$ = (s, r=document) => Array.from(r.querySelectorAll(s));
-    const shuffle = arr => arr.map(v=>[Math.random(),v]).sort((a,b)=>a[0]-b[0]).map(x=>x[1]);
-    const sample = (arr, n) => arr.slice(0, n);
+    <!-- Footer nav -->
+    <div class="footer">
+      <div class="left">
+        <button class="btn nav" id="btnBack">Back</button>
+        <button class="btn nav" id="btnNext">Next</button>
+      </div>
+      <div class="right">
+        <button class="btn ghost" id="btnFlag" aria-pressed="false">Mark for review</button>
+        <button class="btn primary" id="btnFinish">End & Score</button>
+      </div>
+    </div>
 
-    // --- State ---
-    let current = [];       // active question set
-    let answered = 0;       // how many questions submitted (for enabling Finish)
-    let results = [];       // per-question results
+    <!-- Review tray -->
+    <div class="review" id="review">
+      <div class="notice">Click a question to jump.</div>
+      <div class="review-grid" id="reviewGrid"></div>
+    </div>
 
-    // --- DOM refs ---
-    const quiz   = $("#quiz");
-    const start  = $("#start");
-    const finish = $("#finish");
-    const retake = $("#retake");
-    const scoreEl= $("#score");
-    const status = $("#status");
+    <!-- Submit/Score page -->
+    <div class="score" id="score"></div>
 
-    // --- Render one question card ---
-    function renderQuestion(q, index) {
-      const card = document.createElement("fieldset");
-      card.className = "card";
-      card.setAttribute("role","group");
+    <!-- Bottom progress strip -->
+    <div class="progress-wrap">
+      <div class="progress-inner">
+        <div class="progress-dash" id="progressDash" style="--segments:24"></div>
+        <div class="center-pill" id="qCounter">Question 1 of 1</div>
+      </div>
+    </div>
+  </div>
 
-      const legend = document.createElement("legend");
-      legend.textContent = `Q${index+1}. ${q.prompt}`;
-      legend.style.fontWeight = "600";
-      card.appendChild(legend);
+<script>
+/* ===================== Exam Data ===================== */
+const exam = {
+  storageKey: 'dsa-circles-v1',
+  sectionTitle: 'Section 1, Module 1: Math — Circles (Practice)',
+  timeLimitSec: 30 * 60, // 30-minute demo
+  questions: [
+    { id:'q1',
+      passage:'Use circle formulas where necessary. Assume π is pi.',
+      prompt:'A circle has radius 5 cm. What is its circumference?',
+      choices:['10π cm','25π cm','5π cm','50π cm'],
+      answerIndex:0 },
+    { id:'q2',
+      passage:'Area formula: A = πr².',
+      prompt:'If a circle’s area is 49π, what is its radius?',
+      choices:['3','7','14','24.5'],
+      answerIndex:1 },
+    { id:'q3',
+      passage:'Center-radius form: (x-h)²+(y-k)²=r².',
+      prompt:'A circle passes through (0,0) and (0,6) with center at (0,3). What is its equation?',
+      choices:['(x-0)²+(y-3)²=9','(x-3)²+(y-0)²=9','(x-3)²+(y-3)²=6','(x-0)²+(y-6)²=3'],
+      answerIndex:0 },
+    { id:'q4',
+      passage:'Arc length s = rθ (θ in radians).',
+      prompt:'For r = 10 and θ = π/3, arc length s equals',
+      choices:['10π/3','20π/3','30π','10','π/3'],
+      answerIndex:0 },
+    { id:'q5',
+      passage:'Sector area = (θ/2)r² (θ in radians).',
+      prompt:'Sector area for r = 6 and θ = π/2 is',
+      choices:['9π','18π','36π','3π'],
+      answerIndex:1 },
+    { id:'q6',
+      passage:'Diameter d = 2r.',
+      prompt:'If the diameter is 18, the area is',
+      choices:['81π','36π','18π','9π'],
+      answerIndex:0 }
+  ]
+};
 
-      q.choices.forEach((text, j)=>{
-        const label = document.createElement("label");
-        label.className = "choice";
-        const input = document.createElement("input");
-        input.type = "radio"; input.name = `q${index}`; input.value = String(j);
-        label.appendChild(input);
-        const span = document.createElement("span");
-        span.textContent = " " + text;
-        label.appendChild(span);
-        card.appendChild(label);
-      });
+/* ===================== State ===================== */
+const state = {
+  index: 0,
+  answers: {},   // { qid: choiceIndex }
+  flags: {},     // { qid: true }
+  remaining: exam.timeLimitSec,
+  timerId: null,
+  timerHidden: false,
+  finished: false
+};
 
-      const exp = document.createElement("div");
-      exp.className = "explanation";
-      exp.textContent = q.explanation;
-      card.appendChild(exp);
+/* ===================== DOM ===================== */
+const el = {
+  sectionTitle: document.getElementById('sectionTitle'),
+  timeLeft: document.getElementById('timeLeft'),
+  toggleTimer: document.getElementById('toggleTimer'),
+  passage: document.getElementById('passagePane'),
+  question: document.getElementById('questionPane'),
+  back: document.getElementById('btnBack'),
+  next: document.getElementById('btnNext'),
+  flag: document.getElementById('btnFlag'),
+  reviewBtn: document.getElementById('btnReview'),
+  review: document.getElementById('review'),
+  reviewGrid: document.getElementById('reviewGrid'),
+  score: document.getElementById('score'),
+  finish: document.getElementById('btnFinish'),
+  progressDash: document.getElementById('progressDash'),
+  qCounter: document.getElementById('qCounter')
+};
 
-      // Immediate feedback on selection
-      card.addEventListener("change", (e)=>{
-        const selected = card.querySelector('input[type="radio"]:checked');
-        if (!selected) return;
-
-        // Clear prior styles
-        $$(".choice", card).forEach(c => c.classList.remove("correct","incorrect"));
-
-        const chosen = Number(selected.value);
-        const choiceEl = selected.closest(".choice");
-
-        if (chosen === q.answer) {
-          choiceEl.classList.add("correct");
-        } else {
-          choiceEl.classList.add("incorrect");
-        }
-
-        // Show explanation
-        exp.classList.add("show");
-
-        // Record result only on first commit for this question
-        if (!results[index]) {
-          results[index] = {
-            questionId: index, choiceIndex: chosen, correct: (chosen===q.answer)
-          };
-          answered++;
-          if (answered === current.length) finish.disabled = false;
-        } else {
-          // allow change before finishing: update correctness
-          results[index].choiceIndex = chosen;
-          results[index].correct = (chosen===q.answer);
-        }
-      });
-
-      return card;
+/* ===================== Storage ===================== */
+function loadSaved() {
+  try {
+    const raw = localStorage.getItem(exam.storageKey);
+    if (!raw) return;
+    const saved = JSON.parse(raw);
+    if (saved && saved.answers) {
+      Object.assign(state.answers, saved.answers);
+      Object.assign(state.flags, saved.flags || {});
+      if (typeof saved.remaining === 'number') state.remaining = saved.remaining;
+      if (typeof saved.index === 'number') state.index = Math.max(0, Math.min(saved.index, exam.questions.length-1));
     }
+  } catch {}
+}
+function save() {
+  const payload = {
+    answers: state.answers,
+    flags: state.flags,
+    remaining: state.remaining,
+    index: state.index
+  };
+  localStorage.setItem(exam.storageKey, JSON.stringify(payload));
+}
 
-    function resetUI() {
-      quiz.innerHTML = "";
-      scoreEl.textContent = "";
-      status.textContent = "";
-      finish.disabled = true;
-      retake.disabled = true;
-      answered = 0;
-      results = [];
-    }
+/* ===================== Timer ===================== */
+function startTimer() {
+  if (state.timerId || state.finished) return;
+  tick();
+  state.timerId = setInterval(tick, 1000);
+}
+function tick() {
+  if (state.remaining <= 0) return finishExam();
+  state.remaining -= 1;
+  const m = String(Math.floor(state.remaining / 60)).padStart(2,'0');
+  const s = String(state.remaining % 60).padStart(2,'0');
+  if (!state.timerHidden) el.timeLeft.textContent = `${m}:${s}`;
+  save();
+  if (state.remaining <= 0) finishExam();
+}
+function toggleTimer() {
+  state.timerHidden = !state.timerHidden;
+  el.toggleTimer.setAttribute('aria-pressed', String(state.timerHidden));
+  el.toggleTimer.textContent = state.timerHidden ? 'Show' : 'Hide';
+  el.timeLeft.style.visibility = state.timerHidden ? 'hidden' : 'visible';
+}
 
-    // --- Start / Retake ---
-    start.addEventListener("click", ()=>{
-      resetUI();
-      const N = Number($("#count").value) || BANK.length;
-      current = $("#shuffle").checked ? sample(shuffle(BANK.slice()), N)
-                                      : sample(BANK.slice(), N);
-      current.forEach((q,i)=> quiz.appendChild(renderQuestion(q, i)));
-      status.textContent = `Loaded ${current.length} questions. Click an answer to see feedback.`;
-      retake.disabled = false;
+/* ===================== Render ===================== */
+function render() {
+  el.sectionTitle.textContent = exam.sectionTitle;
+  renderScreen();
+  renderReviewGrid();
+  updateNavButtons();
+  updateFlagButton();
+  renderProgress();
+  const m = String(Math.floor(state.remaining / 60)).padStart(2,'0');
+  const s = String(state.remaining % 60).padStart(2,'0');
+  el.timeLeft.textContent = `${m}:${s}`;
+}
+
+function renderScreen() {
+  const q = exam.questions[state.index];
+  // left pane (passage/info)
+  el.passage.innerHTML = `
+    <div class="tag">Info</div>
+    <p style="margin-top:8px">${q.passage}</p>
+  `;
+
+  // right pane (question)
+  const choiceHtml = q.choices.map((text, i) => {
+    const checked = state.answers[q.id] === i ? 'checked' : '';
+    const choiceId = `${q.id}_c${i}`;
+    // Letter badges A/B/C/D
+    const letter = String.fromCharCode(65 + i);
+    return `
+      <label class="choice" for="${choiceId}">
+        <input type="radio" name="${q.id}" id="${choiceId}" value="${i}" ${checked} />
+        <div><b>${letter}.</b> ${text}</div>
+      </label>
+    `;
+  }).join('');
+
+  el.question.innerHTML = `
+    <div style="display:flex;align-items:center;gap:8px">
+      <div class="tag">Question</div>
+      <div class="tag">Mark for Review</div>
+    </div>
+    <h3 style="margin-top:8px">Question ${state.index + 1} of ${exam.questions.length}</h3>
+    <div class="notice">${q.prompt}</div>
+    <div class="choices" role="radiogroup" aria-label="Choices">${choiceHtml}</div>
+  `;
+
+  // listeners
+  el.question.querySelectorAll('input[type=radio]').forEach(inp => {
+    inp.addEventListener('change', () => {
+      state.answers[q.id] = Number(inp.value);
+      save();
+      renderReviewGrid();
+      renderProgress();
     });
+  });
+}
 
-    retake.addEventListener("click", ()=> start.click());
+function renderReviewGrid() {
+  el.reviewGrid.innerHTML = '';
+  exam.questions.forEach((q, idx) => {
+    const answered = typeof state.answers[q.id] === 'number';
+    const flagged  = !!state.flags[q.id];
+    const pill = document.createElement('button');
+    pill.className = 'pill';
+    pill.innerHTML = `<span>${idx + 1}</span><div class="dot ${answered ? 'answered' : ''} ${flagged ? 'flagged' : ''}"></div>`;
+    pill.setAttribute('aria-label', `Question ${idx + 1}${answered ? ', answered' : ', unanswered'}${flagged ? ', flagged' : ''}`);
+    pill.addEventListener('click', () => { state.index = idx; render(); });
+    el.reviewGrid.appendChild(pill);
+  });
+}
 
-    // --- Finish & score ---
-    finish.addEventListener("click", async ()=>{
-      if (!current.length) return;
+function renderProgress(){
+  const N = Math.max(24, exam.questions.length * 2); // visual density
+  el.progressDash.style.setProperty('--segments', N);
+  el.progressDash.innerHTML = '';
+  for (let i=0;i<N;i++){
+    const seg = document.createElement('div');
+    seg.className = 'seg' + (i < Math.ceil(((state.index+1)/exam.questions.length)*N) ? ' active' : '');
+    el.progressDash.appendChild(seg);
+  }
+  el.qCounter.textContent = `Question ${state.index+1} of ${exam.questions.length}`;
+}
 
-      // score
-      const correct = results.filter(r => r?.correct).length;
-      scoreEl.textContent = `Score: ${correct}/${current.length} (${Math.round(100*correct/current.length)}%)`;
+function updateNavButtons() {
+  el.back.disabled = state.index === 0;
+  el.next.disabled = state.index === exam.questions.length - 1;
+}
+function updateFlagButton() {
+  const q = exam.questions[state.index];
+  const flagged = !!state.flags[q.id];
+  el.flag.setAttribute('aria-pressed', String(flagged));
+  el.flag.textContent = flagged ? 'Unmark review' : 'Mark for review';
+}
 
-      // Optional: save to Firestore if Firebase helpers are available
-      if (window.FB?.auth && window.FB?.db && window.FB?.addDoc && window.FB?.collection && window.FB?.serverTimestamp) {
-        try {
-          const u = window.FB.auth.currentUser;
-          if (u) {
-            await window.FB.addDoc(window.FB.collection(window.FB.db,"attempts"), {
-              userId: u.uid,
-              section: "Math",
-              topicFilters: ["Circles"],
-              countRequested: current.length,
-              timerEnabled: false,
-              timeLimitSec: null,
-              timeUsedSec: null,
-              scoreRaw: correct,
-              scorePct: Math.round(100*correct/current.length),
-              startedAt: window.FB.serverTimestamp(),
-              finishedAt: window.FB.serverTimestamp(),
-              items: results.map((r,i)=> ({
-                questionId: `circles-${i}`,
-                choiceIndex: r?.choiceIndex ?? null,
-                correct: !!r?.correct,
-                timeSpentSec: null
-              }))
-            });
-            status.textContent = "Saved to your account.";
-          } else {
-            status.textContent = "Not signed in — score not saved.";
-          }
-        } catch (e) {
-          console.warn("Save failed:", e);
-          status.textContent = "Couldn’t save (offline or rules).";
-        }
-      }
-    });
-  </script>
+/* ===================== Actions ===================== */
+function go(delta){
+  const next = state.index + delta;
+  if (next < 0 || next > exam.questions.length - 1) return;
+  state.index = next;
+  save();
+  render();
+}
+function toggleFlag() {
+  const q = exam.questions[state.index];
+  state.flags[q.id] = !state.flags[q.id];
+  save();
+  updateFlagButton();
+  renderReviewGrid();
+}
+function finishExam() {
+  if (state.finished) return;
+  state.finished = true;
+  clearInterval(state.timerId);
+  el.review.style.display = 'none';
+
+  // Grade
+  let correct = 0; let answered = 0;
+  const lines = exam.questions.map((q,i)=>{
+    const chosen = state.answers[q.id];
+    const isAnswered = typeof chosen === 'number';
+    const isCorrect  = isAnswered && chosen === q.answerIndex;
+    if (isAnswered) answered++;
+    if (isCorrect) correct++;
+    const status = isCorrect ? '✅ Correct' : (isAnswered ? '❌ Incorrect' : '⚠️ Unanswered');
+    const detail = isAnswered ? `You chose “${q.choices[chosen]}”.` : '';
+    return `<div style="padding:10px;border:1px solid #26314b;border-radius:12px;margin-bottom:8px">
+              <div><b>Q${i+1}</b> — ${status}</div>
+              <div class="notice">Correct answer: “${q.choices[q.answerIndex]}”. ${detail}</div>
+            </div>`;
+  }).join('');
+
+  const scorePct = Math.round((correct / exam.questions.length) * 100);
+  el.score.innerHTML = `
+    <h2 style="margin:0 0 8px">Results</h2>
+    <p class="notice">Answered: <b>${answered}/${exam.questions.length}</b> • Correct: <b>${correct}</b> • Score: <b>${scorePct}%</b></p>
+    <div style="margin-top:10px">${lines}</div>
+  `;
+  el.score.style.display = 'block';
+
+  // Optionally clear saved progress after finish:
+  // localStorage.removeItem(exam.storageKey);
+}
+
+/* ===================== Wire up ===================== */
+el.back.addEventListener('click', () => go(-1));
+el.next.addEventListener('click', () => go(1));
+el.flag.addEventListener('click', toggleFlag);
+el.reviewBtn.addEventListener('click', () => {
+  const open = el.review.style.display === 'block';
+  el.review.style.display = open ? 'none' : 'block';
+});
+el.finish.addEventListener('click', finishExam);
+el.toggleTimer.addEventListener('click', toggleTimer);
+
+/* ===================== Init ===================== */
+loadSaved();
+render();
+startTimer();
+</script>
 </body>
 </html>
