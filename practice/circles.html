@@ -43,7 +43,7 @@
   .btn.primary:hover{background:var(--bb-blue-dark);border-color:var(--bb-blue-dark)}
   .tools{justify-self:end;display:flex;gap:10px}
 
-  /* “THIS IS A PRACTICE TEST” banner + tick marks row */
+  /* PRACTICE banner + ticks */
   .ticks{
     margin:8px 2px 0; background:#0d1a5a; color:#fff; border-radius:10px; 
     height:22px; display:flex; align-items:center; justify-content:center;
@@ -72,43 +72,70 @@
   }
   .choice input{transform:scale(1.1)}
   .letter{
-    margin-left:auto; /* float to right like Bluebook’s circle letters */
+    margin-left:auto;
     width:28px;height:28px;border-radius:50%;border:2px solid #b7c1dd;display:grid;place-items:center;color:#1f2a44;font-weight:700;
   }
 
-  /* FOOTER rail */
+  /* BOTTOM RAIL */
   .rail{
     position:fixed;left:0;right:0;bottom:0;background:var(--bb-rail);border-top:1px solid var(--bb-line);
-    padding:12px 0; z-index:4;
+    padding:12px 0; z-index:6;
   }
   .rail-inner{max-width:1280px;margin:0 auto;position:relative}
   .progress{display:grid;grid-template-columns:repeat(var(--seg,24),1fr);gap:8px;padding:0 16px}
   .seg{height:6px;border-radius:3px;background:#0b0b0b}
   .seg.active{background:#00a6e7}
+
   .center-pill{
     position:absolute;left:50%;transform:translateX(-50%);bottom:8px;background:var(--bb-pill);color:#fff;border-radius:999px;
-    padding:8px 12px;font-weight:800;box-shadow:0 4px 12px rgba(0,0,0,.25)
+    padding:8px 12px;font-weight:800;box-shadow:0 4px 12px rgba(0,0,0,.25);display:flex;align-items:center;gap:6px;cursor:pointer;border:0;
   }
-  .rail-actions{
-    position:absolute;right:16px;bottom:4px;display:flex;gap:10px;align-items:center;
-  }
-  .rail-left{
-    position:absolute;left:16px;bottom:4px;display:flex;gap:10px;align-items:center;
-  }
+  .center-pill .caret{font-weight:900}
 
-  /* Review tray & Score */
-  .review, .score{
-    margin-top:10px;background:#fff;border:1px solid var(--bb-line);border-radius:10px;box-shadow:var(--shadow);padding:12px;display:none;
+  .rail-actions{position:absolute;right:16px;bottom:4px;display:flex;gap:10px;align-items:center;}
+  .rail-left{position:absolute;left:16px;bottom:4px;display:flex;gap:10px;align-items:center;}
+
+  /* REVIEW POPOVER */
+  .popover{
+    position:fixed;left:50%;bottom:84px;transform:translateX(-50%);
+    background:#fff;border:1px solid var(--bb-line);border-radius:12px;box-shadow:0 10px 30px rgba(0,0,0,.18);
+    width:min(620px,92vw);padding:14px;display:none;z-index:7;
   }
-  .review-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(72px,1fr));gap:8px;margin-top:8px}
-  .pill{border:1px solid var(--bb-line);border-radius:999px;background:#fff;padding:8px 10px;display:flex;justify-content:space-between;align-items:center;gap:8px;cursor:pointer}
-  .dot{width:10px;height:10px;border-radius:50%;background:#d4d7e3}
-  .dot.answered{background:var(--bb-green)}
-  .dot.flagged{background:#fedb00;box-shadow:0 0 0 2px rgba(254,219,0,.25)}
-  .muted{color:var(--bb-muted);font-size:14px}
+  .popover .title{font-weight:800;font-size:18px;margin:2px 0 8px}
+  .popover .legend{display:flex;gap:18px;align-items:center;margin:10px 0;border-top:1px solid var(--bb-line);border-bottom:1px solid var(--bb-line);padding:8px 0;color:var(--bb-muted)}
+  .legend .box{width:16px;height:16px;border:2px dashed #2b3350;border-radius:4px;background:#fff;display:inline-block;vertical-align:middle;margin-right:6px}
+  .legend .flag{width:12px;height:12px;background:#d11;border-radius:2px;display:inline-block;margin-right:6px}
+  .popover .grid{display:grid;grid-template-columns:repeat(10,1fr);gap:10px;margin-top:12px}
+  .nbtn{
+    display:inline-grid;place-items:center;height:36px;border:2px dashed #2b3350;border-radius:6px;background:#fff;
+    color:#1f4dd8;font-weight:800;cursor:pointer;
+  }
+  .nbtn.current{box-shadow:0 0 0 2px #111 inset; position:relative}
+  .pin{position:absolute;right:-6px;top:-8px;font-size:16px}
+  .nbtn.answered{border-style:solid;border-color:#5b74d5}
+  .nbtn.review{background:#fff0f0;border-color:#d11;border-style:solid}
+
+  .popover .go-review{display:block;margin:14px auto 4px;background:#fff;border:2px solid #7da2ff;color:#1f4dd8;border-radius:24px;padding:8px 14px;font-weight:800;cursor:pointer}
+  .popover .close{position:absolute;right:12px;top:8px;border:0;background:transparent;font-size:20px;cursor:pointer}
+
+  /* REVIEW PAGE */
+  .check-wrap{display:none;margin-top:18px}
+  .check-head{font-size:28px;font-weight:800;text-align:center;margin:8px 0 6px}
+  .check-sub{color:var(--bb-muted);text-align:center;margin-bottom:12px}
+  .check-card{max-width:860px;margin:0 auto;background:#fff;border:1px solid var(--bb-line);border-radius:12px;box-shadow:var(--shadow);padding:14px}
+  .check-row{display:flex;justify-content:space-between;align-items:center;color:#111;font-weight:700;margin-bottom:6px}
+  .check-leg{display:flex;gap:18px;align-items:center;color:var(--bb-muted)}
+  .grid-nums{display:grid;grid-template-columns:repeat(10,1fr);gap:10px;margin-top:12px}
+  .grid-nums .nbtn{height:44px}
+
+  /* RESULT */
+  .score{margin-top:10px;background:#fff;border:1px solid var(--bb-line);border-radius:10px;box-shadow:var(--shadow);padding:12px;display:none;}
+
+  /* Question header bits */
   .qnum{
     display:inline-grid;place-items:center;width:28px;height:24px;border-radius:6px;border:2px dashed #2b3350;color:#111;font-weight:800;background:#f9fbff;margin-right:8px;
   }
+  .muted{color:var(--bb-muted);font-size:14px}
 </style>
 </head>
 <body>
@@ -129,24 +156,34 @@
       </div>
     </div>
 
-    <!-- Dark banner + tick row -->
+    <!-- Practice banner + ticks -->
     <div class="ticks">THIS IS A PRACTICE TEST</div>
     <div class="dashrow" id="dashrow"></div>
 
-    <!-- Split screen -->
-    <div class="screen">
+    <!-- Split screen (hidden during full review) -->
+    <div class="screen" id="screen">
       <div class="divider"></div><div class="handle" aria-hidden="true" title="Drag handle"></div>
       <section class="pane passage" id="passagePane" aria-label="Passage"></section>
       <section class="pane question" id="questionPane" aria-label="Question"></section>
     </div>
 
-    <!-- Review tray -->
-    <div class="review" id="review">
-      <div class="muted">Click a number to jump.</div>
-      <div class="review-grid" id="reviewGrid"></div>
-    </div>
+    <!-- Review page -->
+    <section class="check-wrap" id="checkPage" aria-label="Check Your Work">
+      <h1 class="check-head">Check Your Work</h1>
+      <p class="check-sub">On test day, you won’t be able to move on to the next module until time expires.</p>
+      <div class="check-card">
+        <div class="check-row">
+          <div>Section 1, Module 1: Reading and Writing Questions</div>
+          <div class="check-leg">
+            <span><span class="box"></span> Unanswered</span>
+            <span><span class="flag"></span> For Review</span>
+          </div>
+        </div>
+        <div class="grid-nums" id="checkGrid"></div>
+      </div>
+    </section>
 
-    <!-- Score / submit page -->
+    <!-- Results -->
     <div class="score" id="score"></div>
   </div>
 
@@ -154,7 +191,9 @@
   <div class="rail" role="contentinfo">
     <div class="rail-inner">
       <div class="progress" id="progress"></div>
-      <div class="center-pill" id="qCounter">Question 1 of 1</div>
+      <button class="center-pill" id="centerPill" aria-haspopup="dialog" aria-expanded="false">
+        <span id="pillText">Question 1 of 1</span><span class="caret">▾</span>
+      </button>
       <div class="rail-left">
         <button id="btnBack" class="btn">Back</button>
       </div>
@@ -166,10 +205,23 @@
     </div>
   </div>
 
+  <!-- Review popover -->
+  <div class="popover" id="popover" role="dialog" aria-modal="false" aria-label="Question Navigator">
+    <button class="close" id="popClose" aria-label="Close">×</button>
+    <div class="title">Section 1, Module 1: Reading and Writing Questions</div>
+    <div class="legend">
+      <span>📍 Current</span>
+      <span><span class="box"></span> Unanswered</span>
+      <span><span class="flag"></span> For Review</span>
+    </div>
+    <div class="grid" id="popGrid"></div>
+    <button class="go-review" id="goReview">Go to Review Page</button>
+  </div>
+
 <script>
 /* ===================== Exam Data ===================== */
 const exam = {
-  storageKey: 'dsa-circles-bluebook-v2',
+  storageKey: 'dsa-circles-bluebook-v3',
   sectionTitle: 'Section 1, Module 1: Math — Circles (Practice)',
   timeLimitSec: 30 * 60,
   questions: [
@@ -214,7 +266,8 @@ const state = {
   remaining: exam.timeLimitSec,
   timerId: null,
   timerHidden: false,
-  finished: false
+  finished: false,
+  reviewMode: false   // full “Check Your Work” page
 };
 
 /* ===================== DOM ===================== */
@@ -224,37 +277,34 @@ const el = {
   toggleTimer: document.getElementById('toggleTimer'),
   passage: document.getElementById('passagePane'),
   question: document.getElementById('questionPane'),
-  reviewBtn: document.getElementById('btnReview'),
-  review: document.getElementById('review'),
-  reviewGrid: document.getElementById('reviewGrid'),
-  score: document.getElementById('score'),
   back: document.getElementById('btnBack'),
   next: document.getElementById('btnNext'),
   flag: document.getElementById('btnFlag'),
   finish: document.getElementById('btnFinish'),
   progress: document.getElementById('progress'),
-  qCounter: document.getElementById('qCounter'),
-  dashrow: document.getElementById('dashrow')
+  pill: document.getElementById('centerPill'),
+  pillText: document.getElementById('pillText'),
+  dashrow: document.getElementById('dashrow'),
+  pop: document.getElementById('popover'),
+  popGrid: document.getElementById('popGrid'),
+  popClose: document.getElementById('popClose'),
+  goReview: document.getElementById('goReview'),
+  reviewBtn: document.getElementById('btnReview'),
+  screen: document.getElementById('screen'),
+  checkPage: document.getElementById('checkPage'),
+  checkGrid: document.getElementById('checkGrid'),
+  score: document.getElementById('score')
 };
 
-/* ===================== Build static rows ===================== */
-(function buildDash(){
-  // top dashed tick row (just repeating blocks)
-  const total = 54;
-  for(let i=0;i<total;i++){
-    const d=document.createElement('div');
-    d.className='dash';
-    el.dashrow.appendChild(d);
-  }
+/* ===================== Static rows ===================== */
+(function buildTicks(){
+  for(let i=0;i<54;i++){ const d=document.createElement('div'); d.className='dash'; el.dashrow.appendChild(d); }
 })();
 (function buildProgress(){
   const seg = Math.max(24, exam.questions.length * 2);
   el.progress.style.setProperty('--seg', seg);
   el.progress.innerHTML='';
-  for(let i=0;i<seg;i++){
-    const s=document.createElement('div');
-    s.className='seg'; el.progress.appendChild(s);
-  }
+  for(let i=0;i<seg;i++){ const s=document.createElement('div'); s.className='seg'; el.progress.appendChild(s); }
 })();
 
 /* ===================== Storage ===================== */
@@ -265,7 +315,7 @@ function loadSaved(){
     Object.assign(state.answers, data.answers||{});
     Object.assign(state.flags, data.flags||{});
     if (typeof data.remaining==='number') state.remaining = data.remaining;
-    if (typeof data.index==='number') state.index = Math.max(0, Math.min(data.index, exam.questions.length-1));
+    if (typeof data.index==='number') state.index = clamp(data.index, 0, exam.questions.length-1);
   }catch(e){}
 }
 function save(){
@@ -275,10 +325,7 @@ function save(){
 }
 
 /* ===================== Timer ===================== */
-function startTimer(){
-  if(state.timerId || state.finished) return;
-  tick(); state.timerId=setInterval(tick,1000);
-}
+function startTimer(){ if(state.timerId || state.finished) return; tick(); state.timerId=setInterval(tick,1000); }
 function tick(){
   if (state.remaining<=0) return finishExam();
   state.remaining--;
@@ -294,26 +341,33 @@ el.toggleTimer.addEventListener('click', ()=>{
   el.timeLeft.style.visibility = state.timerHidden ? 'hidden' : 'visible';
 });
 
-/* ===================== Render ===================== */
+/* ===================== Renderers ===================== */
+function clamp(n,min,max){ return Math.max(min, Math.min(max, n)); }
+
 function render(){
   el.sectionTitle.textContent = exam.sectionTitle;
-  renderScreen(); renderReviewGrid(); renderProgress();
+  renderScreen();
+  renderProgress();
+  buildPopGrid();
+  buildCheckGrid();
   updateNavs(); updateFlagButton();
-
   const m=String(Math.floor(state.remaining/60)).padStart(2,'0');
   const s=String(state.remaining%60).padStart(2,'0');
   el.timeLeft.textContent=`${m}:${s}`;
 }
 
 function renderScreen(){
+  // toggle screen vs review page
+  el.screen.style.display = state.reviewMode ? 'none' : 'grid';
+  el.checkPage.style.display = state.reviewMode ? 'block' : 'none';
+
+  if (state.reviewMode) return;
+
   const q = exam.questions[state.index];
 
-  el.passage.innerHTML = `
-    <span class="tag">Info</span>
-    <p style="margin-top:10px">${q.passage}</p>
-  `;
+  el.passage.innerHTML = `<span class="tag">Info</span><p style="margin-top:10px">${q.passage}</p>`;
 
-  const letter = idx => String.fromCharCode(65+idx);
+  const letter = i => String.fromCharCode(65+i);
   const choices = q.choices.map((t,i)=>{
     const id=`${q.id}_c${i}`;
     const checked = state.answers[q.id]===i ? 'checked':'';
@@ -339,51 +393,72 @@ function renderScreen(){
   el.question.querySelectorAll('input[type=radio]').forEach(inp=>{
     inp.addEventListener('change', ()=>{
       state.answers[q.id] = Number(inp.value);
-      save(); renderReviewGrid(); renderProgress();
+      save(); renderProgress(); buildPopGrid(); buildCheckGrid();
     });
-  });
-}
-
-function renderReviewGrid(){
-  el.reviewGrid.innerHTML='';
-  exam.questions.forEach((q,i)=>{
-    const answered = typeof state.answers[q.id]==='number';
-    const flagged  = !!state.flags[q.id];
-    const b=document.createElement('button');
-    b.className='pill';
-    b.innerHTML=`<span>${i+1}</span><div class="dot ${answered?'answered':''} ${flagged?'flagged':''}"></div>`;
-    b.addEventListener('click', ()=>{ state.index=i; render(); });
-    el.reviewGrid.appendChild(b);
   });
 }
 
 function renderProgress(){
   const segs = el.progress.children.length;
   const active = Math.ceil(((state.index+1)/exam.questions.length)*segs);
-  for(let i=0;i<segs;i++){
-    el.progress.children[i].classList.toggle('active', i<active);
-  }
-  el.qCounter.textContent = `Question ${state.index+1} of ${exam.questions.length}`;
+  for(let i=0;i<segs;i++){ el.progress.children[i].classList.toggle('active', i<active); }
+  el.pillText.textContent = `Question ${state.index+1} of ${exam.questions.length}`;
 }
 
-/* ===================== Nav / Actions ===================== */
+/* ---------- Review popover & page grids ---------- */
+function buildPopGrid(){
+  el.popGrid.innerHTML='';
+  exam.questions.forEach((q,i)=>{
+    const b=document.createElement('button');
+    b.className='nbtn';
+    b.textContent = String(i+1);
+    const answered = typeof state.answers[q.id]==='number';
+    const flagged  = !!state.flags[q.id];
+    if (i===state.index){ b.classList.add('current'); const pin=document.createElement('span'); pin.className='pin'; pin.textContent='📍'; b.appendChild(pin); }
+    if (answered) b.classList.add('answered');
+    if (flagged)  b.classList.add('review');
+    b.addEventListener('click', ()=>{
+      state.index=i; state.reviewMode=false; closePopover(); render();
+    });
+    el.popGrid.appendChild(b);
+  });
+}
+function buildCheckGrid(){
+  el.checkGrid.innerHTML='';
+  exam.questions.forEach((q,i)=>{
+    const b=document.createElement('button');
+    b.className='nbtn';
+    b.textContent = String(i+1);
+    const answered = typeof state.answers[q.id]==='number';
+    const flagged  = !!state.flags[q.id];
+    if (answered) b.classList.add('answered');
+    if (flagged)  b.classList.add('review');
+    b.addEventListener('click', ()=>{ state.index=i; state.reviewMode=false; render(); scrollTo(0,0); });
+    el.checkGrid.appendChild(b);
+  });
+}
+
+/* ===================== Actions ===================== */
 function updateNavs(){
-  el.back.disabled = state.index===0;
-  // show Finish on last question; otherwise Next
-  const last = state.index===exam.questions.length-1;
+  el.back.disabled = state.index===0 && !state.reviewMode;
+  const last = state.index===exam.questions.length-1 && !state.reviewMode;
   el.next.style.display = last ? 'none':'inline-block';
   el.finish.style.display = last ? 'inline-block':'none';
 }
 function go(delta){
-  const k = state.index + delta;
-  if (k<0 || k>exam.questions.length-1) return;
+  if (state.reviewMode){ state.reviewMode=false; render(); return; }
+  const k = clamp(state.index + delta, 0, exam.questions.length-1);
+  if (k===state.index) return;
   state.index = k; save(); render();
 }
 function toggleFlag(){
+  if (state.reviewMode){ return; }
   const q=exam.questions[state.index];
-  state.flags[q.id]=!state.flags[q.id]; save(); renderReviewGrid(); updateFlagButton();
+  state.flags[q.id]=!state.flags[q.id]; save();
+  updateFlagButton(); buildPopGrid(); buildCheckGrid();
 }
 function updateFlagButton(){
+  if (state.reviewMode){ el.flag.textContent='Mark for review'; return; }
   const q=exam.questions[state.index]; const flagged=!!state.flags[q.id];
   el.flag.textContent = flagged ? 'Unmark review' : 'Mark for review';
 }
@@ -391,7 +466,7 @@ function updateFlagButton(){
 function finishExam(){
   if(state.finished) return;
   state.finished=true; clearInterval(state.timerId);
-  el.review.style.display='none';
+  state.reviewMode=false; el.pop.style.display='none';
 
   // grade
   let correct=0, answered=0;
@@ -413,20 +488,43 @@ function finishExam(){
     <div class="muted">Answered: <b>${answered}/${exam.questions.length}</b> • Correct: <b>${correct}</b> • Score: <b>${pct}%</b></div>
     <div style="margin-top:10px">${rows}</div>
   `;
+  el.screen.style.display='none';
+  el.checkPage.style.display='none';
   el.score.style.display='block';
 }
 
+/* ---------- Popover controls ---------- */
+function openPopover(){
+  el.pop.style.display='block';
+  el.pill.setAttribute('aria-expanded','true');
+}
+function closePopover(){
+  el.pop.style.display='none';
+  el.pill.setAttribute('aria-expanded','false');
+}
+
 /* ===================== Wire up ===================== */
-document.getElementById('btnReview').addEventListener('click', ()=>{
-  el.review.style.display = el.review.style.display==='block' ? 'none' : 'block';
-});
+document.getElementById('btnMore').addEventListener('click', ()=>alert('More menu placeholder'));
 el.back.addEventListener('click', ()=>go(-1));
 el.next.addEventListener('click', ()=>go(1));
 el.finish.addEventListener('click', finishExam);
 el.flag.addEventListener('click', toggleFlag);
 
+el.pill.addEventListener('click', ()=>{ if (el.pop.style.display==='block') closePopover(); else openPopover(); });
+el.popClose.addEventListener('click', closePopover);
+el.goReview.addEventListener('click', ()=>{ state.reviewMode=true; closePopover(); render(); });
+el.reviewBtn.addEventListener('click', ()=>{ state.reviewMode = !state.reviewMode; render(); });
+
+/* Close popover when clicking outside */
+document.addEventListener('click', (e)=>{
+  const inside = e.target===el.pill || el.pill.contains(e.target) || e.target===el.pop || el.pop.contains(e.target);
+  if (!inside) closePopover();
+});
+
 /* ===================== Init ===================== */
 (function init(){
+  // top tick row
+  // (already built)
   loadSaved();
   render();
   startTimer();
