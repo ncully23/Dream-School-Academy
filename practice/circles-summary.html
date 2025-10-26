@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Circles — Summary</title>
+<style>
+  :root{
+    --bg:#eef2fb;--surface:#fff;--ink:#0f172a;--muted:#64748b;--line:#d9e0f2;
+    --good:#11a36a;--bad:#d33;--pill:#0b1227;--blue:#1f4dd8;--shadow:0 6px 14px rgba(16,24,40,.08);
+  }
+  body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 Inter, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;}
+  .wrap{max-width:1100px;margin:0 auto;padding:20px 16px 80px}
+  .card{background:var(--surface);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow);padding:16px}
+  h1{margin:.25rem 0 .35rem}
+  .muted{color:var(--muted)}
+  .top{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:10px}
+  .score{
+    background:#0b1227;color:#fff;border-radius:999px;padding:8px 12px;font-weight:800;display:inline-flex;gap:10px
+  }
+  .actions{display:flex;gap:10px;flex-wrap:wrap}
+  .btn{border:1px solid var(--line);background:#fff;border-radius:999px;padding:8px 12px;font-weight:700;cursor:pointer}
+  .btn.primary{background:var(--blue);border-color:var(--blue);color:#fff}
+
+  /* grid of Qs */
+  .qs{margin-top:14px;display:grid;gap:12px}
+  .q{border:1px solid var(--line);border-radius:12px;padding:14px;background:#fff}
+  .qhead{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+  .badge{width:32px;height:32px;border-radius:6px;display:grid;place-items:center;font-weight:900;color:#fff}
+  .badge.ok{background:var(--good)} .badge.no{background:var(--bad)}
+  .prompt{font-weight:800}
+  .choices{margin-top:6px;display:grid;gap:6px}
+  .choice{border:1px solid var(--line);border-radius:10px;padding:8px 10px;background:#f7f8fd;display:flex;justify-content:space-between;align-items:center}
+  .tag{font-size:12px;border-radius:999px;padding:3px 8px}
+  .tag.ok{background:#ecfdf5;color:#065f46;border:1px solid #a7f3d0}
+  .tag.you{background:#eef2ff;color:#3730a3;border:1px solid #c7d2fe}
+  .tag.correct{background:#f0fdf4;color:#166534;border:1px solid #bbf7d0}
+  .tag.wrong{background:#fff1f2;color:#991b1b;border:1px solid #fecdd3}
+  .exp{margin-top:8px;color:var(--muted)}
+  .empty{max-width:760px;margin:40px auto;text-align:center}
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="card">
+      <div class="top">
+        <div>
+          <h1 id="title">Summary</h1>
+          <div class="muted" id="meta"></div>
+        </div>
+        <div class="score" id="scorePill"></div>
+      </div>
+      <div class="actions">
+        <a class="btn" href="circles.html">← Back to practice</a>
+        <button class="btn primary" id="retake">Retake this set</button>
+        <button class="btn" id="clear">Clear my answers</button>
+      </div>
+    </div>
+
+    <div class="qs" id="qs"></div>
+
+    <div class="card empty" id="empty" style="display:none">
+      <h2>No summary found</h2>
+      <p class="muted">Take the practice first, then you’ll land here automatically with a full breakdown.</p>
+      <a class="btn primary" href="circles.html">Start Practice</a>
+    </div>
+  </div>
+
+<script>
+(function(){
+  const KEY = 'dsa-last-summary';
+  const RAW = localStorage.getItem(KEY);
+  const data = RAW ? JSON.parse(RAW) : null;
+
+  const qs = document.getElementById('qs');
+  const title = document.getElementById('title');
+  const meta = document.getElementById('meta');
+  const pill = document.getElementById('scorePill');
+  const empty = document.getElementById('empty');
+
+  if(!data){
+    empty.style.display = 'block';
+    document.querySelector('.card').style.display='none';
+    return;
+  }
+
+  title.textContent = data.title || 'Summary';
+  meta.textContent  = `Answered ${data.answered}/${data.total} • Correct ${data.correct} • Completed ${new Date(data.finishedAt).toLocaleString()}`;
+  pill.textContent  = `Score: ${data.scorePct}%`;
+
+  // Build full list
+  const letter = i => String.fromCharCode(65+i);
+  data.items.forEach(it=>{
+    const ok = (it.userIndex !== null) && (it.userIndex === it.correctIndex);
+    const q = document.createElement('section');
+    q.className = 'q';
+    q.innerHTML = `
+      <div class="qhead">
+        <div class="badge ${ok ? 'ok':'no'}">${it.number}</div>
+        <div class="prompt">${it.prompt}</div>
+      </div>
+      <div class="choices">
+        ${it.choices.map((c,i)=>{
+          const isCorrect = i === it.correctIndex;
+          const isUser    = i === it.userIndex;
+          const tags = [
+            isUser ? '<span class="tag you">Your choice</span>' : '',
+            isCorrect ? '<span class="tag correct">Correct</span>' : ''
+          ].join(' ');
+          return `<div class="choice">
+                    <div><b>${letter(i)}.</b> ${c}</div>
+                    <div style="display:flex;gap:6px">${tags}</div>
+                  </div>`;
+        }).join('')}
+      </div>
+      <div class="exp"><b>Explanation:</b> ${it.explanation || '—'}</div>
+    `;
+    qs.appendChild(q);
+  });
+
+  // Buttons
+  document.getElementById('retake').addEventListener('click', ()=>{
+    // clear only answers in the practice storage so user starts fresh
+    try {
+      const PRACTICE_KEY = 'dsa-circles-bluebook-v6';
+      const raw = localStorage.getItem(PRACTICE_KEY);
+      if (raw){
+        const obj = JSON.parse(raw);
+        obj.answers = {};
+        obj.flags = {};
+        obj.elims = {};
+        localStorage.setItem(PRACTICE_KEY, JSON.stringify(obj));
+      }
+    } catch(e){}
+    location.href = 'circles.html';
+  });
+
+  document.getElementById('clear').addEventListener('click', ()=>{
+    localStorage.removeItem(KEY);
+    alert('Summary cleared.');
+  });
+})();
+</script>
+</body>
+</html>
