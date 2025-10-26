@@ -34,8 +34,9 @@
     display:grid;grid-template-columns:1fr auto;align-items:center;gap:16px;
     background:var(--bb-surface);border:1px solid var(--bb-line);
     border-radius:10px;padding:10px 14px;box-shadow:var(--shadow);position:sticky;top:8px;z-index:5;
+    .timer{ justify-self:center; }   /* NEW: centers the timer in the middle column */
   }
-  .timer{ justify-self:center; }   /* NEW: centers the timer in the middle column */
+
   .title{font-weight:700;font-size:18px}
   .directions{display:inline-flex;gap:6px;align-items:center;color:#111;background:transparent;border:0;font-weight:600}
   .timer{display:flex;flex-direction:column;align-items:center;justify-content:center}
