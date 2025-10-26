@@ -340,17 +340,6 @@ const el = {
 })();
 
 /* ===================== Storage ===================== */
-function loadSaved(){
-  try{
-    const data = JSON.parse(localStorage.getItem(exam.storageKey)||'null');
-    if(!data) return;
-    Object.assign(state.answers, data.answers||{});
-    Object.assign(state.flags, data.flags||{});
-    if (data.elims) { Object.keys(data.elims).forEach(q=> state.elims[q] = new Set(data.elims[q])); }
-    if (typeof data.remaining==='number') state.remaining = data.remaining;
-    if (typeof data.index==='number') state.index = clamp(data.index, 0, exam.questions.length-1);
-  }catch(e){}
-}
 function save(){
   const elimsObj = {};
   Object.keys(state.elims).forEach(q=>{ elimsObj[q] = Array.from(state.elims[q]||[]); });
@@ -403,7 +392,7 @@ function renderQuestion(){
   const elimSet = state.elims[q.id] || new Set();
   el.choices.innerHTML = q.choices.map((t,i)=>{
     const id=`${q.id}_c${i}`;
-    const checked = state.answers[q.id]===i ? 'checked':'';
+    const checked = state.answers[q.id]===i ? 'checked':''; /* will always be blank on fresh load */
     const elimClass = elimSet.has(i) ? 'eliminated' : '';
     return `
       <label class="choice ${elimClass}" data-choice="${i}" for="${id}">
@@ -573,26 +562,4 @@ const pill = document.getElementById('centerPill');
 function openPopover(){ el.pop.style.display='block'; pill.setAttribute('aria-expanded','true'); }
 function closePopover(){ el.pop.style.display='none'; pill.setAttribute('aria-expanded','false'); }
 pill.addEventListener('click', ()=>{ if (el.pop.style.display==='block') closePopover(); else openPopover(); });
-document.getElementById('popClose').addEventListener('click', closePopover);
-el.goReview.addEventListener('click', ()=>{ state.reviewMode=true; closePopover(); render(); });
-
-/* Close popover when clicking outside */
-document.addEventListener('click', (e)=>{
-  const inside = e.target===pill || pill.contains(e.target) || e.target===el.pop || el.pop.contains(e.target);
-  if (!inside) closePopover();
-});
-
-/* Nav buttons */
-document.getElementById('btnBack').addEventListener('click', ()=>go(-1));
-document.getElementById('btnNext').addEventListener('click', ()=>go(1));
-document.getElementById('btnFinish').addEventListener('click', finishExam);
-
-/* ===================== Init ===================== */
-(function init(){
-  loadSaved();
-  render();
-  startTimer();
-})();
-</script>
-</body>
-</html>
+document.getElementById('popClose').addEventListener('click
