@@ -35,6 +35,7 @@
     background:var(--bb-surface);border:1px solid var(--bb-line);
     border-radius:10px;padding:10px 14px;box-shadow:var(--shadow);position:sticky;top:8px;z-index:5;
   }
+  .timer{ justify-self:center; }   /* NEW: centers the timer in the middle column */
   .title{font-weight:700;font-size:18px}
   .directions{display:inline-flex;gap:6px;align-items:center;color:#111;background:transparent;border:0;font-weight:600}
   .timer{display:flex;flex-direction:column;align-items:center;justify-content:center}
@@ -166,16 +167,18 @@
 <body>
   <div class="app">
     <!-- Header (clean) -->
-    <div class="header" role="banner">
-      <div>
-        <div class="title" id="sectionTitle">Section 1, Module 1: Math — Circles (Practice)</div>
-        <button class="directions" aria-label="Directions">Directions ▾</button>
-      </div>
-      <div class="timer" aria-live="polite">
-        <b id="timeLeft">30:00</b>
-        <button id="toggleTimer" class="btn ghost" aria-pressed="false">Hide</button>
-      </div>
-    </div>
+<div class="header" role="banner">
+  <div>
+    <div class="title" id="sectionTitle">Section 1, Module 1: Math — Circles (Practice)</div>
+    <button class="directions" aria-label="Directions">Directions ▾</button>
+  </div>
+  <div class="timer" aria-live="polite">
+    <b id="timeLeft">30:00</b>
+    <button id="toggleTimer" class="btn ghost" aria-pressed="false">Hide</button>
+  </div>
+  <div aria-hidden="true"></div> <!-- spacer for the 3rd grid column -->
+</div>
+
 
     <!-- Practice banner + ticks -->
     <div class="ticks">THIS IS A PRACTICE TEST</div>
