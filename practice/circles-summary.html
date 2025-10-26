@@ -19,7 +19,7 @@
     background:#0b1227;color:#fff;border-radius:999px;padding:8px 12px;font-weight:800;display:inline-flex;gap:10px
   }
   .actions{display:flex;gap:10px;flex-wrap:wrap}
-  .btn{border:1px solid var(--line);background:#fff;border-radius:999px;padding:8px 12px;font-weight:700;cursor:pointer}
+  .btn{border:1px solid var(--line);background:#fff;border-radius:999px;padding:8px 12px;font-weight:700;cursor:pointer;text-decoration:none;color:inherit}
   .btn.primary{background:var(--blue);border-color:var(--blue);color:#fff}
 
   /* grid of Qs */
@@ -42,7 +42,7 @@
 </head>
 <body>
   <div class="wrap">
-    <div class="card">
+    <div class="card" id="headerCard">
       <div class="top">
         <div>
           <h1 id="title">Summary</h1>
@@ -68,67 +68,85 @@
 
 <script>
 (function(){
-  const KEY = 'dsa-last-summary';
-  const RAW = localStorage.getItem(KEY);
-  const data = RAW ? JSON.parse(RAW) : null;
+  // Primary key your practice page writes to:
+  const SUMMARY_KEY = 'dsa-circles-summary-v1';
+  // Graceful fallback (older builds):
+  const FALLBACK_KEY = 'dsa-last-summary';
 
-  const qs = document.getElementById('qs');
-  const title = document.getElementById('title');
-  const meta = document.getElementById('meta');
-  const pill = document.getElementById('scorePill');
-  const empty = document.getElementById('empty');
+  // Read whichever exists
+  const raw = localStorage.getItem(SUMMARY_KEY) || localStorage.getItem(FALLBACK_KEY);
+  const data = raw ? JSON.parse(raw) : null;
 
-  if(!data){
+  const qsEl   = document.getElementById('qs');
+  const title  = document.getElementById('title');
+  const meta   = document.getElementById('meta');
+  const pill   = document.getElementById('scorePill');
+  const empty  = document.getElementById('empty');
+  const header = document.getElementById('headerCard');
+
+  if (!data || !data.items || !Array.isArray(data.items) || data.items.length === 0) {
+    // Nothing to show (this should not happen after the fix, but keep a graceful fallback)
     empty.style.display = 'block';
-    document.querySelector('.card').style.display='none';
+    header.style.display = 'none';
     return;
   }
 
-  title.textContent = data.title || 'Summary';
-  meta.textContent  = `Answered ${data.answered}/${data.total} • Correct ${data.correct} • Completed ${new Date(data.finishedAt).toLocaleString()}`;
-  pill.textContent  = `Score: ${data.scorePct}%`;
+  // Normalize fields from the structure saved by circles.html
+  // circles.html stores: { title, generatedAt, totals:{answered,correct,total,timeSpentSec}, items:[{chosenIndex, correctIndex, ...}] }
+  const totals     = data.totals || {};
+  const answered   = typeof totals.answered === 'number' ? totals.answered : 0;
+  const correct    = typeof totals.correct === 'number'  ? totals.correct  : 0;
+  const total      = typeof totals.total === 'number'    ? totals.total    : data.items.length;
+  const scorePct   = total ? Math.round((correct/total)*100) : 0;
+  const finishedAt = data.generatedAt || new Date().toISOString();
 
-  // Build full list
+  title.textContent = data.title || 'Summary';
+  meta.textContent  = `Answered ${answered}/${total} • Correct ${correct} • Completed ${new Date(finishedAt).toLocaleString()}`;
+  pill.textContent  = `Score: ${scorePct}%`;
+
   const letter = i => String.fromCharCode(65+i);
+
   data.items.forEach(it=>{
-    const ok = (it.userIndex !== null) && (it.userIndex === it.correctIndex);
-    const q = document.createElement('section');
-    q.className = 'q';
-    q.innerHTML = `
+    const userIndex = (typeof it.chosenIndex === 'number') ? it.chosenIndex : null;
+    const ok = (userIndex !== null) && (userIndex === it.correctIndex);
+
+    const sec = document.createElement('section');
+    sec.className = 'q';
+    sec.innerHTML = `
       <div class="qhead">
-        <div class="badge ${ok ? 'ok':'no'}">${it.number}</div>
-        <div class="prompt">${it.prompt}</div>
+        <div class="badge ${ok ? 'ok' : 'no'}">${it.number ?? ''}</div>
+        <div class="prompt">${it.prompt || ''}</div>
       </div>
       <div class="choices">
-        ${it.choices.map((c,i)=>{
-          const isCorrect = i === it.correctIndex;
-          const isUser    = i === it.userIndex;
-          const tags = [
-            isUser ? '<span class="tag you">Your choice</span>' : '',
-            isCorrect ? '<span class="tag correct">Correct</span>' : ''
-          ].join(' ');
-          return `<div class="choice">
-                    <div><b>${letter(i)}.</b> ${c}</div>
-                    <div style="display:flex;gap:6px">${tags}</div>
-                  </div>`;
-        }).join('')}
+        ${ (it.choices || []).map((c,i)=>{
+            const isCorrect = i === it.correctIndex;
+            const isUser    = i === userIndex;
+            const tags = [
+              isUser ? '<span class="tag you">Your choice</span>' : '',
+              isCorrect ? '<span class="tag correct">Correct</span>' : ''
+            ].join(' ');
+            return `<div class="choice">
+                      <div><b>${letter(i)}.</b> ${c}</div>
+                      <div style="display:flex;gap:6px">${tags}</div>
+                    </div>`;
+          }).join('') }
       </div>
       <div class="exp"><b>Explanation:</b> ${it.explanation || '—'}</div>
     `;
-    qs.appendChild(q);
+    qsEl.appendChild(sec);
   });
 
   // Buttons
   document.getElementById('retake').addEventListener('click', ()=>{
-    // clear only answers in the practice storage so user starts fresh
+    // Clear the practice progress so the user starts fresh
     try {
-      const PRACTICE_KEY = 'dsa-circles-bluebook-v6';
-      const raw = localStorage.getItem(PRACTICE_KEY);
-      if (raw){
-        const obj = JSON.parse(raw);
+      const PRACTICE_KEY = 'dsa-circles-bluebook-v7'; // <-- matches circles.html
+      const rawPractice = localStorage.getItem(PRACTICE_KEY);
+      if (rawPractice){
+        const obj = JSON.parse(rawPractice);
         obj.answers = {};
-        obj.flags = {};
-        obj.elims = {};
+        obj.flags   = {};
+        obj.elims   = {};
         localStorage.setItem(PRACTICE_KEY, JSON.stringify(obj));
       }
     } catch(e){}
@@ -136,7 +154,8 @@
   });
 
   document.getElementById('clear').addEventListener('click', ()=>{
-    localStorage.removeItem(KEY);
+    localStorage.removeItem(SUMMARY_KEY);
+    localStorage.removeItem(FALLBACK_KEY);
     alert('Summary cleared.');
   });
 })();
