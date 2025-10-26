@@ -12,14 +12,11 @@
     --bb-ink:#111827;
     --bb-muted:#4b5563;
     --bb-line:#cfd7ea;
-    --bb-strong:#aab6d6;
     --bb-blue:#1f4dd8;
     --bb-blue-dark:#1437a8;
     --bb-pill:#0b1227;
-    --flag:#d11;                /* review flag red */
+    --flag:#d11;
     --flag-soft:#fff0f0;
-    --bb-green:#06d6a0;
-    --radius:12px;
     --shadow:0 1px 2px rgba(16,24,40,.06), 0 6px 14px rgba(16,24,40,.08);
   }
   html,body{height:100%}
@@ -29,15 +26,15 @@
   }
   .app{max-width:1280px;margin:0 auto;padding:12px 16px 120px}
 
-  /* HEADER (no Review/More on the right) */
-.header{
-  display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:16px;
-  background:var(--bb-surface);border:1px solid var(--bb-line);
-  border-radius:10px;padding:10px 14px;box-shadow:var(--shadow);position:sticky;top:8px;z-index:5;
-}
+  /* HEADER — timer centered */
+  .header{
+    display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:16px;
+    background:var(--bb-surface);border:1px solid var(--bb-line);
+    border-radius:10px;padding:10px 14px;box-shadow:var(--shadow);position:sticky;top:8px;z-index:5;
+  }
   .title{font-weight:700;font-size:18px}
   .directions{display:inline-flex;gap:6px;align-items:center;color:#111;background:transparent;border:0;font-weight:600}
-  .timer{display:flex;flex-direction:column;align-items:center;justify-content:center}
+  .timer{display:flex;flex-direction:column;align-items:center;justify-content:center;justify-self:center}
   .timer b{font-size:26px;letter-spacing:.5px;font-variant-numeric:tabular-nums}
   .btn{border-radius:999px;border:1px solid var(--bb-line);background:#fff;padding:6px 12px;font-weight:600;cursor:pointer}
   .btn.primary{background:var(--bb-blue);border-color:var(--bb-blue);color:#fff}
@@ -53,7 +50,7 @@
   .dashrow{display:grid;grid-template-columns:repeat(54,1fr);gap:3px;margin:6px 4px}
   .dash{height:5px;border-radius:2px;background:#000;opacity:.95}
 
-  /* ----- ONE-COLUMN CENTERED QUESTION CARD ----- */
+  /* ----- ONE-COLUMN QUESTION CARD ----- */
   .qwrap{ margin-top:10px;display:flex;justify-content:center; }
   .qcard{
     width:min(980px, 96vw);
@@ -145,9 +142,6 @@
   .nbtn.answered{border-style:solid;border-color:#5b74d5}
   .nbtn.review{background:var(--flag-soft);border-color:var(--flag);border-style:solid}
 
-  .popover .go-review{display:block;margin:14px auto 4px;background:#fff;border:2px solid #7da2ff;color:#1f4dd8;border-radius:24px;padding:8px 14px;font-weight:800;cursor:pointer}
-  .popover .close{position:absolute;right:12px;top:8px;border:0;background:transparent;font-size:20px;cursor:pointer}
-
   /* REVIEW PAGE */
   .check-wrap{display:none;margin-top:18px}
   .check-head{font-size:28px;font-weight:800;text-align:center;margin:8px 0 6px}
@@ -157,27 +151,22 @@
   .check-leg{display:flex;gap:18px;align-items:center;color:var(--bb-muted)}
   .grid-nums{display:grid;grid-template-columns:repeat(10,1fr);gap:10px;margin-top:12px}
   .grid-nums .nbtn{height:44px}
-
-  /* RESULTS */
-  .score{margin-top:10px;background:#fff;border:1px solid var(--bb-line);border-radius:10px;box-shadow:var(--shadow);padding:12px;display:none;}
-  .muted{color:var(--bb-muted);font-size:14px}
 </style>
 </head>
 <body>
   <div class="app">
-    <!-- Header (clean) -->
-<div class="header" role="banner">
-  <div>
-    <div class="title" id="sectionTitle">Section 1, Module 1: Math — Circles (Practice)</div>
-    <button class="directions" aria-label="Directions">Directions ▾</button>
-  </div>
-  <div class="timer" aria-live="polite">
-    <b id="timeLeft">30:00</b>
-    <button id="toggleTimer" class="btn ghost" aria-pressed="false">Hide</button>
-  </div>
-  <div aria-hidden="true"></div> <!-- spacer for the 3rd grid column -->
-</div>
-
+    <!-- Header -->
+    <div class="header" role="banner">
+      <div>
+        <div class="title" id="sectionTitle">Section 1, Module 1: Math — Circles (Practice)</div>
+        <button class="directions" aria-label="Directions">Directions ▾</button>
+      </div>
+      <div class="timer" aria-live="polite">
+        <b id="timeLeft">30:00</b>
+        <button id="toggleTimer" class="btn ghost" aria-pressed="false">Hide</button>
+      </div>
+      <div aria-hidden="true"></div>
+    </div>
 
     <!-- Practice banner + ticks -->
     <div class="ticks">THIS IS A PRACTICE TEST</div>
@@ -203,7 +192,7 @@
       </article>
     </div>
 
-    <!-- Review page -->
+    <!-- Review page (optional mid-test) -->
     <section class="check-wrap" id="checkPage" aria-label="Check Your Work">
       <h1 class="check-head">Check Your Work</h1>
       <p class="check-sub">On test day, you won’t be able to move on to the next module until time expires.</p>
@@ -218,9 +207,6 @@
         <div class="grid-nums" id="checkGrid"></div>
       </div>
     </section>
-
-    <!-- Results -->
-    <div class="score" id="score"></div>
   </div>
 
   <!-- Bottom rail -->
@@ -228,7 +214,7 @@
     <div class="rail-inner">
       <div class="progress" id="progress"></div>
       <button class="center-pill" id="centerPill" aria-haspopup="dialog" aria-expanded="false">
-        <div class="pill-flag" id="pillFlag"></div>
+        <div class="pill-flag" id="pillFlag" style="display:none"></div>
         <span id="pillText">Question 1 of 1</span><span class="caret">▾</span>
       </button>
       <div class="rail-left">
@@ -257,34 +243,41 @@
 <script>
 /* ===================== Exam Data ===================== */
 const exam = {
-  storageKey: 'dsa-circles-bluebook-v6',
+  storageKey: 'dsa-circles-bluebook-v7',
+  summaryKey: 'dsa-circles-summary-v1', // where we store for the summary page
   sectionTitle: 'Section 1, Module 1: Math — Circles (Practice)',
   timeLimitSec: 30 * 60,
   questions: [
     { id:'q1',
       prompt:'A circle has radius 5 cm. What is its circumference?',
       choices:['10π cm','25π cm','5π cm','50π cm'],
-      answerIndex:0 },
+      answerIndex:0,
+      explanation:'Use C = 2πr. With r = 5, C = 2·π·5 = 10π cm.' },
     { id:'q2',
       prompt:'If a circle’s area is 49π, what is its radius?',
       choices:['3','7','14','24.5'],
-      answerIndex:1 },
+      answerIndex:1,
+      explanation:'Area A = πr². If A = 49π, then r² = 49 and r = 7.' },
     { id:'q3',
       prompt:'A circle passes through (0,0) and (0,6) with center at (0,3). What is its equation?',
       choices:['(x − 0)² + (y − 3)² = 9','(x − 3)² + (y − 0)² = 9','(x − 3)² + (y − 3)² = 6','(x − 0)² + (y − 6)² = 3'],
-      answerIndex:0 },
+      answerIndex:0,
+      explanation:'Center (0,3); radius is the distance to (0,0): √[(0−0)²+(0−3)²] = 3. Equation: (x−0)² + (y−3)² = 3² = 9.' },
     { id:'q4',
       prompt:'For r = 10 and θ = π/3, what is the arc length s?',
       choices:['10π/3','20π/3','30π','10','π/3'],
-      answerIndex:0 },
+      answerIndex:0,
+      explanation:'Arc length s = rθ (θ in radians). So s = 10·(π/3) = 10π/3.' },
     { id:'q5',
       prompt:'Sector area for r = 6 and θ = π/2 is',
       choices:['9π','18π','36π','3π'],
-      answerIndex:1 },
+      answerIndex:1,
+      explanation:'Sector area = (1/2) r² θ = (1/2)·36·(π/2) = 18π.' },
     { id:'q6',
       prompt:'If the diameter is 18, the area is',
       choices:['81π','36π','18π','9π'],
-      answerIndex:0 }
+      answerIndex:0,
+      explanation:'Diameter 18 ⇒ r = 9. Area = πr² = π·81 = 81π.' }
   ]
 };
 
@@ -332,7 +325,6 @@ const el = {
   checkPage: document.getElementById('checkPage'),
   checkGrid: document.getElementById('checkGrid'),
 
-  score: document.getElementById('score'),
   dashrow: document.getElementById('dashrow')
 };
 
@@ -536,49 +528,52 @@ el.elimToggle.addEventListener('click', ()=>{
   el.elimHint.style.display = state.eliminateMode ? 'block' : 'none';
 });
 
-/* Flag button at top */
-el.flagTop.addEventListener('click', toggleFlag);
-
-/* Finish / Nav / Popover */
+/* Finish: save payload for summary page, then redirect */
 function finishExam(){
   if(state.finished) return;
   state.finished=true; clearInterval(state.timerId);
   closePopover();
 
-  let correct=0, answered=0;
-  const rows = exam.questions.map((q,i)=>{
-    const chosen = state.answers[q.id];
-    const done = typeof chosen==='number';
-    const ok = done && chosen===q.answerIndex;
-    if(done) answered++; if(ok) correct++;
-    const status = ok ? '✅ Correct' : (done?'❌ Incorrect':'⚠️ Unanswered');
-    const detail = done ? `You chose “${q.choices[chosen]}”.` : '';
-    return `<div style="padding:10px;border:1px solid var(--bb-line);border-radius:10px;margin-bottom:8px">
-      <b>Q${i+1}</b> — ${status}<div class="muted">Correct answer: “${q.choices[q.answerIndex]}”. ${detail}</div>
-    </div>`;
-  }).join('');
+  // Build summary payload
+  const items = exam.questions.map((q,i)=>{
+    const chosen = (typeof state.answers[q.id] === 'number') ? state.answers[q.id] : null;
+    return {
+      number: i+1,
+      id: q.id,
+      prompt: q.prompt,
+      choices: q.choices,
+      correctIndex: q.answerIndex,
+      chosenIndex: chosen,
+      correct: chosen === q.answerIndex,
+      explanation: q.explanation || ''
+    };
+  });
 
-  const pct = Math.round(100*correct/exam.questions.length);
-  el.score.innerHTML = `
-    <h2 style="margin:0 0 8px">Results</h2>
-    <div class="muted">Answered: <b>${answered}/${exam.questions.length}</b> • Correct: <b>${correct}</b> • Score: <b>${pct}%</b></div>
-    <div style="margin-top:10px">${rows}</div>
-  `;
-  document.getElementById('qcard').style.display='none';
-  el.checkPage.style.display='none';
-  el.score.style.display='block';
+  const totals = {
+    answered: items.filter(it => it.chosenIndex !== null).length,
+    correct: items.filter(it => it.correct).length,
+    total: items.length,
+    timeSpentSec: exam.timeLimitSec - state.remaining
+  };
+
+  const summary = {
+    title: exam.sectionTitle,
+    generatedAt: new Date().toISOString(),
+    totals,
+    items
+  };
+
+  // Persist summary & navigate
+  try{ localStorage.setItem(exam.summaryKey, JSON.stringify(summary)); }catch(e){}
+  location.href = 'circles-summary.html';
 }
-
-el.back.addEventListener('click', ()=>go(-1));
-el.next.addEventListener('click', ()=>go(1));
-el.finish.addEventListener('click', finishExam);
 
 /* Popover */
 const pill = document.getElementById('centerPill');
 function openPopover(){ el.pop.style.display='block'; pill.setAttribute('aria-expanded','true'); }
 function closePopover(){ el.pop.style.display='none'; pill.setAttribute('aria-expanded','false'); }
 pill.addEventListener('click', ()=>{ if (el.pop.style.display==='block') closePopover(); else openPopover(); });
-el.popClose.addEventListener('click', closePopover);
+document.getElementById('popClose').addEventListener('click', closePopover);
 el.goReview.addEventListener('click', ()=>{ state.reviewMode=true; closePopover(); render(); });
 
 /* Close popover when clicking outside */
@@ -586,6 +581,11 @@ document.addEventListener('click', (e)=>{
   const inside = e.target===pill || pill.contains(e.target) || e.target===el.pop || el.pop.contains(e.target);
   if (!inside) closePopover();
 });
+
+/* Nav buttons */
+document.getElementById('btnBack').addEventListener('click', ()=>go(-1));
+document.getElementById('btnNext').addEventListener('click', ()=>go(1));
+document.getElementById('btnFinish').addEventListener('click', finishExam);
 
 /* ===================== Init ===================== */
 (function init(){
