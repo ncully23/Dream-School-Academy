@@ -1,107 +1,92 @@
 <!DOCTYPE html>
-<html lang="en" data-page="login">
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Login — Dream School Academy</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Login / Signup</title>
 
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;800&display=swap" rel="stylesheet">
-
-  <style>
-    :root{
-      --bg:#0f1420; --surface:#1b2231; --ink:#e8eefc; --muted:#a9b5cc;
-      --brand:#00d8ff; --brand-ink:#001018; --border:rgba(255,255,255,.08);
-    }
-    *{box-sizing:border-box}
-    body{margin:0;background:var(--bg);color:var(--ink);font-family:Outfit,system-ui,sans-serif}
-    main{min-height:100dvh;display:grid;place-items:center;padding:24px}
-    .card{width:min(520px,92vw);background:var(--surface);border:1px solid var(--border);border-radius:18px;padding:20px;box-shadow:0 12px 30px rgba(0,0,0,.25)}
-    h1{margin:.25rem 0 1rem}
-    label{display:block;font-size:.95rem;color:var(--muted);margin:.5rem 0 .25rem}
-    input{width:100%;padding:.85rem 1rem;border-radius:12px;border:1px solid var(--border);background:#0f1420;color:var(--ink)}
-    .row{display:flex;gap:.6rem;flex-wrap:wrap;margin-top:1rem}
-    .btn{appearance:none;border:0;border-radius:999px;padding:.8rem 1rem;font-weight:800;letter-spacing:.2px;cursor:pointer}
-    .primary{background:var(--brand);color:var(--brand-ink);box-shadow:0 6px 14px rgba(105,229,255,.22)}
-    .ghost{background:transparent;color:var(--ink);box-shadow:inset 0 0 0 1px var(--border)}
-    .google{display:inline-flex;align-items:center;gap:.6rem;background:#fff;color:#111;border:0;border-radius:999px;padding:.8rem 1rem;cursor:pointer}
-    .hr{display:flex;align-items:center;gap:.8rem;margin:1rem 0}
-    .hr::before,.hr::after{content:"";height:1px;flex:1;background:var(--border)}
-    .muted{color:var(--muted)}
-    .status{min-height:1.1rem;margin-top:.6rem}
-    .tabs{display:flex;gap:.4rem;background:#121826;padding:.4rem;border-radius:12px;margin:.75rem 0 0}
-    .tabs button{flex:1;padding:.7rem 1rem;border:0;border-radius:10px;background:transparent;color:var(--ink);font-weight:700;cursor:pointer}
-    .tabs button.active{background:var(--brand);color:var(--brand-ink)}
-  </style>
+  <!-- Load global site styles BEFORE header appears -->
+  <link rel="stylesheet" href="/assets/site.css">
+  <link rel="stylesheet" href="/assets/login.css">
 </head>
+
 <body>
-  <!-- optional shared header (shell.js will fill this if you include it) -->
+
+  <!-- Header placeholder (shell.js will load header.html into this) -->
   <div id="site-header"></div>
 
   <main>
     <div class="card">
-      <h1>Welcome back</h1>
-      <p class="muted">Sign in to save progress and track scores.</p>
 
-      <div class="tabs" role="tablist">
-        <button id="tab-login" class="active" aria-selected="true">Log In</button>
-        <button id="tab-signup" aria-selected="false">Sign Up</button>
+      <!-- ---- LOGIN / SIGNUP TABS ---- -->
+      <div class="tabs">
+        <button id="tab-login"  class="tab active" aria-selected="true">Login</button>
+        <button id="tab-signup" class="tab" aria-selected="false">Sign Up</button>
       </div>
 
-      <!-- Login -->
-      <form id="login-form" autocomplete="on">
-        <label for="login-email">Email</label>
-        <input id="login-email" type="email" placeholder="you@example.com" required />
-        <label for="login-password">Password</label>
-        <input id="login-password" type="password" placeholder="••••••••" required />
+      <!-- ---- LOGIN FORM ---- -->
+      <form id="login-form" class="form-block">
+        <h2>Welcome back</h2>
 
-        <div class="row">
-          <button id="login-submit" class="btn primary" type="submit">Log In</button>
-          <button id="reset" class="btn ghost" type="button">Forgot password?</button>
+        <div class="field">
+          <label>Email</label>
+          <input id="login-email" type="email" required />
         </div>
 
-        <div class="hr"><span class="muted">or</span></div>
-        <button id="google-login" class="google" type="button">
-          <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="" width="18" height="18">
-          Continue with Google
-        </button>
-        <div id="login-status" class="status"></div>
-      </form>
-
-      <!-- Signup -->
-      <form id="signup-form" autocomplete="on" style="display:none">
-        <label for="signup-first">First name (optional)</label>
-        <input id="signup-first" type="text" placeholder="e.g., Alex" />
-        <label for="signup-email">Email</label>
-        <input id="signup-email" type="email" placeholder="you@example.com" required />
-        <label for="signup-password">Password</label>
-        <input id="signup-password" type="password" placeholder="Minimum 6 characters" minlength="6" required />
-
-        <div class="row">
-          <button id="signup-submit" class="btn primary" type="submit">Create account</button>
+        <div class="field">
+          <label>Password</label>
+          <input id="login-password" type="password" required />
         </div>
 
-        <div class="hr"><span class="muted">or</span></div>
-        <button id="google-signup" class="google" type="button">
-          <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="" width="18" height="18">
-          Continue with Google
-        </button>
-        <div id="signup-status" class="status"></div>
+        <button id="login-submit" class="btn-primary">Log In</button>
+
+        <p id="login-status" class="status"></p>
+
+        <p class="alt-action">
+          <a id="reset" href="javascript:void(0)">Forgot password?</a>
+        </p>
+
+        <button id="google-login" class="btn-google" type="button">Sign in with Google</button>
       </form>
+
+      <!-- ---- SIGNUP FORM ---- -->
+      <form id="signup-form" class="form-block" style="display:none;">
+        <h2>Create your account</h2>
+
+        <div class="field">
+          <label>First name</label>
+          <input id="signup-first" type="text" />
+        </div>
+
+        <div class="field">
+          <label>Email</label>
+          <input id="signup-email" type="email" required />
+        </div>
+
+        <div class="field">
+          <label>Password</label>
+          <input id="signup-password" type="password" required />
+        </div>
+
+        <button id="signup-submit" class="btn-primary">Sign Up</button>
+
+        <p id="signup-status" class="status"></p>
+
+        <button id="google-signup" class="btn-google" type="button">Sign up with Google</button>
+      </form>
+
     </div>
   </main>
 
-  <div id="site-footer"></div>
 
-  <!-- shared shell (header/nav); optional but recommended -->
+  <!-- Load header + login logic -->
   <script type="module" src="/assets/shell.js"></script>
 
-  <!-- LOGIN LOGIC -->
+  <!-- LOGIN / SIGNUP LOGIC -->
   <script type="module">
-    // Reuse shared Firebase instances
+
     import { auth, db, googleProvider } from "/assets/firebase-init.js";
 
-    // Extra auth + firestore functions
     import {
       onAuthStateChanged,
       signInWithEmailAndPassword,
@@ -120,6 +105,7 @@
       serverTimestamp
     } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-firestore.js";
 
+    // Friendly error messages
     const nice = (e) => ({
       "auth/invalid-email":        "That email looks invalid.",
       "auth/missing-password":     "Enter your password.",
@@ -127,8 +113,8 @@
       "auth/email-already-in-use": "That email is already registered.",
       "auth/user-not-found":       "No account with that email.",
       "auth/wrong-password":       "Incorrect password.",
-      "auth/popup-blocked":        "Popup blocked. Check your browser settings.",
-      "auth/unauthorized-domain":  "Add this domain in Firebase → Auth → Authorized domains."
+      "auth/popup-blocked":        "Popup blocked.",
+      "auth/unauthorized-domain":  "Unauthorized domain in Firebase."
     }[e?.code] || e?.message || "Something went wrong.");
 
     async function ensureProfile(u, first = "") {
@@ -145,7 +131,7 @@
       }
     }
 
-    // Grab DOM elements
+    // ----- Grab DOM elements -----
     const tabLogin    = document.getElementById("tab-login");
     const tabSignup   = document.getElementById("tab-signup");
     const loginForm   = document.getElementById("login-form");
@@ -158,34 +144,33 @@
     const btnGoogleIn = document.getElementById("google-login");
     const btnGoogleUp = document.getElementById("google-signup");
 
+    // Prevent crashes if something missing
     if (!tabLogin || !tabSignup || !loginForm || !signupForm) {
-      console.warn("Login tabs or forms not found on this page");
+      console.warn("Login UI missing — skipping login script.");
     } else {
+
       // ----- Tabs -----
       const showLogin = () => {
         tabLogin.classList.add("active");
-        tabLogin.setAttribute("aria-selected", "true");
         tabSignup.classList.remove("active");
-        tabSignup.setAttribute("aria-selected", "false");
         loginForm.style.display = "block";
         signupForm.style.display = "none";
       };
 
       const showSignup = () => {
         tabSignup.classList.add("active");
-        tabSignup.setAttribute("aria-selected", "true");
         tabLogin.classList.remove("active");
-        tabLogin.setAttribute("aria-selected", "false");
         signupForm.style.display = "block";
         loginForm.style.display = "none";
       };
 
       tabLogin.addEventListener("click", showLogin);
       tabSignup.addEventListener("click", showSignup);
-      showLogin(); // default
+
+      showLogin();  // default
 
       // ----- Login -----
-      if (btnLogin && loginStatus) {
+      if (btnLogin) {
         btnLogin.addEventListener("click", async (e) => {
           e.preventDefault();
           loginStatus.textContent = "Signing in…";
@@ -196,31 +181,27 @@
             await ensureProfile(cred.user);
             location.href = "/";
           } catch (err) {
-            console.error(err);
             loginStatus.textContent = nice(err);
           }
         });
       }
 
-      if (btnReset && loginStatus) {
+      // Reset password
+      if (btnReset) {
         btnReset.addEventListener("click", async () => {
           const email = document.getElementById("login-email").value.trim();
-          if (!email) {
-            loginStatus.textContent = "Enter your email first.";
-            return;
-          }
+          if (!email) return loginStatus.textContent = "Enter your email.";
           try {
             await sendPasswordResetEmail(auth, email);
-            loginStatus.textContent = "Password reset email sent.";
+            loginStatus.textContent = "Reset email sent.";
           } catch (err) {
-            console.error(err);
             loginStatus.textContent = nice(err);
           }
         });
       }
 
       // Google login
-      if (btnGoogleIn && loginStatus) {
+      if (btnGoogleIn) {
         btnGoogleIn.addEventListener("click", async () => {
           loginStatus.textContent = "Opening Google…";
           try {
@@ -228,24 +209,13 @@
             await ensureProfile(res.user);
             location.href = "/";
           } catch (err) {
-            console.error(err);
-            if (["auth/popup-blocked","auth/popup-closed-by-user","auth/unauthorized-domain"].includes(err.code)) {
-              loginStatus.textContent = nice(err);
-              try {
-                await signInWithRedirect(auth, googleProvider);
-              } catch (e) {
-                console.error(e);
-                loginStatus.textContent = nice(e);
-              }
-            } else {
-              loginStatus.textContent = nice(err);
-            }
+            loginStatus.textContent = nice(err);
           }
         });
       }
 
       // ----- Signup -----
-      if (btnSignup && signupStatus) {
+      if (btnSignup) {
         btnSignup.addEventListener("click", async (e) => {
           e.preventDefault();
           signupStatus.textContent = "Creating account…";
@@ -254,19 +224,21 @@
             const email = document.getElementById("signup-email").value.trim();
             const pass  = document.getElementById("signup-password").value;
             const cred  = await createUserWithEmailAndPassword(auth, email, pass);
+
             if (first) {
               try { await updateProfile(cred.user, { displayName: first }); } catch {}
             }
+
             await ensureProfile(cred.user, first);
             location.href = "/";
           } catch (err) {
-            console.error(err);
             signupStatus.textContent = nice(err);
           }
         });
       }
 
-      if (btnGoogleUp && signupStatus) {
+      // Google signup
+      if (btnGoogleUp) {
         btnGoogleUp.addEventListener("click", async () => {
           signupStatus.textContent = "Opening Google…";
           try {
@@ -274,24 +246,13 @@
             await ensureProfile(res.user);
             location.href = "/";
           } catch (err) {
-            console.error(err);
-            if (["auth/popup-blocked","auth/popup-closed-by-user","auth/unauthorized-domain"].includes(err.code)) {
-              signupStatus.textContent = nice(err);
-              try {
-                await signInWithRedirect(auth, googleProvider);
-              } catch (e) {
-                console.error(e);
-                signupStatus.textContent = nice(e);
-              }
-            } else {
-              signupStatus.textContent = nice(err);
-            }
+            signupStatus.textContent = nice(err);
           }
         });
       }
     }
 
-    // Handle Google redirect (popup blocked)
+    // Handle redirect fallback
     try {
       const r = await getRedirectResult(auth);
       if (r?.user) {
@@ -299,15 +260,9 @@
         location.href = "/";
       }
     } catch (e) {
-      console.warn("Redirect sign-in failed:", e);
+      console.warn("Redirect failed:", e);
     }
 
-    onAuthStateChanged(auth, (user) => {
-      // Optional auto-redirect if already logged in
-      // if (user) location.href = "/";
-    });
   </script>
-
-  <noscript><p style="text-align:center;color:#ffb4b4">JavaScript is required to sign in.</p></noscript>
 </body>
 </html>
