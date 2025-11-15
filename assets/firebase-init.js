@@ -1,12 +1,18 @@
 // /assets/firebase-init.js
-import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-app.js";
+import { initializeApp, getApps, getApp } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-app.js";
 import {
-  getAuth, setPersistence, browserLocalPersistence, GoogleAuthProvider
+  getAuth,
+  setPersistence,
+  browserLocalPersistence,
+  GoogleAuthProvider
 } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-auth.js";
+import {
+  getFirestore
+} from "https://www.gstatic.com/firebasejs/10.12.4/firebase-firestore.js";
 
-// REAL config (from your screenshots)
+// REAL config (make sure this matches your Firebase console exactly)
 const firebaseConfig = {
-  apiKey: "AIzaSyD7R7ZsmTpG0jgLNt7w_R0tm_mWg_FZEYE",
+  apiKey: "AIzaSyD7R7ZsmTpGojgLNt7w_R0tm_mWg_FZEYE",
   authDomain: "dream-school-academy.firebaseapp.com",
   projectId: "dream-school-academy",
   storageBucket: "dream-school-academy.firebasestorage.app",
@@ -16,16 +22,16 @@ const firebaseConfig = {
 };
 
 // Initialize exactly once, even if imported multiple times
-const app = getApps().length ? getApps()[0] : initializeApp(firebaseConfig);
+const app  = getApps().length ? getApp() : initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db   = getFirestore(app);
+const googleProvider = new GoogleAuthProvider();
 
-export const auth = getAuth(app);
-export const googleProvider = new GoogleAuthProvider();
+// Keep users signed in (no top-level await)
+setPersistence(auth, browserLocalPersistence).catch(console.error);
 
-// Keep users signed in
-await setPersistence(auth, browserLocalPersistence);
+// Optional debug
+console.log("Firebase init OK:", firebaseConfig.projectId);
 
-// DEBUG so you can verify the right app is running:
-console.log("Firebase init OK:",
-  auth.config?.authDomain,
-  "key:", (firebaseConfig.apiKey||"").slice(0,7)+"…"
-);
+// Export shared instances for use everywhere
+export { app, auth, db, googleProvider };
