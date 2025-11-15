@@ -55,7 +55,6 @@ async function initShell() {
       "/index.html": "home",
       "/study.html": "study",
       "/practice.html": "practice",
-      "/pricing.html": "pricing",
       "/contactus.html": "contact",
       "/login.html": "login",
     };
