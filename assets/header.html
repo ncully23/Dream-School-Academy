@@ -16,24 +16,12 @@
       <a href="/pricing.html"   data-nav="pricing">Pricing</a>
       <a href="/contactus.html" data-nav="contact">Contact Us</a>
 
-      <!-- Greeting shown only when signed in -->
-      <span class="greeting" data-when="signed-in" aria-live="polite">
-        Hi, <strong id="greeting-name">there</strong>!
-      </span>
+      <!-- Greeting (JS fills this in when signed in) -->
+      <span id="user-greeting" class="nav-greeting"></span>
 
       <!-- Auth controls -->
-      <a href="/login.html"
-         class="cta"
-         data-nav="login"
-         data-when="signed-out">
-        Login / Sign Up
-      </a>
-
-      <a href="#"
-         id="signout-link"
-         data-when="signed-in">
-        Sign out
-      </a>
+      <a href="/login.html" id="login-link" class="nav-btn">Log in / Sign up</a>
+      <button id="logout-btn" class="nav-btn" style="display:none">Log out</button>
     </nav>
   </div>
 </header>
