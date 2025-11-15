@@ -2,7 +2,7 @@
   // Reuse shared Firebase instances
   import { auth, db, googleProvider } from "/assets/firebase-init.js";
 
-  // Extra auth + Firestore functions
+  // Pull in the extra auth + firestore functions we need
   import {
     onAuthStateChanged,
     signInWithEmailAndPassword,
@@ -33,16 +33,16 @@
     'auth/unauthorized-domain':  'Add this domain in Firebase → Auth → Authorized domains.'
   }[e?.code] || e?.message || 'Something went wrong.');
 
-  // Ensure profile document exists — stored under users/{uid}
+  // Ensure profile document exists — stored under `users/{uid}`
   async function ensureProfile(u, first = "") {
     if (!u) return;
     const ref  = doc(db, "users", u.uid);
     const snap = await getDoc(ref);
     if (!snap.exists()) {
       await setDoc(ref, {
-        userId:   u.uid,
-        email:    u.email || "",
-        name:     (u.displayName || first || "").trim(),
+        userId: u.uid,
+        email: u.email || "",
+        name: (u.displayName || first || "").trim(),
         createdAt: serverTimestamp()
       });
     }
@@ -56,20 +56,20 @@
 
   const showLogin = () => {
     tabLogin.classList.add('active');
-    tabLogin.setAttribute('aria-selected', 'true');
+    tabLogin.setAttribute('aria-selected','true');
     tabSignup.classList.remove('active');
-    tabSignup.setAttribute('aria-selected', 'false');
-    loginForm.style.display  = 'block';
+    tabSignup.setAttribute('aria-selected','false');
+    loginForm.style.display = 'block';
     signupForm.style.display = 'none';
   };
 
   const showSignup = () => {
     tabSignup.classList.add('active');
-    tabSignup.setAttribute('aria-selected', 'true');
+    tabSignup.setAttribute('aria-selected','true');
     tabLogin.classList.remove('active');
-    tabLogin.setAttribute('aria-selected', 'false');
+    tabLogin.setAttribute('aria-selected','false');
     signupForm.style.display = 'block';
-    loginForm.style.display  = 'none';
+    loginForm.style.display = 'none';
   };
 
   tabLogin.addEventListener('click', showLogin);
@@ -142,9 +142,7 @@
       const pass  = document.getElementById('signup-password').value;
       const cred  = await createUserWithEmailAndPassword(auth, email, pass);
       if (first) {
-        try {
-          await updateProfile(cred.user, { displayName: first });
-        } catch {}
+        try { await updateProfile(cred.user, { displayName: first }); } catch {}
       }
       await ensureProfile(cred.user, first);
       location.href = '/';
