@@ -97,7 +97,7 @@
         .replace(/^\w/, c => c.toUpperCase()) || 'there';
 
     function renderGreeting(name) {
-      const el = $('#greeting-name');
+      const el = $('#greeting-name'); // <strong id="greeting-name">
       if (el) el.textContent = name || 'there';
     }
 
