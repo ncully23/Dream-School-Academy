@@ -2,7 +2,7 @@
   // Reuse shared Firebase instances
   import { auth, db, googleProvider } from "/assets/firebase-init.js";
 
-  // Pull in the extra auth + firestore functions we need
+  // Extra auth + Firestore functions
   import {
     onAuthStateChanged,
     signInWithEmailAndPassword,
@@ -20,11 +20,6 @@
     setDoc,
     serverTimestamp
   } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-firestore.js";
-
-  // --- NEW: optional redirect target, e.g. ?redirectTo=/practice/circles.html
-  const params     = new URLSearchParams(window.location.search);
-  const redirectTo = params.get("redirectTo") || "/";
-  const goAfterAuth = () => { window.location.href = redirectTo; };
 
   // Friendly error messages
   const nice = (e) => ({
@@ -90,7 +85,7 @@
       const pass  = document.getElementById('login-password').value;
       const cred  = await signInWithEmailAndPassword(auth, email, pass);
       await ensureProfile(cred.user);
-      goAfterAuth();
+      location.href = '/';
     } catch (err) {
       console.error(err);
       loginStatus.textContent = nice(err);
@@ -119,7 +114,7 @@
     try {
       const res = await signInWithPopup(auth, googleProvider);
       await ensureProfile(res.user);
-      goAfterAuth();
+      location.href = '/';
     } catch (err) {
       console.error(err);
       if (['auth/popup-blocked','auth/popup-closed-by-user','auth/unauthorized-domain'].includes(err.code)) {
@@ -147,10 +142,12 @@
       const pass  = document.getElementById('signup-password').value;
       const cred  = await createUserWithEmailAndPassword(auth, email, pass);
       if (first) {
-        try { await updateProfile(cred.user, { displayName: first }); } catch {}
+        try {
+          await updateProfile(cred.user, { displayName: first });
+        } catch {}
       }
       await ensureProfile(cred.user, first);
-      goAfterAuth();
+      location.href = '/';
     } catch (err) {
       console.error(err);
       signupStatus.textContent = nice(err);
@@ -163,7 +160,7 @@
     try {
       const res = await signInWithPopup(auth, googleProvider);
       await ensureProfile(res.user);
-      goAfterAuth();
+      location.href = '/';
     } catch (err) {
       console.error(err);
       if (['auth/popup-blocked','auth/popup-closed-by-user','auth/unauthorized-domain'].includes(err.code)) {
@@ -185,7 +182,7 @@
     const r = await getRedirectResult(auth);
     if (r?.user) {
       await ensureProfile(r.user);
-      goAfterAuth();
+      location.href = '/';
     }
   } catch (e) {
     console.warn('Redirect sign-in failed:', e);
@@ -193,6 +190,6 @@
 
   onAuthStateChanged(auth, (user) => {
     // Optional: if already logged in, bounce them home
-    // if (user) goAfterAuth();
+    // if (user) location.href = '/';
   });
 </script>
