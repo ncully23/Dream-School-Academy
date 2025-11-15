@@ -80,206 +80,206 @@
   </main>
 
   <!-- Firebase (CDN, single init) -->
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-app.js";
-    import {
-      getAuth, setPersistence, browserLocalPersistence, onAuthStateChanged,
-      signInWithEmailAndPassword, createUserWithEmailAndPassword, sendPasswordResetEmail,
-      updateProfile, GoogleAuthProvider, signInWithPopup, signInWithRedirect, getRedirectResult
-    } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-auth.js";
-    import {
-      getFirestore, doc, getDoc, setDoc, serverTimestamp
-    } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-firestore.js";
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-app.js";
+  import {
+    getAuth, setPersistence, browserLocalPersistence, onAuthStateChanged,
+    signInWithEmailAndPassword, createUserWithEmailAndPassword, sendPasswordResetEmail,
+    updateProfile, GoogleAuthProvider, signInWithPopup, signInWithRedirect, getRedirectResult
+  } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-auth.js";
+  import {
+    getFirestore, doc, getDoc, setDoc, serverTimestamp
+  } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-firestore.js";
 
-    const firebaseConfig = {
-      apiKey: "AIzaSyD7R7ZsmTpGojgLNt7w_R0tm_mWg_FZEYE",
-      authDomain: "dream-school-academy.firebaseapp.com",
-      projectId: "dream-school-academy",
-      storageBucket: "dream-school-academy.firebasestorage.app",
-      messagingSenderId: "665412130733",
-      appId: "1:665412130733:web:fc73f3ed574ffb6d277324",
-      measurementId: "G-7LY2V2HQ4G"
-    };
+  const firebaseConfig = {
+    apiKey: "AIzaSyD7R7ZsmTpGojgLNt7w_R0tm_mWg_FZEYE",
+    authDomain: "dream-school-academy.firebaseapp.com",
+    projectId: "dream-school-academy",
+    storageBucket: "dream-school-academy.firebasestorage.app",
+    messagingSenderId: "665412130733",
+    appId: "1:665412130733:web:fc73f3ed574ffb6d277324",
+    measurementId: "G-7LY2V2HQ4G"
+  };
 
-    // Core Firebase init
-    const app      = initializeApp(firebaseConfig);
-    const auth     = getAuth(app);
-    const db       = getFirestore(app);
-    const provider = new GoogleAuthProvider();
+  // Core Firebase init
+  const app      = initializeApp(firebaseConfig);
+  const auth     = getAuth(app);
+  const db       = getFirestore(app);
+  const provider = new GoogleAuthProvider();
 
-    // Persist login across tabs/browser restarts
-    setPersistence(auth, browserLocalPersistence).catch(console.error);
+  // Persist login across tabs/browser restarts
+  setPersistence(auth, browserLocalPersistence).catch(console.error);
 
-    // Friendly error messages
-    const nice = (e) => ({
-      'auth/invalid-email':        'That email looks invalid.',
-      'auth/missing-password':     'Enter your password.',
-      'auth/weak-password':        'Use 6+ characters for your password.',
-      'auth/email-already-in-use': 'That email is already registered.',
-      'auth/user-not-found':       'No account with that email.',
-      'auth/wrong-password':       'Incorrect password.',
-      'auth/popup-blocked':        'Popup blocked. Check your browser settings.',
-      'auth/unauthorized-domain':  'Add this domain in Firebase → Auth → Authorized domains.'
-    }[e?.code] || e?.message || 'Something went wrong.');
+  // Friendly error messages
+  const nice = (e) => ({
+    'auth/invalid-email':        'That email looks invalid.',
+    'auth/missing-password':     'Enter your password.',
+    'auth/weak-password':        'Use 6+ characters for your password.',
+    'auth/email-already-in-use': 'That email is already registered.',
+    'auth/user-not-found':       'No account with that email.',
+    'auth/wrong-password':       'Incorrect password.',
+    'auth/popup-blocked':        'Popup blocked. Check your browser settings.',
+    'auth/unauthorized-domain':  'Add this domain in Firebase → Auth → Authorized domains.'
+  }[e?.code] || e?.message || 'Something went wrong.');
 
-    // Ensure profile document exists
-    async function ensureProfile(u, first = "") {
-      if (!u) return;
-      const ref  = doc(db, "profiles", u.uid);
-      const snap = await getDoc(ref);
-      if (!snap.exists()) {
-        await setDoc(ref, {
-          userId: u.uid,
-          email: u.email || "",
-          name: (u.displayName || first || "").trim(),
-          createdAt: serverTimestamp()
-        });
+  // Ensure profile document exists — now under `users/{uid}`
+  async function ensureProfile(u, first = "") {
+    if (!u) return;
+    const ref  = doc(db, "users", u.uid);          // <— CHANGED from "profiles" to "users"
+    const snap = await getDoc(ref);
+    if (!snap.exists()) {
+      await setDoc(ref, {
+        userId: u.uid,
+        email: u.email || "",
+        name: (u.displayName || first || "").trim(),
+        createdAt: serverTimestamp()
+      });
+    }
+  }
+
+  // Tabs
+  const tabLogin   = document.getElementById('tab-login');
+  const tabSignup  = document.getElementById('tab-signup');
+  const loginForm  = document.getElementById('login-form');
+  const signupForm = document.getElementById('signup-form');
+
+  const showLogin = () => {
+    tabLogin.classList.add('active');
+    tabLogin.setAttribute('aria-selected','true');
+    tabSignup.classList.remove('active');
+    tabSignup.setAttribute('aria-selected','false');
+    loginForm.style.display = 'block';
+    signupForm.style.display = 'none';
+  };
+
+  const showSignup = () => {
+    tabSignup.classList.add('active');
+    tabSignup.setAttribute('aria-selected','true');
+    tabLogin.classList.remove('active');
+    tabLogin.setAttribute('aria-selected','false');
+    signupForm.style.display = 'block';
+    loginForm.style.display = 'none';
+  };
+
+  tabLogin.addEventListener('click', showLogin);
+  tabSignup.addEventListener('click', showSignup);
+
+  // Login
+  const loginStatus = document.getElementById('login-status');
+  document.getElementById('login-submit').addEventListener('click', async (e) => {
+    e.preventDefault();
+    loginStatus.textContent = 'Signing in…';
+    try {
+      const email = document.getElementById('login-email').value.trim();
+      const pass  = document.getElementById('login-password').value;
+      const cred  = await signInWithEmailAndPassword(auth, email, pass);
+      await ensureProfile(cred.user);
+      location.href = '/';
+    } catch (err) {
+      console.error(err);
+      loginStatus.textContent = nice(err);
+    }
+  });
+
+  // Reset password
+  document.getElementById('reset').addEventListener('click', async () => {
+    const email = document.getElementById('login-email').value.trim();
+    if (!email) {
+      loginStatus.textContent = 'Enter your email first.';
+      return;
+    }
+    try {
+      await sendPasswordResetEmail(auth, email);
+      loginStatus.textContent = 'Password reset email sent.';
+    } catch (err) {
+      console.error(err);
+      loginStatus.textContent = nice(err);
+    }
+  });
+
+  // Google login
+  document.getElementById('google-login').addEventListener('click', async () => {
+    loginStatus.textContent = 'Opening Google…';
+    try {
+      const res = await signInWithPopup(auth, provider);
+      await ensureProfile(res.user);
+      location.href = '/';
+    } catch (err) {
+      console.error(err);
+      if (['auth/popup-blocked','auth/popup-closed-by-user','auth/unauthorized-domain'].includes(err.code)) {
+        loginStatus.textContent = nice(err);
+        try {
+          await signInWithRedirect(auth, provider);
+        } catch (e) {
+          console.error(e);
+          loginStatus.textContent = nice(e);
+        }
+      } else {
+        loginStatus.textContent = nice(err);
       }
     }
+  });
 
-    // Tabs
-    const tabLogin   = document.getElementById('tab-login');
-    const tabSignup  = document.getElementById('tab-signup');
-    const loginForm  = document.getElementById('login-form');
-    const signupForm = document.getElementById('signup-form');
-
-    const showLogin = () => {
-      tabLogin.classList.add('active');
-      tabLogin.setAttribute('aria-selected','true');
-      tabSignup.classList.remove('active');
-      tabSignup.setAttribute('aria-selected','false');
-      loginForm.style.display = 'block';
-      signupForm.style.display = 'none';
-    };
-
-    const showSignup = () => {
-      tabSignup.classList.add('active');
-      tabSignup.setAttribute('aria-selected','true');
-      tabLogin.classList.remove('active');
-      tabLogin.setAttribute('aria-selected','false');
-      signupForm.style.display = 'block';
-      loginForm.style.display = 'none';
-    };
-
-    tabLogin.addEventListener('click', showLogin);
-    tabSignup.addEventListener('click', showSignup);
-
-    // Login
-    const loginStatus = document.getElementById('login-status');
-    document.getElementById('login-submit').addEventListener('click', async (e) => {
-      e.preventDefault();
-      loginStatus.textContent = 'Signing in…';
-      try {
-        const email = document.getElementById('login-email').value.trim();
-        const pass  = document.getElementById('login-password').value;
-        const cred  = await signInWithEmailAndPassword(auth, email, pass);
-        await ensureProfile(cred.user);
-        location.href = '/';
-      } catch (err) {
-        console.error(err);
-        loginStatus.textContent = nice(err);
+  // Signup
+  const signupStatus = document.getElementById('signup-status');
+  document.getElementById('signup-submit').addEventListener('click', async (e) => {
+    e.preventDefault();
+    signupStatus.textContent = 'Creating account…';
+    try {
+      const first = document.getElementById('signup-first').value.trim();
+      const email = document.getElementById('signup-email').value.trim();
+      const pass  = document.getElementById('signup-password').value;
+      const cred  = await createUserWithEmailAndPassword(auth, email, pass);
+      if (first) {
+        try { await updateProfile(cred.user, { displayName: first }); } catch {}
       }
-    });
+      await ensureProfile(cred.user, first);
+      location.href = '/';
+    } catch (err) {
+      console.error(err);
+      signupStatus.textContent = nice(err);
+    }
+  });
 
-    // Reset password
-    document.getElementById('reset').addEventListener('click', async () => {
-      const email = document.getElementById('login-email').value.trim();
-      if (!email) {
-        loginStatus.textContent = 'Enter your email first.';
-        return;
-      }
-      try {
-        await sendPasswordResetEmail(auth, email);
-        loginStatus.textContent = 'Password reset email sent.';
-      } catch (err) {
-        console.error(err);
-        loginStatus.textContent = nice(err);
-      }
-    });
-
-    // Google login
-    document.getElementById('google-login').addEventListener('click', async () => {
-      loginStatus.textContent = 'Opening Google…';
-      try {
-        const res = await signInWithPopup(auth, provider);
-        await ensureProfile(res.user);
-        location.href = '/';
-      } catch (err) {
-        console.error(err);
-        if (['auth/popup-blocked','auth/popup-closed-by-user','auth/unauthorized-domain'].includes(err.code)) {
-          loginStatus.textContent = nice(err);
-          try {
-            await signInWithRedirect(auth, provider);
-          } catch (e) {
-            console.error(e);
-            loginStatus.textContent = nice(e);
-          }
-        } else {
-          loginStatus.textContent = nice(err);
+  // Google signup
+  document.getElementById('google-signup').addEventListener('click', async () => {
+    signupStatus.textContent = 'Opening Google…';
+    try {
+      const res = await signInWithPopup(auth, provider);
+      await ensureProfile(res.user);
+      location.href = '/';
+    } catch (err) {
+      console.error(err);
+      if (['auth/popup-blocked','auth/popup-closed-by-user','auth/unauthorized-domain'].includes(err.code)) {
+        signupStatus.textContent = nice(err);
+        try {
+          await signInWithRedirect(auth, provider);
+        } catch (e) {
+          console.error(e);
+          signupStatus.textContent = nice(e);
         }
-      }
-    });
-
-    // Signup
-    const signupStatus = document.getElementById('signup-status');
-    document.getElementById('signup-submit').addEventListener('click', async (e) => {
-      e.preventDefault();
-      signupStatus.textContent = 'Creating account…';
-      try {
-        const first = document.getElementById('signup-first').value.trim();
-        const email = document.getElementById('signup-email').value.trim();
-        const pass  = document.getElementById('signup-password').value;
-        const cred  = await createUserWithEmailAndPassword(auth, email, pass);
-        if (first) {
-          try { await updateProfile(cred.user, { displayName: first }); } catch {}
-        }
-        await ensureProfile(cred.user, first);
-        location.href = '/';
-      } catch (err) {
-        console.error(err);
+      } else {
         signupStatus.textContent = nice(err);
       }
-    });
-
-    // Google signup
-    document.getElementById('google-signup').addEventListener('click', async () => {
-      signupStatus.textContent = 'Opening Google…';
-      try {
-        const res = await signInWithPopup(auth, provider);
-        await ensureProfile(res.user);
-        location.href = '/';
-      } catch (err) {
-        console.error(err);
-        if (['auth/popup-blocked','auth/popup-closed-by-user','auth/unauthorized-domain'].includes(err.code)) {
-          signupStatus.textContent = nice(err);
-          try {
-            await signInWithRedirect(auth, provider);
-          } catch (e) {
-            console.error(e);
-            signupStatus.textContent = nice(e);
-          }
-        } else {
-          signupStatus.textContent = nice(err);
-        }
-      }
-    });
-
-    // Handle Google redirect (if popup blocked)
-    try {
-      const r = await getRedirectResult(auth);
-      if (r?.user) {
-        await ensureProfile(r.user);
-        location.href = '/';
-      }
-    } catch (e) {
-      console.warn('Redirect sign-in failed:', e);
     }
+  });
 
-    onAuthStateChanged(auth, (user) => {
-      // You could auto-redirect if already signed in:
-      // if (user) location.href = '/';
-    });
-  </script>
+  // Handle Google redirect (if popup blocked)
+  try {
+    const r = await getRedirectResult(auth);
+    if (r?.user) {
+      await ensureProfile(r.user);
+      location.href = '/';
+    }
+  } catch (e) {
+    console.warn('Redirect sign-in failed:', e);
+  }
+
+  onAuthStateChanged(auth, (user) => {
+    // Optional: auto-redirect if already logged in
+    // if (user) location.href = '/';
+  });
+</script>
 
   <noscript><p style="text-align:center;color:#ffb4b4">JavaScript is required to sign in.</p></noscript>
 </body>
