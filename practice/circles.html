@@ -1,246 +1,12 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Section 1, Module 1: Math — Circles (Practice)</title>
-<style>
-  :root{
-    --bb-bg:#eef2fb;            /* page bg */
-    --bb-rail:#e7edf9;          /* bottom rail */
-    --bb-surface:#fff;
-    --bb-ink:#111827;
-    --bb-muted:#4b5563;
-    --bb-line:#cfd7ea;
-    --bb-blue:#1f4dd8;
-    --bb-blue-dark:#1437a8;
-    --bb-pill:#0b1227;
-    --flag:#d11;
-    --flag-soft:#fff0f0;
-    --shadow:0 1px 2px rgba(16,24,40,.06), 0 6px 14px rgba(16,24,40,.08);
-  }
-  html,body{height:100%}
-  body{
-    margin:0;background:var(--bb-bg);color:var(--bb-ink);
-    font:16px/1.5 Inter, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
-  }
-  .app{max-width:1280px;margin:0 auto;padding:12px 16px 120px}
+<script type="module">
+/* ===== Firebase imports for history/progress ===== */
+import { auth, db } from "/assets/firebase-init.js";
+import {
+  collection,
+  addDoc,
+  serverTimestamp
+} from "https://www.gstatic.com/firebasejs/10.12.4/firebase-firestore.js";
 
-  /* HEADER — timer centered */
-  .header{
-    display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:16px;
-    background:var(--bb-surface);border:1px solid var(--bb-line);
-    border-radius:10px;padding:10px 14px;box-shadow:var(--shadow);position:sticky;top:8px;z-index:5;
-  }
-  .title{font-weight:700;font-size:18px}
-  .directions{display:inline-flex;gap:6px;align-items:center;color:#111;background:transparent;border:0;font-weight:600}
-  .timer{display:flex;flex-direction:column;align-items:center;justify-content:center;justify-self:center}
-  .timer b{font-size:26px;letter-spacing:.5px;font-variant-numeric:tabular-nums}
-  .btn{border-radius:999px;border:1px solid var(--bb-line);background:#fff;padding:6px 12px;font-weight:600;cursor:pointer}
-  .btn.primary{background:var(--bb-blue);border-color:var(--bb-blue);color:#fff}
-  .btn.primary:hover{background:var(--bb-blue-dark);border-color:var(--bb-blue-dark)}
-  .btn.ghost{background:#fff}
-
-  /* PRACTICE banner + ticks */
-  .ticks{
-    margin:8px 2px 0; background:#0d1a5a; color:#fff; border-radius:10px; 
-    height:22px; display:flex; align-items:center; justify-content:center;
-    font-size:12px; font-weight:800; letter-spacing:.6px; box-shadow:var(--shadow);
-  }
-  .dashrow{display:grid;grid-template-columns:repeat(54,1fr);gap:3px;margin:6px 4px}
-  .dash{height:5px;border-radius:2px;background:#000;opacity:.95}
-
-  /* ----- ONE-COLUMN QUESTION CARD ----- */
-  .qwrap{ margin-top:10px;display:flex;justify-content:center; }
-  .qcard{
-    width:min(980px, 96vw);
-    background:#fff;border:1px solid var(--bb-line);border-radius:12px;box-shadow:var(--shadow);
-    padding:16px;
-  }
-
-  /* Top row: number, dashed rule, actions */
-  .qtop{ display:grid;grid-template-columns:auto 1fr auto auto;align-items:center;gap:10px }
-  .qbadge{
-    width:34px;height:34px;background:#000;color:#fff;display:grid;place-items:center;border-radius:6px;font-weight:800
-  }
-  .qdash{ border-bottom:4px dashed #111; height:0; margin:0 6px; }
-  .flagbtn{
-    display:inline-flex;align-items:center;gap:8px;border-radius:999px;border:1px solid var(--bb-line);
-    background:#fff;color:#111;padding:6px 10px;font-weight:700;cursor:pointer
-  }
-  .flagbtn .flagicon{
-    width:0;height:0;border-left:8px solid var(--flag);border-top:6px solid transparent;border-bottom:6px solid transparent;display:inline-block;opacity:.25
-  }
-  .flagbtn.on{border-color:var(--flag);background:var(--flag-soft)}
-  .flagbtn.on .flagicon{opacity:1}
-  .elimbtn{
-    margin-left:8px;display:inline-flex;align-items:center;gap:8px;border-radius:8px;border:1px solid var(--bb-line);
-    background:#fff;color:#111;padding:6px 10px;font-weight:700;cursor:pointer
-  }
-  .elimicon{
-    width:20px;height:20px;border:2px solid #1f2a44;border-radius:50%;position:relative;display:inline-block
-  }
-  .elimicon::after{ content:"";position:absolute;left:2px;right:2px;top:9px;height:2px;background:#1f2a44;transform:rotate(-20deg) }
-  .elimbtn.on{border-color:#1f2a44;background:#f1f4ff}
-
-  /* Question body */
-  .qtitle{margin:14px 0 10px;font-size:20px;font-weight:800}
-  .choices{display:grid;gap:12px;margin-top:8px}
-  .choice{
-    display:flex;align-items:center;gap:10px;border:1px solid var(--bb-line);border-radius:10px;background:#f7f8fd; padding:12px 14px; position:relative;
-    transition:opacity .12s ease
-  }
-  .choice input{transform:scale(1.1)}
-  .letter{
-    margin-left:auto;width:32px;height:32px;border-radius:50%;border:2px solid #b7c1dd;display:grid;place-items:center;color:#1f2a44;font-weight:700;
-  }
-  /* Eliminated styling */
-  .choice.eliminated{opacity:.4}
-  .choice.eliminated .text{ text-decoration:line-through 2px }
-  .choice.eliminated .letter{ position:relative }
-  .choice.eliminated .letter::after{
-    content:""; position:absolute; left:4px; right:4px; top:15px; height:2px; background:#1f2a44; transform:rotate(-20deg)
-  }
-  .hint{color:var(--bb-muted);font-size:14px;margin-top:4px}
-
-  /* BOTTOM RAIL */
-  .rail{
-    position:fixed;left:0;right:0;bottom:0;background:var(--bb-rail);border-top:1px solid var(--bb-line);
-    padding:12px 0; z-index:6;
-  }
-  .rail-inner{max-width:1280px;margin:0 auto;position:relative}
-  .progress{display:grid;grid-template-columns:repeat(var(--seg,24),1fr);gap:8px;padding:0 16px}
-  .seg{height:6px;border-radius:3px;background:#0b0b0b}
-  .seg.active{background:#00a6e7}
-  .center-pill{
-    position:absolute;left:50%;transform:translateX(-50%);bottom:8px;background:var(--bb-pill);color:#fff;border-radius:999px;
-    padding:8px 12px;font-weight:800;box-shadow:0 4px 12px rgba(0,0,0,.25);display:flex;align-items:center;gap:8px;cursor:pointer;border:0;
-  }
-  .center-pill .caret{font-weight:900}
-  .pill-flag{display:none;width:0;height:0;border-left:10px solid var(--flag);border-top:7px solid transparent;border-bottom:7px solid transparent}
-  .rail-actions{position:absolute;right:16px;bottom:4px;display:flex;gap:10px;align-items:center;}
-  .rail-left{position:absolute;left:16px;bottom:4px;display:flex;gap:10px;align-items:center;}
-  .btn.nav{min-width:78px}
-
-  /* REVIEW POPOVER */
-  .popover{
-    position:fixed;left:50%;bottom:84px;transform:translateX(-50%);
-    background:#fff;border:1px solid var(--bb-line);border-radius:12px;box-shadow:0 10px 30px rgba(0,0,0,.18);
-    width:min(620px,92vw);padding:14px;display:none;z-index:7;
-  }
-  .popover .title{font-weight:800;font-size:18px;margin:2px 0 8px}
-  .popover .legend{display:flex;gap:18px;align-items:center;margin:10px 0;border-top:1px solid var(--bb-line);border-bottom:1px solid var(--bb-line);padding:8px 0;color:var(--bb-muted)}
-  .legend .box{width:16px;height:16px;border:2px dashed #2b3350;border-radius:4px;background:#fff;display:inline-block;vertical-align:middle;margin-right:6px}
-  .legend .flag{width:12px;height:12px;background:var(--flag);border-radius:2px;display:inline-block;margin-right:6px}
-  .popover .grid{display:grid;grid-template-columns:repeat(10,1fr);gap:10px;margin-top:12px}
-  .nbtn{
-    display:inline-grid;place-items:center;height:36px;border:2px dashed #2b3350;border-radius:6px;background:#fff;
-    color:#1f4dd8;font-weight:800;cursor:pointer;
-  }
-  .nbtn.current{box-shadow:0 0 0 2px #111 inset; position:relative}
-  .pin{position:absolute;right:-6px;top:-8px;font-size:16px}
-  .nbtn.answered{border-style:solid;border-color:#5b74d5}
-  .nbtn.review{background:var(--flag-soft);border-color:var(--flag);border-style:solid}
-
-  /* REVIEW PAGE */
-  .check-wrap{display:none;margin-top:18px}
-  .check-head{font-size:28px;font-weight:800;text-align:center;margin:8px 0 6px}
-  .check-sub{color:var(--bb-muted);text-align:center;margin-bottom:12px}
-  .check-card{max-width:860px;margin:0 auto;background:#fff;border:1px solid var(--bb-line);border-radius:12px;box-shadow:var(--shadow);padding:14px}
-  .check-row{display:flex;justify-content:space-between;align-items:center;color:#111;font-weight:700;margin-bottom:6px}
-  .check-leg{display:flex;gap:18px;align-items:center;color:var(--bb-muted)}
-  .grid-nums{display:grid;grid-template-columns:repeat(10,1fr);gap:10px;margin-top:12px}
-  .grid-nums .nbtn{height:44px}
-</style>
-</head>
-<body>
-  <div class="app">
-    <!-- Header -->
-    <div class="header" role="banner">
-      <div>
-        <div class="title" id="sectionTitle">Section 1, Module 1: Math — Circles (Practice)</div>
-        <button class="directions" aria-label="Directions">Directions ▾</button>
-      </div>
-      <div class="timer" aria-live="polite">
-        <b id="timeLeft">30:00</b>
-        <button id="toggleTimer" class="btn ghost" aria-pressed="false">Hide</button>
-      </div>
-      <div aria-hidden="true"></div>
-    </div>
-
-    <!-- Practice banner + ticks -->
-    <div class="ticks">THIS IS A PRACTICE TEST</div>
-    <div class="dashrow" id="dashrow"></div>
-
-    <!-- ONE-COLUMN QUESTION CARD -->
-    <div class="qwrap">
-      <article class="qcard" id="qcard">
-        <header class="qtop">
-          <div class="qbadge" id="qbadge">1</div>
-          <div class="qdash" aria-hidden="true"></div>
-          <button id="flagTop" class="flagbtn" aria-pressed="false">
-            <span class="flagicon"></span><span id="flagLabel">Mark for review</span>
-          </button>
-          <button id="elimToggle" class="elimbtn" aria-pressed="false" title="Eliminate answers">
-            <span class="elimicon" aria-hidden="true"></span> Eliminate
-          </button>
-        </header>
-
-        <h2 class="qtitle" id="qtitle">Question text</h2>
-        <div class="choices" id="choices" role="radiogroup" aria-label="Choices"></div>
-        <div class="hint" id="elimHint" style="display:none">Eliminate mode is on — click an answer to gray it out. Click again to restore.</div>
-      </article>
-    </div>
-
-    <!-- Review page (optional mid-test) -->
-    <section class="check-wrap" id="checkPage" aria-label="Check Your Work">
-      <h1 class="check-head">Check Your Work</h1>
-      <p class="check-sub">On test day, you won’t be able to move on to the next module until time expires.</p>
-      <div class="check-card">
-        <div class="check-row">
-          <div>Section 1, Module 1: Reading and Writing Questions</div>
-          <div class="check-leg">
-            <span><span class="box" style="width:16px;height:16px;border:2px dashed #2b3350;border-radius:4px;display:inline-block;margin-right:6px"></span> Unanswered</span>
-            <span><span class="flag" style="width:12px;height:12px;background:var(--flag);display:inline-block;margin-right:6px"></span> For Review</span>
-          </div>
-        </div>
-        <div class="grid-nums" id="checkGrid"></div>
-      </div>
-    </section>
-  </div>
-
-  <!-- Bottom rail -->
-  <div class="rail" role="contentinfo">
-    <div class="rail-inner">
-      <div class="progress" id="progress"></div>
-      <button class="center-pill" id="centerPill" aria-haspopup="dialog" aria-expanded="false">
-        <div class="pill-flag" id="pillFlag" style="display:none"></div>
-        <span id="pillText">Question 1 of 1</span><span class="caret">▾</span>
-      </button>
-      <div class="rail-left">
-        <button id="btnBack" class="btn nav">Back</button>
-      </div>
-      <div class="rail-actions">
-        <button id="btnNext" class="btn nav primary">Next</button>
-        <button id="btnFinish" class="btn nav primary" style="display:none">End &amp; Score</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- Review popover -->
-  <div class="popover" id="popover" role="dialog" aria-modal="false" aria-label="Question Navigator">
-    <button class="close" id="popClose" aria-label="Close">×</button>
-    <div class="title">Section 1, Module 1: Reading and Writing Questions</div>
-    <div class="legend">
-      <span>📍 Current</span>
-      <span><span class="box"></span> Unanswered</span>
-      <span><span class="flag"></span> For Review</span>
-    </div>
-    <div class="grid" id="popGrid"></div>
-    <button class="go-review" id="goReview">Go to Review Page</button>
-  </div>
-
-<script>
 /* ===================== Exam Data ===================== */
 const exam = {
   storageKey: 'dsa-circles-bluebook-v7',
@@ -330,23 +96,33 @@ const el = {
 
 /* ===================== Static rows ===================== */
 (function buildTicks(){
-  for(let i=0;i<54;i++){ const d=document.createElement('div'); d.className='dash'; el.dashrow.appendChild(d); }
+  for(let i=0;i<54;i++){
+    const d=document.createElement('div');
+    d.className='dash';
+    el.dashrow.appendChild(d);
+  }
 })();
 (function buildProgress(){
   const seg = Math.max(24, exam.questions.length * 2);
   el.progress.style.setProperty('--seg', seg);
   el.progress.innerHTML='';
-  for(let i=0;i<seg;i++){ const s=document.createElement('div'); s.className='seg'; el.progress.appendChild(s); }
+  for(let i=0;i<seg;i++){
+    const s=document.createElement('div');
+    s.className='seg';
+    el.progress.appendChild(s);
+  }
 })();
 
-/* ===================== Storage (resume functions kept for reference) ===================== */
+/* ===================== Storage ===================== */
 function loadSaved(){
   try{
     const data = JSON.parse(localStorage.getItem(exam.storageKey)||'null');
     if(!data) return;
     Object.assign(state.answers, data.answers||{});
     Object.assign(state.flags, data.flags||{});
-    if (data.elims) { Object.keys(data.elims).forEach(q=> state.elims[q] = new Set(data.elims[q])); }
+    if (data.elims) {
+      Object.keys(data.elims).forEach(q=> state.elims[q] = new Set(data.elims[q]));
+    }
     if (typeof data.remaining==='number') state.remaining = data.remaining;
     if (typeof data.index==='number') state.index = clamp(data.index, 0, exam.questions.length-1);
   }catch(e){}
@@ -355,11 +131,15 @@ function save(){
   const elimsObj = {};
   Object.keys(state.elims).forEach(q=>{ elimsObj[q] = Array.from(state.elims[q]||[]); });
   localStorage.setItem(exam.storageKey, JSON.stringify({
-    answers: state.answers, flags: state.flags, elims: elimsObj, remaining: state.remaining, index: state.index
+    answers: state.answers,
+    flags: state.flags,
+    elims: elimsObj,
+    remaining: state.remaining,
+    index: state.index
   }));
 }
 
-/* ====== Option A: ALWAYS RESET ON PAGE LOAD ====== */
+/* ====== Always reset on page load for this practice ====== */
 function resetPractice() {
   try { localStorage.removeItem(exam.storageKey); } catch(e){}
   state.index = 0;
@@ -367,13 +147,17 @@ function resetPractice() {
   state.flags = {};
   state.elims = {};
   state.eliminateMode = false;
-  state.remaining = exam.timeLimitSec; // reset clock
+  state.remaining = exam.timeLimitSec;
   state.finished = false;
   state.reviewMode = false;
 }
 
 /* ===================== Timer ===================== */
-function startTimer(){ if(state.timerId || state.finished) return; tick(); state.timerId=setInterval(tick,1000); }
+function startTimer(){
+  if(state.timerId || state.finished) return;
+  tick();
+  state.timerId=setInterval(tick,1000);
+}
 function tick(){
   if (state.remaining<=0) return finishExam();
   state.remaining--;
@@ -385,7 +169,7 @@ function tick(){
 }
 el.toggleTimer.addEventListener('click', ()=>{
   state.timerHidden=!state.timerHidden;
-  el.toggleTimer.textContent = state.timerHidden ? 'Show' : 'Hide';
+  el.toggleTimer.textContent = state.timerHidden ? 'Hide' : 'Hide'; // label optional
   el.timeLeft.style.visibility = state.timerHidden ? 'hidden' : 'visible';
 });
 
@@ -398,7 +182,9 @@ function render(){
   renderProgress();
   buildPopGrid();
   buildCheckGrid();
-  updateNavs(); updateFlagVisuals(); updatePillFlag();
+  updateNavs();
+  updateFlagVisuals();
+  updatePillFlag();
   const m=String(Math.floor(state.remaining/60)).padStart(2,'0');
   const s=String(state.remaining%60).padStart(2,'0');
   el.timeLeft.textContent=`${m}:${s}`;
@@ -407,11 +193,9 @@ function render(){
 function renderQuestion(){
   const q = exam.questions[state.index];
 
-  // top meta
   el.qbadge.textContent = state.index + 1;
   el.qtitle.textContent = q.prompt;
 
-  // choices
   const letter = i => String.fromCharCode(65+i);
   const elimSet = state.elims[q.id] || new Set();
   el.choices.innerHTML = q.choices.map((t,i)=>{
@@ -427,7 +211,6 @@ function renderQuestion(){
     `;
   }).join('');
 
-  // handlers
   el.choices.querySelectorAll('.choice').forEach(choice=>{
     const idx = Number(choice.dataset.choice);
     const input = choice.querySelector('input');
@@ -440,11 +223,14 @@ function renderQuestion(){
       save();
     });
     input.addEventListener('change', ()=>{
-      state.answers[q.id] = idx; save(); renderProgress(); buildPopGrid(); buildCheckGrid();
+      state.answers[q.id] = idx;
+      save();
+      renderProgress();
+      buildPopGrid();
+      buildCheckGrid();
     });
   });
 
-  // flag & eliminate controls
   const flagged = !!state.flags[q.id];
   el.flagTop.classList.toggle('on', flagged);
   el.flagTop.setAttribute('aria-pressed', String(flagged));
@@ -464,7 +250,9 @@ function toggleElimination(qid, idx){
 function renderProgress(){
   const segs = el.progress.children.length;
   const active = Math.ceil(((state.index+1)/exam.questions.length)*segs);
-  for(let i=0;i<segs;i++){ el.progress.children[i].classList.toggle('active', i<active); }
+  for(let i=0;i<segs;i++){
+    el.progress.children[i].classList.toggle('active', i<active);
+  }
   el.pillText.textContent = `Question ${state.index+1} of ${exam.questions.length}`;
 }
 
@@ -490,11 +278,20 @@ function buildPopGrid(){
     b.textContent = String(i+1);
     const answered = typeof state.answers[q.id]==='number';
     const flagged  = !!state.flags[q.id];
-    if (i===state.index){ b.classList.add('current'); const pin=document.createElement('span'); pin.className='pin'; pin.textContent='📍'; b.appendChild(pin); }
+    if (i===state.index){
+      b.classList.add('current');
+      const pin=document.createElement('span');
+      pin.className='pin';
+      pin.textContent='📍';
+      b.appendChild(pin);
+    }
     if (answered) b.classList.add('answered');
     if (flagged)  b.classList.add('review');
     b.addEventListener('click', ()=>{
-      state.index=i; state.reviewMode=false; closePopover(); render();
+      state.index=i;
+      state.reviewMode=false;
+      closePopover();
+      render();
     });
     el.popGrid.appendChild(b);
   });
@@ -509,7 +306,12 @@ function buildCheckGrid(){
     const flagged  = !!state.flags[q.id];
     if (answered) b.classList.add('answered');
     if (flagged)  b.classList.add('review');
-    b.addEventListener('click', ()=>{ state.index=i; state.reviewMode=false; render(); scrollTo(0,0); });
+    b.addEventListener('click', ()=>{
+      state.index=i;
+      state.reviewMode=false;
+      render();
+      scrollTo(0,0);
+    });
     el.checkGrid.appendChild(b);
   });
 }
@@ -521,16 +323,26 @@ function updateNavs(){
   el.finish.style.display = last ? 'inline-block':'none';
 }
 function go(delta){
-  if (state.reviewMode){ state.reviewMode=false; render(); return; }
+  if (state.reviewMode){
+    state.reviewMode=false;
+    render();
+    return;
+  }
   const k = clamp(state.index + delta, 0, exam.questions.length-1);
   if (k===state.index) return;
-  state.index = k; save(); render();
+  state.index = k;
+  save();
+  render();
 }
 function toggleFlag(){
-  if (state.reviewMode){ return; }
+  if (state.reviewMode) return;
   const q=exam.questions[state.index];
-  state.flags[q.id]=!state.flags[q.id]; save();
-  updateFlagVisuals(); updatePillFlag(); buildPopGrid(); buildCheckGrid();
+  state.flags[q.id]=!state.flags[q.id];
+  save();
+  updateFlagVisuals();
+  updatePillFlag();
+  buildPopGrid();
+  buildCheckGrid();
 }
 
 /* Eliminate toggle */
@@ -541,10 +353,11 @@ el.elimToggle.addEventListener('click', ()=>{
   el.elimHint.style.display = state.eliminateMode ? 'block' : 'none';
 });
 
-/* Finish: save payload for summary page, then redirect */
-function finishExam(){
+/* ===== Finish: save payload + write history to Firestore, then redirect ===== */
+async function finishExam(){
   if(state.finished) return;
-  state.finished=true; clearInterval(state.timerId);
+  state.finished=true;
+  clearInterval(state.timerId);
   closePopover();
 
   // Build summary payload
@@ -564,10 +377,11 @@ function finishExam(){
 
   const totals = {
     answered: items.filter(it => it.chosenIndex !== null).length,
-    correct: items.filter(it => it.correct).length,
-    total: items.length,
+    correct:  items.filter(it => it.correct).length,
+    total:    items.length,
     timeSpentSec: exam.timeLimitSec - state.remaining
   };
+  const scorePct = totals.total ? Math.round((totals.correct / totals.total) * 100) : 0;
 
   const summary = {
     title: exam.sectionTitle,
@@ -576,18 +390,46 @@ function finishExam(){
     items
   };
 
-  // Persist summary & navigate
-  try{ localStorage.setItem(exam.summaryKey, JSON.stringify(summary)); }catch(e){}
-  location.href = 'circles-summary.html';
+  // Local summary for circles-summary.html
+  try{
+    localStorage.setItem(exam.summaryKey, JSON.stringify(summary));
+  }catch(e){}
+
+  // History/progress entry in Firestore (if user is logged in)
+  try {
+    const user = auth.currentUser;
+    if (user) {
+      await addDoc(collection(db, "practiceRuns"), {
+        uid: user.uid,
+        moduleId: "math-circles-v1",
+        title: exam.sectionTitle,
+        totals,
+        scorePct,
+        createdAt: serverTimestamp()
+      });
+    }
+  } catch (e) {
+    console.error("Failed to save practice run to Firestore:", e);
+  }
+
+  // Go to detailed summary page
+  location.href = "circles-summary.html";
 }
 
 /* Popover */
 const pill = document.getElementById('centerPill');
 function openPopover(){ el.pop.style.display='block'; pill.setAttribute('aria-expanded','true'); }
 function closePopover(){ el.pop.style.display='none'; pill.setAttribute('aria-expanded','false'); }
-pill.addEventListener('click', ()=>{ if (el.pop.style.display==='block') closePopover(); else openPopover(); });
+pill.addEventListener('click', ()=>{
+  if (el.pop.style.display==='block') closePopover();
+  else openPopover();
+});
 document.getElementById('popClose').addEventListener('click', closePopover);
-el.goReview.addEventListener('click', ()=>{ state.reviewMode=true; closePopover(); render(); });
+el.goReview.addEventListener('click', ()=>{
+  state.reviewMode=true;
+  closePopover();
+  render();
+});
 
 /* Close popover when clicking outside */
 document.addEventListener('click', (e)=>{
@@ -602,12 +444,8 @@ document.getElementById('btnFinish').addEventListener('click', finishExam);
 
 /* ===================== Init ===================== */
 (function init(){
-  // OPTION A: Always start fresh on each load
-  resetPractice();
-
+  resetPractice();      // always start fresh
   render();
   startTimer();
 })();
 </script>
-</body>
-</html>
