@@ -3,38 +3,151 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Login / Signup</title>
+  <title>Dream School Academy – Login / Sign Up</title>
 
-  <!-- Load global site styles BEFORE header appears -->
-  <link rel="stylesheet" href="/assets/site.css">
-  <link rel="stylesheet" href="/assets/login.css">
+  <!-- Global styles -->
+  <link rel="stylesheet" href="/assets/site.css" />
+  <link rel="stylesheet" href="/assets/login.css" />
+
+  <!-- Page-specific layout to make the login card look right -->
+  <style>
+    main {
+      min-height: calc(100vh - 160px);
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      padding: 80px 16px 40px;
+    }
+
+    .auth-card {
+      background: #0b1019;
+      border-radius: 24px;
+      padding: 28px 24px 26px;
+      max-width: 420px;
+      width: 100%;
+      box-shadow: 0 18px 40px rgba(0, 0, 0, 0.55);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+    }
+
+    .auth-card h2 {
+      margin: 0 0 12px 0;
+      font-size: 1.5rem;
+    }
+
+    .auth-tabs {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 20px;
+    }
+
+    .auth-tab {
+      flex: 1;
+      padding: 8px 0;
+      border-radius: 999px;
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      background: transparent;
+      color: #f9fafb;
+      font-weight: 600;
+      font-size: 0.9rem;
+      cursor: pointer;
+    }
+
+    .auth-tab.active {
+      background: #2563eb;
+      border-color: #2563eb;
+    }
+
+    .form-block {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .field label {
+      font-size: 0.9rem;
+    }
+
+    .field input {
+      width: 100%;
+      padding: 9px 11px;
+      border-radius: 10px;
+      border: 1px solid rgba(148, 163, 184, 0.7);
+      background: #020617;
+      color: #f9fafb;
+      font-size: 0.95rem;
+    }
+
+    .btn-primary {
+      margin-top: 4px;
+      width: 100%;
+      padding: 9px 12px;
+      border-radius: 999px;
+      border: none;
+      background: #22c55e;
+      color: #020617;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .btn-google {
+      margin-top: 6px;
+      width: 100%;
+      padding: 8px 12px;
+      border-radius: 999px;
+      border: 1px solid rgba(148, 163, 184, 0.7);
+      background: transparent;
+      color: #e5e7eb;
+      font-weight: 500;
+      cursor: pointer;
+    }
+
+    .status {
+      min-height: 1.3em;
+      font-size: 0.85rem;
+      color: #f97373;
+    }
+
+    .alt-action {
+      margin-top: 4px;
+      font-size: 0.85rem;
+    }
+
+    .alt-action a {
+      color: #60a5fa;
+      text-decoration: underline;
+    }
+  </style>
 </head>
 
 <body>
-
-  <!-- Header placeholder (shell.js will load header.html into this) -->
+  <!-- Header placeholder; shell.js will inject header.html here -->
   <div id="site-header"></div>
 
   <main>
-    <div class="card">
-
-      <!-- ---- LOGIN / SIGNUP TABS ---- -->
-      <div class="tabs">
-        <button id="tab-login"  class="tab active" aria-selected="true">Login</button>
-        <button id="tab-signup" class="tab" aria-selected="false">Sign Up</button>
+    <div class="auth-card">
+      <!-- Tabs -->
+      <div class="auth-tabs">
+        <button id="tab-login" class="auth-tab active" aria-selected="true">Login</button>
+        <button id="tab-signup" class="auth-tab" aria-selected="false">Sign Up</button>
       </div>
 
-      <!-- ---- LOGIN FORM ---- -->
+      <!-- Login form -->
       <form id="login-form" class="form-block">
         <h2>Welcome back</h2>
 
         <div class="field">
-          <label>Email</label>
+          <label for="login-email">Email</label>
           <input id="login-email" type="email" required />
         </div>
 
         <div class="field">
-          <label>Password</label>
+          <label for="login-password">Password</label>
           <input id="login-password" type="password" required />
         </div>
 
@@ -46,25 +159,27 @@
           <a id="reset" href="javascript:void(0)">Forgot password?</a>
         </p>
 
-        <button id="google-login" class="btn-google" type="button">Sign in with Google</button>
+        <button id="google-login" class="btn-google" type="button">
+          Sign in with Google
+        </button>
       </form>
 
-      <!-- ---- SIGNUP FORM ---- -->
+      <!-- Signup form -->
       <form id="signup-form" class="form-block" style="display:none;">
         <h2>Create your account</h2>
 
         <div class="field">
-          <label>First name</label>
+          <label for="signup-first">First name</label>
           <input id="signup-first" type="text" />
         </div>
 
         <div class="field">
-          <label>Email</label>
+          <label for="signup-email">Email</label>
           <input id="signup-email" type="email" required />
         </div>
 
         <div class="field">
-          <label>Password</label>
+          <label for="signup-password">Password</label>
           <input id="signup-password" type="password" required />
         </div>
 
@@ -72,19 +187,18 @@
 
         <p id="signup-status" class="status"></p>
 
-        <button id="google-signup" class="btn-google" type="button">Sign up with Google</button>
+        <button id="google-signup" class="btn-google" type="button">
+          Sign up with Google
+        </button>
       </form>
-
     </div>
   </main>
 
-
-  <!-- Load header + login logic -->
+  <!-- Shell to inject header + handle greeting -->
   <script type="module" src="/assets/shell.js"></script>
 
-  <!-- LOGIN / SIGNUP LOGIC -->
+  <!-- Login / signup logic -->
   <script type="module">
-
     import { auth, db, googleProvider } from "/assets/firebase-init.js";
 
     import {
@@ -105,7 +219,6 @@
       serverTimestamp
     } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-firestore.js";
 
-    // Friendly error messages
     const nice = (e) => ({
       "auth/invalid-email":        "That email looks invalid.",
       "auth/missing-password":     "Enter your password.",
@@ -131,7 +244,7 @@
       }
     }
 
-    // ----- Grab DOM elements -----
+    // Grab DOM elements
     const tabLogin    = document.getElementById("tab-login");
     const tabSignup   = document.getElementById("tab-signup");
     const loginForm   = document.getElementById("login-form");
@@ -144,12 +257,10 @@
     const btnGoogleIn = document.getElementById("google-login");
     const btnGoogleUp = document.getElementById("google-signup");
 
-    // Prevent crashes if something missing
     if (!tabLogin || !tabSignup || !loginForm || !signupForm) {
       console.warn("Login UI missing — skipping login script.");
     } else {
-
-      // ----- Tabs -----
+      // Tabs
       const showLogin = () => {
         tabLogin.classList.add("active");
         tabSignup.classList.remove("active");
@@ -166,10 +277,9 @@
 
       tabLogin.addEventListener("click", showLogin);
       tabSignup.addEventListener("click", showSignup);
+      showLogin(); // default
 
-      showLogin();  // default
-
-      // ----- Login -----
+      // Login
       if (btnLogin) {
         btnLogin.addEventListener("click", async (e) => {
           e.preventDefault();
@@ -181,6 +291,7 @@
             await ensureProfile(cred.user);
             location.href = "/";
           } catch (err) {
+            console.error(err);
             loginStatus.textContent = nice(err);
           }
         });
@@ -190,11 +301,15 @@
       if (btnReset) {
         btnReset.addEventListener("click", async () => {
           const email = document.getElementById("login-email").value.trim();
-          if (!email) return loginStatus.textContent = "Enter your email.";
+          if (!email) {
+            loginStatus.textContent = "Enter your email.";
+            return;
+          }
           try {
             await sendPasswordResetEmail(auth, email);
-            loginStatus.textContent = "Reset email sent.";
+            loginStatus.textContent = "Password reset email sent.";
           } catch (err) {
+            console.error(err);
             loginStatus.textContent = nice(err);
           }
         });
@@ -209,12 +324,13 @@
             await ensureProfile(res.user);
             location.href = "/";
           } catch (err) {
+            console.error(err);
             loginStatus.textContent = nice(err);
           }
         });
       }
 
-      // ----- Signup -----
+      // Signup
       if (btnSignup) {
         btnSignup.addEventListener("click", async (e) => {
           e.preventDefault();
@@ -232,6 +348,7 @@
             await ensureProfile(cred.user, first);
             location.href = "/";
           } catch (err) {
+            console.error(err);
             signupStatus.textContent = nice(err);
           }
         });
@@ -246,13 +363,14 @@
             await ensureProfile(res.user);
             location.href = "/";
           } catch (err) {
+            console.error(err);
             signupStatus.textContent = nice(err);
           }
         });
       }
     }
 
-    // Handle redirect fallback
+    // Handle Google redirect fallback
     try {
       const r = await getRedirectResult(auth);
       if (r?.user) {
@@ -260,9 +378,13 @@
         location.href = "/";
       }
     } catch (e) {
-      console.warn("Redirect failed:", e);
+      console.warn("Redirect sign-in failed:", e);
     }
 
+    onAuthStateChanged(auth, (user) => {
+      // Optional auto-redirect if you want:
+      // if (user) location.href = "/";
+    });
   </script>
 </body>
 </html>
