@@ -2,7 +2,7 @@
   // Reuse shared Firebase instances
   import { auth, db, googleProvider } from "/assets/firebase-init.js";
 
-  // Pull in the extra auth + firestore functions we need
+  // Extra auth + firestore functions
   import {
     onAuthStateChanged,
     signInWithEmailAndPassword,
@@ -48,34 +48,41 @@
     }
   }
 
-  // Tabs
+  // ----- Tabs (wrapped in a guard so they can't be null) -----
   const tabLogin   = document.getElementById('tab-login');
   const tabSignup  = document.getElementById('tab-signup');
   const loginForm  = document.getElementById('login-form');
   const signupForm = document.getElementById('signup-form');
 
-  const showLogin = () => {
-    tabLogin.classList.add('active');
-    tabLogin.setAttribute('aria-selected','true');
-    tabSignup.classList.remove('active');
-    tabSignup.setAttribute('aria-selected','false');
-    loginForm.style.display = 'block';
-    signupForm.style.display = 'none';
-  };
+  if (tabLogin && tabSignup && loginForm && signupForm) {
+    const showLogin = () => {
+      tabLogin.classList.add('active');
+      tabLogin.setAttribute('aria-selected','true');
+      tabSignup.classList.remove('active');
+      tabSignup.setAttribute('aria-selected','false');
+      loginForm.style.display = 'block';
+      signupForm.style.display = 'none';
+    };
 
-  const showSignup = () => {
-    tabSignup.classList.add('active');
-    tabSignup.setAttribute('aria-selected','true');
-    tabLogin.classList.remove('active');
-    tabLogin.setAttribute('aria-selected','false');
-    signupForm.style.display = 'block';
-    loginForm.style.display = 'none';
-  };
+    const showSignup = () => {
+      tabSignup.classList.add('active');
+      tabSignup.setAttribute('aria-selected','true');
+      tabLogin.classList.remove('active');
+      tabLogin.setAttribute('aria-selected','false');
+      signupForm.style.display = 'block';
+      loginForm.style.display = 'none';
+    };
 
-  tabLogin.addEventListener('click', showLogin);
-  tabSignup.addEventListener('click', showSignup);
+    tabLogin.addEventListener('click', showLogin);
+    tabSignup.addEventListener('click', showSignup);
 
-  // Login
+    // Default view
+    showLogin();
+  } else {
+    console.warn('Login tabs or forms not found on this page');
+  }
+
+  // ----- Login -----
   const loginStatus = document.getElementById('login-status');
   document.getElementById('login-submit').addEventListener('click', async (e) => {
     e.preventDefault();
@@ -131,7 +138,7 @@
     }
   });
 
-  // Signup
+  // ----- Signup -----
   const signupStatus = document.getElementById('signup-status');
   document.getElementById('signup-submit').addEventListener('click', async (e) => {
     e.preventDefault();
