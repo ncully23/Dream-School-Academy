@@ -11,10 +11,7 @@
     updateProfile,
     signInWithPopup,
     signInWithRedirect,
-    getRedirectResult,
-    setPersistence,
-    browserLocalPersistence,
-    browserSessionPersistence
+    getRedirectResult
   } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-auth.js";
 
   import {
@@ -24,9 +21,10 @@
     serverTimestamp
   } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-firestore.js";
 
-  // --- Redirect target (e.g. ?redirectTo=/practice/circles.html) ---
-  const params      = new URLSearchParams(location.search);
-  const redirectTo  = params.get("redirectTo") || "/";
+  // --- NEW: optional redirect target, e.g. ?redirectTo=/practice/circles.html
+  const params     = new URLSearchParams(window.location.search);
+  const redirectTo = params.get("redirectTo") || "/";
+  const goAfterAuth = () => { window.location.href = redirectTo; };
 
   // Friendly error messages
   const nice = (e) => ({
@@ -40,16 +38,16 @@
     'auth/unauthorized-domain':  'Add this domain in Firebase → Auth → Authorized domains.'
   }[e?.code] || e?.message || 'Something went wrong.');
 
-  // Ensure profile document exists — stored under `users/{uid}`
+  // Ensure profile document exists — stored under users/{uid}
   async function ensureProfile(u, first = "") {
     if (!u) return;
     const ref  = doc(db, "users", u.uid);
     const snap = await getDoc(ref);
     if (!snap.exists()) {
       await setDoc(ref, {
-        userId: u.uid,
-        email: u.email || "",
-        name: (u.displayName || first || "").trim(),
+        userId:   u.uid,
+        email:    u.email || "",
+        name:     (u.displayName || first || "").trim(),
         createdAt: serverTimestamp()
       });
     }
@@ -63,46 +61,31 @@
 
   const showLogin = () => {
     tabLogin.classList.add('active');
-    tabLogin.setAttribute('aria-selected','true');
+    tabLogin.setAttribute('aria-selected', 'true');
     tabSignup.classList.remove('active');
-    tabSignup.setAttribute('aria-selected','false');
-    loginForm.style.display = 'block';
+    tabSignup.setAttribute('aria-selected', 'false');
+    loginForm.style.display  = 'block';
     signupForm.style.display = 'none';
   };
 
   const showSignup = () => {
     tabSignup.classList.add('active');
-    tabSignup.setAttribute('aria-selected','true');
+    tabSignup.setAttribute('aria-selected', 'true');
     tabLogin.classList.remove('active');
-    tabLogin.setAttribute('aria-selected','false');
+    tabLogin.setAttribute('aria-selected', 'false');
     signupForm.style.display = 'block';
-    loginForm.style.display = 'none';
+    loginForm.style.display  = 'none';
   };
 
   tabLogin.addEventListener('click', showLogin);
   tabSignup.addEventListener('click', showSignup);
 
-  // --- Shared helpers ---
-  const loginStatus   = document.getElementById('login-status');
-  const signupStatus  = document.getElementById('signup-status');
-  const rememberCheck = document.getElementById('remember-me');
-
-  async function applyPersistence() {
-    const remember = rememberCheck ? rememberCheck.checked : true;
-    const mode = remember ? browserLocalPersistence : browserSessionPersistence;
-    await setPersistence(auth, mode);
-  }
-
-  function goAfterAuth() {
-    location.href = redirectTo;
-  }
-
-  // --- Email/password Login ---
+  // Login
+  const loginStatus = document.getElementById('login-status');
   document.getElementById('login-submit').addEventListener('click', async (e) => {
     e.preventDefault();
     loginStatus.textContent = 'Signing in…';
     try {
-      await applyPersistence();
       const email = document.getElementById('login-email').value.trim();
       const pass  = document.getElementById('login-password').value;
       const cred  = await signInWithEmailAndPassword(auth, email, pass);
@@ -123,18 +106,17 @@
     }
     try {
       await sendPasswordResetEmail(auth, email);
-      loginStatus.textContent = 'Password reset email sent. Check your inbox and spam folder.';
+      loginStatus.textContent = 'Password reset email sent.';
     } catch (err) {
       console.error(err);
       loginStatus.textContent = nice(err);
     }
   });
 
-  // --- Google login ---
+  // Google login
   document.getElementById('google-login').addEventListener('click', async () => {
     loginStatus.textContent = 'Opening Google…';
     try {
-      await applyPersistence();
       const res = await signInWithPopup(auth, googleProvider);
       await ensureProfile(res.user);
       goAfterAuth();
@@ -143,7 +125,6 @@
       if (['auth/popup-blocked','auth/popup-closed-by-user','auth/unauthorized-domain'].includes(err.code)) {
         loginStatus.textContent = nice(err);
         try {
-          await applyPersistence();
           await signInWithRedirect(auth, googleProvider);
         } catch (e) {
           console.error(e);
@@ -155,12 +136,12 @@
     }
   });
 
-  // --- Email/password Signup ---
+  // Signup
+  const signupStatus = document.getElementById('signup-status');
   document.getElementById('signup-submit').addEventListener('click', async (e) => {
     e.preventDefault();
     signupStatus.textContent = 'Creating account…';
     try {
-      await applyPersistence();
       const first = document.getElementById('signup-first').value.trim();
       const email = document.getElementById('signup-email').value.trim();
       const pass  = document.getElementById('signup-password').value;
@@ -169,7 +150,6 @@
         try { await updateProfile(cred.user, { displayName: first }); } catch {}
       }
       await ensureProfile(cred.user, first);
-      signupStatus.textContent = 'Account created! Redirecting…';
       goAfterAuth();
     } catch (err) {
       console.error(err);
@@ -177,11 +157,10 @@
     }
   });
 
-  // --- Google Signup ---
+  // Google signup
   document.getElementById('google-signup').addEventListener('click', async () => {
     signupStatus.textContent = 'Opening Google…';
     try {
-      await applyPersistence();
       const res = await signInWithPopup(auth, googleProvider);
       await ensureProfile(res.user);
       goAfterAuth();
@@ -190,7 +169,6 @@
       if (['auth/popup-blocked','auth/popup-closed-by-user','auth/unauthorized-domain'].includes(err.code)) {
         signupStatus.textContent = nice(err);
         try {
-          await applyPersistence();
           await signInWithRedirect(auth, googleProvider);
         } catch (e) {
           console.error(e);
@@ -214,7 +192,7 @@
   }
 
   onAuthStateChanged(auth, (user) => {
-    // Optional: if already logged in, bounce them to redirect target
+    // Optional: if already logged in, bounce them home
     // if (user) goAfterAuth();
   });
 </script>
