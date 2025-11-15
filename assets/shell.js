@@ -1,33 +1,17 @@
 // /assets/shell.js (module)
 
-// 0) Firebase imports (same style as your working script)
-import { initializeApp, getApps, getApp } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-app.js";
+// Reuse shared Firebase instances
+import { auth, db } from "/assets/firebase-init.js";
+
+// Pull in helpers that work *with* those instances
 import {
-  getAuth,
   onAuthStateChanged,
   signOut
-} from "https://www.gstatic.com/firebasejs/10.13.1/firebase-auth.js";
+} from "https://www.gstatic.com/firebasejs/10.12.4/firebase-auth.js";
 import {
-  getFirestore,
   doc,
   getDoc
-} from "https://www.gstatic.com/firebasejs/10.13.1/firebase-firestore.js";
-
-// Same config as your login page
-const firebaseConfig = {
-  apiKey: "AIzaSyD7R7ZsmTpGojgLNt7w_R0tm_mWg_FZEYE",
-  authDomain: "dream-school-academy.firebaseapp.com",
-  projectId: "dream-school-academy",
-  storageBucket: "dream-school-academy.firebasestorage.app",
-  messagingSenderId: "665412130733",
-  appId: "1:665412130733:web:fc73f3ed574ffb6d277324",
-  measurementId: "G-7LY2V2HQ4G"
-};
-
-// Init Firebase once per tab
-const app  = getApps().length ? getApp() : initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const db   = getFirestore(app);
+} from "https://www.gstatic.com/firebasejs/10.12.4/firebase-firestore.js";
 
 // Small DOM helpers
 const $  = (sel) => document.querySelector(sel);
