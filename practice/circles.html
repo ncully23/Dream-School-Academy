@@ -5,8 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Section 1, Module 1: Math — Circles (Practice)</title>
 
-  <!-- Reusable quiz styles -->
-  <link rel="stylesheet" href="quiz.css" />
+  <!-- Bluebook-style quiz layout -->
+  <!-- If your CSS folder is different, adjust the href accordingly -->
+  <link rel="stylesheet" href="/assets/css/quiz.css" />
 </head>
 <body>
   <div class="app">
@@ -101,7 +102,7 @@
 /* ===================== Exam Data ===================== */
 const exam = {
   storageKey: 'dsa-circles-bluebook-v7',
-  summaryKey: 'dsa-circles-summary-v1', // where we store for the summary page
+  summaryKey: 'dsa-circles-summary-v1',
   sectionTitle: 'Section 1, Module 1: Math — Circles (Practice)',
   timeLimitSec: 30 * 60,
   questions: [
@@ -153,9 +154,9 @@ const exam = {
 /* ===================== State ===================== */
 const state = {
   index: 0,
-  answers: {},        // { qid: choiceIndex }
-  flags: {},          // { qid: true }
-  elims: {},          // { qid: Set([choiceIndex,...]) }
+  answers: {},
+  flags: {},
+  elims: {},
   eliminateMode: false,
   remaining: exam.timeLimitSec,
   timerId: null,
@@ -176,24 +177,19 @@ const el = {
   flagLabel: document.getElementById('flagLabel'),
   elimToggle: document.getElementById('elimToggle'),
   elimHint: document.getElementById('elimHint'),
-
   back: document.getElementById('btnBack'),
   next: document.getElementById('btnNext'),
   finish: document.getElementById('btnFinish'),
-
   progress: document.getElementById('progress'),
   pill: document.getElementById('centerPill'),
   pillText: document.getElementById('pillText'),
   pillFlag: document.getElementById('pillFlag'),
-
   pop: document.getElementById('popover'),
   popGrid: document.getElementById('popGrid'),
   popClose: document.getElementById('popClose'),
   goReview: document.getElementById('goReview'),
-
   checkPage: document.getElementById('checkPage'),
   checkGrid: document.getElementById('checkGrid'),
-
   dashrow: document.getElementById('dashrow')
 };
 
@@ -216,7 +212,7 @@ const el = {
   }
 })();
 
-/* ===================== Storage (resume functions kept for reference) ===================== */
+/* ===================== Storage ===================== */
 function loadSaved(){
   try{
     const data = JSON.parse(localStorage.getItem(exam.storageKey)||'null');
@@ -242,7 +238,7 @@ function save(){
   }));
 }
 
-/* ====== Option A: ALWAYS RESET ON PAGE LOAD ====== */
+/* ====== Always reset on load for now ====== */
 function resetPractice() {
   try { localStorage.removeItem(exam.storageKey); } catch(e){}
   state.index = 0;
@@ -250,7 +246,7 @@ function resetPractice() {
   state.flags = {};
   state.elims = {};
   state.eliminateMode = false;
-  state.remaining = exam.timeLimitSec; // reset clock
+  state.remaining = exam.timeLimitSec;
   state.finished = false;
   state.reviewMode = false;
 }
@@ -296,11 +292,9 @@ function render(){
 function renderQuestion(){
   const q = exam.questions[state.index];
 
-  // top meta
   el.qbadge.textContent = state.index + 1;
   el.qtitle.textContent = q.prompt;
 
-  // choices
   const letter = i => String.fromCharCode(65+i);
   const elimSet = state.elims[q.id] || new Set();
   el.choices.innerHTML = q.choices.map((t,i)=>{
@@ -316,7 +310,6 @@ function renderQuestion(){
     `;
   }).join('');
 
-  // handlers
   el.choices.querySelectorAll('.choice').forEach(choice=>{
     const idx = Number(choice.dataset.choice);
     const input = choice.querySelector('input');
@@ -337,7 +330,6 @@ function renderQuestion(){
     });
   });
 
-  // flag & eliminate controls
   const flagged = !!state.flags[q.id];
   el.flagTop.classList.toggle('on', flagged);
   el.flagTop.setAttribute('aria-pressed', String(flagged));
@@ -467,7 +459,6 @@ function finishExam(){
   clearInterval(state.timerId);
   closePopover();
 
-  // Build summary payload
   const items = exam.questions.map((q,i)=>{
     const chosen = (typeof state.answers[q.id] === 'number') ? state.answers[q.id] : null;
     return {
@@ -496,7 +487,6 @@ function finishExam(){
     items
   };
 
-  // Persist summary & navigate
   try{ localStorage.setItem(exam.summaryKey, JSON.stringify(summary)); }catch(e){}
   location.href = 'circles-summary.html';
 }
@@ -529,7 +519,6 @@ document.getElementById('btnFinish').addEventListener('click', finishExam);
 
 /* ===================== Init ===================== */
 (function init(){
-  // Always start fresh on each load
   resetPractice();
   render();
   startTimer();
