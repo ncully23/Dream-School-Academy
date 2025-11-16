@@ -3,287 +3,574 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Linear Equations in One Variable — Quiz | Dream School Academy</title>
+  <title>Section 1, Module 1: Math — Linear Equations in One Variable (Practice)</title>
 
-  <!-- this file lives in /practice/, so use ../ -->
-  <link rel="stylesheet" href="../style.css" />
-  <style>
-    :root{
-      --bg:#0f1420; --card:#1b2231; --ink:#e8eefc; --muted:#a9b5cc; --brand:#00d8ff;
-      --border:rgba(255,255,255,.08); --ok:#29c46d; --bad:#ff6b6b;
-    }
-    body{ background:var(--bg); color:var(--ink); }
-    main{ max-width:960px; margin:0 auto; padding:24px; }
-    .card{ background:var(--card); border:1px solid var(--border); border-radius:14px; padding:22px; }
-    .bar{ display:flex; justify-content:space-between; align-items:center; gap:12px; margin-bottom:16px; }
-    h1{ margin:0; font-size:1.5rem }
-    .muted{ color:var(--muted) }
-    .q-stem{ font-size:1.06rem; line-height:1.6; margin-bottom:14px; }
-    .choices{ display:grid; gap:10px; }
-    .choice{ display:flex; gap:10px; align-items:flex-start; padding:12px 14px; border:1px solid var(--border); border-radius:10px; cursor:pointer; background:#0f1624; }
-    .choice.correct{ outline:2px solid var(--ok); }
-    .choice.incorrect{ outline:2px solid var(--bad); }
-    .nav{ display:flex; gap:10px; margin-top:16px; flex-wrap:wrap; }
-    .btn{ background:var(--brand); color:#051018; border:0; border-radius:999px; padding:10px 16px; font-weight:800; cursor:pointer; }
-    .btn.secondary{ background:transparent; color:var(--ink); border:1px solid var(--border) }
-    .btn[disabled]{ opacity:.6; cursor:not-allowed }
-    .hr{ height:1px; background:var(--border); margin:16px 0; }
-    .results h2{ margin:.2rem 0 1rem }
-    .badge{ display:inline-block; padding:3px 8px; border-radius:999px; font-weight:800; font-size:.85rem }
-    .badge.ok{ background:rgba(41,196,109,.15); color:var(--ok); }
-    .badge.bad{ background:rgba(255,107,107,.15); color:var(--bad); }
-    .stat{ color:#cfe6ff; font-weight:800 }
-    .small{ font-size:.93rem }
-    .save-note{ color:#9be7ff; margin-top:8px; display:none }
-    .last-attempt{ background:#141b29; border:1px dashed var(--border); border-radius:12px; padding:10px 12px; margin-bottom:12px; color:#cfe6ff; }
-  </style>
+  <!-- Bluebook-style quiz layout -->
+  <!-- Update href if your quiz.css path is different -->
+  <link rel="stylesheet" href="/assets/css/quiz.css" />
 
-  <!-- MathJax (renders TeX like \( \frac{4}{25}m \)) -->
+  <!-- MathJax for inline TeX like \( \frac{4}{25}m \) -->
   <script>
     window.MathJax = {
       tex: { inlineMath: [['\\(','\\)'],['$','$']] },
       svg: { fontCache: 'global' }
     };
   </script>
-  <script defer id="MathJax-script" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+  <script defer id="MathJax-script"
+          src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
 </head>
 <body>
-  <header>
-    <div class="header-container">
-      <a href="/" class="logo-button">Dream School Academy</a>
-      <nav>
-        <a href="/study">Study</a>
-        <a href="/practice">Practice</a>
-        <a href="/contactus">Contact Us</a>
-      </nav>
-    </div>
-  </header>
-
-  <main>
-    <!-- Quiz -->
-    <div class="card" id="quiz">
-      <div class="bar">
-        <h1 id="title">Linear Equations in One Variable — Quiz</h1>
-        <div class="muted"><span id="idx">1</span>/<span id="total">0</span></div>
+  <div class="app">
+    <!-- Header -->
+    <div class="header" role="banner">
+      <div>
+        <div class="title" id="sectionTitle">
+          Section 1, Module 1: Math — Linear Equations in One Variable (Practice)
+        </div>
+        <button class="directions" aria-label="Directions">Directions ▾</button>
       </div>
-
-      <div id="lastAttempt" class="last-attempt" style="display:none"></div>
-
-      <div id="stem" class="q-stem"></div>
-      <div id="choices" class="choices"></div>
-
-      <div class="nav">
-        <button id="prev" class="btn secondary">Back</button>
-        <button id="next" class="btn secondary">Next</button>
-        <button id="submit" class="btn">Grade</button>
+      <div class="timer" aria-live="polite">
+        <b id="timeLeft">30:00</b>
+        <button id="toggleTimer" class="btn ghost" aria-pressed="false">Hide</button>
       </div>
-      <p class="muted small">You can change answers before grading. Math is formatted automatically.</p>
-      <p id="saved" class="save-note">Saved ✔ Your latest attempt was stored on this device.</p>
+      <div aria-hidden="true"></div>
     </div>
 
-    <!-- Results -->
-    <div class="card" id="results" style="display:none">
-      <h2>Results</h2>
-      <p class="stat" id="scoreLine"></p>
-      <div class="hr"></div>
-      <div id="review"></div>
-      <div class="nav">
-        <button id="retry" class="btn">Retry</button>
-        <a href="/practice" class="btn secondary">Back to Practice</a>
-      </div>
+    <!-- Practice banner + ticks -->
+    <div class="ticks">THIS IS A PRACTICE TEST</div>
+    <div class="dashrow" id="dashrow"></div>
+
+    <!-- ONE-COLUMN QUESTION CARD -->
+    <div class="qwrap">
+      <article class="qcard" id="qcard">
+        <header class="qtop">
+          <div class="qbadge" id="qbadge">1</div>
+          <div class="qdash" aria-hidden="true"></div>
+          <button id="flagTop" class="flagbtn" aria-pressed="false">
+            <span class="flagicon"></span><span id="flagLabel">Mark for review</span>
+          </button>
+          <button id="elimToggle" class="elimbtn" aria-pressed="false" title="Eliminate answers">
+            <span class="elimicon" aria-hidden="true"></span> Eliminate
+          </button>
+        </header>
+
+        <h2 class="qtitle" id="qtitle">Question text</h2>
+        <div class="choices" id="choices" role="radiogroup" aria-label="Choices"></div>
+        <div class="hint" id="elimHint" style="display:none">
+          Eliminate mode is on — click an answer to gray it out. Click again to restore.
+        </div>
+      </article>
     </div>
-  </main>
 
-  <script>
-    // ---------- DATA ----------
-    const TOPIC = "linear-equations-one-variable";
-    const QUESTIONS = [
-      {
-        id:"26fac581",
-        stem:"If \\(2(x-5)+3(x-5)=10\\), what is the value of \\(x-5\\)?",
-        choices:["2","5","7","12"],
-        answer:0
-      },
-      {
-        id:"48bad848",
-        stem:"Megan’s regular wage at her job is \\(p\\) dollars per hour for the first 8 hours of work in a day plus 1.5 times her regular hourly wage for work in excess of 8 hours that day. On a given day, Megan worked for 10 hours, and her total earnings for that day were \\(\\$137.50\\). What is Megan’s regular hourly wage?",
-        choices:["$11.75","$12.50","$13.25","$13.75"],
-        answer:1
-      },
-      {
-        id:"f0581e16",
-        stem:"Gas is \\(\\$4\\)/gal and the car averages 25 mpg. Alan wants to reduce weekly gas spending by \\(\\$5\\). Let \\(m\\) be miles fewer per week. Which equation is correct?",
-        choices:["\\(\\tfrac{25}{4}m=95\\)","\\(\\tfrac{25}{4}m=5\\)","\\(\\tfrac{4}{25}m=95\\)","\\(\\tfrac{4}{25}m=5\\)"],
-        answer:3
-      },
-      {
-        id:"6e706172",
-        stem:"A product costs \\(\\$65\\) to make and sells for \\(\\$100\\). The salesperson earns a commission equal to 20% of the sales price. Profit per unit equals price minus the combined cost of making the product and the commission. Which equation gives the number of units, \\(u\\), the company sold to make a profit of \\(\\$6{,}840\\)?",
-        choices:[
-          "\\((100(1-0.2)-65)u=6840\\)",
-          "\\((100-65)(1-0.2)u=6840\\)",
-          "\\(0.8(100)-65u=6840\\)",
-          "\\((0.2(100)+65)u=6840\\)"
-        ],
-        answer:0
-      },
-      {
-        id:"509cb1a6",
-        stem:"\\(4x+12=\\dfrac{a(x+3)}{2}\\). If the equation has infinitely many solutions, what is the value of \\(a\\)?",
-        choices:["0","3","8","12"],
-        answer:2
-      }
-    ];
-
-    // ---------- STATE & STORAGE ----------
-    const STORAGE_KEY = `dsa:quiz:${TOPIC}`;
-    const total = QUESTIONS.length;
-    let idx = 0;
-    let answers = new Array(total).fill(null); // stores choice index
-
-    // restore last attempt (if any)
-    try {
-      const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}");
-      if (Array.isArray(saved.answers) && saved.answers.length === total) {
-        answers = saved.answers;
-        renderLastAttempt(saved);
-      }
-    } catch {}
-
-    // ---------- DOM ----------
-    const titleEl = document.getElementById("title");
-    const idxEl = document.getElementById("idx");
-    const totalEl = document.getElementById("total");
-    const stemEl = document.getElementById("stem");
-    const choicesEl = document.getElementById("choices");
-    const prevBtn = document.getElementById("prev");
-    const nextBtn = document.getElementById("next");
-    const submitBtn = document.getElementById("submit");
-    const savedNote = document.getElementById("saved");
-
-    const resultsCard = document.getElementById("results");
-    const quizCard = document.getElementById("quiz");
-    const scoreLine = document.getElementById("scoreLine");
-    const reviewEl = document.getElementById("review");
-    const retryBtn = document.getElementById("retry");
-
-    totalEl.textContent = total.toString();
-    render();
-
-    prevBtn.addEventListener("click", ()=> { if (idx>0) { idx--; render(); } });
-    nextBtn.addEventListener("click", ()=> { if (idx<total-1) { idx++; render(); } });
-    submitBtn.addEventListener("click", gradeNow);
-    retryBtn.addEventListener("click", ()=>{
-      answers.fill(null);
-      idx = 0;
-      resultsCard.style.display = "none";
-      quizCard.style.display = "block";
-      savedNote.style.display = "none";
-      render();
-      window.scrollTo({top:0, behavior:'smooth'});
-    });
-
-    function render() {
-      const q = QUESTIONS[idx];
-      idxEl.textContent = (idx+1).toString();
-
-      stemEl.innerHTML = q.stem;
-      choicesEl.innerHTML = "";
-      q.choices.forEach((c,i)=>{
-        const id = `q${idx}_c${i}`;
-        const lab = document.createElement("label");
-        lab.className = "choice";
-        lab.setAttribute("for", id);
-
-        const inp = document.createElement("input");
-        inp.type = "radio";
-        inp.name = `q${idx}`;
-        inp.id = id;
-        inp.value = i;
-        if (answers[idx] === i) inp.checked = true;
-
-        inp.addEventListener("change", ()=>{
-          answers[idx] = i;
-        });
-
-        const txt = document.createElement("div");
-        txt.innerHTML = c;
-
-        lab.appendChild(inp);
-        lab.appendChild(txt);
-        choicesEl.appendChild(lab);
-      });
-
-      prevBtn.disabled = (idx===0);
-      nextBtn.disabled = (idx===total-1);
-
-      // typeset math after DOM update
-      if (window.MathJax?.typesetPromise) MathJax.typesetPromise([stemEl, choicesEl]);
-    }
-
-    function gradeNow() {
-      let correct = 0;
-      const items = QUESTIONS.map((q, i) => {
-        const ok = answers[i] === q.answer;
-        if (ok) correct++;
-        return { ...q, userIndex: answers[i], ok };
-      });
-
-      // Save attempt
-      const payload = {
-        answers,
-        correct,
-        total,
-        when: new Date().toISOString()
-      };
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
-      savedNote.style.display = "block";
-
-      // Build results UI
-      const pct = Math.round(100*correct/total);
-      scoreLine.textContent = `Score: ${correct} / ${total} (${pct}%)`;
-      reviewEl.innerHTML = "";
-      items.forEach((it, n)=>{
-        const wrap = document.createElement("div");
-        wrap.className = "q-review";
-        wrap.style.marginBottom = "14px";
-        wrap.innerHTML = `
-          <div style="display:flex;justify-content:space-between;align-items:center;gap:8px">
-            <div><strong>Q${n+1}.</strong> <span class="muted">ID: ${it.id}</span></div>
-            <span class="badge ${it.ok ? 'ok':'bad'}">${it.ok ? 'Correct':'Incorrect'}</span>
+    <!-- Review page (optional mid-test) -->
+    <section class="check-wrap" id="checkPage" aria-label="Check Your Work">
+      <h1 class="check-head">Check Your Work</h1>
+      <p class="check-sub">
+        On test day, you won’t be able to move on to the next module until time expires.
+      </p>
+      <div class="check-card">
+        <div class="check-row">
+          <div>Section 1, Module 1: Reading and Writing Questions</div>
+          <div class="check-leg">
+            <span>
+              <span class="box"
+                    style="width:16px;height:16px;border:2px dashed #2b3350;border-radius:4px;
+                           display:inline-block;margin-right:6px"></span>
+              Unanswered
+            </span>
+            <span>
+              <span class="flag"
+                    style="width:12px;height:12px;background:var(--flag);
+                           display:inline-block;margin-right:6px"></span>
+              For Review
+            </span>
           </div>
-          <div class="q-stem" style="margin-top:6px">${it.stem}</div>
-        `;
+        </div>
+        <div class="grid-nums" id="checkGrid"></div>
+      </div>
+    </section>
+  </div>
 
-        // choices review
-        const list = document.createElement("div");
-        list.className = "choices";
-        it.choices.forEach((txt, i)=>{
-          const row = document.createElement("div");
-          row.className = "choice" + (i===it.answer ? " correct" : (i===it.userIndex && i!==it.answer ? " incorrect" : ""));
-          row.innerHTML = `<div>${txt}</div>`;
-          list.appendChild(row);
-        });
+  <!-- Bottom rail -->
+  <div class="rail" role="contentinfo">
+    <div class="rail-inner">
+      <div class="progress" id="progress"></div>
+      <button class="center-pill" id="centerPill" aria-haspopup="dialog" aria-expanded="false">
+        <div class="pill-flag" id="pillFlag" style="display:none"></div>
+        <span id="pillText">Question 1 of 5</span><span class="caret">▾</span>
+      </button>
+      <div class="rail-left">
+        <button id="btnBack" class="btn nav">Back</button>
+      </div>
+      <div class="rail-actions">
+        <button id="btnNext" class="btn nav primary">Next</button>
+        <button id="btnFinish" class="btn nav primary" style="display:none">End &amp; Score</button>
+      </div>
+    </div>
+  </div>
 
-        wrap.appendChild(list);
-        reviewEl.appendChild(wrap);
-      });
+  <!-- Review popover -->
+  <div class="popover" id="popover" role="dialog" aria-modal="false"
+       aria-label="Question Navigator">
+    <button class="close" id="popClose" aria-label="Close">×</button>
+    <div class="title">Section 1, Module 1: Reading and Writing Questions</div>
+    <div class="legend">
+      <span>📍 Current</span>
+      <span><span class="box"></span> Unanswered</span>
+      <span><span class="flag"></span> For Review</span>
+    </div>
+    <div class="grid" id="popGrid"></div>
+    <button class="go-review" id="goReview">Go to Review Page</button>
+  </div>
 
-      quizCard.style.display = "none";
-      resultsCard.style.display = "block";
-
-      // typeset math in results
-      if (window.MathJax?.typesetPromise) MathJax.typesetPromise([resultsCard]);
-      window.scrollTo({top:0, behavior:'smooth'});
+<script>
+/* ===================== Exam Data ===================== */
+const exam = {
+  storageKey: 'dsa-linear-eq1-bluebook-v1',
+  summaryKey: 'dsa-linear-eq1-summary-v1',
+  sectionTitle: 'Section 1, Module 1: Math — Linear Equations in One Variable (Practice)',
+  timeLimitSec: 30 * 60,
+  questions: [
+    {
+      id: '26fac581',
+      prompt: 'If \\(2(x-5)+3(x-5)=10\\), what is the value of \\(x-5\\)?',
+      choices: ['2','5','7','12'],
+      answerIndex: 0,
+      explanation: 'Combine like terms: (2+3)(x−5)=10 → 5(x−5)=10 → x−5=2.'
+    },
+    {
+      id: '48bad848',
+      prompt: 'Megan’s regular wage at her job is \\(p\\) dollars per hour for the first 8 hours of work in a day plus 1.5 times her regular hourly wage for work in excess of 8 hours that day. On a given day, Megan worked for 10 hours, and her total earnings for that day were \\(\\$137.50\\). What is Megan’s regular hourly wage?',
+      choices: ['\\$11.75','\\$12.50','\\$13.25','\\$13.75'],
+      answerIndex: 1,
+      explanation: 'Pay: \\(8p + 1.5p\\cdot 2 = 137.5\\) → \\(11p=137.5\\) → \\(p=12.5\\).'
+    },
+    {
+      id: 'f0581e16',
+      prompt: 'Gas is \\(\\$4\\)/gal and the car averages 25 mpg. Alan wants to reduce weekly gas spending by \\(\\$5\\). Let \\(m\\) be miles fewer per week. Which equation is correct?',
+      choices: [
+        '\\(\\tfrac{25}{4}m=95\\)',
+        '\\(\\tfrac{25}{4}m=5\\)',
+        '\\(\\tfrac{4}{25}m=95\\)',
+        '\\(\\tfrac{4}{25}m=5\\)'
+      ],
+      answerIndex: 3,
+      explanation: 'Each mile costs \\(4/25\\) dollars; to save 5 dollars: \\((4/25)m = 5\\).'
+    },
+    {
+      id: '6e706172',
+      prompt: 'A product costs \\(\\$65\\) to make and sells for \\(\\$100\\). The salesperson earns a commission equal to 20% of the sales price. Profit per unit equals price minus the combined cost of making the product and the commission. Which equation gives the number of units, \\(u\\), the company sold to make a profit of \\(\\$6{,}840\\)?',
+      choices: [
+        '\\((100(1-0.2)-65)u=6840\\)',
+        '\\((100-65)(1-0.2)u=6840\\)',
+        '\\(0.8(100)-65u=6840\\)',
+        '\\((0.2(100)+65)u=6840\\)'
+      ],
+      answerIndex: 0,
+      explanation: 'Profit per unit: \\(100 - 0.2\\cdot100 -65 = 100(1-0.2)-65\\); multiply by \\(u\\).'
+    },
+    {
+      id: '509cb1a6',
+      prompt: '\\(4x+12=\\dfrac{a(x+3)}{2}\\). If the equation has infinitely many solutions, what is the value of \\(a\\)?',
+      choices: ['0','3','8','12'],
+      answerIndex: 2,
+      explanation:
+        'Multiply both sides by 2: \\(8x+24 = a(x+3) = ax+3a\\). Matching coefficients: \\(a=8\\).'
     }
+  ]
+};
 
-    function renderLastAttempt(saved){
-      const box = document.getElementById("lastAttempt");
-      const pct = Math.round(100*saved.correct/saved.total);
-      const dt = new Date(saved.when);
-      box.textContent = `Last attempt: ${saved.correct}/${saved.total} (${pct}%) on ${dt.toLocaleString()}`;
-      box.style.display = "block";
+/* ===================== State ===================== */
+const state = {
+  index: 0,
+  answers: {},
+  flags: {},
+  elims: {},
+  eliminateMode: false,
+  remaining: exam.timeLimitSec,
+  timerId: null,
+  timerHidden: false,
+  finished: false,
+  reviewMode: false
+};
+
+/* ===================== DOM ===================== */
+const el = {
+  sectionTitle: document.getElementById('sectionTitle'),
+  timeLeft: document.getElementById('timeLeft'),
+  toggleTimer: document.getElementById('toggleTimer'),
+  qbadge: document.getElementById('qbadge'),
+  qtitle: document.getElementById('qtitle'),
+  choices: document.getElementById('choices'),
+  flagTop: document.getElementById('flagTop'),
+  flagLabel: document.getElementById('flagLabel'),
+  elimToggle: document.getElementById('elimToggle'),
+  elimHint: document.getElementById('elimHint'),
+
+  back: document.getElementById('btnBack'),
+  next: document.getElementById('btnNext'),
+  finish: document.getElementById('btnFinish'),
+
+  progress: document.getElementById('progress'),
+  pill: document.getElementById('centerPill'),
+  pillText: document.getElementById('pillText'),
+  pillFlag: document.getElementById('pillFlag'),
+
+  pop: document.getElementById('popover'),
+  popGrid: document.getElementById('popGrid'),
+  popClose: document.getElementById('popClose'),
+  goReview: document.getElementById('goReview'),
+
+  checkPage: document.getElementById('checkPage'),
+  checkGrid: document.getElementById('checkGrid'),
+
+  dashrow: document.getElementById('dashrow'),
+  qcard: document.getElementById('qcard')
+};
+
+/* ===================== Static rows ===================== */
+(function buildTicks(){
+  for(let i=0;i<54;i++){
+    const d=document.createElement('div');
+    d.className='dash';
+    el.dashrow.appendChild(d);
+  }
+})();
+(function buildProgress(){
+  const seg = Math.max(24, exam.questions.length * 2);
+  el.progress.style.setProperty('--seg', seg);
+  el.progress.innerHTML='';
+  for(let i=0;i<seg;i++){
+    const s=document.createElement('div');
+    s.className='seg';
+    el.progress.appendChild(s);
+  }
+})();
+
+/* ===================== Storage ===================== */
+function loadSaved(){
+  try{
+    const data = JSON.parse(localStorage.getItem(exam.storageKey)||'null');
+    if(!data) return;
+    Object.assign(state.answers, data.answers||{});
+    Object.assign(state.flags, data.flags||{});
+    if (data.elims) {
+      Object.keys(data.elims).forEach(q=> state.elims[q] = new Set(data.elims[q]));
     }
-  </script>
+    if (typeof data.remaining==='number') state.remaining = data.remaining;
+    if (typeof data.index==='number')
+      state.index = clamp(data.index, 0, exam.questions.length-1);
+  }catch(e){}
+}
+function save(){
+  const elimsObj = {};
+  Object.keys(state.elims).forEach(q=>{ elimsObj[q] = Array.from(state.elims[q]||[]); });
+  localStorage.setItem(exam.storageKey, JSON.stringify({
+    answers: state.answers,
+    flags: state.flags,
+    elims: elimsObj,
+    remaining: state.remaining,
+    index: state.index
+  }));
+}
+
+/* For now: always reset this practice on load */
+function resetPractice() {
+  try { localStorage.removeItem(exam.storageKey); } catch(e){}
+  state.index = 0;
+  state.answers = {};
+  state.flags = {};
+  state.elims = {};
+  state.eliminateMode = false;
+  state.remaining = exam.timeLimitSec;
+  state.finished = false;
+  state.reviewMode = false;
+}
+
+/* ===================== Timer ===================== */
+function startTimer(){
+  if(state.timerId || state.finished) return;
+  tick();
+  state.timerId=setInterval(tick,1000);
+}
+function tick(){
+  if (state.remaining<=0) return finishExam();
+  state.remaining--;
+  const m=String(Math.floor(state.remaining/60)).padStart(2,'0');
+  const s=String(state.remaining%60).padStart(2,'0');
+  if(!state.timerHidden) el.timeLeft.textContent=`${m}:${s}`;
+  save();
+  if(state.remaining<=0) finishExam();
+}
+el.toggleTimer.addEventListener('click', ()=>{
+  state.timerHidden=!state.timerHidden;
+  el.toggleTimer.textContent = state.timerHidden ? 'Show' : 'Hide';
+  el.timeLeft.style.visibility = state.timerHidden ? 'hidden' : 'visible';
+});
+
+/* ===================== Renderers ===================== */
+function clamp(n,min,max){ return Math.max(min, Math.min(max, n)); }
+
+function render(){
+  el.sectionTitle.textContent = exam.sectionTitle;
+  renderQuestion();
+  renderProgress();
+  buildPopGrid();
+  buildCheckGrid();
+  updateNavs();
+  updateFlagVisuals();
+  updatePillFlag();
+  const m=String(Math.floor(state.remaining/60)).padStart(2,'0');
+  const s=String(state.remaining%60).padStart(2,'0');
+  el.timeLeft.textContent=`${m}:${s}`;
+}
+
+function renderQuestion(){
+  const q = exam.questions[state.index];
+
+  // top meta
+  el.qbadge.textContent = state.index + 1;
+  el.qtitle.innerHTML = q.prompt;  // allow TeX / MathJax
+
+  // choices
+  const letter = i => String.fromCharCode(65+i);
+  const elimSet = state.elims[q.id] || new Set();
+  el.choices.innerHTML = q.choices.map((t,i)=>{
+    const id=`${q.id}_c${i}`;
+    const checked = state.answers[q.id]===i ? 'checked':'';
+    const elimClass = elimSet.has(i) ? 'eliminated' : '';
+    return `
+      <label class="choice ${elimClass}" data-choice="${i}" for="${id}">
+        <input id="${id}" type="radio" name="${q.id}" value="${i}" ${checked} />
+        <div class="text"><b>${letter(i)}.</b> ${t}</div>
+        <div class="letter">${letter(i)}</div>
+      </label>
+    `;
+  }).join('');
+
+  // attach handlers
+  el.choices.querySelectorAll('.choice').forEach(choice=>{
+    const idx = Number(choice.dataset.choice);
+    const input = choice.querySelector('input');
+    choice.addEventListener('click', (ev)=>{
+      if (!state.eliminateMode) return;
+      if (ev.target.tagName.toLowerCase()==='input') return;
+      ev.preventDefault();
+      toggleElimination(q.id, idx);
+      choice.classList.toggle('eliminated');
+      save();
+    });
+    input.addEventListener('change', ()=>{
+      state.answers[q.id] = idx;
+      save();
+      renderProgress();
+      buildPopGrid();
+      buildCheckGrid();
+    });
+  });
+
+  // flag & eliminate controls
+  const flagged = !!state.flags[q.id];
+  el.flagTop.classList.toggle('on', flagged);
+  el.flagTop.setAttribute('aria-pressed', String(flagged));
+  el.flagLabel.textContent = flagged ? 'For review' : 'Mark for review';
+
+  el.elimToggle.classList.toggle('on', state.eliminateMode);
+  el.elimToggle.setAttribute('aria-pressed', String(state.eliminateMode));
+  el.elimHint.style.display = state.eliminateMode ? 'block' : 'none';
+
+  // typeset math for current card
+  if (window.MathJax && MathJax.typesetPromise) {
+    MathJax.typesetPromise([el.qcard]);
+  }
+}
+
+function toggleElimination(qid, idx){
+  if (!state.elims[qid]) state.elims[qid] = new Set();
+  const s = state.elims[qid];
+  if (s.has(idx)) s.delete(idx); else s.add(idx);
+}
+
+function renderProgress(){
+  const segs = el.progress.children.length;
+  const active = Math.ceil(((state.index+1)/exam.questions.length)*segs);
+  for(let i=0;i<segs;i++){
+    el.progress.children[i].classList.toggle('active', i<active);
+  }
+  el.pillText.textContent =
+    `Question ${state.index+1} of ${exam.questions.length}`;
+}
+
+function updatePillFlag(){
+  const q = exam.questions[state.index];
+  const flagged = !!state.flags[q.id];
+  el.pillFlag.style.display = flagged ? 'block' : 'none';
+}
+function updateFlagVisuals(){
+  const q = exam.questions[state.index];
+  const flagged = !!state.flags[q.id];
+  el.flagTop.classList.toggle('on', flagged);
+  el.flagTop.setAttribute('aria-pressed', String(flagged));
+  el.flagLabel.textContent = flagged ? 'For review' : 'Mark for review';
+}
+
+/* ---------- Review popover & page grids ---------- */
+function buildPopGrid(){
+  el.popGrid.innerHTML='';
+  exam.questions.forEach((q,i)=>{
+    const b=document.createElement('button');
+    b.className='nbtn';
+    b.textContent = String(i+1);
+    const answered = typeof state.answers[q.id]==='number';
+    const flagged  = !!state.flags[q.id];
+    if (i===state.index){
+      b.classList.add('current');
+      const pin=document.createElement('span');
+      pin.className='pin';
+      pin.textContent='📍';
+      b.appendChild(pin);
+    }
+    if (answered) b.classList.add('answered');
+    if (flagged)  b.classList.add('review');
+    b.addEventListener('click', ()=>{
+      state.index=i;
+      state.reviewMode=false;
+      closePopover();
+      render();
+    });
+    el.popGrid.appendChild(b);
+  });
+}
+function buildCheckGrid(){
+  el.checkGrid.innerHTML='';
+  exam.questions.forEach((q,i)=>{
+    const b=document.createElement('button');
+    b.className='nbtn';
+    b.textContent = String(i+1);
+    const answered = typeof state.answers[q.id]==='number';
+    const flagged  = !!state.flags[q.id];
+    if (answered) b.classList.add('answered');
+    if (flagged)  b.classList.add('review');
+    b.addEventListener('click', ()=>{
+      state.index=i;
+      state.reviewMode=false;
+      render();
+      scrollTo(0,0);
+    });
+    el.checkGrid.appendChild(b);
+  });
+}
+
+/* ===================== Actions ===================== */
+function updateNavs(){
+  const last = state.index===exam.questions.length-1 && !state.reviewMode;
+  el.next.style.display = last ? 'none':'inline-block';
+  el.finish.style.display = last ? 'inline-block':'none';
+}
+function go(delta){
+  if (state.reviewMode){
+    state.reviewMode=false;
+    render();
+    return;
+  }
+  const k = clamp(state.index + delta, 0, exam.questions.length-1);
+  if (k===state.index) return;
+  state.index = k;
+  save();
+  render();
+}
+function toggleFlag(){
+  if (state.reviewMode){ return; }
+  const q=exam.questions[state.index];
+  state.flags[q.id]=!state.flags[q.id];
+  save();
+  updateFlagVisuals();
+  updatePillFlag();
+  buildPopGrid();
+  buildCheckGrid();
+}
+
+/* Eliminate toggle */
+el.elimToggle.addEventListener('click', ()=>{
+  state.eliminateMode = !state.eliminateMode;
+  el.elimToggle.classList.toggle('on', state.eliminateMode);
+  el.elimToggle.setAttribute('aria-pressed', String(state.eliminateMode));
+  el.elimHint.style.display = state.eliminateMode ? 'block' : 'none';
+});
+
+/* Finish: save payload for summary page, then redirect */
+function finishExam(){
+  if(state.finished) return;
+  state.finished=true;
+  clearInterval(state.timerId);
+  closePopover();
+
+  const items = exam.questions.map((q,i)=>{
+    const chosen = (typeof state.answers[q.id] === 'number') ? state.answers[q.id] : null;
+    return {
+      number: i+1,
+      id: q.id,
+      prompt: q.prompt,
+      choices: q.choices,
+      correctIndex: q.answerIndex,
+      chosenIndex: chosen,
+      correct: chosen === q.answerIndex,
+      explanation: q.explanation || ''
+    };
+  });
+
+  const totals = {
+    answered: items.filter(it => it.chosenIndex !== null).length,
+    correct: items.filter(it => it.correct).length,
+    total: items.length,
+    timeSpentSec: exam.timeLimitSec - state.remaining
+  };
+
+  const summary = {
+    title: exam.sectionTitle,
+    generatedAt: new Date().toISOString(),
+    totals,
+    items
+  };
+
+  try{ localStorage.setItem(exam.summaryKey, JSON.stringify(summary)); }catch(e){}
+  // TODO: create this summary page next
+  location.href = 'linear-equations-one-variable-summary.html';
+}
+
+/* Popover */
+const pill = document.getElementById('centerPill');
+function openPopover(){ el.pop.style.display='block'; pill.setAttribute('aria-expanded','true'); }
+function closePopover(){ el.pop.style.display='none'; pill.setAttribute('aria-expanded','false'); }
+pill.addEventListener('click', ()=>{
+  if (el.pop.style.display==='block') closePopover();
+  else openPopover();
+});
+document.getElementById('popClose').addEventListener('click', closePopover);
+el.goReview.addEventListener('click', ()=>{
+  state.reviewMode=true;
+  closePopover();
+  render();
+});
+
+/* Close popover when clicking outside */
+document.addEventListener('click', (e)=>{
+  const inside = e.target===pill || pill.contains(e.target) ||
+                 e.target===el.pop || el.pop.contains(e.target);
+  if (!inside) closePopover();
+});
+
+/* Nav buttons */
+document.getElementById('btnBack').addEventListener('click', ()=>go(-1));
+document.getElementById('btnNext').addEventListener('click', ()=>go(1));
+document.getElementById('btnFinish').addEventListener('click', finishExam);
+
+/* ===================== Init ===================== */
+(function init(){
+  resetPractice();     // or call loadSaved() instead if you want persistence
+  render();
+  startTimer();
+})();
+</script>
 </body>
 </html>
