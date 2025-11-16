@@ -1,0 +1,20 @@
+{
+  "title": "Circles",
+  "timeLimitSec": 1800,
+  "questions": [
+    {
+      "id": "q1",
+      "prompt": "A circle has radius 5 cm. What is its circumference?",
+      "choices": ["10π cm", "25π cm", "5π cm", "50π cm"],
+      "answerIndex": 0,
+      "explanation": "Use C = 2πr → 10π cm"
+    },
+    {
+      "id": "q2",
+      "prompt": "If a circle’s area is 49π, what is its radius?",
+      "choices": ["3", "7", "14", "24.5"],
+      "answerIndex": 1,
+      "explanation": "Area = πr² → r = 7"
+    }
+  ]
+}
