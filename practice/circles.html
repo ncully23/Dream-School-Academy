@@ -9,6 +9,43 @@
   <link rel="stylesheet" href="/assets/quiz.css">
 </head>
 
+<script>
+window.examConfig = {
+  title: "Section 1, Module 1: Math — Circles (Practice)",
+  timeLimitSec: 30 * 60,
+  storageKey: "dsa-circles-v1",
+  summaryKey: "dsa-circles-summary-v1",
+  questions: [
+    {
+      id: "q1",
+      prompt: "A circle has radius 5 cm. What is its circumference?",
+      choices: ["10π cm", "25π cm", "5π cm", "50π cm"],
+      answerIndex: 0,
+      explanation: "Use C = 2πr. With r = 5, C = 10π."
+    },
+    {
+      id: "q2",
+      prompt: "If a circle’s area is 49π, what is its radius?",
+      choices: ["3", "7", "14", "24.5"],
+      answerIndex: 1,
+      explanation: "Area A = πr² → r = 7."
+    },
+    {
+      id: "q3",
+      prompt: "A circle passes through (0,0) and (0,6) with center at (0,3). What is its equation?",
+      choices: [
+        "(x − 0)² + (y − 3)² = 9",
+        "(x − 3)² + (y − 0)² = 9",
+        "(x − 3)² + (y − 3)² = 6",
+        "(x − 0)² + (y − 6)² = 3"
+      ],
+      answerIndex: 0,
+      explanation: "Center (0,3), radius 3 → equation (x−0)² + (y−3)² = 9."
+    }
+  ]
+};
+</script>
+<script src="/assets/js/quiz-engine.js" defer></script>
 <body>
 
   <!-- The quiz engine will inject the entire Bluebook interface here -->
