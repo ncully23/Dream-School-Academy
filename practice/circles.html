@@ -5,9 +5,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Section 1, Module 1: Math — Circles (Practice)</title>
 <style>
+  /* === your existing CSS, unchanged === */
   :root{
-    --bb-bg:#eef2fb;            /* page bg */
-    --bb-rail:#e7edf9;          /* bottom rail */
+    --bb-bg:#eef2fb;
+    --bb-rail:#e7edf9;
     --bb-surface:#fff;
     --bb-ink:#111827;
     --bb-muted:#4b5563;
@@ -26,7 +27,6 @@
   }
   .app{max-width:1280px;margin:0 auto;padding:12px 16px 120px}
 
-  /* HEADER — timer centered */
   .header{
     display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:16px;
     background:var(--bb-surface);border:1px solid var(--bb-line);
@@ -41,7 +41,6 @@
   .btn.primary:hover{background:var(--bb-blue-dark);border-color:var(--bb-blue-dark)}
   .btn.ghost{background:#fff}
 
-  /* PRACTICE banner + ticks */
   .ticks{
     margin:8px 2px 0; background:#0d1a5a; color:#fff; border-radius:10px; 
     height:22px; display:flex; align-items:center; justify-content:center;
@@ -50,7 +49,6 @@
   .dashrow{display:grid;grid-template-columns:repeat(54,1fr);gap:3px;margin:6px 4px}
   .dash{height:5px;border-radius:2px;background:#000;opacity:.95}
 
-  /* ----- ONE-COLUMN QUESTION CARD ----- */
   .qwrap{ margin-top:10px;display:flex;justify-content:center; }
   .qcard{
     width:min(980px, 96vw);
@@ -58,7 +56,6 @@
     padding:16px;
   }
 
-  /* Top row: number, dashed rule, actions */
   .qtop{ display:grid;grid-template-columns:auto 1fr auto auto;align-items:center;gap:10px }
   .qbadge{
     width:34px;height:34px;background:#000;color:#fff;display:grid;place-items:center;border-radius:6px;font-weight:800
@@ -83,7 +80,6 @@
   .elimicon::after{ content:"";position:absolute;left:2px;right:2px;top:9px;height:2px;background:#1f2a44;transform:rotate(-20deg) }
   .elimbtn.on{border-color:#1f2a44;background:#f1f4ff}
 
-  /* Question body */
   .qtitle{margin:14px 0 10px;font-size:20px;font-weight:800}
   .choices{display:grid;gap:12px;margin-top:8px}
   .choice{
@@ -94,7 +90,6 @@
   .letter{
     margin-left:auto;width:32px;height:32px;border-radius:50%;border:2px solid #b7c1dd;display:grid;place-items:center;color:#1f2a44;font-weight:700;
   }
-  /* Eliminated styling */
   .choice.eliminated{opacity:.4}
   .choice.eliminated .text{ text-decoration:line-through 2px }
   .choice.eliminated .letter{ position:relative }
@@ -103,7 +98,6 @@
   }
   .hint{color:var(--bb-muted);font-size:14px;margin-top:4px}
 
-  /* BOTTOM RAIL */
   .rail{
     position:fixed;left:0;right:0;bottom:0;background:var(--bb-rail);border-top:1px solid var(--bb-line);
     padding:12px 0; z-index:6;
@@ -122,7 +116,6 @@
   .rail-left{position:absolute;left:16px;bottom:4px;display:flex;gap:10px;align-items:center;}
   .btn.nav{min-width:78px}
 
-  /* REVIEW POPOVER */
   .popover{
     position:fixed;left:50%;bottom:84px;transform:translateX(-50%);
     background:#fff;border:1px solid var(--bb-line);border-radius:12px;box-shadow:0 10px 30px rgba(0,0,0,.18);
@@ -142,7 +135,6 @@
   .nbtn.answered{border-style:solid;border-color:#5b74d5}
   .nbtn.review{background:var(--flag-soft);border-color:var(--flag);border-style:solid}
 
-  /* REVIEW PAGE */
   .check-wrap{display:none;margin-top:18px}
   .check-head{font-size:28px;font-weight:800;text-align:center;margin:8px 0 6px}
   .check-sub{color:var(--bb-muted);text-align:center;margin-bottom:12px}
@@ -240,432 +232,63 @@
     <button class="go-review" id="goReview">Go to Review Page</button>
   </div>
 
-<script>
-/* ===================== Exam Data ===================== */
-const exam = {
-  storageKey: 'dsa-circles-bluebook-v7',
-  summaryKey: 'dsa-circles-summary-v1', // where we store for the summary page
-  sectionTitle: 'Section 1, Module 1: Math — Circles (Practice)',
-  timeLimitSec: 30 * 60,
-  questions: [
-    { id:'q1',
-      prompt:'A circle has radius 5 cm. What is its circumference?',
-      choices:['10π cm','25π cm','5π cm','50π cm'],
-      answerIndex:0,
-      explanation:'Use C = 2πr. With r = 5, C = 2·π·5 = 10π cm.' },
-    { id:'q2',
-      prompt:'If a circle’s area is 49π, what is its radius?',
-      choices:['3','7','14','24.5'],
-      answerIndex:1,
-      explanation:'Area A = πr². If A = 49π, then r² = 49 and r = 7.' },
-    { id:'q3',
-      prompt:'A circle passes through (0,0) and (0,6) with center at (0,3). What is its equation?',
-      choices:['(x − 0)² + (y − 3)² = 9','(x − 3)² + (y − 0)² = 9','(x − 3)² + (y − 3)² = 6','(x − 0)² + (y − 6)² = 3'],
-      answerIndex:0,
-      explanation:'Center (0,3); radius is the distance to (0,0): √[(0−0)²+(0−3)²] = 3. Equation: (x−0)² + (y−3)² = 3² = 9.' },
-    { id:'q4',
-      prompt:'For r = 10 and θ = π/3, what is the arc length s?',
-      choices:['10π/3','20π/3','30π','10','π/3'],
-      answerIndex:0,
-      explanation:'Arc length s = rθ (θ in radians). So s = 10·(π/3) = 10π/3.' },
-    { id:'q5',
-      prompt:'Sector area for r = 6 and θ = π/2 is',
-      choices:['9π','18π','36π','3π'],
-      answerIndex:1,
-      explanation:'Sector area = (1/2) r² θ = (1/2)·36·(π/2) = 18π.' },
-    { id:'q6',
-      prompt:'If the diameter is 18, the area is',
-      choices:['81π','36π','18π','9π'],
-      answerIndex:0,
-      explanation:'Diameter 18 ⇒ r = 9. Area = πr² = π·81 = 81π.' }
-  ]
-};
-
-/* ===================== State ===================== */
-const state = {
-  index: 0,
-  answers: {},        // { qid: choiceIndex }
-  flags: {},          // { qid: true }
-  elims: {},          // { qid: Set([choiceIndex,...]) }
-  eliminateMode: false,
-  remaining: exam.timeLimitSec,
-  timerId: null,
-  timerHidden: false,
-  finished: false,
-  reviewMode: false
-};
-
-/* ===================== DOM ===================== */
-const el = {
-  sectionTitle: document.getElementById('sectionTitle'),
-  timeLeft: document.getElementById('timeLeft'),
-  toggleTimer: document.getElementById('toggleTimer'),
-  qbadge: document.getElementById('qbadge'),
-  qtitle: document.getElementById('qtitle'),
-  choices: document.getElementById('choices'),
-  flagTop: document.getElementById('flagTop'),
-  flagLabel: document.getElementById('flagLabel'),
-  elimToggle: document.getElementById('elimToggle'),
-  elimHint: document.getElementById('elimHint'),
-
-  back: document.getElementById('btnBack'),
-  next: document.getElementById('btnNext'),
-  finish: document.getElementById('btnFinish'),
-
-  progress: document.getElementById('progress'),
-  pill: document.getElementById('centerPill'),
-  pillText: document.getElementById('pillText'),
-  pillFlag: document.getElementById('pillFlag'),
-
-  pop: document.getElementById('popover'),
-  popGrid: document.getElementById('popGrid'),
-  popClose: document.getElementById('popClose'),
-  goReview: document.getElementById('goReview'),
-
-  checkPage: document.getElementById('checkPage'),
-  checkGrid: document.getElementById('checkGrid'),
-
-  dashrow: document.getElementById('dashrow')
-};
-
-/* ===================== Static rows ===================== */
-(function buildTicks(){
-  for(let i=0;i<54;i++){
-    const d=document.createElement('div');
-    d.className='dash';
-    el.dashrow.appendChild(d);
-  }
-})();
-(function buildProgress(){
-  const seg = Math.max(24, exam.questions.length * 2);
-  el.progress.style.setProperty('--seg', seg);
-  el.progress.innerHTML='';
-  for(let i=0;i<seg;i++){
-    const s=document.createElement('div');
-    s.className='seg';
-    el.progress.appendChild(s);
-  }
-})();
-
-/* ===================== Storage (resume functions kept for reference) ===================== */
-function loadSaved(){
-  try{
-    const data = JSON.parse(localStorage.getItem(exam.storageKey)||'null');
-    if(!data) return;
-    Object.assign(state.answers, data.answers||{});
-    Object.assign(state.flags, data.flags||{});
-    if (data.elims) {
-      Object.keys(data.elims).forEach(q=> state.elims[q] = new Set(data.elims[q]));
-    }
-    if (typeof data.remaining==='number') state.remaining = data.remaining;
-    if (typeof data.index==='number') state.index = clamp(data.index, 0, exam.questions.length-1);
-  }catch(e){}
-}
-function save(){
-  const elimsObj = {};
-  Object.keys(state.elims).forEach(q=>{ elimsObj[q] = Array.from(state.elims[q]||[]); });
-  localStorage.setItem(exam.storageKey, JSON.stringify({
-    answers: state.answers,
-    flags: state.flags,
-    elims: elimsObj,
-    remaining: state.remaining,
-    index: state.index
-  }));
-}
-
-/* ====== Option A: ALWAYS RESET ON PAGE LOAD ====== */
-function resetPractice() {
-  try { localStorage.removeItem(exam.storageKey); } catch(e){}
-  state.index = 0;
-  state.answers = {};
-  state.flags = {};
-  state.elims = {};
-  state.eliminateMode = false;
-  state.remaining = exam.timeLimitSec; // reset clock
-  state.finished = false;
-  state.reviewMode = false;
-}
-
-/* ===================== Timer ===================== */
-function startTimer(){
-  if(state.timerId || state.finished) return;
-  tick();
-  state.timerId=setInterval(tick,1000);
-}
-function tick(){
-  if (state.remaining<=0) return finishExam();
-  state.remaining--;
-  const m=String(Math.floor(state.remaining/60)).padStart(2,'0');
-  const s=String(state.remaining%60).padStart(2,'0');
-  if(!state.timerHidden) el.timeLeft.textContent=`${m}:${s}`;
-  save();
-  if(state.remaining<=0) finishExam();
-}
-el.toggleTimer.addEventListener('click', ()=>{
-  state.timerHidden=!state.timerHidden;
-  el.toggleTimer.textContent = state.timerHidden ? 'Show' : 'Hide';
-  el.timeLeft.style.visibility = state.timerHidden ? 'hidden' : 'visible';
-});
-
-/* ===================== Renderers ===================== */
-function clamp(n,min,max){ return Math.max(min, Math.min(max, n)); }
-
-function render(){
-  el.sectionTitle.textContent = exam.sectionTitle;
-  renderQuestion();
-  renderProgress();
-  buildPopGrid();
-  buildCheckGrid();
-  updateNavs();
-  updateFlagVisuals();
-  updatePillFlag();
-  const m=String(Math.floor(state.remaining/60)).padStart(2,'0');
-  const s=String(state.remaining%60).padStart(2,'0');
-  el.timeLeft.textContent=`${m}:${s}`;
-}
-
-function renderQuestion(){
-  const q = exam.questions[state.index];
-
-  // top meta
-  el.qbadge.textContent = state.index + 1;
-  el.qtitle.textContent = q.prompt;
-
-  // choices
-  const letter = i => String.fromCharCode(65+i);
-  const elimSet = state.elims[q.id] || new Set();
-  el.choices.innerHTML = q.choices.map((t,i)=>{
-    const id=`${q.id}_c${i}`;
-    const checked = state.answers[q.id]===i ? 'checked':'';
-    const elimClass = elimSet.has(i) ? 'eliminated' : '';
-    return `
-      <label class="choice ${elimClass}" data-choice="${i}" for="${id}">
-        <input id="${id}" type="radio" name="${q.id}" value="${i}" ${checked} />
-        <div class="text"><b>${letter(i)}.</b> ${t}</div>
-        <div class="letter">${letter(i)}</div>
-      </label>
-    `;
-  }).join('');
-
-  // handlers
-  el.choices.querySelectorAll('.choice').forEach(choice=>{
-    const idx = Number(choice.dataset.choice);
-    const input = choice.querySelector('input');
-    choice.addEventListener('click', (ev)=>{
-      if (!state.eliminateMode) return;
-      if (ev.target.tagName.toLowerCase()==='input') return;
-      ev.preventDefault();
-      toggleElimination(q.id, idx);
-      choice.classList.toggle('eliminated');
-      save();
-    });
-    input.addEventListener('change', ()=>{
-      state.answers[q.id] = idx;
-      save();
-      renderProgress();
-      buildPopGrid();
-      buildCheckGrid();
-    });
-  });
-
-  // flag & eliminate controls
-  const flagged = !!state.flags[q.id];
-  el.flagTop.classList.toggle('on', flagged);
-  el.flagTop.setAttribute('aria-pressed', String(flagged));
-  el.flagLabel.textContent = flagged ? 'For review' : 'Mark for review';
-
-  el.elimToggle.classList.toggle('on', state.eliminateMode);
-  el.elimToggle.setAttribute('aria-pressed', String(state.eliminateMode));
-  el.elimHint.style.display = state.eliminateMode ? 'block' : 'none';
-}
-
-function toggleElimination(qid, idx){
-  if (!state.elims[qid]) state.elims[qid] = new Set();
-  const s = state.elims[qid];
-  if (s.has(idx)) s.delete(idx); else s.add(idx);
-}
-
-function renderProgress(){
-  const segs = el.progress.children.length;
-  const active = Math.ceil(((state.index+1)/exam.questions.length)*segs);
-  for(let i=0;i<segs;i++){
-    el.progress.children[i].classList.toggle('active', i<active);
-  }
-  el.pillText.textContent = `Question ${state.index+1} of ${exam.questions.length}`;
-}
-
-function updatePillFlag(){
-  const q = exam.questions[state.index];
-  const flagged = !!state.flags[q.id];
-  el.pillFlag.style.display = flagged ? 'block' : 'none';
-}
-function updateFlagVisuals(){
-  const q = exam.questions[state.index];
-  const flagged = !!state.flags[q.id];
-  el.flagTop.classList.toggle('on', flagged);
-  el.flagTop.setAttribute('aria-pressed', String(flagged));
-  el.flagLabel.textContent = flagged ? 'For review' : 'Mark for review';
-}
-
-/* ---------- Review popover & page grids ---------- */
-function buildPopGrid(){
-  el.popGrid.innerHTML='';
-  exam.questions.forEach((q,i)=>{
-    const b=document.createElement('button');
-    b.className='nbtn';
-    b.textContent = String(i+1);
-    const answered = typeof state.answers[q.id]==='number';
-    const flagged  = !!state.flags[q.id];
-    if (i===state.index){
-      b.classList.add('current');
-      const pin=document.createElement('span');
-      pin.className='pin';
-      pin.textContent='📍';
-      b.appendChild(pin);
-    }
-    if (answered) b.classList.add('answered');
-    if (flagged)  b.classList.add('review');
-    b.addEventListener('click', ()=>{
-      state.index=i;
-      state.reviewMode=false;
-      closePopover();
-      render();
-    });
-    el.popGrid.appendChild(b);
-  });
-}
-function buildCheckGrid(){
-  el.checkGrid.innerHTML='';
-  exam.questions.forEach((q,i)=>{
-    const b=document.createElement('button');
-    b.className='nbtn';
-    b.textContent = String(i+1);
-    const answered = typeof state.answers[q.id]==='number';
-    const flagged  = !!state.flags[q.id];
-    if (answered) b.classList.add('answered');
-    if (flagged)  b.classList.add('review');
-    b.addEventListener('click', ()=>{
-      state.index=i;
-      state.reviewMode=false;
-      render();
-      scrollTo(0,0);
-    });
-    el.checkGrid.appendChild(b);
-  });
-}
-
-/* ===================== Actions ===================== */
-function updateNavs(){
-  const last = state.index===exam.questions.length-1 && !state.reviewMode;
-  el.next.style.display = last ? 'none':'inline-block';
-  el.finish.style.display = last ? 'inline-block':'none';
-}
-function go(delta){
-  if (state.reviewMode){
-    state.reviewMode=false;
-    render();
-    return;
-  }
-  const k = clamp(state.index + delta, 0, exam.questions.length-1);
-  if (k===state.index) return;
-  state.index = k;
-  save();
-  render();
-}
-function toggleFlag(){
-  if (state.reviewMode){ return; }
-  const q=exam.questions[state.index];
-  state.flags[q.id]=!state.flags[q.id];
-  save();
-  updateFlagVisuals();
-  updatePillFlag();
-  buildPopGrid();
-  buildCheckGrid();
-}
-
-/* Eliminate toggle */
-el.elimToggle.addEventListener('click', ()=>{
-  state.eliminateMode = !state.eliminateMode;
-  el.elimToggle.classList.toggle('on', state.eliminateMode);
-  el.elimToggle.setAttribute('aria-pressed', String(state.eliminateMode));
-  el.elimHint.style.display = state.eliminateMode ? 'block' : 'none';
-});
-
-/* Finish: save payload for summary page, then redirect */
-function finishExam(){
-  if(state.finished) return;
-  state.finished=true;
-  clearInterval(state.timerId);
-  closePopover();
-
-  // Build summary payload
-  const items = exam.questions.map((q,i)=>{
-    const chosen = (typeof state.answers[q.id] === 'number') ? state.answers[q.id] : null;
-    return {
-      number: i+1,
-      id: q.id,
-      prompt: q.prompt,
-      choices: q.choices,
-      correctIndex: q.answerIndex,
-      chosenIndex: chosen,
-      correct: chosen === q.answerIndex,
-      explanation: q.explanation || ''
+  <!-- Per-quiz config: THIS is all you change for new modules -->
+  <script>
+    window.examConfig = {
+      moduleId: 'circles-1',
+      storageKey: 'dsa-circles-bluebook-v7',
+      summaryKey: 'dsa-circles-summary-v1',
+      summaryUrl: 'circles-summary.html',
+      sectionTitle: 'Section 1, Module 1: Math — Circles (Practice)',
+      timeLimitSec: 30 * 60,
+      questions: [
+        {
+          id:'q1',
+          prompt:'A circle has radius 5 cm. What is its circumference?',
+          choices:['10π cm','25π cm','5π cm','50π cm'],
+          answerIndex:0,
+          explanation:'Use C = 2πr. With r = 5, C = 2·π·5 = 10π cm.'
+        },
+        {
+          id:'q2',
+          prompt:'If a circle’s area is 49π, what is its radius?',
+          choices:['3','7','14','24.5'],
+          answerIndex:1,
+          explanation:'Area A = πr². If A = 49π, then r² = 49 and r = 7.'
+        },
+        {
+          id:'q3',
+          prompt:'A circle passes through (0,0) and (0,6) with center at (0,3). What is its equation?',
+          choices:['(x − 0)² + (y − 3)² = 9','(x − 3)² + (y − 0)² = 9','(x − 3)² + (y − 3)² = 6','(x − 0)² + (y − 6)² = 3'],
+          answerIndex:0,
+          explanation:'Center (0,3); radius is the distance to (0,0): √[(0−0)²+(0−3)²] = 3. Equation: (x−0)² + (y−3)² = 3² = 9.'
+        },
+        {
+          id:'q4',
+          prompt:'For r = 10 and θ = π/3, what is the arc length s?',
+          choices:['10π/3','20π/3','30π','10','π/3'],
+          answerIndex:0,
+          explanation:'Arc length s = rθ (θ in radians). So s = 10·(π/3) = 10π/3.'
+        },
+        {
+          id:'q5',
+          prompt:'Sector area for r = 6 and θ = π/2 is',
+          choices:['9π','18π','36π','3π'],
+          answerIndex:1,
+          explanation:'Sector area = (1/2) r² θ = (1/2)·36·(π/2) = 18π.'
+        },
+        {
+          id:'q6',
+          prompt:'If the diameter is 18, the area is',
+          choices:['81π','36π','18π','9π'],
+          answerIndex:0,
+          explanation:'Diameter 18 ⇒ r = 9. Area = πr² = π·81 = 81π.'
+        }
+      ]
     };
-  });
+  </script>
 
-  const totals = {
-    answered: items.filter(it => it.chosenIndex !== null).length,
-    correct: items.filter(it => it.correct).length,
-    total: items.length,
-    timeSpentSec: exam.timeLimitSec - state.remaining
-  };
-
-  const summary = {
-    title: exam.sectionTitle,
-    generatedAt: new Date().toISOString(),
-    totals,
-    items
-  };
-
-  // Persist summary & navigate
-  try{ localStorage.setItem(exam.summaryKey, JSON.stringify(summary)); }catch(e){}
-  location.href = 'circles-summary.html';
-}
-
-/* Popover */
-const pill = document.getElementById('centerPill');
-function openPopover(){ el.pop.style.display='block'; pill.setAttribute('aria-expanded','true'); }
-function closePopover(){ el.pop.style.display='none'; pill.setAttribute('aria-expanded','false'); }
-pill.addEventListener('click', ()=>{
-  if (el.pop.style.display==='block') closePopover();
-  else openPopover();
-});
-document.getElementById('popClose').addEventListener('click', closePopover);
-el.goReview.addEventListener('click', ()=>{
-  state.reviewMode=true;
-  closePopover();
-  render();
-});
-
-/* Close popover when clicking outside */
-document.addEventListener('click', (e)=>{
-  const inside = e.target===pill || pill.contains(e.target) || e.target===el.pop || el.pop.contains(e.target);
-  if (!inside) closePopover();
-});
-
-/* Nav buttons */
-document.getElementById('btnBack').addEventListener('click', ()=>go(-1));
-document.getElementById('btnNext').addEventListener('click', ()=>go(1));
-document.getElementById('btnFinish').addEventListener('click', finishExam);
-
-/* ===================== Init ===================== */
-(function init(){
-  // OPTION A: Always start fresh on each load
-  resetPractice();
-
-  render();
-  startTimer();
-})();
-</script>
+  <!-- Shared engine -->
+  <script src="quiz-engine.js"></script>
 </body>
 </html>
