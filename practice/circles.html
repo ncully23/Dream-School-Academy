@@ -1,58 +1,90 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
+  <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Circles Practice – Dream School Academy</title>
 
   <!-- Universal Bluebook-style layout -->
-  <link rel="stylesheet" href="/assets/quiz.css">
+  <link rel="stylesheet" href="/assets/css/quiz.css" />
 </head>
 
-<script>
-window.examConfig = {
-  title: "Section 1, Module 1: Math — Circles (Practice)",
-  timeLimitSec: 30 * 60,
-  storageKey: "dsa-circles-v1",
-  summaryKey: "dsa-circles-summary-v1",
-  questions: [
-    {
-      id: "q1",
-      prompt: "A circle has radius 5 cm. What is its circumference?",
-      choices: ["10π cm", "25π cm", "5π cm", "50π cm"],
-      answerIndex: 0,
-      explanation: "Use C = 2πr. With r = 5, C = 10π."
-    },
-    {
-      id: "q2",
-      prompt: "If a circle’s area is 49π, what is its radius?",
-      choices: ["3", "7", "14", "24.5"],
-      answerIndex: 1,
-      explanation: "Area A = πr² → r = 7."
-    },
-    {
-      id: "q3",
-      prompt: "A circle passes through (0,0) and (0,6) with center at (0,3). What is its equation?",
-      choices: [
-        "(x − 0)² + (y − 3)² = 9",
-        "(x − 3)² + (y − 0)² = 9",
-        "(x − 3)² + (y − 3)² = 6",
-        "(x − 0)² + (y − 6)² = 3"
-      ],
-      answerIndex: 0,
-      explanation: "Center (0,3), radius 3 → equation (x−0)² + (y−3)² = 9."
-    }
-  ]
-};
-</script>
-<script src="/assets/js/quiz-engine.js" defer></script>
 <body>
 
-  <!-- The quiz engine will inject the entire Bluebook interface here -->
+  <!-- The quiz engine will inject the full interface here -->
   <div id="quiz-app"></div>
 
-  <!-- Load the universal quiz engine and tell it which quiz to load -->
-  <script src="/assets/js/quiz-engine.js" data-quiz="circles"></script>
+  <!-- ============================= -->
+  <!-- 1) DEFINE YOUR QUIZ CONFIG    -->
+  <!-- ============================= -->
+  <script>
+  window.examConfig = {
+    title: "Section 1, Module 1: Math — Circles (Practice)",
+    timeLimitSec: 30 * 60,              // 30 minutes
+    storageKey: "dsa-circles-v1",       // localStorage key
+    summaryKey: "dsa-circles-summary-v1",
+
+    questions: [
+      {
+        id: "q1",
+        prompt: "A circle has radius 5 cm. What is its circumference?",
+        choices: ["10π cm", "25π cm", "5π cm", "50π cm"],
+        answerIndex: 0,
+        explanation: "Use C = 2πr. With r = 5, C = 10π cm."
+      },
+
+      {
+        id: "q2",
+        prompt: "If a circle’s area is 49π, what is its radius?",
+        choices: ["3", "7", "14", "24.5"],
+        answerIndex: 1,
+        explanation: "Area A = πr² → r = 7."
+      },
+
+      {
+        id: "q3",
+        prompt: "A circle passes through (0,0) and (0,6) with center at (0,3). What is its equation?",
+        choices: [
+          "(x − 0)² + (y − 3)² = 9",
+          "(x − 3)² + (y − 0)² = 9",
+          "(x − 3)² + (y − 3)² = 6",
+          "(x − 0)² + (y − 6)² = 3"
+        ],
+        answerIndex: 0,
+        explanation: "Center (0,3), radius 3 → (x−0)² + (y−3)² = 9."
+      },
+
+      {
+        id: "q4",
+        prompt: "For r = 10 and θ = π/3, what is the arc length s?",
+        choices: ["10π/3", "20π/3", "30π", "10", "π/3"],
+        answerIndex: 0,
+        explanation: "Arc length s = rθ = 10 × (π/3) = 10π/3."
+      },
+
+      {
+        id: "q5",
+        prompt: "Sector area for r = 6 and θ = π/2 is",
+        choices: ["9π", "18π", "36π", "3π"],
+        answerIndex: 1,
+        explanation: "Sector area = ½ r² θ = ½ × 36 × (π/2) = 18π."
+      },
+
+      {
+        id: "q6",
+        prompt: "If the diameter is 18, the area is",
+        choices: ["81π", "36π", "18π", "9π"],
+        answerIndex: 0,
+        explanation: "Diameter 18 → r = 9 → Area = π × 9² = 81π."
+      }
+    ]
+  };
+  </script>
+
+  <!-- ============================= -->
+  <!-- 2) LOAD THE QUIZ ENGINE       -->
+  <!-- ============================= -->
+  <script src="/assets/js/quiz-engine.js" defer></script>
 
 </body>
 </html>
