@@ -5,7 +5,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Section 1, Module 1: Math — Circles (Practice)</title>
 <style>
-  /* === your existing CSS, unchanged === */
   :root{
     --bb-bg:#eef2fb;
     --bb-rail:#e7edf9;
@@ -42,7 +41,7 @@
   .btn.ghost{background:#fff}
 
   .ticks{
-    margin:8px 2px 0; background:#0d1a5a; color:#fff; border-radius:10px; 
+    margin:8px 2px 0; background:#0d1a5a; color:#fff; border-radius:10px;
     height:22px; display:flex; align-items:center; justify-content:center;
     font-size:12px; font-weight:800; letter-spacing:.6px; box-shadow:var(--shadow);
   }
@@ -77,14 +76,16 @@
   .elimicon{
     width:20px;height:20px;border:2px solid #1f2a44;border-radius:50%;position:relative;display:inline-block
   }
-  .elimicon::after{ content:"";position:absolute;left:2px;right:2px;top:9px;height:2px;background:#1f2a44;transform:rotate(-20deg) }
+  .elimicon::after{
+    content:"";position:absolute;left:2px;right:2px;top:9px;height:2px;background:#1f2a44;transform:rotate(-20deg)
+  }
   .elimbtn.on{border-color:#1f2a44;background:#f1f4ff}
 
   .qtitle{margin:14px 0 10px;font-size:20px;font-weight:800}
   .choices{display:grid;gap:12px;margin-top:8px}
   .choice{
-    display:flex;align-items:center;gap:10px;border:1px solid var(--bb-line);border-radius:10px;background:#f7f8fd; padding:12px 14px; position:relative;
-    transition:opacity .12s ease
+    display:flex;align-items:center;gap:10px;border:1px solid var(--bb-line);border-radius:10px;background:#f7f8fd;
+    padding:12px 14px; position:relative; transition:opacity .12s ease
   }
   .choice input{transform:scale(1.1)}
   .letter{
@@ -160,11 +161,9 @@
       <div aria-hidden="true"></div>
     </div>
 
-    <!-- Practice banner + ticks -->
     <div class="ticks">THIS IS A PRACTICE TEST</div>
     <div class="dashrow" id="dashrow"></div>
 
-    <!-- ONE-COLUMN QUESTION CARD -->
     <div class="qwrap">
       <article class="qcard" id="qcard">
         <header class="qtop">
@@ -180,11 +179,12 @@
 
         <h2 class="qtitle" id="qtitle">Question text</h2>
         <div class="choices" id="choices" role="radiogroup" aria-label="Choices"></div>
-        <div class="hint" id="elimHint" style="display:none">Eliminate mode is on — click an answer to gray it out. Click again to restore.</div>
+        <div class="hint" id="elimHint" style="display:none">
+          Eliminate mode is on — click an answer to gray it out. Click again to restore.
+        </div>
       </article>
     </div>
 
-    <!-- Review page (optional mid-test) -->
     <section class="check-wrap" id="checkPage" aria-label="Check Your Work">
       <h1 class="check-head">Check Your Work</h1>
       <p class="check-sub">On test day, you won’t be able to move on to the next module until time expires.</p>
@@ -201,7 +201,6 @@
     </section>
   </div>
 
-  <!-- Bottom rail -->
   <div class="rail" role="contentinfo">
     <div class="rail-inner">
       <div class="progress" id="progress"></div>
@@ -219,7 +218,6 @@
     </div>
   </div>
 
-  <!-- Review popover -->
   <div class="popover" id="popover" role="dialog" aria-modal="false" aria-label="Question Navigator">
     <button class="close" id="popClose" aria-label="Close">×</button>
     <div class="title">Section 1, Module 1: Reading and Writing Questions</div>
@@ -232,15 +230,14 @@
     <button class="go-review" id="goReview">Go to Review Page</button>
   </div>
 
-  <!-- Per-quiz config: THIS is all you change for new modules -->
+  <!-- QUIZ CONFIG (page-specific) -->
   <script>
     window.examConfig = {
-      moduleId: 'circles-1',
       storageKey: 'dsa-circles-bluebook-v7',
       summaryKey: 'dsa-circles-summary-v1',
-      summaryUrl: 'circles-summary.html',
       sectionTitle: 'Section 1, Module 1: Math — Circles (Practice)',
       timeLimitSec: 30 * 60,
+      summaryHref: 'circles-summary.html',
       questions: [
         {
           id:'q1',
@@ -261,7 +258,7 @@
           prompt:'A circle passes through (0,0) and (0,6) with center at (0,3). What is its equation?',
           choices:['(x − 0)² + (y − 3)² = 9','(x − 3)² + (y − 0)² = 9','(x − 3)² + (y − 3)² = 6','(x − 0)² + (y − 6)² = 3'],
           answerIndex:0,
-          explanation:'Center (0,3); radius is the distance to (0,0): √[(0−0)²+(0−3)²] = 3. Equation: (x−0)² + (y−3)² = 3² = 9.'
+          explanation:'Center (0,3); radius is distance to (0,0): √[(0−0)²+(0−3)²] = 3. Equation: (x−0)² + (y−3)² = 3² = 9.'
         },
         {
           id:'q4',
@@ -288,7 +285,7 @@
     };
   </script>
 
-  <!-- Shared engine -->
-  <script src="quiz-engine.js"></script>
+  <!-- SHARED ENGINE -->
+  <script src="/assets/js/quiz-engine.js"></script>
 </body>
 </html>
