@@ -118,7 +118,7 @@
     <button class="go-review" id="goReview">Go to Review Page</button>
   </div>
 
-  <!-- Quiz config only; logic lives in /assets/quiz-engine.js -->
+  <!-- Quiz config only; logic lives in /assets/js/quiz-engine.js -->
   <script>
     window.examConfig = {
       topicId: "circles",
@@ -185,7 +185,7 @@
   <script src="/assets/js/quiz-recorder.js" defer></script>
 
   <!-- Core quiz engine (existing) -->
-  <script src="/assets/quiz-engine.js" defer></script>
+  <script src="/assets/js/quiz-engine.js" defer></script>
 
   <!-- Integration: capture finished practice tests and record them to My Progress -->
   <script>
@@ -286,9 +286,9 @@
               answers: answers
             };
 
-            window.DreamSchoolRecorder.recordTestResult(record);
+            window.DreamSchoolRecorder && window.DreamSchoolRecorder.recordTestResult && window.DreamSchoolRecorder.recordTestResult(record);
             // Optionally push to server in background
-            if (window.DreamSchoolRecorder.pushToServer) {
+            if (window.DreamSchoolRecorder && window.DreamSchoolRecorder.pushToServer) {
               window.DreamSchoolRecorder.pushToServer(record).catch(() => {});
             }
           } catch (err) {
