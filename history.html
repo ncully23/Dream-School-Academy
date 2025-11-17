@@ -1,26 +1,51 @@
-<!DOCTYPE html>
-<html lang="en" data-page="history">
+<!doctype html>
+<html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>My Progress — Dream School Academy</title>
-  <link rel="stylesheet" href="/assets/site.css" />
-  <script type="module" src="/assets/shell.js"></script>
+  <link rel="stylesheet" href="assets/css/progress.css">
 </head>
 <body>
-  <div id="site-header"></div>
+  <header class="site-header">
+    <h1>My Progress</h1>
+    <nav><a href="index.html">Home</a> | <a href="practice.html">Practice</a></nav>
+  </header>
 
-  <main id="history">
-    <section class="hero">
-      <div class="container">
-        <h1>My Progress</h1>
-        <p>See your recent quizzes and practice exams.</p>
-        <div id="attempts-list" class="card-list"></div>
+  <main class="container">
+    <section id="summary" class="summary">
+      <!-- filled by JS -->
+    </section>
+
+    <section class="controls">
+      <button id="exportBtn">Export JSON</button>
+      <button id="clearBtn" class="danger">Clear History</button>
+    </section>
+
+    <section>
+      <h2>Test History</h2>
+      <div class="table-wrap">
+        <table id="historyTable" class="history-table">
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Category</th>
+              <th>Score</th>
+              <th>Total</th>
+              <th>%</th>
+              <th>Duration</th>
+              <th>Details</th>
+            </tr>
+          </thead>
+          <tbody id="historyBody">
+            <!-- rows inserted by JS -->
+          </tbody>
+        </table>
       </div>
     </section>
   </main>
 
-  <div id="site-footer"></div>
-  <script type="module" src="/assets/history.js"></script>
+  <script src="assets/js/quiz-recorder.js"></script>
+  <script src="assets/js/my-progress.js"></script>
 </body>
 </html>
