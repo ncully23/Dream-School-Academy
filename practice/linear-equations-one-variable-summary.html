@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Review: Linear Equations in One Variable — Dream School Academy</title>
+
+  <!-- Same shared quiz styling -->
+  <link rel="stylesheet" href="/assets/css/quiz.css" />
+
+  <!-- Small extra styles just for review page -->
+  <style>
+    .summary-header{
+      max-width:980px;
+      margin:0 auto 10px;
+      padding:10px 16px 0;
+      color:#111827;
+      font-family:Inter, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+    }
+    .score-pill{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:6px 10px;
+      border-radius:999px;
+      font-weight:700;
+      background:#ecfdf3;
+      color:#166534;
+      border:1px solid #bbf7d0;
+      font-size:14px;
+    }
+    .score-pill.bad{
+      background:#fef2f2;
+      color:#b91c1c;
+      border-color:#fecaca;
+    }
+    .meta-line{
+      margin-top:6px;
+      font-size:14px;
+      color:#4b5563;
+    }
+    .review-card{
+      width:min(980px, 96vw);
+      margin:12px auto;
+      background:#fff;
+      border:1px solid #cfd7ea;
+      border-radius:12px;
+      box-shadow:0 1px 2px rgba(16,24,40,.06), 0 6px 14px rgba(16,24,40,.08);
+      padding:16px 18px 14px;
+      font-family:Inter, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+    }
+    .review-top{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:10px;
+      margin-bottom:8px;
+    }
+    .badge-correct,
+    .badge-incorrect{
+      padding:3px 8px;
+      border-radius:999px;
+      font-size:12px;
+      font-weight:800;
+    }
+    .badge-correct{
+      background:#ecfdf3;
+      color:#15803d;
+      border:1px solid #bbf7d0;
+    }
+    .badge-incorrect{
+      background:#fef2f2;
+      color:#b91c1c;
+      border:1px solid #fecaca;
+    }
+    .review-stem{
+      font-size:16px;
+      margin-bottom:10px;
+    }
+    .review-choices{
+      display:grid;
+      gap:8px;
+    }
+    .review-choice{
+      display:flex;
+      align-items:flex-start;
+      gap:8px;
+      padding:8px 10px;
+      border-radius:10px;
+      border:1px solid #e5e7eb;
+      background:#f9fafb;
+      font-size:15px;
+    }
+    .review-choice.correct{
+      border-color:#16a34a;
+      background:#ecfdf3;
+    }
+    .review-choice.user-wrong{
+      border-color:#b91c1c;
+      background:#fef2f2;
+    }
+    .review-tag{
+      font-weight:700;
+      min-width:18px;
+    }
+    .explanation-title{
+      margin-top:8px;
+      font-weight:700;
+      font-size:14px;
+    }
+    .explanation-text{
+      font-size:14px;
+      color:#4b5563;
+      margin-top:2px;
+    }
+    .back-links{
+      max-width:980px;
+      margin:18px auto 24px;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      font-family:Inter, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+    }
+    .back-links a{
+      text-decoration:none;
+      font-weight:600;
+      font-size:14px;
+      color:#1f4dd8;
+    }
+  </style>
+
+  <!-- MathJax to render TeX in questions/answers/explanations -->
+  <script>
+    window.MathJax = {
+      tex: { inlineMath: [['\\(','\\)'],['$','$']] },
+      svg: { fontCache: 'global' }
+    };
+  </script>
+  <script defer id="MathJax-script"
+          src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+</head>
+<body>
+  <div class="app">
+    <!-- reuse header bar shell just for consistent look -->
+    <div class="header" role="banner">
+      <div>
+        <div class="title">Review — Linear Equations in One Variable</div>
+        <button class="directions" aria-label="Directions" disabled>Practice Review</button>
+      </div>
+      <div class="timer">
+        <b id="scoreMini">–</b>
+        <button class="btn ghost" disabled>Completed</button>
+      </div>
+      <div aria-hidden="true"></div>
+    </div>
+
+    <div class="summary-header">
+      <div id="scorePill" class="score-pill" style="display:none"></div>
+      <div id="metaLine" class="meta-line"></div>
+    </div>
+
+    <div id="reviewContainer"></div>
+
+    <div class="back-links">
+      <a href="linear-equations-one-variable.html">↩ Try this quiz again</a>
+      <a href="/practice">Back to Practice Home</a>
+    </div>
+  </div>
+
+<script>
+  const SUMMARY_KEY = 'dsa-linear-eq1-summary-v1';
+
+  function formatTime(seconds){
+    const m = Math.floor(seconds / 60);
+    const s = seconds % 60;
+    return `${m} min ${s.toString().padStart(2,'0')} s`;
+  }
+
+  function loadSummary(){
+    try{
+      return JSON.parse(localStorage.getItem(SUMMARY_KEY) || 'null');
+    }catch(e){
+      return null;
+    }
+  }
+
+  const data = loadSummary();
+  const container = document.getElementById('reviewContainer');
+  const scoreMini = document.getElementById('scoreMini');
+  const scorePill = document.getElementById('scorePill');
+  const metaLine = document.getElementById('metaLine');
+
+  if (!data){
+    container.innerHTML = `
+      <div class="review-card">
+        <p><strong>No attempt found.</strong></p>
+        <p style="font-size:14px;color:#4b5563">
+          It looks like you haven’t finished this quiz on this device yet.
+          Go back and complete the quiz to see a full review.
+        </p>
+      </div>
+    `;
+  } else {
+    const { totals, items, title, generatedAt } = data;
+    const pct = Math.round(100 * (totals.correct / totals.total));
+
+    // header stats
+    scoreMini.textContent = `${pct}%`;
+    scorePill.style.display = 'inline-flex';
+    scorePill.textContent = `Score: ${totals.correct} / ${totals.total} (${pct}%)`;
+    if (pct < 70) scorePill.classList.add('bad');
+
+    const when = new Date(generatedAt);
+    const timeStr = totals.timeSpentSec != null
+      ? `Time spent: ${formatTime(totals.timeSpentSec)}.`
+      : '';
+
+    metaLine.textContent =
+      `${title || 'Practice quiz'} — Completed on ${when.toLocaleString()}. ${timeStr}`;
+
+    // question-by-question review
+    const letters = i => String.fromCharCode(65 + i);
+    items.forEach(item => {
+      const card = document.createElement('article');
+      card.className = 'review-card';
+
+      const correct = !!item.correct;
+      const badgeClass = correct ? 'badge-correct' : 'badge-incorrect';
+      const badgeText  = correct ? 'Correct' : 'Incorrect';
+
+      card.innerHTML = `
+        <div class="review-top">
+          <div>
+            <strong>Question ${item.number}</strong>
+            <span style="color:#6b7280;font-size:13px;margin-left:6px;">ID: ${item.id}</span>
+          </div>
+          <span class="${badgeClass}">${badgeText}</span>
+        </div>
+        <div class="review-stem">${item.prompt}</div>
+      `;
+
+      const list = document.createElement('div');
+      list.className = 'review-choices';
+
+      item.choices.forEach((choiceText, idx) => {
+        const row = document.createElement('div');
+        row.className = 'review-choice';
+
+        if (idx === item.correctIndex) row.classList.add('correct');
+        if (
+          item.chosenIndex !== null &&
+          item.chosenIndex === idx &&
+          item.chosenIndex !== item.correctIndex
+        ){
+          row.classList.add('user-wrong');
+        }
+
+        row.innerHTML = `
+          <div class="review-tag">${letters(idx)}.</div>
+          <div>${choiceText}</div>
+        `;
+        list.appendChild(row);
+      });
+
+      card.appendChild(list);
+
+      if (item.explanation){
+        const exTitle = document.createElement('div');
+        exTitle.className = 'explanation-title';
+        exTitle.textContent = 'Explanation';
+
+        const exText = document.createElement('div');
+        exText.className = 'explanation-text';
+        exText.textContent = item.explanation;
+
+        card.appendChild(exTitle);
+        card.appendChild(exText);
+      }
+
+      container.appendChild(card);
+    });
+
+    // typeset all math
+    if (window.MathJax && MathJax.typesetPromise) {
+      MathJax.typesetPromise([container]);
+    }
+  }
+</script>
+</body>
+</html>
