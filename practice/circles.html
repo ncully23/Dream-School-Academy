@@ -18,10 +18,16 @@
         </div>
         <button class="directions" aria-label="Directions">Directions ▾</button>
       </div>
-      <div class="timer" aria-live="polite">
-        <b id="timeLeft">30:00</b>
-        <button id="toggleTimer" class="btn ghost" aria-pressed="false">Hide</button>
+
+      <!-- Added a quick link to My Progress -->
+      <div style="display:flex;align-items:center;gap:12px">
+        <a href="/my-progress.html" style="color:#cfe3ff;text-decoration:none;font-size:14px;">My Progress</a>
+        <div class="timer" aria-live="polite">
+          <b id="timeLeft">30:00</b>
+          <button id="toggleTimer" class="btn ghost" aria-pressed="false">Hide</button>
+        </div>
       </div>
+
       <div aria-hidden="true"></div>
     </div>
 
@@ -175,6 +181,220 @@
     };
   </script>
 
+  <!-- Recorder: stores test results to localStorage (and has pushToServer stub) -->
+  <script src="/assets/js/quiz-recorder.js" defer></script>
+
+  <!-- Core quiz engine (existing) -->
   <script src="/assets/quiz-engine.js" defer></script>
+
+  <!-- Integration: capture finished practice tests and record them to My Progress -->
+  <script>
+    (function () {
+      // Wait until DOM + engine initialize
+      function whenReady(fn) {
+        if (document.readyState === 'complete' || document.readyState === 'interactive') {
+          fn();
+        } else {
+          document.addEventListener('DOMContentLoaded', fn);
+        }
+      }
+
+      whenReady(function () {
+        const finishBtn = document.getElementById('btnFinish');
+        if (!finishBtn) return;
+
+        // Called when we detect quiz finished data available
+        function recordFromSummaryData(summary, answersData) {
+          try {
+            if (!window.DreamSchoolRecorder || !window.DreamSchoolRecorder.recordTestResult) {
+              console.warn('DreamSchoolRecorder not available; skipping record.');
+              return;
+            }
+
+            // Attempt to extract common fields from summary object
+            const totalCandidates = [
+              summary && summary.total,
+              summary && summary.numQuestions,
+              summary && summary.questions,
+              (Array.isArray(answersData) && answersData.length),
+              (window.examConfig && window.examConfig.questions && window.examConfig.questions.length)
+            ];
+            const scoreCandidates = [
+              summary && summary.score,
+              summary && summary.correct,
+              summary && summary.numCorrect,
+              summary && summary.num_right,
+              summary && summary.points,
+            ];
+
+            // Determine total and score
+            const total = (function () {
+              for (const v of totalCandidates) {
+                if (typeof v === 'number' && !isNaN(v)) return v;
+                if (Array.isArray(v)) return v.length;
+              }
+              return (window.examConfig && window.examConfig.questions && window.examConfig.questions.length) || 0;
+            })();
+
+            let score = (function () {
+              for (const v of scoreCandidates) {
+                if (typeof v === 'number' && !isNaN(v)) return v;
+              }
+              // Fallback: compute from stored answers compared to examConfig
+              if (Array.isArray(answersData) && window.examConfig && Array.isArray(window.examConfig.questions)) {
+                let c = 0;
+                for (let i = 0; i < window.examConfig.questions.length; i++) {
+                  const q = window.examConfig.questions[i];
+                  const ans = answersData[i];
+                  if (ans == null) continue;
+                  // answersData could be objects like {qid:..., answer: index} or just index
+                  const selectedIndex = (typeof ans === 'number') ? ans : (ans && (ans.selected || ans.answer || ans.choice) || ans.index);
+                  if (typeof selectedIndex === 'number' && q.answerIndex === Number(selectedIndex)) c++;
+                }
+                return c;
+              }
+              return null;
+            })();
+
+            if (score === null) score = 0;
+
+            // duration: try common fields
+            let durationSeconds = null;
+            if (summary && typeof summary.durationSeconds === 'number') durationSeconds = summary.durationSeconds;
+            else if (summary && typeof summary.timeSpent === 'number') durationSeconds = summary.timeSpent;
+            else if (summary && typeof summary.seconds === 'number') durationSeconds = summary.seconds;
+
+            // Build answer detail array if possible
+            let answers = [];
+            if (Array.isArray(answersData)) {
+              // Normalize items to { qid, answer, correct }
+              answers = answersData.map((a, idx) => {
+                const q = (window.examConfig && window.examConfig.questions && window.examConfig.questions[idx]) || {};
+                let sel = null;
+                if (typeof a === 'number') sel = a;
+                else if (a && typeof a === 'object') sel = a.selected ?? a.answer ?? a.choice ?? a.index ?? null;
+                const correct = typeof sel === 'number' && typeof q.answerIndex === 'number' ? (Number(sel) === Number(q.answerIndex)) : undefined;
+                return { qid: q.id || idx + 1, answer: sel, correct };
+              });
+            }
+
+            const record = {
+              score: Number(score),
+              total: Number(total),
+              durationSeconds: durationSeconds != null ? Number(durationSeconds) : 0,
+              category: (window.examConfig && window.examConfig.sectionTitle) ? window.examConfig.sectionTitle : 'Circles (Practice)',
+              answers: answers
+            };
+
+            window.DreamSchoolRecorder.recordTestResult(record);
+            // Optionally push to server in background
+            if (window.DreamSchoolRecorder.pushToServer) {
+              window.DreamSchoolRecorder.pushToServer(record).catch(() => {});
+            }
+          } catch (err) {
+            console.error('Failed to record practice test result:', err);
+          }
+        }
+
+        // Try to read summaryKey & storageKey out of examConfig
+        const summaryKey = (window.examConfig && window.examConfig.summaryKey) || 'dsa:summary:circles';
+        const storageKey = (window.examConfig && window.examConfig.storageKey) || 'dsa:quiz:circles';
+
+        // Helper: read summary JSON if present
+        function tryReadSummary() {
+          try {
+            const raw = localStorage.getItem(summaryKey);
+            return raw ? JSON.parse(raw) : null;
+          } catch (e) { return null; }
+        }
+
+        // Helper: read answers object/array saved by engine
+        function tryReadAnswers() {
+          try {
+            const raw = localStorage.getItem(storageKey);
+            if (!raw) return null;
+            const parsed = JSON.parse(raw);
+            // The engine might store an object with answers: [] or an array itself.
+            if (Array.isArray(parsed)) return parsed;
+            if (parsed && Array.isArray(parsed.answers)) return parsed.answers;
+            // some formats: map of qid->choiceIndex -> convert to array
+            if (parsed && typeof parsed === 'object') {
+              // attempt to return array in same order as examConfig.questions
+              const qs = (window.examConfig && window.examConfig.questions) || [];
+              const arr = qs.map(q => {
+                // try keys q.id, q1 etc
+                const key = q.id;
+                if (parsed[key] !== undefined) return parsed[key];
+                // fallback to positional array stored inside object under "responses"
+                if (Array.isArray(parsed.responses)) return parsed.responses[qs.indexOf(q)];
+                return null;
+              });
+              return arr;
+            }
+            return null;
+          } catch (e) { return null; }
+        }
+
+        // Polling helper: after finish button clicked, wait up to timeout for summary to appear
+        function waitForSummaryAndRecord(timeoutMs = 2500) {
+          const start = Date.now();
+          (function poll() {
+            const summary = tryReadSummary();
+            const answers = tryReadAnswers();
+            if (summary || answers) {
+              // If summary exists, prefer summary fields; always pass answers if available
+              recordFromSummaryData(summary || {}, answers || []);
+              return;
+            }
+            if (Date.now() - start > timeoutMs) {
+              // Last-ditch: try compute from answers alone
+              const fallbackAnswers = tryReadAnswers();
+              if (fallbackAnswers) {
+                recordFromSummaryData({}, fallbackAnswers);
+              } else {
+                // nothing to record
+                console.warn('No summary or answers found to record after finish.');
+              }
+              return;
+            }
+            setTimeout(poll, 120);
+          })();
+        }
+
+        // Attach a capture handler to the finish button. This runs alongside the engine.
+        finishBtn.addEventListener('click', function () {
+          // Give engine first crack at writing summary to localStorage, then capture it.
+          // The polling handles synchronous and slightly-asynchronous writes.
+          setTimeout(() => waitForSummaryAndRecord(3000), 10);
+        });
+
+        // Also capture when the engine writes directly to the summaryKey (in case it doesn't go through finish button)
+        // Monkey-patch localStorage.setItem to detect writes to summaryKey (non-invasive and safe fallback)
+        try {
+          const originalSetItem = Storage.prototype.setItem;
+          Storage.prototype.setItem = function (k, v) {
+            try {
+              originalSetItem.apply(this, [k, v]);
+              if (String(k) === String(summaryKey) || String(k) === String(storageKey)) {
+                // Small async delay so other handlers can finish
+                setTimeout(() => {
+                  const summary = tryReadSummary();
+                  const answers = tryReadAnswers();
+                  if (summary || answers) {
+                    recordFromSummaryData(summary || {}, answers || []);
+                  }
+                }, 10);
+              }
+            } catch (e) {
+              // If any error occurs, ensure original still works
+              try { originalSetItem.apply(this, [k, v]); } catch (_) {}
+            }
+          };
+        } catch (err) {
+          // ignore if we can't patch (some environments restrict prototype changes)
+        }
+      });
+    })();
+  </script>
 </body>
 </html>
