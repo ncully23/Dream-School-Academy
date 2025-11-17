@@ -142,31 +142,76 @@
     if (el.timeLeft) el.timeLeft.textContent = `${m}:${s}`;
   }
 
-  function renderQuestion() {
-    const q = exam.questions[state.index];
-    if (!q) return;
+function renderQuestion() {
+  const q = exam.questions[state.index];
+  if (!q) return;
 
-    if (el.qbadge) el.qbadge.textContent = state.index + 1;
-    if (el.qtitle) el.qtitle.textContent = q.prompt;
+  if (el.qbadge) el.qbadge.textContent = state.index + 1;
 
-    const letter = (i) => String.fromCharCode(65 + i);
-    const elimSet = state.elims[q.id] || new Set();
-    if (el.choices) {
-      el.choices.innerHTML = q.choices
-        .map((t, i) => {
-          const id = `${q.id}_c${i}`;
-          const checked = state.answers[q.id] === i ? "checked" : "";
-          const elimClass = elimSet.has(i) ? "eliminated" : "";
-          return `
-            <label class="choice ${elimClass}" data-choice="${i}" for="${id}">
-              <input id="${id}" type="radio" name="${q.id}" value="${i}" ${checked} />
-              <div class="text"><b>${letter(i)}.</b> ${t}</div>
-              <div class="letter">${letter(i)}</div>
-            </label>
-          `;
-        })
-        .join("");
-    }
+  // Use innerHTML so TeX is kept
+  if (el.qtitle) el.qtitle.innerHTML = q.prompt;
+
+  const letter = (i) => String.fromCharCode(65 + i);
+  const elimSet = state.elims[q.id] || new Set();
+
+  if (el.choices) {
+    el.choices.innerHTML = q.choices
+      .map((t, i) => {
+        const id = `${q.id}_c${i}`;
+        const checked = state.answers[q.id] === i ? "checked" : "";
+        const elimClass = elimSet.has(i) ? "eliminated" : "";
+        return `
+          <label class="choice ${elimClass}" data-choice="${i}" for="${id}">
+            <input id="${id}" type="radio" name="${q.id}" value="${i}" ${checked} />
+            <div class="text"><b>${letter(i)}.</b> ${t}</div>
+            <div class="letter">${letter(i)}</div>
+          </label>
+        `;
+      })
+      .join("");
+  }
+
+  if (el.choices) {
+    el.choices.querySelectorAll(".choice").forEach((choice) => {
+      const idx = Number(choice.dataset.choice);
+      const input = choice.querySelector("input");
+      choice.addEventListener("click", (ev) => {
+        if (!state.eliminateMode) return;
+        if (ev.target.tagName.toLowerCase() === "input") return;
+        ev.preventDefault();
+        toggleElimination(q.id, idx);
+        choice.classList.toggle("eliminated");
+        save();
+      });
+      input.addEventListener("change", () => {
+        state.answers[q.id] = idx;
+        save();
+        renderProgress();
+        buildPopGrid();
+        buildCheckGrid();
+      });
+    });
+  }
+
+  const flagged = !!state.flags[q.id];
+  if (el.flagTop && el.flagLabel) {
+    el.flagTop.classList.toggle("on", flagged);
+    el.flagTop.setAttribute("aria-pressed", String(flagged));
+    el.flagLabel.textContent = flagged ? "For review" : "Mark for review";
+  }
+
+  if (el.elimToggle && el.elimHint) {
+    el.elimToggle.classList.toggle("on", state.eliminateMode);
+    el.elimToggle.setAttribute("aria-pressed", String(state.eliminateMode));
+    el.elimHint.style.display = state.eliminateMode ? "block" : "none";
+  }
+
+  // 🔹 Ask MathJax to typeset the current card if available
+  if (window.MathJax && MathJax.typesetPromise) {
+    MathJax.typesetPromise([el.qtitle, el.choices]).catch(() => {});
+  }
+}
+
 
     if (el.choices) {
       el.choices.querySelectorAll(".choice").forEach((choice) => {
