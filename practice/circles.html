@@ -6,6 +6,7 @@
   <title>Section 1, Module 1: Math — Circles (Practice)</title>
 
   <!-- Bluebook-style quiz layout -->
+  <!-- If your CSS folder is different, adjust the href accordingly -->
   <link rel="stylesheet" href="/assets/css/quiz.css" />
 </head>
 <body>
@@ -13,21 +14,13 @@
     <!-- Header -->
     <div class="header" role="banner">
       <div>
-        <div class="title" id="sectionTitle">
-          Section 1, Module 1: Math — Circles (Practice)
-        </div>
+        <div class="title" id="sectionTitle">Section 1, Module 1: Math — Circles (Practice)</div>
         <button class="directions" aria-label="Directions">Directions ▾</button>
       </div>
-
-      <!-- Added a quick link to My Progress -->
-      <div style="display:flex;align-items:center;gap:12px">
-        <a href="/my-progress.html" style="color:#cfe3ff;text-decoration:none;font-size:14px;">My Progress</a>
-        <div class="timer" aria-live="polite">
-          <b id="timeLeft">30:00</b>
-          <button id="toggleTimer" class="btn ghost" aria-pressed="false">Hide</button>
-        </div>
+      <div class="timer" aria-live="polite">
+        <b id="timeLeft">30:00</b>
+        <button id="toggleTimer" class="btn ghost" aria-pressed="false">Hide</button>
       </div>
-
       <div aria-hidden="true"></div>
     </div>
 
@@ -60,25 +53,13 @@
     <!-- Review page (optional mid-test) -->
     <section class="check-wrap" id="checkPage" aria-label="Check Your Work">
       <h1 class="check-head">Check Your Work</h1>
-      <p class="check-sub">
-        On test day, you won’t be able to move on to the next module until time expires.
-      </p>
+      <p class="check-sub">On test day, you won’t be able to move on to the next module until time expires.</p>
       <div class="check-card">
         <div class="check-row">
-          <div>Section 1, Module 1: Math — Circles Questions</div>
+          <div>Section 1, Module 1: Reading and Writing Questions</div>
           <div class="check-leg">
-            <span>
-              <span class="box"
-                    style="width:16px;height:16px;border:2px dashed #2b3350;border-radius:4px;
-                           display:inline-block;margin-right:6px"></span>
-              Unanswered
-            </span>
-            <span>
-              <span class="flag"
-                    style="width:12px;height:12px;background:var(--flag);
-                           display:inline-block;margin-right:6px"></span>
-              For Review
-            </span>
+            <span><span class="box" style="width:16px;height:16px;border:2px dashed #2b3350;border-radius:4px;display:inline-block;margin-right:6px"></span> Unanswered</span>
+            <span><span class="flag" style="width:12px;height:12px;background:var(--flag);display:inline-block;margin-right:6px"></span> For Review</span>
           </div>
         </div>
         <div class="grid-nums" id="checkGrid"></div>
@@ -92,7 +73,7 @@
       <div class="progress" id="progress"></div>
       <button class="center-pill" id="centerPill" aria-haspopup="dialog" aria-expanded="false">
         <div class="pill-flag" id="pillFlag" style="display:none"></div>
-        <span id="pillText">Question 1 of 6</span><span class="caret">▾</span>
+        <span id="pillText">Question 1 of 1</span><span class="caret">▾</span>
       </button>
       <div class="rail-left">
         <button id="btnBack" class="btn nav">Back</button>
@@ -105,10 +86,9 @@
   </div>
 
   <!-- Review popover -->
-  <div class="popover" id="popover" role="dialog" aria-modal="false"
-       aria-label="Question Navigator">
+  <div class="popover" id="popover" role="dialog" aria-modal="false" aria-label="Question Navigator">
     <button class="close" id="popClose" aria-label="Close">×</button>
-    <div class="title">Section 1, Module 1: Math — Circles Questions</div>
+    <div class="title">Section 1, Module 1: Reading and Writing Questions</div>
     <div class="legend">
       <span>📍 Current</span>
       <span><span class="box"></span> Unanswered</span>
@@ -118,283 +98,431 @@
     <button class="go-review" id="goReview">Go to Review Page</button>
   </div>
 
-  <!-- Quiz config only; logic lives in /assets/js/quiz-engine.js -->
-  <script>
-    window.examConfig = {
-      topicId: "circles",
-      sectionTitle: "Section 1, Module 1: Math — Circles (Practice)",
-      storageKey: "dsa:quiz:circles",
-      summaryKey: "dsa:summary:circles",
-      // where quiz-engine.js should send them after Finish
-      summaryHref: "circles-summary.html",
-      timeLimitSec: 30 * 60,
-      questions: [
-        {
-          id: "q1",
-          prompt: "A circle has radius 5 cm. What is its circumference?",
-          choices: ["10π cm","25π cm","5π cm","50π cm"],
-          answerIndex: 0,
-          explanation: "Use C = 2πr. With r = 5, C = 2·π·5 = 10π cm."
-        },
-        {
-          id: "q2",
-          prompt: "If a circle’s area is 49π, what is its radius?",
-          choices: ["3","7","14","24.5"],
-          answerIndex: 1,
-          explanation: "Area A = πr². If A = 49π, then r² = 49 and r = 7."
-        },
-        {
-          id: "q3",
-          prompt: "A circle passes through (0,0) and (0,6) with center at (0,3). What is its equation?",
-          choices: [
-            "(x − 0)² + (y − 3)² = 9",
-            "(x − 3)² + (y − 0)² = 9",
-            "(x − 3)² + (y − 3)² = 6",
-            "(x − 0)² + (y − 6)² = 3"
-          ],
-          answerIndex: 0,
-          explanation:
-            "Center (0,3); radius is the distance to (0,0): √[(0−0)²+(0−3)²] = 3. Equation: (x−0)² + (y−3)² = 3² = 9."
-        },
-        {
-          id: "q4",
-          prompt: "For r = 10 and θ = π/3, what is the arc length s?",
-          choices: ["10π/3","20π/3","30π","10","π/3"],
-          answerIndex: 0,
-          explanation: "Arc length s = rθ (θ in radians). So s = 10·(π/3) = 10π/3."
-        },
-        {
-          id: "q5",
-          prompt: "Sector area for r = 6 and θ = π/2 is",
-          choices: ["9π","18π","36π","3π"],
-          answerIndex: 1,
-          explanation: "Sector area = (1/2) r² θ = (1/2)·36·(π/2) = 18π."
-        },
-        {
-          id: "q6",
-          prompt: "If the diameter is 18, the area is",
-          choices: ["81π","36π","18π","9π"],
-          answerIndex: 0,
-          explanation: "Diameter 18 ⇒ r = 9. Area = πr² = π·81 = 81π."
-        }
-      ]
+<script>
+/* ===================== Exam Data ===================== */
+const exam = {
+  storageKey: 'dsa-circles-bluebook-v7',
+  summaryKey: 'dsa-circles-summary-v1',
+  sectionTitle: 'Section 1, Module 1: Math — Circles (Practice)',
+  timeLimitSec: 30 * 60,
+  questions: [
+    {
+      id:'q1',
+      prompt:'A circle has radius 5 cm. What is its circumference?',
+      choices:['10π cm','25π cm','5π cm','50π cm'],
+      answerIndex:0,
+      explanation:'Use C = 2πr. With r = 5, C = 2·π·5 = 10π cm.'
+    },
+    {
+      id:'q2',
+      prompt:'If a circle’s area is 49π, what is its radius?',
+      choices:['3','7','14','24.5'],
+      answerIndex:1,
+      explanation:'Area A = πr². If A = 49π, then r² = 49 and r = 7.'
+    },
+    {
+      id:'q3',
+      prompt:'A circle passes through (0,0) and (0,6) with center at (0,3). What is its equation?',
+      choices:['(x − 0)² + (y − 3)² = 9','(x − 3)² + (y − 0)² = 9','(x − 3)² + (y − 3)² = 6','(x − 0)² + (y − 6)² = 3'],
+      answerIndex:0,
+      explanation:'Center (0,3); radius is the distance to (0,0): √[(0−0)²+(0−3)²] = 3. Equation: (x−0)² + (y−3)² = 3² = 9.'
+    },
+    {
+      id:'q4',
+      prompt:'For r = 10 and θ = π/3, what is the arc length s?',
+      choices:['10π/3','20π/3','30π','10','π/3'],
+      answerIndex:0,
+      explanation:'Arc length s = rθ (θ in radians). So s = 10·(π/3) = 10π/3.'
+    },
+    {
+      id:'q5',
+      prompt:'Sector area for r = 6 and θ = π/2 is',
+      choices:['9π','18π','36π','3π'],
+      answerIndex:1,
+      explanation:'Sector area = (1/2) r² θ = (1/2)·36·(π/2) = 18π.'
+    },
+    {
+      id:'q6',
+      prompt:'If the diameter is 18, the area is',
+      choices:['81π','36π','18π','9π'],
+      answerIndex:0,
+      explanation:'Diameter 18 ⇒ r = 9. Area = πr² = π·81 = 81π.'
+    }
+  ]
+};
+
+/* ===================== State ===================== */
+const state = {
+  index: 0,
+  answers: {},
+  flags: {},
+  elims: {},
+  eliminateMode: false,
+  remaining: exam.timeLimitSec,
+  timerId: null,
+  timerHidden: false,
+  finished: false,
+  reviewMode: false
+};
+
+/* ===================== DOM ===================== */
+const el = {
+  sectionTitle: document.getElementById('sectionTitle'),
+  timeLeft: document.getElementById('timeLeft'),
+  toggleTimer: document.getElementById('toggleTimer'),
+  qbadge: document.getElementById('qbadge'),
+  qtitle: document.getElementById('qtitle'),
+  choices: document.getElementById('choices'),
+  flagTop: document.getElementById('flagTop'),
+  flagLabel: document.getElementById('flagLabel'),
+  elimToggle: document.getElementById('elimToggle'),
+  elimHint: document.getElementById('elimHint'),
+  back: document.getElementById('btnBack'),
+  next: document.getElementById('btnNext'),
+  finish: document.getElementById('btnFinish'),
+  progress: document.getElementById('progress'),
+  pill: document.getElementById('centerPill'),
+  pillText: document.getElementById('pillText'),
+  pillFlag: document.getElementById('pillFlag'),
+  pop: document.getElementById('popover'),
+  popGrid: document.getElementById('popGrid'),
+  popClose: document.getElementById('popClose'),
+  goReview: document.getElementById('goReview'),
+  checkPage: document.getElementById('checkPage'),
+  checkGrid: document.getElementById('checkGrid'),
+  dashrow: document.getElementById('dashrow')
+};
+
+/* ===================== Static rows ===================== */
+(function buildTicks(){
+  for(let i=0;i<54;i++){
+    const d=document.createElement('div');
+    d.className='dash';
+    el.dashrow.appendChild(d);
+  }
+})();
+(function buildProgress(){
+  const seg = Math.max(24, exam.questions.length * 2);
+  el.progress.style.setProperty('--seg', seg);
+  el.progress.innerHTML='';
+  for(let i=0;i<seg;i++){
+    const s=document.createElement('div');
+    s.className='seg';
+    el.progress.appendChild(s);
+  }
+})();
+
+/* ===================== Storage ===================== */
+function loadSaved(){
+  try{
+    const data = JSON.parse(localStorage.getItem(exam.storageKey)||'null');
+    if(!data) return;
+    Object.assign(state.answers, data.answers||{});
+    Object.assign(state.flags, data.flags||{});
+    if (data.elims) {
+      Object.keys(data.elims).forEach(q=> state.elims[q] = new Set(data.elims[q]));
+    }
+    if (typeof data.remaining==='number') state.remaining = data.remaining;
+    if (typeof data.index==='number') state.index = clamp(data.index, 0, exam.questions.length-1);
+  }catch(e){}
+}
+function save(){
+  const elimsObj = {};
+  Object.keys(state.elims).forEach(q=>{ elimsObj[q] = Array.from(state.elims[q]||[]); });
+  localStorage.setItem(exam.storageKey, JSON.stringify({
+    answers: state.answers,
+    flags: state.flags,
+    elims: elimsObj,
+    remaining: state.remaining,
+    index: state.index
+  }));
+}
+
+/* ====== Always reset on load for now ====== */
+function resetPractice() {
+  try { localStorage.removeItem(exam.storageKey); } catch(e){}
+  state.index = 0;
+  state.answers = {};
+  state.flags = {};
+  state.elims = {};
+  state.eliminateMode = false;
+  state.remaining = exam.timeLimitSec;
+  state.finished = false;
+  state.reviewMode = false;
+}
+
+/* ===================== Timer ===================== */
+function startTimer(){
+  if(state.timerId || state.finished) return;
+  tick();
+  state.timerId=setInterval(tick,1000);
+}
+function tick(){
+  if (state.remaining<=0) return finishExam();
+  state.remaining--;
+  const m=String(Math.floor(state.remaining/60)).padStart(2,'0');
+  const s=String(state.remaining%60).padStart(2,'0');
+  if(!state.timerHidden) el.timeLeft.textContent=`${m}:${s}`;
+  save();
+  if(state.remaining<=0) finishExam();
+}
+el.toggleTimer.addEventListener('click', ()=>{
+  state.timerHidden=!state.timerHidden;
+  el.toggleTimer.textContent = state.timerHidden ? 'Show' : 'Hide';
+  el.timeLeft.style.visibility = state.timerHidden ? 'hidden' : 'visible';
+});
+
+/* ===================== Renderers ===================== */
+function clamp(n,min,max){ return Math.max(min, Math.min(max, n)); }
+
+function render(){
+  el.sectionTitle.textContent = exam.sectionTitle;
+  renderQuestion();
+  renderProgress();
+  buildPopGrid();
+  buildCheckGrid();
+  updateNavs();
+  updateFlagVisuals();
+  updatePillFlag();
+  const m=String(Math.floor(state.remaining/60)).padStart(2,'0');
+  const s=String(state.remaining%60).padStart(2,'0');
+  el.timeLeft.textContent=`${m}:${s}`;
+}
+
+function renderQuestion(){
+  const q = exam.questions[state.index];
+
+  el.qbadge.textContent = state.index + 1;
+  el.qtitle.textContent = q.prompt;
+
+  const letter = i => String.fromCharCode(65+i);
+  const elimSet = state.elims[q.id] || new Set();
+  el.choices.innerHTML = q.choices.map((t,i)=>{
+    const id=`${q.id}_c${i}`;
+    const checked = state.answers[q.id]===i ? 'checked':'';
+    const elimClass = elimSet.has(i) ? 'eliminated' : '';
+    return `
+      <label class="choice ${elimClass}" data-choice="${i}" for="${id}">
+        <input id="${id}" type="radio" name="${q.id}" value="${i}" ${checked} />
+        <div class="text"><b>${letter(i)}.</b> ${t}</div>
+        <div class="letter">${letter(i)}</div>
+      </label>
+    `;
+  }).join('');
+
+  el.choices.querySelectorAll('.choice').forEach(choice=>{
+    const idx = Number(choice.dataset.choice);
+    const input = choice.querySelector('input');
+    choice.addEventListener('click', (ev)=>{
+      if (!state.eliminateMode) return;
+      if (ev.target.tagName.toLowerCase()==='input') return;
+      ev.preventDefault();
+      toggleElimination(q.id, idx);
+      choice.classList.toggle('eliminated');
+      save();
+    });
+    input.addEventListener('change', ()=>{
+      state.answers[q.id] = idx;
+      save();
+      renderProgress();
+      buildPopGrid();
+      buildCheckGrid();
+    });
+  });
+
+  const flagged = !!state.flags[q.id];
+  el.flagTop.classList.toggle('on', flagged);
+  el.flagTop.setAttribute('aria-pressed', String(flagged));
+  el.flagLabel.textContent = flagged ? 'For review' : 'Mark for review';
+
+  el.elimToggle.classList.toggle('on', state.eliminateMode);
+  el.elimToggle.setAttribute('aria-pressed', String(state.eliminateMode));
+  el.elimHint.style.display = state.eliminateMode ? 'block' : 'none';
+}
+
+function toggleElimination(qid, idx){
+  if (!state.elims[qid]) state.elims[qid] = new Set();
+  const s = state.elims[qid];
+  if (s.has(idx)) s.delete(idx); else s.add(idx);
+}
+
+function renderProgress(){
+  const segs = el.progress.children.length;
+  const active = Math.ceil(((state.index+1)/exam.questions.length)*segs);
+  for(let i=0;i<segs;i++){
+    el.progress.children[i].classList.toggle('active', i<active);
+  }
+  el.pillText.textContent = `Question ${state.index+1} of ${exam.questions.length}`;
+}
+
+function updatePillFlag(){
+  const q = exam.questions[state.index];
+  const flagged = !!state.flags[q.id];
+  el.pillFlag.style.display = flagged ? 'block' : 'none';
+}
+function updateFlagVisuals(){
+  const q = exam.questions[state.index];
+  const flagged = !!state.flags[q.id];
+  el.flagTop.classList.toggle('on', flagged);
+  el.flagTop.setAttribute('aria-pressed', String(flagged));
+  el.flagLabel.textContent = flagged ? 'For review' : 'Mark for review';
+}
+
+/* ---------- Review popover & page grids ---------- */
+function buildPopGrid(){
+  el.popGrid.innerHTML='';
+  exam.questions.forEach((q,i)=>{
+    const b=document.createElement('button');
+    b.className='nbtn';
+    b.textContent = String(i+1);
+    const answered = typeof state.answers[q.id]==='number';
+    const flagged  = !!state.flags[q.id];
+    if (i===state.index){
+      b.classList.add('current');
+      const pin=document.createElement('span');
+      pin.className='pin';
+      pin.textContent='📍';
+      b.appendChild(pin);
+    }
+    if (answered) b.classList.add('answered');
+    if (flagged)  b.classList.add('review');
+    b.addEventListener('click', ()=>{
+      state.index=i;
+      state.reviewMode=false;
+      closePopover();
+      render();
+    });
+    el.popGrid.appendChild(b);
+  });
+}
+function buildCheckGrid(){
+  el.checkGrid.innerHTML='';
+  exam.questions.forEach((q,i)=>{
+    const b=document.createElement('button');
+    b.className='nbtn';
+    b.textContent = String(i+1);
+    const answered = typeof state.answers[q.id]==='number';
+    const flagged  = !!state.flags[q.id];
+    if (answered) b.classList.add('answered');
+    if (flagged)  b.classList.add('review');
+    b.addEventListener('click', ()=>{
+      state.index=i;
+      state.reviewMode=false;
+      render();
+      scrollTo(0,0);
+    });
+    el.checkGrid.appendChild(b);
+  });
+}
+
+/* ===================== Actions ===================== */
+function updateNavs(){
+  const last = state.index===exam.questions.length-1 && !state.reviewMode;
+  el.next.style.display = last ? 'none':'inline-block';
+  el.finish.style.display = last ? 'inline-block':'none';
+}
+function go(delta){
+  if (state.reviewMode){
+    state.reviewMode=false;
+    render();
+    return;
+  }
+  const k = clamp(state.index + delta, 0, exam.questions.length-1);
+  if (k===state.index) return;
+  state.index = k;
+  save();
+  render();
+}
+function toggleFlag(){
+  if (state.reviewMode){ return; }
+  const q=exam.questions[state.index];
+  state.flags[q.id]=!state.flags[q.id];
+  save();
+  updateFlagVisuals();
+  updatePillFlag();
+  buildPopGrid();
+  buildCheckGrid();
+}
+
+/* Eliminate toggle */
+el.elimToggle.addEventListener('click', ()=>{
+  state.eliminateMode = !state.eliminateMode;
+  el.elimToggle.classList.toggle('on', state.eliminateMode);
+  el.elimToggle.setAttribute('aria-pressed', String(state.eliminateMode));
+  el.elimHint.style.display = state.eliminateMode ? 'block' : 'none';
+});
+
+/* Finish: save payload for summary page, then redirect */
+function finishExam(){
+  if(state.finished) return;
+  state.finished=true;
+  clearInterval(state.timerId);
+  closePopover();
+
+  const items = exam.questions.map((q,i)=>{
+    const chosen = (typeof state.answers[q.id] === 'number') ? state.answers[q.id] : null;
+    return {
+      number: i+1,
+      id: q.id,
+      prompt: q.prompt,
+      choices: q.choices,
+      correctIndex: q.answerIndex,
+      chosenIndex: chosen,
+      correct: chosen === q.answerIndex,
+      explanation: q.explanation || ''
     };
-  </script>
+  });
 
-  <!-- Recorder: stores test results to localStorage (and has pushToServer stub) -->
-  <script src="/assets/js/quiz-recorder.js" defer></script>
+  const totals = {
+    answered: items.filter(it => it.chosenIndex !== null).length,
+    correct: items.filter(it => it.correct).length,
+    total: items.length,
+    timeSpentSec: exam.timeLimitSec - state.remaining
+  };
 
-  <!-- Core quiz engine (existing) -->
-  <script src="/assets/js/quiz-engine.js" defer></script>
+  const summary = {
+    title: exam.sectionTitle,
+    generatedAt: new Date().toISOString(),
+    totals,
+    items
+  };
 
-  <!-- Integration: capture finished practice tests and record them to My Progress -->
-  <script>
-    (function () {
-      // Wait until DOM + engine initialize
-      function whenReady(fn) {
-        if (document.readyState === 'complete' || document.readyState === 'interactive') {
-          fn();
-        } else {
-          document.addEventListener('DOMContentLoaded', fn);
-        }
-      }
+  try{ localStorage.setItem(exam.summaryKey, JSON.stringify(summary)); }catch(e){}
+  location.href = 'circles-summary.html';
+}
 
-      whenReady(function () {
-        const finishBtn = document.getElementById('btnFinish');
-        if (!finishBtn) return;
+/* Popover */
+const pill = document.getElementById('centerPill');
+function openPopover(){ el.pop.style.display='block'; pill.setAttribute('aria-expanded','true'); }
+function closePopover(){ el.pop.style.display='none'; pill.setAttribute('aria-expanded','false'); }
+pill.addEventListener('click', ()=>{
+  if (el.pop.style.display==='block') closePopover();
+  else openPopover();
+});
+document.getElementById('popClose').addEventListener('click', closePopover);
+el.goReview.addEventListener('click', ()=>{
+  state.reviewMode=true;
+  closePopover();
+  render();
+});
 
-        // Called when we detect quiz finished data available
-        function recordFromSummaryData(summary, answersData) {
-          try {
-            if (!window.DreamSchoolRecorder || !window.DreamSchoolRecorder.recordTestResult) {
-              console.warn('DreamSchoolRecorder not available; skipping record.');
-              return;
-            }
+/* Close popover when clicking outside */
+document.addEventListener('click', (e)=>{
+  const inside = e.target===pill || pill.contains(e.target) || e.target===el.pop || el.pop.contains(e.target);
+  if (!inside) closePopover();
+});
 
-            // Attempt to extract common fields from summary object
-            const totalCandidates = [
-              summary && summary.total,
-              summary && summary.numQuestions,
-              summary && summary.questions,
-              (Array.isArray(answersData) && answersData.length),
-              (window.examConfig && window.examConfig.questions && window.examConfig.questions.length)
-            ];
-            const scoreCandidates = [
-              summary && summary.score,
-              summary && summary.correct,
-              summary && summary.numCorrect,
-              summary && summary.num_right,
-              summary && summary.points,
-            ];
+/* Nav buttons */
+document.getElementById('btnBack').addEventListener('click', ()=>go(-1));
+document.getElementById('btnNext').addEventListener('click', ()=>go(1));
+document.getElementById('btnFinish').addEventListener('click', finishExam);
 
-            // Determine total and score
-            const total = (function () {
-              for (const v of totalCandidates) {
-                if (typeof v === 'number' && !isNaN(v)) return v;
-                if (Array.isArray(v)) return v.length;
-              }
-              return (window.examConfig && window.examConfig.questions && window.examConfig.questions.length) || 0;
-            })();
-
-            let score = (function () {
-              for (const v of scoreCandidates) {
-                if (typeof v === 'number' && !isNaN(v)) return v;
-              }
-              // Fallback: compute from stored answers compared to examConfig
-              if (Array.isArray(answersData) && window.examConfig && Array.isArray(window.examConfig.questions)) {
-                let c = 0;
-                for (let i = 0; i < window.examConfig.questions.length; i++) {
-                  const q = window.examConfig.questions[i];
-                  const ans = answersData[i];
-                  if (ans == null) continue;
-                  // answersData could be objects like {qid:..., answer: index} or just index
-                  const selectedIndex = (typeof ans === 'number') ? ans : (ans && (ans.selected || ans.answer || ans.choice) || ans.index);
-                  if (typeof selectedIndex === 'number' && q.answerIndex === Number(selectedIndex)) c++;
-                }
-                return c;
-              }
-              return null;
-            })();
-
-            if (score === null) score = 0;
-
-            // duration: try common fields
-            let durationSeconds = null;
-            if (summary && typeof summary.durationSeconds === 'number') durationSeconds = summary.durationSeconds;
-            else if (summary && typeof summary.timeSpent === 'number') durationSeconds = summary.timeSpent;
-            else if (summary && typeof summary.seconds === 'number') durationSeconds = summary.seconds;
-
-            // Build answer detail array if possible
-            let answers = [];
-            if (Array.isArray(answersData)) {
-              // Normalize items to { qid, answer, correct }
-              answers = answersData.map((a, idx) => {
-                const q = (window.examConfig && window.examConfig.questions && window.examConfig.questions[idx]) || {};
-                let sel = null;
-                if (typeof a === 'number') sel = a;
-                else if (a && typeof a === 'object') sel = a.selected ?? a.answer ?? a.choice ?? a.index ?? null;
-                const correct = typeof sel === 'number' && typeof q.answerIndex === 'number' ? (Number(sel) === Number(q.answerIndex)) : undefined;
-                return { qid: q.id || idx + 1, answer: sel, correct };
-              });
-            }
-
-            const record = {
-              score: Number(score),
-              total: Number(total),
-              durationSeconds: durationSeconds != null ? Number(durationSeconds) : 0,
-              category: (window.examConfig && window.examConfig.sectionTitle) ? window.examConfig.sectionTitle : 'Circles (Practice)',
-              answers: answers
-            };
-
-            window.DreamSchoolRecorder && window.DreamSchoolRecorder.recordTestResult && window.DreamSchoolRecorder.recordTestResult(record);
-            // Optionally push to server in background
-            if (window.DreamSchoolRecorder && window.DreamSchoolRecorder.pushToServer) {
-              window.DreamSchoolRecorder.pushToServer(record).catch(() => {});
-            }
-          } catch (err) {
-            console.error('Failed to record practice test result:', err);
-          }
-        }
-
-        // Try to read summaryKey & storageKey out of examConfig
-        const summaryKey = (window.examConfig && window.examConfig.summaryKey) || 'dsa:summary:circles';
-        const storageKey = (window.examConfig && window.examConfig.storageKey) || 'dsa:quiz:circles';
-
-        // Helper: read summary JSON if present
-        function tryReadSummary() {
-          try {
-            const raw = localStorage.getItem(summaryKey);
-            return raw ? JSON.parse(raw) : null;
-          } catch (e) { return null; }
-        }
-
-        // Helper: read answers object/array saved by engine
-        function tryReadAnswers() {
-          try {
-            const raw = localStorage.getItem(storageKey);
-            if (!raw) return null;
-            const parsed = JSON.parse(raw);
-            // The engine might store an object with answers: [] or an array itself.
-            if (Array.isArray(parsed)) return parsed;
-            if (parsed && Array.isArray(parsed.answers)) return parsed.answers;
-            // some formats: map of qid->choiceIndex -> convert to array
-            if (parsed && typeof parsed === 'object') {
-              // attempt to return array in same order as examConfig.questions
-              const qs = (window.examConfig && window.examConfig.questions) || [];
-              const arr = qs.map(q => {
-                // try keys q.id, q1 etc
-                const key = q.id;
-                if (parsed[key] !== undefined) return parsed[key];
-                // fallback to positional array stored inside object under "responses"
-                if (Array.isArray(parsed.responses)) return parsed.responses[qs.indexOf(q)];
-                return null;
-              });
-              return arr;
-            }
-            return null;
-          } catch (e) { return null; }
-        }
-
-        // Polling helper: after finish button clicked, wait up to timeout for summary to appear
-        function waitForSummaryAndRecord(timeoutMs = 2500) {
-          const start = Date.now();
-          (function poll() {
-            const summary = tryReadSummary();
-            const answers = tryReadAnswers();
-            if (summary || answers) {
-              // If summary exists, prefer summary fields; always pass answers if available
-              recordFromSummaryData(summary || {}, answers || []);
-              return;
-            }
-            if (Date.now() - start > timeoutMs) {
-              // Last-ditch: try compute from answers alone
-              const fallbackAnswers = tryReadAnswers();
-              if (fallbackAnswers) {
-                recordFromSummaryData({}, fallbackAnswers);
-              } else {
-                // nothing to record
-                console.warn('No summary or answers found to record after finish.');
-              }
-              return;
-            }
-            setTimeout(poll, 120);
-          })();
-        }
-
-        // Attach a capture handler to the finish button. This runs alongside the engine.
-        finishBtn.addEventListener('click', function () {
-          // Give engine first crack at writing summary to localStorage, then capture it.
-          // The polling handles synchronous and slightly-asynchronous writes.
-          setTimeout(() => waitForSummaryAndRecord(3000), 10);
-        });
-
-        // Also capture when the engine writes directly to the summaryKey (in case it doesn't go through finish button)
-        // Monkey-patch localStorage.setItem to detect writes to summaryKey (non-invasive and safe fallback)
-        try {
-          const originalSetItem = Storage.prototype.setItem;
-          Storage.prototype.setItem = function (k, v) {
-            try {
-              originalSetItem.apply(this, [k, v]);
-              if (String(k) === String(summaryKey) || String(k) === String(storageKey)) {
-                // Small async delay so other handlers can finish
-                setTimeout(() => {
-                  const summary = tryReadSummary();
-                  const answers = tryReadAnswers();
-                  if (summary || answers) {
-                    recordFromSummaryData(summary || {}, answers || []);
-                  }
-                }, 10);
-              }
-            } catch (e) {
-              // If any error occurs, ensure original still works
-              try { originalSetItem.apply(this, [k, v]); } catch (_) {}
-            }
-          };
-        } catch (err) {
-          // ignore if we can't patch (some environments restrict prototype changes)
-        }
-      });
-    })();
-  </script>
+/* ===================== Init ===================== */
+(function init(){
+  resetPractice();
+  render();
+  startTimer();
+})();
+</script>
 </body>
 </html>
