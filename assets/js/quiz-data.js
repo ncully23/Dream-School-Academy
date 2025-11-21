@@ -16,14 +16,15 @@
   // <script src="/assets/js/quiz-engine.js"></script>
   //
   // Fill in your own config from the Firebase console:
-  const firebaseConfig = {
-    apiKey: "YOUR_API_KEY",
-    authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
-    projectId: "YOUR_PROJECT_ID",
-    storageBucket: "YOUR_PROJECT_ID.appspot.com",
-    messagingSenderId: "YOUR_SENDER_ID",
-    appId: "YOUR_APP_ID"
-  };
+const firebaseConfig = {
+  apiKey: "AIzaSyD7R7ZsmTpGojgLNt7w_R0tm_mWg_FZEYE",
+  authDomain: "dream-school-academy.firebaseapp.com",
+  projectId: "dream-school-academy",
+  storageBucket: "dream-school-academy.firebasestorage.app",
+  messagingSenderId: "665412130733",
+  appId: "1:665412130733:web:c3d59ab2c20f65a2277324",
+  measurementId: "G-HCJWBWZXKZ"
+};
 
   if (!firebase.apps.length) {
     firebase.initializeApp(firebaseConfig);
