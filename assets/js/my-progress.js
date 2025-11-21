@@ -1,4 +1,7 @@
-// Renders "My Progress" summary and history using DreamSchoolRecorder
+// my-progress.js
+// "My Progress" page: shows combined results from Firestore (quizData)
+// and local fallback (DreamSchoolRecorder), with summary + history table.
+
 (function () {
   // Prevent double initialization if script is loaded twice
   if (window.__dsa_my_progress_initialized) return;
@@ -10,15 +13,21 @@
     const exportBtn = document.getElementById('exportBtn');
     const clearBtn = document.getElementById('clearBtn');
 
+    const loadingEl = document.getElementById('progressLoading');   // optional
+    const unsyncedEl = document.getElementById('unsyncedBanner');   // optional
+
+    // Optional modal elements for nicer details UI
+    const detailsModal = document.getElementById('detailsModal');
+    const detailsBody = document.getElementById('detailsBody');
+    const detailsClose = document.getElementById('detailsClose');
+
     // If the page doesn't include the expected elements, bail quietly
     if (!summaryEl || !historyBody) return;
 
+    // -----------------------------
+    // Helpers
+    // -----------------------------
 
-    // secToHMS converts seconds to human readable time.
-    // If the input s is missing, zero, or negative, it simply returns '-' to indicate no valid duration.
-    // Otherwise, it first calculates the number of whole hours by dividing by 3600, then uses the remainder to compute whole minutes, and finally takes the remaining seconds.
-    // It returns a formatted string that only includes units that are non-zero—for example, 3725 becomes "1h 2m 5s", 125 becomes "2m 5s", and 7 becomes "7s".
-    // This allows durations to display compactly without unnecessary zeros.
     function secToHMS(s) {
       if (!s || s <= 0) return '-';
       const h = Math.floor(s / 3600);
@@ -27,36 +36,203 @@
       return (h ? h + 'h ' : '') + (m ? m + 'm ' : '') + (sec ? sec + 's' : '');
     }
 
-
-
-    // escapeHtml ensures that any text you insert into the page is safe to display as plain text rather than being interpreted as HTML.
-    // If the input s is missing or empty, it returns an empty string
-    // Otherwise, it converts s to a string and replaces any characters that could be interpreted as HTML—specifically &, <, >, ", and '—with their corresponding HTML entity codes (like &lt; for < and &amp; for &).
-    // This prevents injected text from accidentally breaking the page layout or enabling security issues such as HTML injection or XSS.
-    // The result is a sanitized version of the input that displays exactly as written.
-    function escapeHtml(s) {
-      if (!s) return '';
-      return String(s).replace(/[&<>"']/g, m => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[m]));
+    function escapeHtml(str) {
+      if (!str) return '';
+      return String(str).replace(/[&<>"']/g, m => ({
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        "'": '&#39;'
+      }[m]));
     }
 
+    function toDateMaybe(ts) {
+      if (!ts) return new Date();
+      if (ts instanceof Date) return ts;
+      if (typeof ts === 'string') return new Date(ts);
+      if (typeof ts.toDate === 'function') return ts.toDate(); // Firestore Timestamp
+      return new Date();
+    }
 
+    function computePercent(score, total) {
+      if (!total || total <= 0) return 0;
+      return Math.round((score / total) * 10000) / 100; // 2 decimals
+    }
 
-// renderSummary builds the top summary panel for the My Progress page using the list of all recorded practice tests.
-// If the list is empty or missing, it simply inserts a message telling the student they have no recorded tests yet and exits.
-// Otherwise, it calculates four key statistics: the total number of tests taken, the average score percentage, the highest-scoring test, and the most recent test.
-// It computes the average by summing all percent values (treating missing ones as 0), dividing by the number of tests, and rounding to two decimal places.
-// It finds the best test by comparing each record’s percent score, and it gets the latest test by taking the last element of the list.
-// After computing these values, the function injects an HTML block into summaryEl, displaying these statistics in a styled grid so the user can quickly see their overall progress.
-    
+    /**
+     * Normalize both Firestore attempts and old DreamSchoolRecorder records
+     * into a common shape:
+     *
+     * {
+     *   id: string,
+     *   timestamp: Date,
+     *   score: number,
+     *   total: number,
+     *   percent: number,
+     *   durationSeconds: number,
+     *   category: string,
+     *   answers: Array<...>,
+     *   synced: boolean      // true if from Firestore, false if only local
+     * }
+     */
+    function normalizeAttempt(raw, opts) {
+      const options = opts || {};
+      const fromFirestore = !!options.fromFirestore;
+
+      // Case 1: Firestore "attempt" (quiz-data.appendAttempt)
+      if (raw && raw.totals && Array.isArray(raw.items)) {
+        const totals = raw.totals;
+        const items = raw.items;
+
+        const score = typeof totals.correct === 'number' ? totals.correct : 0;
+        const total = typeof totals.total === 'number' ? totals.total : items.length;
+        const percent =
+          typeof totals.scorePercent === 'number'
+            ? totals.scorePercent
+            : computePercent(score, total);
+
+        const durationSeconds =
+          typeof totals.timeSpentSec === 'number' ? totals.timeSpentSec : 0;
+
+        const timestamp = toDateMaybe(raw.createdAt || raw.timestamp);
+
+        const category = raw.sectionId || raw.title || 'Practice';
+
+        // Simplify answers if needed
+        const answers = items.map(it => ({
+          qid: it.id || it.number || null,
+          answerIndex: typeof it.chosenIndex === 'number' ? it.chosenIndex : null,
+          correctIndex: typeof it.correctIndex === 'number' ? it.correctIndex : null,
+          correct: !!it.correct
+        }));
+
+        return {
+          id: raw.id || raw.attemptId || 'fs_' + (timestamp.getTime()),
+          timestamp,
+          score,
+          total,
+          percent,
+          durationSeconds,
+          category,
+          answers,
+          synced: true
+        };
+      }
+
+      // Case 2: Old DreamSchoolRecorder records
+      if (raw && typeof raw.score === 'number' && typeof raw.total === 'number') {
+        const score = raw.score;
+        const total = raw.total;
+        const percent =
+          typeof raw.percent === 'number' ? raw.percent : computePercent(score, total);
+        const durationSeconds =
+          typeof raw.durationSeconds === 'number' ? raw.durationSeconds : 0;
+        const timestamp = toDateMaybe(raw.timestamp);
+        const category = raw.category || 'General';
+
+        return {
+          id: raw.id || 'local_' + timestamp.getTime(),
+          timestamp,
+          score,
+          total,
+          percent,
+          durationSeconds,
+          category,
+          answers: Array.isArray(raw.answers) ? raw.answers : [],
+          synced: false
+        };
+      }
+
+      // Fallback: very minimal
+      const fallbackTime = toDateMaybe(raw && raw.timestamp);
+      return {
+        id: (raw && raw.id) || 'unknown_' + fallbackTime.getTime(),
+        timestamp: fallbackTime,
+        score: raw && typeof raw.score === 'number' ? raw.score : 0,
+        total: raw && typeof raw.total === 'number' ? raw.total : 0,
+        percent: 0,
+        durationSeconds: 0,
+        category: (raw && raw.category) || 'Unknown',
+        answers: [],
+        synced: !!fromFirestore
+      };
+    }
+
+    // -----------------------------
+    // Data loading: Firestore + local fallback
+    // -----------------------------
+
+    async function fetchAllResults() {
+      let firestoreAttempts = [];
+      let localAttempts = [];
+      let hasUnsynced = false;
+      let source = 'none';
+
+      // 1) Try Firestore via quizData
+      if (window.quizData && typeof window.quizData.loadAllResultsForUser === 'function') {
+        try {
+          const fsRaw = await window.quizData.loadAllResultsForUser();
+          firestoreAttempts = (fsRaw || []).map(r =>
+            normalizeAttempt(r, { fromFirestore: true })
+          );
+          if (firestoreAttempts.length) {
+            source = 'firestore';
+          }
+        } catch (err) {
+          console.error('MyProgress: failed to load Firestore attempts', err);
+        }
+      }
+
+      // 2) Local fallback via DreamSchoolRecorder
+      if (window.DreamSchoolRecorder && typeof DreamSchoolRecorder.getAllResults === 'function') {
+        try {
+          const recRaw = DreamSchoolRecorder.getAllResults() || [];
+          localAttempts = recRaw.map(r => normalizeAttempt(r, { fromFirestore: false }));
+          if (localAttempts.length && source === 'none') {
+            source = 'local';
+          } else if (localAttempts.length && firestoreAttempts.length) {
+            source = 'mixed';
+          }
+        } catch (err) {
+          console.error('MyProgress: failed to load local recorder attempts', err);
+        }
+      }
+
+      const all = [...firestoreAttempts, ...localAttempts];
+
+      // sort newest → oldest
+      all.sort((a, b) => b.timestamp - a.timestamp);
+
+      hasUnsynced = localAttempts.some(r => !r.synced) || all.some(r => r.synced === false);
+
+      return {
+        list: all,
+        source,
+        hasUnsynced
+      };
+    }
+
+    // -----------------------------
+    // Rendering
+    // -----------------------------
+
     function renderSummary(list) {
       if (!list || !list.length) {
-        summaryEl.innerHTML = '<p>No practice tests recorded yet. Take a practice test and it will appear here.</p>';
+        summaryEl.innerHTML = `
+          <p>No practice tests recorded yet.</p>
+          <p>Once you take a practice exam while signed in, your results will appear here.</p>
+        `;
         return;
       }
+
       const totalTests = list.length;
-      const avgPercent = Math.round((list.reduce((s, r) => s + (r.percent || 0), 0) / totalTests) * 100) / 100;
+      const avgPercent =
+        Math.round(
+          (list.reduce((sum, r) => sum + (r.percent || 0), 0) / totalTests) * 100
+        ) / 100;
       const best = list.reduce((a, b) => (a.percent >= b.percent ? a : b));
-      const last = list.slice(-1)[0];
+      const last = list[0]; // list is sorted newest → oldest
 
       summaryEl.innerHTML = `
         <div class="stats-grid">
@@ -73,132 +249,216 @@
             <div class="stat-label">Best score</div>
           </div>
           <div class="stat">
-            <div class="stat-value">${new Date(last.timestamp).toLocaleString()}</div>
+            <div class="stat-value">${last.timestamp.toLocaleString()}</div>
             <div class="stat-label">Last taken</div>
           </div>
         </div>
       `;
     }
 
-// renderTable constructs the full history table of all practice tests by transforming each record in the list into an HTML table row.
-// It first makes a reversed copy of the list so the most recent test appears at the top.
-// For each record r, it converts the stored timestamp into a readable date/time, escapes the category name for safety, and inserts the raw score, total questions, percentage, and formatted duration using secToHMS.
-// It also generates a “View” button for each row, embedding the test’s unique ID in a data-id attribute so another function can later open detailed results for that specific test.
-// All of these row strings are joined together and placed into the table’s <tbody> (historyBody).
-// If no tests exist, the function instead inserts a single row with a message spanning all seven columns. This produces the scrollable test history students see on the My Progress page.
-    
     function renderTable(list) {
-      const rows = (list.slice().reverse().map(r => {
-        const date = new Date(r.timestamp).toLocaleString();
-        const detailsBtn = `<button class="details-btn" data-id="${r.id}">View</button>`;
-        return `
-          <tr>
-            <td>${date}</td>
-            <td>${escapeHtml(r.category)}</td>
-            <td>${r.score}</td>
-            <td>${r.total}</td>
-            <td>${r.percent}%</td>
-            <td>${secToHMS(r.durationSeconds)}</td>
-            <td>${detailsBtn}</td>
-          </tr>
-        `;
-      })).join('');
-      historyBody.innerHTML = rows || '<tr><td colspan="7">No tests yet</td></tr>';
-    }
+      if (!list || !list.length) {
+        historyBody.innerHTML = '<tr><td colspan="7">No tests yet</td></tr>';
+        return;
+      }
 
-
-// The first part of attachRowListeners ensures that each “View” button is free of any old or duplicated event listeners before new ones are added.
-// It selects all elements with the class .details-btn—each one corresponding to a row in the test history—and for each button, it creates a clone (cloneNode(true)), which copies the button’s appearance and attributes but does not carry over previous event listeners.
-// The script then replaces the original button with its clean clone.
-// This defensive pattern prevents multiple click handlers from accumulating if the table is re-rendered—which happens whenever new results are saved or the page is refreshed—ensuring each button will have exactly one listener attached afterward.
-    
-    function attachRowListeners(list) {
-      document.querySelectorAll('.details-btn').forEach(btn => {
-        // remove existing listener by cloning the node (defensive if multiple loads)
-        const newBtn = btn.cloneNode(true);
-        btn.parentNode.replaceChild(newBtn, btn);
+      // Group by category/section
+      const groups = {};
+      list.forEach(r => {
+        const key = r.category || 'General';
+        if (!groups[key]) groups[key] = [];
+        groups[key].push(r);
       });
 
-// Once the first part clears old listeners by cloning the buttons, this part attaches fresh, clean click handlers to every .details-btn.
-// It selects all the newly cloned .details-btn buttons.
-// For each button, it adds a single click event listener.
-// When clicked: 1. It reads the record ID stored in data-id. 2. It finds the matching test record in list. 3. If no record matches, it alerts an error.
-// 4. If the record exists, it builds a list of details: a. Date/time of test, b. Category (e.g., “Math Module 2”) c. Score, total, and percent; d. Duration in seconds e. Up to the first 50 answers, each showing: Question ID Student’s answer Whether it was correct All lines are joined into a clean block of text.
-// The results are displayed using alert(...) (a modal could later replace this). This part is what actually makes the “View” button work, pulling data from list and showing a detailed summary for the selected test.
-      
-      document.querySelectorAll('.details-btn').forEach(btn => {
-        btn.addEventListener('click', () => {
-          const id = btn.dataset.id;
-          const rec = list.find(r => r.id === id);
-          if (!rec) return alert('Record not found');
-          const details = [
-            `Date: ${new Date(rec.timestamp).toLocaleString()}`,
-            `Category: ${rec.category}`,
-            `Score: ${rec.score} / ${rec.total} (${rec.percent}%)`,
-            `Duration: ${rec.durationSeconds ? rec.durationSeconds + 's' : '—'}`,
-          ];
-          if (Array.isArray(rec.answers) && rec.answers.length) {
-            details.push('', 'Answers:');
-            rec.answers.slice(0, 50).forEach(a => {
-              details.push(`Q ${a.qid}: answered="${a.answer}" correct=${a.correct}`);
-            });
-            if (rec.answers.length > 50) details.push('...truncated...');
-          }
-          // Replace alert with a modal if you prefer
-          alert(details.join('\n'));
+      const categories = Object.keys(groups).sort();
+
+      const rows = [];
+
+      categories.forEach(cat => {
+        const group = groups[cat];
+
+        // Group header row
+        rows.push(`
+          <tr class="group-row">
+            <td colspan="7">${escapeHtml(cat)}</td>
+          </tr>
+        `);
+
+        group.forEach(r => {
+          const dateStr = r.timestamp.toLocaleString();
+          const unsyncedIcon = r.synced ? '' : ' ⚠';
+          const detailsBtn = `<button class="details-btn" data-id="${escapeHtml(r.id)}">View</button>`;
+
+          rows.push(`
+            <tr>
+              <td>${escapeHtml(dateStr)}</td>
+              <td>${escapeHtml(r.category)}${unsyncedIcon}</td>
+              <td>${r.score}</td>
+              <td>${r.total}</td>
+              <td>${r.percent}%</td>
+              <td>${secToHMS(r.durationSeconds)}</td>
+              <td>${detailsBtn}</td>
+            </tr>
+          `);
         });
       });
+
+      historyBody.innerHTML = rows.join('');
     }
 
+    // -----------------------------
+    // Details view (modal or alert)
+    // -----------------------------
 
-// This block handles updating the page, wiring up the export/clear buttons, and ensures DreamSchoolRecorder is fully loaded before trying to display anything.
-// The refresh() function is the central “update everything” routine:
-// 1. it safely retrieves all stored test results from DreamSchoolRecorder (falling back to an empty list if the recorder isn’t ready)
-// 2. then calls renderSummary, renderTable, and attachRowListeners to rebuild the entire progress page.
-// Below that, the script adds click handlers to the optional Export and Clear buttons—export simply calls DreamSchoolRecorder.exportResults() if it exists, while clear asks for confirmation, calls clearAllResults(), and then reruns refresh() so the UI immediately shows no tests.
-// Finally, the ensureRecorderReady() function is a small polling loop designed to handle situations where this script loads before the DreamSchoolRecorder script.
-// It checks up to 10 times (every 120 ms) to see whether DreamSchoolRecorder.getAllResults is available.
-// Once it is, it calls refresh() and stops. If all attempts fail, it renders empty UI sections instead of crashing.
-// This ensures your progress page always initializes cleanly regardless of script load order.
-    
-    function refresh() {
-      const list = (window.DreamSchoolRecorder && DreamSchoolRecorder.getAllResults && DreamSchoolRecorder.getAllResults()) || [];
-      renderSummary(list);
-      renderTable(list);
-      attachRowListeners(list);
+    function openDetailsModal(record) {
+      if (!detailsModal || !detailsBody) {
+        // Fallback: simple alert
+        const lines = buildDetailsLines(record);
+        alert(lines.join('\n'));
+        return;
+      }
+
+      const lines = buildDetailsLines(record);
+      detailsBody.textContent = lines.join('\n');
+
+      if (typeof detailsModal.showModal === 'function') {
+        // <dialog> element
+        detailsModal.showModal();
+      } else {
+        // Fallback display via CSS class
+        detailsModal.style.display = 'block';
+      }
+    }
+
+    function closeDetailsModal() {
+      if (!detailsModal) return;
+      if (typeof detailsModal.close === 'function') {
+        try { detailsModal.close(); } catch (e) {}
+      } else {
+        detailsModal.style.display = 'none';
+      }
+    }
+
+    function buildDetailsLines(rec) {
+      const lines = [
+        `Date: ${rec.timestamp.toLocaleString()}`,
+        `Category: ${rec.category}`,
+        `Score: ${rec.score} / ${rec.total} (${rec.percent}%)`,
+        `Duration: ${rec.durationSeconds ? rec.durationSeconds + 's' : '—'}`
+      ];
+      if (Array.isArray(rec.answers) && rec.answers.length) {
+        lines.push('', 'Answers:');
+        rec.answers.slice(0, 50).forEach((a, idx) => {
+          const qid = a.qid != null ? a.qid : (idx + 1);
+          const ans = a.answerIndex != null ? a.answerIndex : a.answer;
+          lines.push(`Q ${qid}: answer="${ans}" correct=${!!a.correct}`);
+        });
+        if (rec.answers.length > 50) lines.push('...truncated...');
+      }
+      return lines;
+    }
+
+    if (detailsClose) {
+      detailsClose.addEventListener('click', closeDetailsModal);
+    }
+    if (detailsModal) {
+      detailsModal.addEventListener('click', (e) => {
+        // Close if clicking backdrop on <dialog> or outside content in custom modal
+        if (e.target === detailsModal) {
+          closeDetailsModal();
+        }
+      });
+    }
+
+    // -----------------------------
+    // Event delegation for "View" buttons
+    // -----------------------------
+
+    let lastResultsList = []; // keep last loaded list for lookup
+
+    if (historyBody) {
+      historyBody.addEventListener('click', (e) => {
+        const btn = e.target.closest('.details-btn');
+        if (!btn) return;
+
+        const id = btn.dataset.id;
+        const rec = lastResultsList.find(r => r.id === id);
+        if (!rec) {
+          alert('Record not found.');
+          return;
+        }
+        openDetailsModal(rec);
+      });
+    }
+
+    // -----------------------------
+    // Export + Clear handlers
+    // -----------------------------
+
+    async function exportAllResults() {
+      const { list } = await fetchAllResults();
+      const data = JSON.stringify(list, null, 2);
+      const blob = new Blob([data], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'dreamschool-progress-export.json';
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
     }
 
     if (exportBtn) {
       exportBtn.addEventListener('click', function () {
-        if (window.DreamSchoolRecorder && DreamSchoolRecorder.exportResults) {
-          DreamSchoolRecorder.exportResults();
-        }
+        exportAllResults().catch(err => {
+          console.error('MyProgress: export failed', err);
+          alert('Failed to export results.');
+        });
       });
     }
 
     if (clearBtn) {
       clearBtn.addEventListener('click', function () {
-        if (!confirm('Clear all recorded practice tests? This action cannot be undone.')) return;
-        if (window.DreamSchoolRecorder && DreamSchoolRecorder.clearAllResults) {
-          DreamSchoolRecorder.clearAllResults();
-          refresh();
+        if (!confirm('Clear all locally stored practice tests? Cloud-saved results in your account will not be deleted.')) {
+          return;
         }
+        if (window.DreamSchoolRecorder && typeof DreamSchoolRecorder.clearAllResults === 'function') {
+          DreamSchoolRecorder.clearAllResults();
+        }
+        // We intentionally do NOT delete Firestore attempts from here.
+        refresh().catch(() => {});
       });
     }
 
-    // If recorder isn't present yet, poll briefly (handles script-order issues)
-    (function ensureRecorderReady(attempts = 10) {
-      if (window.DreamSchoolRecorder && typeof window.DreamSchoolRecorder.getAllResults === 'function') {
-        refresh();
-        return;
+    // -----------------------------
+    // Main refresh
+    // -----------------------------
+
+    async function refresh() {
+      try {
+        if (loadingEl) loadingEl.style.display = 'block';
+        if (unsyncedEl) unsyncedEl.style.display = 'none';
+
+        const { list, hasUnsynced } = await fetchAllResults();
+        lastResultsList = list;
+
+        renderSummary(list);
+        renderTable(list);
+
+        if (unsyncedEl) {
+          unsyncedEl.style.display = hasUnsynced ? 'block' : 'none';
+        }
+      } catch (err) {
+        console.error('MyProgress: refresh failed', err);
+        summaryEl.innerHTML = '<p>Could not load your progress. Please try again later.</p>';
+        historyBody.innerHTML = '<tr><td colspan="7">Error loading results</td></tr>';
+      } finally {
+        if (loadingEl) loadingEl.style.display = 'none';
       }
-      if (attempts <= 0) {
-        // show empty UI
-        renderSummary([]);
-        renderTable([]);
-        return;
-      }
-      setTimeout(() => ensureRecorderReady(attempts - 1), 120);
-    })();
+    }
+
+    // Initial load
+    refresh();
   });
 })();
