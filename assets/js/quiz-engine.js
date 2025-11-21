@@ -6,19 +6,101 @@
   }
 
   // -----------------------
+  // Helpers
+  // -----------------------
+  function clamp(n, min, max) {
+    return Math.max(min, Math.min(max, n));
+  }
+
+  // Simple attempt ID generator (used for local + Firestore records)
+  function createAttemptId() {
+    return "t_" + Date.now() + "_" + Math.floor(Math.random() * 10000);
+  }
+
+  const ATTEMPT_STORAGE_KEY = "dreamschool:attempts:v1";
+
+  // Minimal local attempt history (recorder-style)
+  function recordLocalAttempt(summary) {
+    try {
+      const raw = localStorage.getItem(ATTEMPT_STORAGE_KEY);
+      const list = raw ? JSON.parse(raw) : [];
+
+      const totals = summary.totals || {};
+      const score = totals.correct || 0;
+      const total = totals.total || 0;
+      const percent =
+        total > 0 ? Math.round((score / total) * 10000) / 100 : 0;
+
+      const record = {
+        id: summary.attemptId || createAttemptId(),
+        sectionId: summary.sectionId || exam.sectionId || null,
+        title: summary.title || exam.sectionTitle || "",
+        timestamp: summary.generatedAt || new Date().toISOString(),
+        score,
+        total,
+        percent,
+        durationSeconds: totals.timeSpentSec || 0
+      };
+
+      list.push(record);
+      localStorage.setItem(ATTEMPT_STORAGE_KEY, JSON.stringify(list));
+    } catch (e) {
+      // non-fatal; just a convenience history
+      console.warn("quiz-engine: failed to record local attempt", e);
+    }
+  }
+
+  // Build a lightweight progressState for quiz-data.js
+  function buildProgressState(state) {
+    const currentQ = exam.questions[state.index];
+    const answers = {};
+
+    Object.keys(state.answers).forEach((qid) => {
+      const q = exam.questions.find((qq) => qq.id === qid);
+      const chosenIndex = state.answers[qid];
+      const correctIndex =
+        q && typeof q.answerIndex === "number" ? q.answerIndex : null;
+      const isCorrect =
+        typeof chosenIndex === "number" &&
+        typeof correctIndex === "number" &&
+        chosenIndex === correctIndex;
+
+      answers[qid] = {
+        chosenIndex,
+        correctIndex,
+        isCorrect
+      };
+    });
+
+    return {
+      sectionId: exam.sectionId,
+      title: exam.sectionTitle,
+      lastQuestionId: currentQ ? currentQ.id : null,
+      lastQuestionIndex: state.index,
+      lastScreenIndex: 0,
+      timerHidden: state.timerHidden,
+      questionCountHidden: false,
+      reviewMode: state.reviewMode,
+      answers
+    };
+  }
+
+  // -----------------------
   // State
   // -----------------------
   const state = {
     index: 0,
-    answers: {},          // { qid: choiceIndex }
-    flags: {},            // { qid: true/false }
-    elims: {},            // { qid: Set(choiceIndex) }
+    answers: {}, // { qid: choiceIndex }
+    flags: {}, // { qid: true/false }
+    elims: {}, // { qid: Set(choiceIndex) }
     eliminateMode: false,
     remaining: exam.timeLimitSec || 0,
     timerId: null,
     timerHidden: false,
     finished: false,
-    reviewMode: false
+    reviewMode: false,
+    startedAt: null,
+    attemptId: null
   };
 
   // -----------------------
@@ -58,10 +140,6 @@
     dashrow: document.getElementById("dashrow")
   };
 
-  function clamp(n, min, max) {
-    return Math.max(min, Math.min(max, n));
-  }
-
   // -----------------------
   // Header ticks & progress bar skeletons
   // -----------------------
@@ -92,7 +170,6 @@
   function save() {
     if (!exam.storageKey) return;
 
-    // Convert Sets to plain arrays
     const elimsObj = {};
     Object.keys(state.elims).forEach((q) => {
       elimsObj[q] = Array.from(state.elims[q] || []);
@@ -111,6 +188,19 @@
       );
     } catch (e) {
       // storage may be full or disabled; fail silently
+    }
+
+    // Optional: push in-progress state to Firestore via quiz-data.js
+    if (
+      window.quizData &&
+      typeof window.quizData.saveSessionProgress === "function"
+    ) {
+      try {
+        const progressState = buildProgressState(state);
+        window.quizData.saveSessionProgress(progressState).catch(() => {});
+      } catch (e) {
+        // ignore progress sync errors
+      }
     }
   }
 
@@ -181,7 +271,7 @@
 
   function startTimer() {
     if (state.timerId || state.finished || !state.remaining) return;
-    updateTimeDisplay(); // initial display
+    updateTimeDisplay();
     state.timerId = setInterval(tick, 1000);
   }
 
@@ -233,7 +323,6 @@
 
     if (el.qbadge) el.qbadge.textContent = state.index + 1;
 
-    // Use innerHTML so TeX is kept
     if (el.qtitle) el.qtitle.innerHTML = q.prompt;
 
     const letter = (i) => String.fromCharCode(65 + i);
@@ -256,25 +345,22 @@
         .join("");
     }
 
-    // Wire choice interactions
     if (el.choices) {
       el.choices.querySelectorAll(".choice").forEach((choice) => {
         const idx = Number(choice.dataset.choice);
         const input = choice.querySelector("input");
 
-        // Eliminate mode click
         choice.addEventListener("click", (ev) => {
           if (!state.eliminateMode) return;
-          if (ev.target.tagName.toLowerCase() === "input") return; // let radio behave normally
+          if (ev.target.tagName.toLowerCase() === "input") return;
           ev.preventDefault();
           toggleElimination(q.id, idx);
           choice.classList.toggle("eliminated");
           save();
         });
 
-        // Answer selection
         input.addEventListener("change", () => {
-          state.answers[q.id] = idx; // only one answer at a time
+          state.answers[q.id] = idx;
           save();
           renderProgress();
           buildPopGrid();
@@ -296,7 +382,6 @@
       el.elimHint.style.display = state.eliminateMode ? "block" : "none";
     }
 
-    // Ask MathJax to typeset the current card if available
     if (window.MathJax && MathJax.typesetPromise) {
       MathJax.typesetPromise([el.qtitle, el.choices]).catch(() => {});
     }
@@ -471,20 +556,43 @@
       };
     });
 
+    const answeredCount = items.filter((it) => it.chosenIndex !== null).length;
+    const correctCount = items.filter((it) => it.correct).length;
+    const totalCount = items.length;
+
+    const elapsedSec = state.startedAt
+      ? Math.max(0, Math.round((Date.now() - state.startedAt) / 1000))
+      : Math.max(0, (exam.timeLimitSec || 0) - state.remaining);
+
     const totals = {
-      answered: items.filter((it) => it.chosenIndex !== null).length,
-      correct: items.filter((it) => it.correct).length,
-      total: items.length,
-      timeSpentSec: (exam.timeLimitSec || 0) - state.remaining
+      answered: answeredCount,
+      correct: correctCount,
+      total: totalCount,
+      timeSpentSec: elapsedSec,
+      scorePercent:
+        totalCount > 0
+          ? Math.round((correctCount / totalCount) * 100)
+          : 0
     };
 
+    const attemptId = state.attemptId || createAttemptId();
+
     const summary = {
+      attemptId,
       sectionId: exam.sectionId,
       title: exam.sectionTitle,
       generatedAt: new Date().toISOString(),
       totals,
-      items
+      items,
+      uiState: {
+        timerHidden: state.timerHidden,
+        reviewMode: state.reviewMode,
+        lastQuestionIndex: state.index
+      }
     };
+
+    // Local attempt history (recorder-style)
+    recordLocalAttempt(summary);
 
     // Save to Firestore via quiz-data.js if available
     if (window.quizData && typeof window.quizData.appendAttempt === "function") {
@@ -493,9 +601,21 @@
         .catch((err) =>
           console.error("quiz-engine: failed to save attempt to Firestore", err)
         );
+
+      // Clear remote in-progress session if supported
+      if (typeof window.quizData.clearSessionProgress === "function") {
+        window.quizData.clearSessionProgress(exam.sectionId).catch(() => {});
+      }
     }
 
-    // Also keep local summary for client-side review pages
+    // Clear local in-progress state now that we're done
+    try {
+      if (exam.storageKey) {
+        localStorage.removeItem(exam.storageKey);
+      }
+    } catch (e) {}
+
+    // Also keep local summary for module-specific review pages
     try {
       if (exam.summaryKey) {
         localStorage.setItem(exam.summaryKey, JSON.stringify(summary));
@@ -543,7 +663,6 @@
     });
   }
 
-  // close popup when clicking outside
   document.addEventListener("click", (e) => {
     if (!el.pop || !pill) return;
     const inside =
@@ -567,11 +686,13 @@
     state.finished = false;
     state.reviewMode = false;
     state.timerHidden = false;
+    state.startedAt = Date.now();
+    state.attemptId = createAttemptId();
   }
 
   function init() {
     resetPractice();
-    restore();   // pull saved work if it exists
+    restore(); // pull saved work if it exists
     render();
     startTimer();
   }
