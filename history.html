@@ -4,48 +4,126 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>My Progress — Dream School Academy</title>
-  <link rel="stylesheet" href="assets/css/progress.css">
+
+  <!-- Main CSS for this page -->
+  <link rel="stylesheet" href="/assets/css/progress.css" />
+  <!-- Optional: global styles / fonts if you use them -->
+  <!-- <link rel="stylesheet" href="/assets/css/site.css" /> -->
 </head>
 <body>
-  <header class="site-header">
-    <h1>My Progress</h1>
-    <nav><a href="index.html">Home</a> | <a href="practice.html">Practice</a></nav>
-  </header>
+  <!-- Site-wide header injected from a shared partial -->
+  <div id="site-header"></div>
+  <script>
+    // Reuse your global header snippet
+    fetch('/assets/header.html')
+      .then(response => response.text())
+      .then(data => {
+        const headerEl = document.getElementById('site-header');
+        if (headerEl) headerEl.innerHTML = data;
+      })
+      .catch(() => {
+        // Fallback if header.html is missing
+        const headerEl = document.getElementById('site-header');
+        if (headerEl) {
+          headerEl.innerHTML = `
+            <header class="site-header">
+              <div class="site-header-inner">
+                <h1 class="site-title">Dream School Academy</h1>
+                <nav class="site-nav">
+                  <a href="/index.html">Home</a>
+                  <a href="/practice.html">Practice</a>
+                  <a href="/my-progress.html" aria-current="page">My Progress</a>
+                </nav>
+              </div>
+            </header>
+          `;
+        }
+      });
+  </script>
 
   <main class="container">
+    <!-- Page title / intro -->
+    <header class="page-header">
+      <h1>My Progress</h1>
+      <p class="page-subtitle">
+        See your practice history, best scores, and how your performance changes over time.
+      </p>
+    </header>
+
+    <!-- Status banners -->
+    <section class="status-bar" aria-live="polite">
+      <div id="progressLoading" class="status-banner" style="display:none;">
+        Loading your progress…
+      </div>
+      <div id="unsyncedBanner" class="status-banner warning" style="display:none;">
+        ⚠ Some attempts are only stored locally on this device and are not yet synced to your account.
+      </div>
+    </section>
+
+    <!-- Summary cards (tests taken, avg score, best, last taken) -->
     <section id="summary" class="summary">
-      <!-- filled by JS -->
+      <!-- Filled by my-progress.js -->
     </section>
 
+    <!-- Controls: export + clear local history -->
     <section class="controls">
-      <button id="exportBtn">Export JSON</button>
-      <button id="clearBtn" class="danger">Clear History</button>
+      <button id="exportBtn" type="button" class="btn">
+        Export all results (JSON)
+      </button>
+      <button id="clearBtn" type="button" class="btn danger">
+        Clear local history
+      </button>
     </section>
 
-    <section>
+    <!-- Test history table -->
+    <section class="history-section">
       <h2>Test History</h2>
+      <p class="history-caption">
+        Each row shows one completed practice exam. Sections are grouped by module or category.
+      </p>
+
       <div class="table-wrap">
         <table id="historyTable" class="history-table">
           <thead>
             <tr>
-              <th>Date</th>
-              <th>Category</th>
-              <th>Score</th>
-              <th>Total</th>
-              <th>%</th>
-              <th>Duration</th>
-              <th>Details</th>
+              <th scope="col">Date</th>
+              <th scope="col">Category</th>
+              <th scope="col">Score</th>
+              <th scope="col">Total</th>
+              <th scope="col">% Correct</th>
+              <th scope="col">Duration</th>
+              <th scope="col">Details</th>
             </tr>
           </thead>
           <tbody id="historyBody">
-            <!-- rows inserted by JS -->
+            <!-- Rows inserted by my-progress.js -->
           </tbody>
         </table>
       </div>
     </section>
   </main>
 
-  <script src="assets/js/quiz-recorder.js"></script>
-  <script src="assets/js/my-progress.js"></script>
+  <!-- Optional modal for attempt details (my-progress.js will use this if present) -->
+  <dialog id="detailsModal" class="details-modal">
+    <div class="details-content">
+      <h2>Attempt details</h2>
+      <pre id="detailsBody" class="details-body"></pre>
+      <button id="detailsClose" type="button" class="btn">Close</button>
+    </div>
+  </dialog>
+
+  <!-- Firebase (needed for quiz-data.js / quizData) -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+
+  <!-- Shared quiz persistence layer (Firestore + local fallback API) -->
+  <script src="/assets/js/quiz-data.js"></script>
+
+  <!-- Legacy local recorder (for older practice pages, used as fallback) -->
+  <script src="/assets/js/quiz-recorder.js"></script>
+
+  <!-- Progress page logic (the rewritten my-progress.js I gave you) -->
+  <script src="/assets/js/my-progress.js"></script>
 </body>
 </html>
