@@ -462,12 +462,23 @@
     };
 
     const summary = {
+      sectionId: exam.sectionId, // optional, defined in examConfig
       title: exam.sectionTitle,
       generatedAt: new Date().toISOString(),
       totals,
       items
     };
 
+    // 🔹 Save to Firestore via quiz-data.js if available
+    if (window.quizData && typeof window.quizData.appendAttempt === "function") {
+      window.quizData
+        .appendAttempt(summary)
+        .catch((err) =>
+          console.error("quiz-engine: failed to save attempt to Firestore", err)
+        );
+    }
+
+    // Also keep local summary for client-side review pages
     try {
       if (exam.summaryKey) {
         localStorage.setItem(exam.summaryKey, JSON.stringify(summary));
