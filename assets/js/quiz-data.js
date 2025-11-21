@@ -1,30 +1,32 @@
 // quiz-data.js
-// Handles exam metadata AND Firebase persistence for results, statistics,
+// Handles Firebase persistence for results, statistics,
 // and in-progress session state (inspired by PR's progress script).
+//
+// This version is UNIVERSAL: it does NOT define window.examConfig.
+// Each quiz page should define its own examConfig, for example:
+//
+// Then include:
+// <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+// <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+// <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+// <script src="/assets/js/quiz-data.js"></script>
+// <script src="/assets/js/quiz-engine.js"></script>
 
 (function () {
   // -----------------------------
   // 1. Firebase setup
   // -----------------------------
-  //
-  // REQUIREMENT in your HTML *before* this file:
-  //
-  // <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
-  // <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
-  // <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
-  // <script src="/assets/js/quiz-data.js"></script>
-  // <script src="/assets/js/quiz-engine.js"></script>
-  //
+
   // Fill in your own config from the Firebase console:
-const firebaseConfig = {
-  apiKey: "AIzaSyD7R7ZsmTpGojgLNt7w_R0tm_mWg_FZEYE",
-  authDomain: "dream-school-academy.firebaseapp.com",
-  projectId: "dream-school-academy",
-  storageBucket: "dream-school-academy.firebasestorage.app",
-  messagingSenderId: "665412130733",
-  appId: "1:665412130733:web:c3d59ab2c20f65a2277324",
-  measurementId: "G-HCJWBWZXKZ"
-};
+  const firebaseConfig = {
+    apiKey: "AIzaSyD7R7ZsmTpGojgLNt7w_R0tm_mWg_FZEYE",
+    authDomain: "dream-school-academy.firebaseapp.com",
+    projectId: "dream-school-academy",
+    storageBucket: "dream-school-academy.firebasestorage.app",
+    messagingSenderId: "665412130733",
+    appId: "1:665412130733:web:c3d59ab2c20f65a2277324",
+    measurementId: "G-HCJWBWZXKZ"
+  };
 
   if (!firebase.apps.length) {
     firebase.initializeApp(firebaseConfig);
@@ -33,57 +35,26 @@ const firebaseConfig = {
   const auth = firebase.auth();
   const db = firebase.firestore();
 
-  // -----------------------------
-  // 2. Exam definition for this module
-  // -----------------------------
+  // Small helpers to pull section info from various places
+  function getExamConfig() {
+    return (typeof window !== "undefined" && window.examConfig) ? window.examConfig : {};
+  }
 
-  // Unique id for this section/module
-  const SECTION_ID = "s1_m1_reading_writing";
+  function getDefaultSectionId() {
+    const exam = getExamConfig();
+    if (exam && typeof exam.sectionId === "string" && exam.sectionId.trim()) {
+      return exam.sectionId.trim();
+    }
+    return null;
+  }
 
-  // This object is what quiz-engine.js consumes:
-  // quiz-engine is responsible for:
-  // - rendering questions
-  // - tracking current index
-  // - building progressState / summary objects
-  window.examConfig = {
-    sectionId: SECTION_ID,
-    sectionTitle: "Section 1, Module 1: Reading and Writing",
-    timeLimitSec: 32 * 60,                   // 32 minutes (or 35*60 if you prefer)
-    storageKey: `quizState_${SECTION_ID}`,   // where quiz-engine saves state in localStorage
-    summaryKey: `quizSummary_${SECTION_ID}`, // where finishExam() stores summary in localStorage
-    summaryHref: "/progress/section1-module1.html", // redirect after Finish
-
-    // Optional meta you can use in quiz-engine for UI:
-    testType: "SAT",
-    sectionType: "Normal",   // fits PR-style semantics if you ever generalize
-    adaptive: false,
-
-    // SAT-style questions
-    questions: [
-      {
-        id: "rw_q1",
-        prompt: `Although critics believed that customers would never agree to pay to pick their own produce on farms, such concerns didn’t _____ Booker T. Whatley’s efforts to promote the practice. Thanks in part to Whatley’s determined advocacy, farms that allow visitors to pick their own apples, pumpkins, and other produce can be found throughout the United States.`,
-        choices: [
-          "enhance",
-          "hinder",
-          "misrepresent",
-          "aggravate"
-        ],
-        answerIndex: 1, // 0 = A, 1 = B, etc.
-        explanation:
-          "Critics’ concerns did not stop or obstruct his efforts, so “hinder” is the best fit."
-      }
-
-      // Add more questions here...
-      // {
-      //   id: "rw_q2",
-      //   prompt: "…",
-      //   choices: ["A", "B", "C", "D"],
-      //   answerIndex: 2,
-      //   explanation: "…"
-      // }
-    ]
-  };
+  function getDefaultTitle() {
+    const exam = getExamConfig();
+    if (exam && typeof exam.sectionTitle === "string" && exam.sectionTitle.trim()) {
+      return exam.sectionTitle;
+    }
+    return null;
+  }
 
   // -----------------------------
   // 3. Helper: ensure we have a logged-in user
@@ -191,8 +162,12 @@ const firebaseConfig = {
    */
   function normalizeAttemptSummary(summary) {
     const safe = summary || {};
-    const sectionId = safe.sectionId || SECTION_ID;
-    const title = safe.title || window.examConfig.sectionTitle;
+    const exam = getExamConfig();
+    const defaultSectionId = getDefaultSectionId();
+    const defaultTitle = getDefaultTitle();
+
+    const sectionId = safe.sectionId || defaultSectionId || null;
+    const title = safe.title || defaultTitle || null;
     const items = Array.isArray(safe.items) ? safe.items : [];
 
     // Normalize totals
@@ -259,13 +234,23 @@ const firebaseConfig = {
   async function appendAttempt(summary) {
     const user = await requireUser();
 
-    // 🔹 New: normalize summary so your DB always has totals and uiState.
     const normalized = normalizeAttemptSummary(summary);
+    const exam = getExamConfig();
+
+    const sectionId = normalized.sectionId || getDefaultSectionId();
+    const title = normalized.title || getDefaultTitle();
+
+    if (!sectionId) {
+      console.warn(
+        "quiz-data.appendAttempt: No sectionId found. " +
+        "Set summary.sectionId or window.examConfig.sectionId."
+      );
+    }
 
     const payload = {
       ...normalized,
-      sectionId: normalized.sectionId || SECTION_ID,
-      title: normalized.title || window.examConfig.sectionTitle,
+      sectionId: sectionId || null,
+      title: title || null,
       userId: user.uid,
       createdAt: firebase.firestore.FieldValue.serverTimestamp()
     };
@@ -281,14 +266,21 @@ const firebaseConfig = {
   }
 
   // Load all attempts for THIS section for the logged-in user
-  async function loadResultsForSection(sectionId = SECTION_ID) {
+  async function loadResultsForSection(sectionId) {
     const user = await requireUser();
+    const effectiveSectionId = sectionId || getDefaultSectionId();
+
+    if (!effectiveSectionId) {
+      throw new Error(
+        "quiz-data.loadResultsForSection: No sectionId provided and none found in examConfig."
+      );
+    }
 
     const snap = await db
       .collection("users")
       .doc(user.uid)
       .collection("examAttempts")
-      .where("sectionId", "==", sectionId)
+      .where("sectionId", "==", effectiveSectionId)
       .orderBy("createdAt", "desc")
       .get();
 
@@ -313,9 +305,6 @@ const firebaseConfig = {
   // 6. Firestore helpers — in-progress session (PR-style progress)
   // -----------------------------
   //
-  // Here we mirror the "save progress / update time spent editing" ideas from PR,
-  // but in a simpler SAT-focused way.
-  //
   // Structure for IN-PROGRESS sessions:
   //
   // users/{uid}/examSessions/{sectionId}
@@ -323,67 +312,37 @@ const firebaseConfig = {
   //   title: "Section 1, Module 1: Reading and Writing"
   //   lastQuestionId: "rw_q3"
   //   lastQuestionIndex: 2
-  //   lastScreenIndex: 0              // if you ever use "screens"/pages
+  //   lastScreenIndex: 0
   //   timerHidden: false
-  //   questionCountHidden: false      // hook if you want to hide question count UI
+  //   questionCountHidden: false
   //   reviewMode: false
-  //   answers: {
-  //     rw_q1: {
-  //       chosenIndex: 1,
-  //       correctIndex: 1,
-  //       isCorrect: true,
-  //       flagged: false,
-  //       timeSpentSecTotal: 18,
-  //       // optional: lastReviewDurationSec, lastUpdatedAt, etc.
-  //     },
-  //     ...
-  //   }
+  //   answers: { ... }
   //   updatedAt: serverTimestamp()
   //   createdAt: serverTimestamp()
   //
-  // And an OPTIONAL review-change log:
-  //
-  // users/{uid}/examSessions/{sectionId}/reviewChanges/{autoId}
-  //   questionId: "rw_q1"
-  //   oldAnswerIndex: 0
-  //   newAnswerIndex: 1
-  //   durationSeconds: 12
-  //   changedAt: serverTimestamp()
-  //
 
-  /**
-   * Save or update in-progress session state for this section.
-   *
-   * quiz-engine.js should build and pass a "progressState" object, e.g.:
-   *
-   * {
-   *   sectionId: "s1_m1_reading_writing",
-   *   title: "Section 1, Module 1: Reading and Writing",
-   *   lastQuestionId: "rw_q5",
-   *   lastQuestionIndex: 4,
-   *   lastScreenIndex: 0,        // optional
-   *   timerHidden: false,
-   *   questionCountHidden: false,
-   *   reviewMode: false,
-   *   answers: {
-   *     rw_q1: {
-   *       chosenIndex: 1,
-   *       flagged: false,
-   *       correctIndex: 1,
-   *       isCorrect: true,
-   *       timeSpentSecTotal: 15
-   *     },
-   *     ...
-   *   }
-   * }
-   */
   async function saveSessionProgress(progressState) {
     if (!progressState) return;
 
     const user = await requireUser();
+    const exam = getExamConfig();
 
-    const sectionId = progressState.sectionId || SECTION_ID;
-    const title = progressState.title || window.examConfig.sectionTitle;
+    const sectionId =
+      progressState.sectionId ||
+      (exam && exam.sectionId) ||
+      null;
+    const title =
+      progressState.title ||
+      (exam && exam.sectionTitle) ||
+      null;
+
+    if (!sectionId) {
+      console.warn(
+        "quiz-data.saveSessionProgress: No sectionId found. " +
+        "Set progressState.sectionId or window.examConfig.sectionId."
+      );
+      return;
+    }
 
     const payload = {
       sectionId,
@@ -422,14 +381,21 @@ const firebaseConfig = {
    * Load in-progress session progress for this section (or any given sectionId).
    * Returns the document data or null if none exists.
    */
-  async function loadSessionProgress(sectionId = SECTION_ID) {
+  async function loadSessionProgress(sectionId) {
     const user = await requireUser();
+    const effectiveSectionId = sectionId || getDefaultSectionId();
+
+    if (!effectiveSectionId) {
+      throw new Error(
+        "quiz-data.loadSessionProgress: No sectionId provided and none found in examConfig."
+      );
+    }
 
     const ref = db
       .collection("users")
       .doc(user.uid)
       .collection("examSessions")
-      .doc(sectionId);
+      .doc(effectiveSectionId);
 
     const snap = await ref.get();
     if (!snap.exists) return null;
@@ -440,14 +406,22 @@ const firebaseConfig = {
    * Clear/remove the in-progress session doc when the exam is finished
    * (optional, but keeps things tidy if you want sessions only while active).
    */
-  async function clearSessionProgress(sectionId = SECTION_ID) {
+  async function clearSessionProgress(sectionId) {
     const user = await requireUser();
+    const effectiveSectionId = sectionId || getDefaultSectionId();
+
+    if (!effectiveSectionId) {
+      console.warn(
+        "quiz-data.clearSessionProgress: No sectionId provided and none found in examConfig."
+      );
+      return;
+    }
 
     const ref = db
       .collection("users")
       .doc(user.uid)
       .collection("examSessions")
-      .doc(sectionId);
+      .doc(effectiveSectionId);
 
     await ref.delete();
   }
@@ -455,24 +429,18 @@ const firebaseConfig = {
   /**
    * Log one or more "review changes" (old vs new answer with time spent),
    * inspired by PR's _updateQuestionReviewTime.
-   *
-   * quiz-engine.js can call this with an array like:
-   *
-   * [
-   *   {
-   *     questionId: "rw_q1",
-   *     oldAnswerIndex: 0,       // or null if no previous answer
-   *     newAnswerIndex: 1,       // index of chosen option
-   *     durationSeconds: 12
-   *   },
-   *   ...
-   * ]
    */
   async function logReviewChanges(sectionId, changes) {
     const user = await requireUser();
     if (!Array.isArray(changes) || changes.length === 0) return;
 
-    const effectiveSectionId = sectionId || SECTION_ID;
+    const effectiveSectionId = sectionId || getDefaultSectionId();
+    if (!effectiveSectionId) {
+      console.warn(
+        "quiz-data.logReviewChanges: No sectionId provided and none found in examConfig."
+      );
+      return;
+    }
 
     const batch = db.batch();
 
@@ -516,17 +484,17 @@ const firebaseConfig = {
   // quiz-engine.js can use:
   //   quizData.appendAttempt(summary)
   //   quizData.saveSessionProgress(progressState)
-  //   quizData.loadSessionProgress()
-  //   quizData.logReviewChanges(sectionId, changes)
+  //   quizData.loadSessionProgress(sectionId?)
+  //   quizData.clearSessionProgress(sectionId?)
+  //   quizData.logReviewChanges(sectionId?, changes)
   //
   // Progress pages can use:
-  //   quizData.loadResultsForSection()
+  //   quizData.loadResultsForSection(sectionId?)
   //   quizData.loadAllResultsForUser()
   //
   window.quizData = {
     auth,
     db,
-    SECTION_ID,
     requireUser,
 
     // Finished attempts
