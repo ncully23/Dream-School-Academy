@@ -29,6 +29,7 @@
     timeLeft: document.getElementById("timeLeft"),
     toggleTimer: document.getElementById("toggleTimer"),
 
+    qcard: document.getElementById("qcard"),
     qbadge: document.getElementById("qbadge"),
     qtitle: document.getElementById("qtitle"),
     choices: document.getElementById("choices"),
@@ -193,6 +194,21 @@
   }
 
   // -----------------------
+  // View mode (question vs "Check Your Work")
+  // -----------------------
+  function updateViewMode() {
+    if (!el.qcard || !el.checkPage) return;
+
+    if (state.reviewMode) {
+      el.qcard.style.display = "none";
+      el.checkPage.style.display = "block";
+    } else {
+      el.qcard.style.display = "";
+      el.checkPage.style.display = "none";
+    }
+  }
+
+  // -----------------------
   // Rendering
   // -----------------------
   function render() {
@@ -200,6 +216,7 @@
       el.sectionTitle.textContent = exam.sectionTitle || "";
     }
 
+    updateViewMode();
     renderQuestion();
     renderProgress();
     buildPopGrid();
@@ -462,14 +479,14 @@
     };
 
     const summary = {
-      sectionId: exam.sectionId, // optional, defined in examConfig
+      sectionId: exam.sectionId,
       title: exam.sectionTitle,
       generatedAt: new Date().toISOString(),
       totals,
       items
     };
 
-    // 🔹 Save to Firestore via quiz-data.js if available
+    // Save to Firestore via quiz-data.js if available
     if (window.quizData && typeof window.quizData.appendAttempt === "function") {
       window.quizData
         .appendAttempt(summary)
@@ -522,7 +539,7 @@
     el.goReview.addEventListener("click", () => {
       state.reviewMode = true;
       closePopover();
-      render(); // currently reviewMode just changes nav behavior
+      render();
     });
   }
 
