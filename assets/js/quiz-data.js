@@ -1,11 +1,11 @@
 // quiz-data.js
 // Handles Firebase persistence for results, statistics,
-// and in-progress session state (inspired by PR's progress script).
+// in-progress session state, and a recorder-style local history.
 //
-// This version is UNIVERSAL: it does NOT define window.examConfig.
+// UNIVERSAL: it does NOT define window.examConfig.
 // Each quiz page should define its own examConfig, for example:
 //
-// Then include:
+// <script>window.examConfig = { ... }</script>
 // <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
 // <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
 // <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
@@ -17,7 +17,6 @@
   // 1. Firebase setup
   // -----------------------------
 
-  // Fill in your own config from the Firebase console:
   const firebaseConfig = {
     apiKey: "AIzaSyD7R7ZsmTpGojgLNt7w_R0tm_mWg_FZEYE",
     authDomain: "dream-school-academy.firebaseapp.com",
@@ -35,9 +34,124 @@
   const auth = firebase.auth();
   const db = firebase.firestore();
 
-  // Small helpers to pull section info from various places
+  // -----------------------------
+  // 2. Local recorder-style store
+  // -----------------------------
+
+  const LOCAL_ATTEMPT_KEY = "dreamschool:attempts:v1";
+
+  function loadLocalAttempts() {
+    try {
+      const raw = localStorage.getItem(LOCAL_ATTEMPT_KEY);
+      return raw ? JSON.parse(raw) : [];
+    } catch (e) {
+      console.warn("quiz-data: failed to load local attempts", e);
+      return [];
+    }
+  }
+
+  function saveLocalAttempts(list) {
+    try {
+      localStorage.setItem(LOCAL_ATTEMPT_KEY, JSON.stringify(list));
+    } catch (e) {
+      console.warn("quiz-data: failed to save local attempts", e);
+    }
+  }
+
+  function createAttemptId() {
+    return "t_" + Date.now() + "_" + Math.floor(Math.random() * 10000);
+  }
+
+  // Build the "recorder-style" core record from a normalized summary
+  function buildCoreRecordFromSummary(normalized, attemptId) {
+    const totals = normalized.totals || {};
+    const score = typeof totals.correct === "number" ? totals.correct : 0;
+    const total = typeof totals.total === "number" ? totals.total : 0;
+
+    const scorePercent =
+      typeof totals.scorePercent === "number"
+        ? totals.scorePercent
+        : total > 0
+        ? Math.round((score / total) * 100)
+        : 0;
+
+    const durationSeconds =
+      typeof totals.timeSpentSec === "number" ? totals.timeSpentSec : 0;
+
+    const timestamp =
+      normalized.generatedAt || new Date().toISOString();
+
+    const sectionId = normalized.sectionId || null;
+    const title = normalized.title || null;
+
+    const answers = Array.isArray(normalized.items)
+      ? normalized.items.map((item) => ({
+          number: item.number || null,
+          id: item.id || null,
+          chosenIndex:
+            typeof item.chosenIndex === "number"
+              ? item.chosenIndex
+              : null,
+          correctIndex:
+            typeof item.correctIndex === "number"
+              ? item.correctIndex
+              : null,
+          correct: !!item.correct
+        }))
+      : [];
+
+    return {
+      id: attemptId,
+      sectionId,
+      title,
+      timestamp,
+      score,
+      total,
+      scorePercent,
+      durationSeconds,
+      answers
+    };
+  }
+
+  // Upsert core record into local store, marking synced true/false
+  function upsertLocalAttemptFromSummary(normalized, options) {
+    const attemptId =
+      normalized.attemptId ||
+      normalized.id ||
+      createAttemptId();
+
+    normalized.attemptId = attemptId;
+
+    const core = buildCoreRecordFromSummary(normalized, attemptId);
+    const synced = !!(options && options.synced);
+
+    const list = loadLocalAttempts();
+    const idx = list.findIndex((r) => r.id === attemptId);
+
+    const record = {
+      ...(idx >= 0 ? list[idx] : {}),
+      ...core,
+      synced
+    };
+
+    if (idx >= 0) {
+      list[idx] = record;
+    } else {
+      list.push(record);
+    }
+
+    saveLocalAttempts(list);
+    return record;
+  }
+
+  // -----------------------------
+  // 3. Helper: examConfig access
+  // -----------------------------
+
   function getExamConfig() {
-    return (typeof window !== "undefined" && window.examConfig) ? window.examConfig : {};
+    return typeof window !== "undefined" && window.examConfig
+      ? window.examConfig
+      : {};
   }
 
   function getDefaultSectionId() {
@@ -57,10 +171,8 @@
   }
 
   // -----------------------------
-  // 3. Helper: ensure we have a logged-in user
+  // 4. Helper: ensure we have a logged-in user
   // -----------------------------
-  // Returns a Promise that resolves with the current user.
-  // Rejects if no one is signed in.
   async function requireUser() {
     const current = auth.currentUser;
     if (current) return current;
@@ -75,13 +187,8 @@
   }
 
   // -----------------------------
-  // 4. Helpers for scoring/summary normalization
+  // 5. Helpers for scoring/summary normalization
   // -----------------------------
-  // These helpers make sure that when quiz-engine passes a "summary",
-  // your database always gets:
-  // - totals (answered, correct, total, timeSpentSec, scorePercent)
-  // - items[] with per-question correctness
-  // - uiState captured in a consistent shape
 
   function computeTotalsFromItems(items) {
     if (!Array.isArray(items) || items.length === 0) {
@@ -96,7 +203,7 @@
 
     let answered = 0;
     let correct = 0;
-    let total = items.length;
+    const total = items.length;
     let timeSpentSec = 0;
 
     items.forEach((item) => {
@@ -104,11 +211,11 @@
         item.chosenIndex !== null &&
         item.chosenIndex !== undefined &&
         item.chosenIndex !== "";
+
       if (hasAnswer) {
         answered += 1;
       }
 
-      // Prefer explicit "correct" boolean if provided; otherwise infer
       let isCorrect = false;
       if (typeof item.correct === "boolean") {
         isCorrect = item.correct;
@@ -133,36 +240,8 @@
     return { answered, correct, total, timeSpentSec, scorePercent };
   }
 
-  /**
-   * Normalize a raw summary from quiz-engine into a consistent shape.
-   *
-   * Expected input (quiz-engine builds this):
-   * {
-   *   sectionId?: string,
-   *   title?: string,
-   *   totals?: { answered, correct, total, timeSpentSec, scorePercent? },
-   *   items: [
-   *     {
-   *       number: 1,
-   *       id: "rw_q1",
-   *       correctIndex: 1,
-   *       chosenIndex: 1,
-   *       correct: true,
-   *       flagged: false,
-   *       timeSpentSec: 12
-   *     },
-   *     ...
-   *   ],
-   *   uiState?: { timerHidden, reviewMode, lastQuestionIndex },
-   *   // optional convenience fields quiz-engine might pass:
-   *   timerHidden?: boolean,
-   *   reviewMode?: boolean,
-   *   lastQuestionIndex?: number
-   * }
-   */
   function normalizeAttemptSummary(summary) {
     const safe = summary || {};
-    const exam = getExamConfig();
     const defaultSectionId = getDefaultSectionId();
     const defaultTitle = getDefaultTitle();
 
@@ -179,7 +258,6 @@
     ) {
       totals = computeTotalsFromItems(items);
     } else {
-      // Ensure timeSpentSec and scorePercent exist even if quiz-engine didn't set them.
       const computed = computeTotalsFromItems(items);
       if (typeof totals.timeSpentSec !== "number") {
         totals.timeSpentSec = computed.timeSpentSec;
@@ -189,8 +267,6 @@
       }
     }
 
-    // Normalize uiState: prefer explicit uiState if provided,
-    // fall back to top-level fields if present.
     const uiState = {
       timerHidden:
         typeof safe.timerHidden === "boolean"
@@ -217,25 +293,34 @@
   }
 
   // -----------------------------
-  // 5. Firestore helpers — completed attempts
+  // 6. Firestore helpers — completed attempts
   // -----------------------------
   //
-  // Structure used in Firestore for FINISHED attempts:
-  //
+  // Firestore document shape:
   // users/{uid}/examAttempts/{autoId}
-  //   sectionId: "s1_m1_reading_writing"
-  //   title: "Section 1, Module 1: Reading and Writing"
+  //   attemptId: "t_..."
+  //   sectionId: "...",
+  //   title: "...",
+  //   timestamp: "ISO string"
+  //   scorePercent: number
+  //   durationSeconds: number
   //   totals: { answered, correct, total, timeSpentSec, scorePercent }
-  //   items:  [ { number, id, correctIndex, chosenIndex, correct, flagged, timeSpentSec, ... } ]
+  //   items:  [ { number, id, correctIndex, chosenIndex, correct, ... } ]
   //   uiState: { timerHidden, reviewMode, lastQuestionIndex }
+  //   userId: uid
   //   createdAt: serverTimestamp()
   //
 
   async function appendAttempt(summary) {
-    const user = await requireUser();
-
+    // Normalize and always log a local record.
     const normalized = normalizeAttemptSummary(summary);
-    const exam = getExamConfig();
+
+    const localRecord = upsertLocalAttemptFromSummary(normalized, {
+      synced: false
+    });
+
+    const attemptId = localRecord.id;
+    normalized.attemptId = attemptId;
 
     const sectionId = normalized.sectionId || getDefaultSectionId();
     const title = normalized.title || getDefaultTitle();
@@ -243,29 +328,72 @@
     if (!sectionId) {
       console.warn(
         "quiz-data.appendAttempt: No sectionId found. " +
-        "Set summary.sectionId or window.examConfig.sectionId."
+          "Set summary.sectionId or window.examConfig.sectionId."
       );
     }
 
-    const payload = {
-      ...normalized,
-      sectionId: sectionId || null,
-      title: title || null,
-      userId: user.uid,
-      createdAt: firebase.firestore.FieldValue.serverTimestamp()
-    };
+    // Enrich with core recorder fields for Firestore
+    const timestamp = localRecord.timestamp;
+    const scorePercent = localRecord.scorePercent;
+    const durationSeconds = localRecord.durationSeconds;
 
-    const ref = db
-      .collection("users")
-      .doc(user.uid)
-      .collection("examAttempts")
-      .doc(); // auto id
+    let user;
+    try {
+      user = await requireUser();
+    } catch (e) {
+      console.warn(
+        "quiz-data.appendAttempt: no user signed in, keeping local only.",
+        e
+      );
+      return {
+        attemptId,
+        synced: false,
+        localOnly: true
+      };
+    }
 
-    await ref.set(payload);
-    return ref.id;
+    try {
+      const payload = {
+        ...normalized,
+        attemptId,
+        sectionId: sectionId || null,
+        title: title || null,
+        userId: user.uid,
+        timestamp,
+        scorePercent,
+        durationSeconds,
+        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+      };
+
+      const ref = db
+        .collection("users")
+        .doc(user.uid)
+        .collection("examAttempts")
+        .doc(); // auto id
+
+      await ref.set(payload);
+
+      // Mark local record as synced:true
+      upsertLocalAttemptFromSummary(normalized, { synced: true });
+
+      return {
+        attemptId,
+        synced: true,
+        docId: ref.id
+      };
+    } catch (e) {
+      console.warn(
+        "quiz-data.appendAttempt: Firestore write failed, local record kept as synced:false",
+        e
+      );
+      return {
+        attemptId,
+        synced: false,
+        error: e && e.message ? e.message : String(e)
+      };
+    }
   }
 
-  // Load all attempts for THIS section for the logged-in user
   async function loadResultsForSection(sectionId) {
     const user = await requireUser();
     const effectiveSectionId = sectionId || getDefaultSectionId();
@@ -287,7 +415,6 @@
     return snap.docs.map((d) => ({ id: d.id, ...d.data() }));
   }
 
-  // Load ALL exam attempts for this user (for a big progress dashboard)
   async function loadAllResultsForUser() {
     const user = await requireUser();
 
@@ -302,24 +429,8 @@
   }
 
   // -----------------------------
-  // 6. Firestore helpers — in-progress session (PR-style progress)
+  // 7. Firestore helpers — in-progress session
   // -----------------------------
-  //
-  // Structure for IN-PROGRESS sessions:
-  //
-  // users/{uid}/examSessions/{sectionId}
-  //   sectionId: "s1_m1_reading_writing"
-  //   title: "Section 1, Module 1: Reading and Writing"
-  //   lastQuestionId: "rw_q3"
-  //   lastQuestionIndex: 2
-  //   lastScreenIndex: 0
-  //   timerHidden: false
-  //   questionCountHidden: false
-  //   reviewMode: false
-  //   answers: { ... }
-  //   updatedAt: serverTimestamp()
-  //   createdAt: serverTimestamp()
-  //
 
   async function saveSessionProgress(progressState) {
     if (!progressState) return;
@@ -339,7 +450,7 @@
     if (!sectionId) {
       console.warn(
         "quiz-data.saveSessionProgress: No sectionId found. " +
-        "Set progressState.sectionId or window.examConfig.sectionId."
+          "Set progressState.sectionId or window.examConfig.sectionId."
       );
       return;
     }
@@ -359,10 +470,8 @@
       timerHidden: !!progressState.timerHidden,
       questionCountHidden: !!progressState.questionCountHidden,
       reviewMode: !!progressState.reviewMode,
-      // answers should be a plain object map; we merge it.
       answers: progressState.answers || {},
       updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
-      // only set createdAt on first write (merge will preserve existing)
       createdAt: firebase.firestore.FieldValue.serverTimestamp()
     };
 
@@ -372,15 +481,10 @@
       .collection("examSessions")
       .doc(sectionId);
 
-    // merge: do not wipe out older fields if you only send partial updates
     await ref.set(payload, { merge: true });
     return ref.id;
   }
 
-  /**
-   * Load in-progress session progress for this section (or any given sectionId).
-   * Returns the document data or null if none exists.
-   */
   async function loadSessionProgress(sectionId) {
     const user = await requireUser();
     const effectiveSectionId = sectionId || getDefaultSectionId();
@@ -402,10 +506,6 @@
     return { id: snap.id, ...snap.data() };
   }
 
-  /**
-   * Clear/remove the in-progress session doc when the exam is finished
-   * (optional, but keeps things tidy if you want sessions only while active).
-   */
   async function clearSessionProgress(sectionId) {
     const user = await requireUser();
     const effectiveSectionId = sectionId || getDefaultSectionId();
@@ -426,10 +526,6 @@
     await ref.delete();
   }
 
-  /**
-   * Log one or more "review changes" (old vs new answer with time spent),
-   * inspired by PR's _updateQuestionReviewTime.
-   */
   async function logReviewChanges(sectionId, changes) {
     const user = await requireUser();
     if (!Array.isArray(changes) || changes.length === 0) return;
@@ -451,11 +547,11 @@
         .collection("examSessions")
         .doc(effectiveSectionId)
         .collection("reviewChanges")
-        .doc(); // auto id
+        .doc();
 
       const payload = {
         questionId: change.questionId || null,
-        subQuestionId: change.subQuestionId || null, // optional hook if you ever support sub-questions
+        subQuestionId: change.subQuestionId || null,
         oldAnswerIndex:
           typeof change.oldAnswerIndex === "number"
             ? change.oldAnswerIndex
@@ -478,7 +574,123 @@
   }
 
   // -----------------------------
-  // 7. Expose an API for quiz-engine + progress pages
+  // 8. Export attempts (local + remote)
+  // -----------------------------
+
+  async function exportAttempts() {
+    const local = loadLocalAttempts();
+    let remote = [];
+
+    try {
+      remote = await loadAllResultsForUser();
+    } catch (e) {
+      console.warn(
+        "quiz-data.exportAttempts: could not load remote results, exporting local only",
+        e
+      );
+    }
+
+    const data = {
+      generatedAt: new Date().toISOString(),
+      localAttempts: local,
+      remoteAttempts: remote
+    };
+
+    try {
+      const json = JSON.stringify(data, null, 2);
+      const blob = new Blob([json], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "dreamschool-attempts-export.json";
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+    } catch (e) {
+      console.warn("quiz-data.exportAttempts: failed to export", e);
+    }
+  }
+
+  // -----------------------------
+  // 9. Compatibility API: recordTestResult
+  // -----------------------------
+  //
+  // Thin wrapper so legacy pages can call:
+  // quizData.recordTestResult({ score, total, durationSeconds, category, answers })
+  // and it will go through the new appendAttempt pipeline.
+
+  async function recordTestResult({
+    score,
+    total,
+    durationSeconds = 0,
+    category = "General",
+    answers = []
+  } = {}) {
+    if (typeof score !== "number" || typeof total !== "number") {
+      throw new Error("recordTestResult: score and total must be numbers");
+    }
+
+    const scorePercent =
+      total > 0 ? Math.round((score / total) * 100) : 0;
+
+    const items = Array.isArray(answers)
+      ? answers.map((a, idx) => {
+          const chosen =
+            typeof a.chosenIndex === "number"
+              ? a.chosenIndex
+              : typeof a.answer === "number"
+              ? a.answer
+              : null;
+          const correctIndex =
+            typeof a.correctIndex === "number"
+              ? a.correctIndex
+              : null;
+          let correctFlag = false;
+          if (typeof a.correct === "boolean") {
+            correctFlag = a.correct;
+          } else if (
+            chosen !== null &&
+            correctIndex !== null
+          ) {
+            correctFlag = chosen === correctIndex;
+          }
+
+          return {
+            number: idx + 1,
+            id: a.qid || "q" + (idx + 1),
+            correctIndex,
+            chosenIndex: chosen,
+            correct: correctFlag
+          };
+        })
+      : [];
+
+    const summary = {
+      attemptId: createAttemptId(),
+      sectionId: category,
+      title: category,
+      generatedAt: new Date().toISOString(),
+      totals: {
+        answered: total,
+        correct: score,
+        total,
+        timeSpentSec: durationSeconds,
+        scorePercent
+      },
+      items,
+      uiState: {
+        timerHidden: false,
+        reviewMode: false,
+        lastQuestionIndex: items.length - 1
+      }
+    };
+
+    return appendAttempt(summary);
+  }
+
+  // -----------------------------
+  // 10. Expose API
   // -----------------------------
   //
   // quiz-engine.js can use:
@@ -488,10 +700,14 @@
   //   quizData.clearSessionProgress(sectionId?)
   //   quizData.logReviewChanges(sectionId?, changes)
   //
-  // Progress pages can use:
+  // Progress / debug pages can use:
   //   quizData.loadResultsForSection(sectionId?)
   //   quizData.loadAllResultsForUser()
+  //   quizData.exportAttempts()
   //
+  // Legacy-style:
+  //   quizData.recordTestResult({ score, total, ... })
+
   window.quizData = {
     auth,
     db,
@@ -506,6 +722,10 @@
     saveSessionProgress,
     loadSessionProgress,
     clearSessionProgress,
-    logReviewChanges
+    logReviewChanges,
+
+    // Recorder-style helpers
+    exportAttempts,
+    recordTestResult
   };
 })();
