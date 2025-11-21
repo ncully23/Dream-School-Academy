@@ -71,7 +71,7 @@
         answerIndex: 1, // 0 = A, 1 = B, etc.
         explanation:
           "Critics’ concerns did not stop or obstruct his efforts, so “hinder” is the best fit."
-      },
+      }
 
       // Add more questions here...
       // {
@@ -103,7 +103,145 @@
   }
 
   // -----------------------------
-  // 4. Firestore helpers — completed attempts
+  // 4. Helpers for scoring/summary normalization
+  // -----------------------------
+  // These helpers make sure that when quiz-engine passes a "summary",
+  // your database always gets:
+  // - totals (answered, correct, total, timeSpentSec, scorePercent)
+  // - items[] with per-question correctness
+  // - uiState captured in a consistent shape
+
+  function computeTotalsFromItems(items) {
+    if (!Array.isArray(items) || items.length === 0) {
+      return {
+        answered: 0,
+        correct: 0,
+        total: 0,
+        timeSpentSec: 0,
+        scorePercent: 0
+      };
+    }
+
+    let answered = 0;
+    let correct = 0;
+    let total = items.length;
+    let timeSpentSec = 0;
+
+    items.forEach((item) => {
+      const hasAnswer =
+        item.chosenIndex !== null &&
+        item.chosenIndex !== undefined &&
+        item.chosenIndex !== "";
+      if (hasAnswer) {
+        answered += 1;
+      }
+
+      // Prefer explicit "correct" boolean if provided; otherwise infer
+      let isCorrect = false;
+      if (typeof item.correct === "boolean") {
+        isCorrect = item.correct;
+      } else if (
+        typeof item.correctIndex === "number" &&
+        typeof item.chosenIndex === "number"
+      ) {
+        isCorrect = item.chosenIndex === item.correctIndex;
+      }
+      if (isCorrect) {
+        correct += 1;
+      }
+
+      if (typeof item.timeSpentSec === "number") {
+        timeSpentSec += item.timeSpentSec;
+      }
+    });
+
+    const scorePercent =
+      total > 0 ? Math.round((correct / total) * 100) : 0;
+
+    return { answered, correct, total, timeSpentSec, scorePercent };
+  }
+
+  /**
+   * Normalize a raw summary from quiz-engine into a consistent shape.
+   *
+   * Expected input (quiz-engine builds this):
+   * {
+   *   sectionId?: string,
+   *   title?: string,
+   *   totals?: { answered, correct, total, timeSpentSec, scorePercent? },
+   *   items: [
+   *     {
+   *       number: 1,
+   *       id: "rw_q1",
+   *       correctIndex: 1,
+   *       chosenIndex: 1,
+   *       correct: true,
+   *       flagged: false,
+   *       timeSpentSec: 12
+   *     },
+   *     ...
+   *   ],
+   *   uiState?: { timerHidden, reviewMode, lastQuestionIndex },
+   *   // optional convenience fields quiz-engine might pass:
+   *   timerHidden?: boolean,
+   *   reviewMode?: boolean,
+   *   lastQuestionIndex?: number
+   * }
+   */
+  function normalizeAttemptSummary(summary) {
+    const safe = summary || {};
+    const sectionId = safe.sectionId || SECTION_ID;
+    const title = safe.title || window.examConfig.sectionTitle;
+    const items = Array.isArray(safe.items) ? safe.items : [];
+
+    // Normalize totals
+    let totals = safe.totals || {};
+    if (
+      typeof totals.answered !== "number" ||
+      typeof totals.correct !== "number" ||
+      typeof totals.total !== "number"
+    ) {
+      totals = computeTotalsFromItems(items);
+    } else {
+      // Ensure timeSpentSec and scorePercent exist even if quiz-engine didn't set them.
+      const computed = computeTotalsFromItems(items);
+      if (typeof totals.timeSpentSec !== "number") {
+        totals.timeSpentSec = computed.timeSpentSec;
+      }
+      if (typeof totals.scorePercent !== "number") {
+        totals.scorePercent = computed.scorePercent;
+      }
+    }
+
+    // Normalize uiState: prefer explicit uiState if provided,
+    // fall back to top-level fields if present.
+    const uiState = {
+      timerHidden:
+        typeof safe.timerHidden === "boolean"
+          ? safe.timerHidden
+          : !!(safe.uiState && safe.uiState.timerHidden),
+      reviewMode:
+        typeof safe.reviewMode === "boolean"
+          ? safe.reviewMode
+          : !!(safe.uiState && safe.uiState.reviewMode),
+      lastQuestionIndex:
+        typeof safe.lastQuestionIndex === "number"
+          ? safe.lastQuestionIndex
+          : (safe.uiState && safe.uiState.lastQuestionIndex) ?? null
+    };
+
+    return {
+      ...safe,
+      sectionId,
+      title,
+      items,
+      totals,
+      uiState
+    };
+  }
+
+  // -----------------------------
+  // 5. Firestore helpers — completed attempts
   // -----------------------------
   //
   // Structure used in Firestore for FINISHED attempts:
@@ -111,7 +249,7 @@
   // users/{uid}/examAttempts/{autoId}
   //   sectionId: "s1_m1_reading_writing"
   //   title: "Section 1, Module 1: Reading and Writing"
-  //   totals: { answered, correct, total, timeSpentSec }
+  //   totals: { answered, correct, total, timeSpentSec, scorePercent }
   //   items:  [ { number, id, correctIndex, chosenIndex, correct, flagged, timeSpentSec, ... } ]
   //   uiState: { timerHidden, reviewMode, lastQuestionIndex }
   //   createdAt: serverTimestamp()
@@ -120,10 +258,13 @@
   async function appendAttempt(summary) {
     const user = await requireUser();
 
+    // 🔹 New: normalize summary so your DB always has totals and uiState.
+    const normalized = normalizeAttemptSummary(summary);
+
     const payload = {
-      ...summary,
-      sectionId: summary.sectionId || SECTION_ID,
-      title: summary.title || window.examConfig.sectionTitle,
+      ...normalized,
+      sectionId: normalized.sectionId || SECTION_ID,
+      title: normalized.title || window.examConfig.sectionTitle,
       userId: user.uid,
       createdAt: firebase.firestore.FieldValue.serverTimestamp()
     };
@@ -168,7 +309,7 @@
   }
 
   // -----------------------------
-  // 5. Firestore helpers — in-progress session (PR-style progress)
+  // 6. Firestore helpers — in-progress session (PR-style progress)
   // -----------------------------
   //
   // Here we mirror the "save progress / update time spent editing" ideas from PR,
@@ -247,12 +388,14 @@
       sectionId,
       title,
       lastQuestionId: progressState.lastQuestionId ?? null,
-      lastQuestionIndex: typeof progressState.lastQuestionIndex === "number"
-        ? progressState.lastQuestionIndex
-        : null,
-      lastScreenIndex: typeof progressState.lastScreenIndex === "number"
-        ? progressState.lastScreenIndex
-        : null,
+      lastQuestionIndex:
+        typeof progressState.lastQuestionIndex === "number"
+          ? progressState.lastQuestionIndex
+          : null,
+      lastScreenIndex:
+        typeof progressState.lastScreenIndex === "number"
+          ? progressState.lastScreenIndex
+          : null,
       timerHidden: !!progressState.timerHidden,
       questionCountHidden: !!progressState.questionCountHidden,
       reviewMode: !!progressState.reviewMode,
@@ -366,7 +509,7 @@
   }
 
   // -----------------------------
-  // 6. Expose an API for quiz-engine + progress pages
+  // 7. Expose an API for quiz-engine + progress pages
   // -----------------------------
   //
   // quiz-engine.js can use:
