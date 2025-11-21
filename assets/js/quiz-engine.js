@@ -5,11 +5,14 @@
     return;
   }
 
+  // -----------------------
+  // State
+  // -----------------------
   const state = {
     index: 0,
-    answers: {},
-    flags: {},
-    elims: {},
+    answers: {},          // { qid: choiceIndex }
+    flags: {},            // { qid: true/false }
+    elims: {},            // { qid: Set(choiceIndex) }
     eliminateMode: false,
     remaining: exam.timeLimitSec || 0,
     timerId: null,
@@ -18,10 +21,14 @@
     reviewMode: false
   };
 
+  // -----------------------
+  // Element cache
+  // -----------------------
   const el = {
     sectionTitle: document.getElementById("sectionTitle"),
     timeLeft: document.getElementById("timeLeft"),
     toggleTimer: document.getElementById("toggleTimer"),
+
     qbadge: document.getElementById("qbadge"),
     qtitle: document.getElementById("qtitle"),
     choices: document.getElementById("choices"),
@@ -54,7 +61,9 @@
     return Math.max(min, Math.min(max, n));
   }
 
-  // Ticks and progress bars
+  // -----------------------
+  // Header ticks & progress bar skeletons
+  // -----------------------
   (function buildTicks() {
     if (!el.dashrow) return;
     for (let i = 0; i < 54; i++) {
@@ -76,12 +85,18 @@
     }
   })();
 
+  // -----------------------
+  // Local storage save / restore
+  // -----------------------
   function save() {
     if (!exam.storageKey) return;
+
+    // Convert Sets to plain arrays
     const elimsObj = {};
     Object.keys(state.elims).forEach((q) => {
       elimsObj[q] = Array.from(state.elims[q] || []);
     });
+
     try {
       localStorage.setItem(
         exam.storageKey,
@@ -93,42 +108,98 @@
           index: state.index
         })
       );
-    } catch (e) {}
+    } catch (e) {
+      // storage may be full or disabled; fail silently
+    }
   }
 
+  function restore() {
+    if (!exam.storageKey) return;
+    let raw;
+    try {
+      raw = localStorage.getItem(exam.storageKey);
+      if (!raw) return;
+      const data = JSON.parse(raw);
+
+      if (data.answers && typeof data.answers === "object") {
+        state.answers = data.answers;
+      }
+      if (data.flags && typeof data.flags === "object") {
+        state.flags = data.flags;
+      }
+      if (data.elims && typeof data.elims === "object") {
+        const result = {};
+        Object.keys(data.elims).forEach((qid) => {
+          result[qid] = new Set(data.elims[qid] || []);
+        });
+        state.elims = result;
+      }
+      if (typeof data.remaining === "number" && data.remaining > 0) {
+        state.remaining = data.remaining;
+      } else {
+        state.remaining = exam.timeLimitSec || 0;
+      }
+      if (typeof data.index === "number") {
+        state.index = clamp(data.index, 0, exam.questions.length - 1);
+      }
+    } catch (e) {
+      // ignore bad JSON
+    }
+  }
+
+  // -----------------------
   // Timer
-  function startTimer() {
-    if (state.timerId || state.finished || !state.remaining) return;
-    tick();
-    state.timerId = setInterval(tick, 1000);
+  // -----------------------
+  function updateTimeDisplay() {
+    if (!el.timeLeft) return;
+    const m = String(Math.floor(state.remaining / 60)).padStart(2, "0");
+    const s = String(state.remaining % 60).padStart(2, "0");
+    if (!state.timerHidden) {
+      el.timeLeft.textContent = `${m}:${s}`;
+      el.timeLeft.style.visibility = "visible";
+    } else {
+      el.timeLeft.style.visibility = "hidden";
+    }
   }
 
   function tick() {
+    if (state.finished) return;
+
+    state.remaining--;
     if (state.remaining <= 0) {
+      state.remaining = 0;
+      updateTimeDisplay();
+      save();
       finishExam();
       return;
     }
-    state.remaining--;
-    const m = String(Math.floor(state.remaining / 60)).padStart(2, "0");
-    const s = String(state.remaining % 60).padStart(2, "0");
-    if (!state.timerHidden && el.timeLeft) {
-      el.timeLeft.textContent = `${m}:${s}`;
-    }
+
+    updateTimeDisplay();
     save();
-    if (state.remaining <= 0) finishExam();
+  }
+
+  function startTimer() {
+    if (state.timerId || state.finished || !state.remaining) return;
+    updateTimeDisplay(); // initial display
+    state.timerId = setInterval(tick, 1000);
   }
 
   if (el.toggleTimer && el.timeLeft) {
     el.toggleTimer.addEventListener("click", () => {
       state.timerHidden = !state.timerHidden;
       el.toggleTimer.textContent = state.timerHidden ? "Show" : "Hide";
-      el.timeLeft.style.visibility = state.timerHidden ? "hidden" : "visible";
+      updateTimeDisplay();
     });
   }
 
+  // -----------------------
   // Rendering
+  // -----------------------
   function render() {
-    if (el.sectionTitle) el.sectionTitle.textContent = exam.sectionTitle || "";
+    if (el.sectionTitle) {
+      el.sectionTitle.textContent = exam.sectionTitle || "";
+    }
+
     renderQuestion();
     renderProgress();
     buildPopGrid();
@@ -136,97 +207,57 @@
     updateNavs();
     updateFlagVisuals();
     updatePillFlag();
-
-    const m = String(Math.floor(state.remaining / 60)).padStart(2, "0");
-    const s = String(state.remaining % 60).padStart(2, "0");
-    if (el.timeLeft) el.timeLeft.textContent = `${m}:${s}`;
+    updateTimeDisplay();
   }
 
-function renderQuestion() {
-  const q = exam.questions[state.index];
-  if (!q) return;
+  function renderQuestion() {
+    const q = exam.questions[state.index];
+    if (!q) return;
 
-  if (el.qbadge) el.qbadge.textContent = state.index + 1;
+    if (el.qbadge) el.qbadge.textContent = state.index + 1;
 
-  // Use innerHTML so TeX is kept
-  if (el.qtitle) el.qtitle.innerHTML = q.prompt;
+    // Use innerHTML so TeX is kept
+    if (el.qtitle) el.qtitle.innerHTML = q.prompt;
 
-  const letter = (i) => String.fromCharCode(65 + i);
-  const elimSet = state.elims[q.id] || new Set();
+    const letter = (i) => String.fromCharCode(65 + i);
+    const elimSet = state.elims[q.id] || new Set();
 
-  if (el.choices) {
-    el.choices.innerHTML = q.choices
-      .map((t, i) => {
-        const id = `${q.id}_c${i}`;
-        const checked = state.answers[q.id] === i ? "checked" : "";
-        const elimClass = elimSet.has(i) ? "eliminated" : "";
-        return `
+    if (el.choices) {
+      el.choices.innerHTML = q.choices
+        .map((t, i) => {
+          const id = `${q.id}_c${i}`;
+          const checked = state.answers[q.id] === i ? "checked" : "";
+          const elimClass = elimSet.has(i) ? "eliminated" : "";
+          return `
           <label class="choice ${elimClass}" data-choice="${i}" for="${id}">
             <input id="${id}" type="radio" name="${q.id}" value="${i}" ${checked} />
             <div class="text"><b>${letter(i)}.</b> ${t}</div>
             <div class="letter">${letter(i)}</div>
           </label>
         `;
-      })
-      .join("");
-  }
+        })
+        .join("");
+    }
 
-  if (el.choices) {
-    el.choices.querySelectorAll(".choice").forEach((choice) => {
-      const idx = Number(choice.dataset.choice);
-      const input = choice.querySelector("input");
-      choice.addEventListener("click", (ev) => {
-        if (!state.eliminateMode) return;
-        if (ev.target.tagName.toLowerCase() === "input") return;
-        ev.preventDefault();
-        toggleElimination(q.id, idx);
-        choice.classList.toggle("eliminated");
-        save();
-      });
-      input.addEventListener("change", () => {
-        state.answers[q.id] = idx;
-        save();
-        renderProgress();
-        buildPopGrid();
-        buildCheckGrid();
-      });
-    });
-  }
-
-  const flagged = !!state.flags[q.id];
-  if (el.flagTop && el.flagLabel) {
-    el.flagTop.classList.toggle("on", flagged);
-    el.flagTop.setAttribute("aria-pressed", String(flagged));
-    el.flagLabel.textContent = flagged ? "For review" : "Mark for review";
-  }
-
-  if (el.elimToggle && el.elimHint) {
-    el.elimToggle.classList.toggle("on", state.eliminateMode);
-    el.elimToggle.setAttribute("aria-pressed", String(state.eliminateMode));
-    el.elimHint.style.display = state.eliminateMode ? "block" : "none";
-  }
-
-  // 🔹 Ask MathJax to typeset the current card if available
-  if (window.MathJax && MathJax.typesetPromise) {
-    MathJax.typesetPromise([el.qtitle, el.choices]).catch(() => {});
-  }
-}
-
-
+    // Wire choice interactions
     if (el.choices) {
       el.choices.querySelectorAll(".choice").forEach((choice) => {
         const idx = Number(choice.dataset.choice);
         const input = choice.querySelector("input");
+
+        // Eliminate mode click
         choice.addEventListener("click", (ev) => {
           if (!state.eliminateMode) return;
-          if (ev.target.tagName.toLowerCase() === "input") return;
+          if (ev.target.tagName.toLowerCase() === "input") return; // let radio behave normally
           ev.preventDefault();
           toggleElimination(q.id, idx);
           choice.classList.toggle("eliminated");
           save();
         });
+
+        // Answer selection
         input.addEventListener("change", () => {
-          state.answers[q.id] = idx;
+          state.answers[q.id] = idx; // only one answer at a time
           save();
           renderProgress();
           buildPopGrid();
@@ -246,6 +277,11 @@ function renderQuestion() {
       el.elimToggle.classList.toggle("on", state.eliminateMode);
       el.elimToggle.setAttribute("aria-pressed", String(state.eliminateMode));
       el.elimHint.style.display = state.eliminateMode ? "block" : "none";
+    }
+
+    // Ask MathJax to typeset the current card if available
+    if (window.MathJax && MathJax.typesetPromise) {
+      MathJax.typesetPromise([el.qtitle, el.choices]).catch(() => {});
     }
   }
 
@@ -284,15 +320,21 @@ function renderQuestion() {
     }
   }
 
+  // -----------------------
+  // Question review grids
+  // -----------------------
   function buildPopGrid() {
     if (!el.popGrid) return;
     el.popGrid.innerHTML = "";
+
     exam.questions.forEach((q, i) => {
       const b = document.createElement("button");
       b.className = "nbtn";
       b.textContent = String(i + 1);
+
       const answered = typeof state.answers[q.id] === "number";
       const flagged = !!state.flags[q.id];
+
       if (i === state.index) {
         b.classList.add("current");
         const pin = document.createElement("span");
@@ -302,12 +344,14 @@ function renderQuestion() {
       }
       if (answered) b.classList.add("answered");
       if (flagged) b.classList.add("review");
+
       b.addEventListener("click", () => {
         state.index = i;
         state.reviewMode = false;
         closePopover();
         render();
       });
+
       el.popGrid.appendChild(b);
     });
   }
@@ -315,25 +359,32 @@ function renderQuestion() {
   function buildCheckGrid() {
     if (!el.checkGrid) return;
     el.checkGrid.innerHTML = "";
+
     exam.questions.forEach((q, i) => {
       const b = document.createElement("button");
       b.className = "nbtn";
       b.textContent = String(i + 1);
+
       const answered = typeof state.answers[q.id] === "number";
       const flagged = !!state.flags[q.id];
+
       if (answered) b.classList.add("answered");
       if (flagged) b.classList.add("review");
+
       b.addEventListener("click", () => {
         state.index = i;
         state.reviewMode = false;
         render();
         window.scrollTo(0, 0);
       });
+
       el.checkGrid.appendChild(b);
     });
   }
 
-  // Nav + flag actions
+  // -----------------------
+  // Navigation & flags
+  // -----------------------
   function updateNavs() {
     if (!el.next || !el.finish) return;
     const last = state.index === exam.questions.length - 1 && !state.reviewMode;
@@ -376,7 +427,12 @@ function renderQuestion() {
     });
   }
 
+  if (el.back) el.back.addEventListener("click", () => go(-1));
+  if (el.next) el.next.addEventListener("click", () => go(1));
+
+  // -----------------------
   // Finish + summary
+  // -----------------------
   function finishExam() {
     if (state.finished) return;
     state.finished = true;
@@ -423,13 +479,19 @@ function renderQuestion() {
     }
   }
 
-  // Popover
+  if (el.finish) el.finish.addEventListener("click", finishExam);
+
+  // -----------------------
+  // Popover for review grid
+  // -----------------------
   const pill = el.pill;
+
   function openPopover() {
     if (!el.pop || !pill) return;
     el.pop.style.display = "block";
     pill.setAttribute("aria-expanded", "true");
   }
+
   function closePopover() {
     if (!el.pop || !pill) return;
     el.pop.style.display = "none";
@@ -442,15 +504,18 @@ function renderQuestion() {
       else openPopover();
     });
   }
+
   if (el.popClose) el.popClose.addEventListener("click", closePopover);
+
   if (el.goReview) {
     el.goReview.addEventListener("click", () => {
       state.reviewMode = true;
       closePopover();
-      render();
+      render(); // currently reviewMode just changes nav behavior
     });
   }
 
+  // close popup when clicking outside
   document.addEventListener("click", (e) => {
     if (!el.pop || !pill) return;
     const inside =
@@ -461,12 +526,9 @@ function renderQuestion() {
     if (!inside) closePopover();
   });
 
-  // Nav buttons
-  if (el.back) el.back.addEventListener("click", () => go(-1));
-  if (el.next) el.next.addEventListener("click", () => go(1));
-  if (el.finish) el.finish.addEventListener("click", finishExam);
-
+  // -----------------------
   // Init
+  // -----------------------
   function resetPractice() {
     state.index = 0;
     state.answers = {};
@@ -476,15 +538,16 @@ function renderQuestion() {
     state.remaining = exam.timeLimitSec || 0;
     state.finished = false;
     state.reviewMode = false;
+    state.timerHidden = false;
   }
 
   function init() {
     resetPractice();
+    restore();   // pull saved work if it exists
     render();
     startTimer();
   }
 
-  // Run once DOM is ready (scripts are at bottom, but this is safe)
   if (document.readyState === "loading") {
     document.addEventListener("DOMContentLoaded", init);
   } else {
