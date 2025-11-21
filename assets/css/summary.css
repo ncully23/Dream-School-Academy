@@ -1,0 +1,286 @@
+/* summary.css
+   Shared layout and styling for quiz summary pages (per-question breakdown).
+   Assumes the following basic HTML structure:
+
+   <div class="wrap">
+     <div class="card" id="headerCard"> ... </div>
+     <div class="qs" id="qs"></div>
+     <div class="card empty" id="empty"> ... </div>
+   </div>
+*/
+
+:root {
+  --bg: #eef2fb;
+  --surface: #ffffff;
+  --ink: #0f172a;
+  --muted: #64748b;
+  --line: #d9e0f2;
+  --good: #11a36a;
+  --bad: #d33;
+  --pill: #0b1227;
+  --blue: #1f4dd8;
+  --shadow: 0 6px 14px rgba(16, 24, 40, 0.08);
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font: 16px/1.5 Inter, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+}
+
+.wrap {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 20px 16px 80px;
+}
+
+.card {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  box-shadow: var(--shadow);
+  padding: 16px;
+}
+
+h1 {
+  margin: 0.25rem 0 0.35rem;
+}
+
+.muted {
+  color: var(--muted);
+}
+
+/* Header row */
+
+.top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.score {
+  background: var(--pill);
+  color: #ffffff;
+  border-radius: 999px;
+  padding: 8px 12px;
+  font-weight: 800;
+  display: inline-flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.score span.small {
+  font-size: 12px;
+  font-weight: 500;
+  opacity: 0.85;
+}
+
+.actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 8px;
+}
+
+/* Buttons */
+
+.btn {
+  border: 1px solid var(--line);
+  background: #ffffff;
+  border-radius: 999px;
+  padding: 8px 12px;
+  font-weight: 700;
+  cursor: pointer;
+  text-decoration: none;
+  color: inherit;
+  font-size: 14px;
+}
+
+.btn.primary {
+  background: var(--blue);
+  border-color: var(--blue);
+  color: #ffffff;
+}
+
+.btn.danger {
+  border-color: #fecaca;
+  background: #fef2f2;
+  color: #b91c1c;
+}
+
+/* Question grid */
+
+.qs {
+  margin-top: 14px;
+  display: grid;
+  gap: 12px;
+}
+
+.q {
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 14px;
+  background: #ffffff;
+}
+
+.qhead {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+
+/* Badge with question number */
+
+.badge {
+  min-width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  display: grid;
+  place-items: center;
+  font-weight: 900;
+  color: #ffffff;
+  font-size: 14px;
+}
+
+.badge.ok {
+  background: var(--good);
+}
+
+.badge.no {
+  background: var(--bad);
+}
+
+/* Meta and prompt */
+
+.qmeta {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.qresult {
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.qresult.ok {
+  color: var(--good);
+}
+
+.qresult.no {
+  color: var(--bad);
+}
+
+.prompt {
+  font-weight: 800;
+  margin-top: 2px;
+}
+
+/* Choices list */
+
+.choices {
+  margin-top: 6px;
+  display: grid;
+  gap: 6px;
+}
+
+.choice {
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 8px 10px;
+  background: #f7f8fd;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 6px;
+}
+
+.choice.correct-answer {
+  border-color: #bbf7d0;
+  background: #f0fdf4;
+}
+
+.choice.user-answer.wrong-answer {
+  border-color: #fecaca;
+  background: #fef2f2;
+}
+
+.choice-main {
+  flex: 1 1 auto;
+}
+
+.choice-main b {
+  margin-right: 4px;
+}
+
+/* Tags on the right side of each choice */
+
+.choice-tags {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  font-size: 12px;
+}
+
+.tag {
+  font-size: 12px;
+  border-radius: 999px;
+  padding: 3px 8px;
+  border: 1px solid transparent;
+  white-space: nowrap;
+}
+
+.tag.ok {
+  background: #ecfdf5;
+  color: #065f46;
+  border-color: #a7f3d0;
+}
+
+.tag.you {
+  background: #eef2ff;
+  color: #3730a3;
+  border-color: #c7d2fe;
+}
+
+.tag.correct {
+  background: #f0fdf4;
+  color: #166534;
+  border-color: #bbf7d0;
+}
+
+.tag.wrong {
+  background: #fff1f2;
+  color: #991b1b;
+  border-color: #fecdd3;
+}
+
+.tag.skipped {
+  background: #e5e7eb;
+  color: #374151;
+  border-color: #d1d5db;
+}
+
+/* Explanation block */
+
+.exp {
+  margin-top: 8px;
+  color: var(--muted);
+  font-size: 14px;
+}
+
+.exp b {
+  color: var(--ink);
+}
+
+/* Empty state */
+
+.empty {
+  max-width: 760px;
+  margin: 40px auto;
+  text-align: center;
+}
