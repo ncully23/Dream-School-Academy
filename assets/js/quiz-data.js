@@ -13,6 +13,12 @@
 // <script src="/assets/js/quiz-engine.js"></script>
 
 (function () {
+  // Simple debug flag – flip to true when you want console logging
+  const DEBUG = false;
+  function dbg(...args) {
+    if (DEBUG) console.log("[quiz-data]", ...args);
+  }
+
   // -----------------------------
   // 1. Firebase setup
   // -----------------------------
@@ -55,6 +61,14 @@
       localStorage.setItem(LOCAL_ATTEMPT_KEY, JSON.stringify(list));
     } catch (e) {
       console.warn("quiz-data: failed to save local attempts", e);
+    }
+  }
+
+  function clearLocalAttempts() {
+    try {
+      localStorage.removeItem(LOCAL_ATTEMPT_KEY);
+    } catch (e) {
+      console.warn("quiz-data: failed to clear local attempts", e);
     }
   }
 
@@ -182,6 +196,21 @@
         unsub();
         if (user) resolve(user);
         else reject(new Error("Not signed in"));
+      });
+    });
+  }
+
+  // A tiny helper if you just want to await auth state (user or null)
+  function waitForAuthReady() {
+    return new Promise((resolve) => {
+      const existing = auth.currentUser;
+      if (existing) {
+        resolve(existing);
+        return;
+      }
+      const unsub = auth.onAuthStateChanged((user) => {
+        unsub();
+        resolve(user || null);
       });
     });
   }
@@ -613,7 +642,150 @@
   }
 
   // -----------------------------
-  // 9. Compatibility API: recordTestResult
+  // 9. Section stats / latest attempt helpers
+  // -----------------------------
+  // These are for preview/progress pages.
+
+  function computeStatsFromAttemptList(list) {
+    if (!Array.isArray(list) || list.length === 0) {
+      return {
+        count: 0,
+        bestPercent: null,
+        avgPercent: null,
+        lastPercent: null,
+        lastTakenAt: null
+      };
+    }
+
+    const count = list.length;
+    let bestPercent = null;
+    let sumPercent = 0;
+    let lastPercent = null;
+    let lastTakenAt = null;
+
+    list.forEach((r, idx) => {
+      const p = typeof r.scorePercent === "number" ? r.scorePercent : null;
+      if (p !== null) {
+        if (bestPercent === null || p > bestPercent) bestPercent = p;
+        sumPercent += p;
+        lastPercent = idx === 0 ? p : lastPercent; // assume sorted newest first if you pass it that way
+      }
+      if (idx === 0 && r.timestamp) {
+        lastTakenAt = r.timestamp;
+      }
+    });
+
+    const avgPercent = bestPercent === null ? null : Math.round(sumPercent / count);
+
+    return {
+      count,
+      bestPercent,
+      avgPercent,
+      lastPercent,
+      lastTakenAt
+    };
+  }
+
+  async function loadSectionStats(sectionId) {
+    const effectiveSectionId = sectionId || getDefaultSectionId();
+    if (!effectiveSectionId) {
+      return {
+        sectionId: null,
+        source: "none",
+        count: 0,
+        bestPercent: null,
+        avgPercent: null,
+        lastPercent: null,
+        lastTakenAt: null
+      };
+    }
+
+    // Try remote first; fall back to local if not signed in or no remote data.
+    let remote = [];
+    let remoteError = null;
+
+    try {
+      const user = await requireUser();
+      const snap = await db
+        .collection("users")
+        .doc(user.uid)
+        .collection("examAttempts")
+        .where("sectionId", "==", effectiveSectionId)
+        .orderBy("createdAt", "desc")
+        .get();
+
+      remote = snap.docs.map((d) => d.data());
+    } catch (e) {
+      remoteError = e;
+      dbg("loadSectionStats: remote fetch failed, will try local", e);
+    }
+
+    if (remote && remote.length > 0) {
+      const stats = computeStatsFromAttemptList(remote);
+      return {
+        sectionId: effectiveSectionId,
+        source: "remote",
+        ...stats
+      };
+    }
+
+    // Local fallback
+    const local = loadLocalAttempts()
+      .filter((a) => a.sectionId === effectiveSectionId)
+      .sort((a, b) => {
+        const ta = a.timestamp || "";
+        const tb = b.timestamp || "";
+        return ta < tb ? 1 : ta > tb ? -1 : 0;
+      });
+
+    const stats = computeStatsFromAttemptList(local);
+    return {
+      sectionId: effectiveSectionId,
+      source: remoteError ? "local-offline" : "local",
+      ...stats
+    };
+  }
+
+  async function loadLatestAttemptForSection(sectionId) {
+    const effectiveSectionId = sectionId || getDefaultSectionId();
+    if (!effectiveSectionId) return null;
+
+    // Remote first
+    try {
+      const user = await requireUser();
+      const snap = await db
+        .collection("users")
+        .doc(user.uid)
+        .collection("examAttempts")
+        .where("sectionId", "==", effectiveSectionId)
+        .orderBy("createdAt", "desc")
+        .limit(1)
+        .get();
+
+      if (!snap.empty) {
+        const doc = snap.docs[0];
+        return { id: doc.id, source: "remote", ...doc.data() };
+      }
+    } catch (e) {
+      dbg("loadLatestAttemptForSection: remote failed, trying local", e);
+    }
+
+    // Fallback to local history
+    const local = loadLocalAttempts()
+      .filter((a) => a.sectionId === effectiveSectionId)
+      .sort((a, b) => {
+        const ta = a.timestamp || "";
+        const tb = b.timestamp || "";
+        return ta < tb ? 1 : ta > tb ? -1 : 0;
+      });
+
+    if (local.length === 0) return null;
+
+    return { source: "local", ...local[0] };
+  }
+
+  // -----------------------------
+  // 10. Compatibility API: recordTestResult
   // -----------------------------
   //
   // Thin wrapper so legacy pages can call:
@@ -690,7 +862,7 @@
   }
 
   // -----------------------------
-  // 10. Expose API
+  // 11. Expose API
   // -----------------------------
   //
   // quiz-engine.js can use:
@@ -700,23 +872,31 @@
   //   quizData.clearSessionProgress(sectionId?)
   //   quizData.logReviewChanges(sectionId?, changes)
   //
-  // Progress / debug pages can use:
+  // Practice / preview / debug pages can use:
   //   quizData.loadResultsForSection(sectionId?)
   //   quizData.loadAllResultsForUser()
+  //   quizData.loadSectionStats(sectionId?)
+  //   quizData.loadLatestAttemptForSection(sectionId?)
+  //   quizData.getLocalAttempts()
+  //   quizData.clearLocalAttempts()
   //   quizData.exportAttempts()
   //
   // Legacy-style:
   //   quizData.recordTestResult({ score, total, ... })
 
   window.quizData = {
+    VERSION: "1.1.0",
     auth,
     db,
     requireUser,
+    waitForAuthReady,
 
     // Finished attempts
     appendAttempt,
     loadResultsForSection,
     loadAllResultsForUser,
+    loadSectionStats,
+    loadLatestAttemptForSection,
 
     // In-progress sessions
     saveSessionProgress,
@@ -726,6 +906,10 @@
 
     // Recorder-style helpers
     exportAttempts,
+    getLocalAttempts: loadLocalAttempts,
+    clearLocalAttempts,
+
+    // Legacy
     recordTestResult
   };
 })();
