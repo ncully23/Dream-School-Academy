@@ -100,7 +100,20 @@
     finished: false,
     reviewMode: false,
     startedAt: null,
-    attemptId: null
+    attemptId: null,
+
+    // Per-question timing
+    currentQuestionEnterTs: null,
+    questionTimes: {}, // { qid: totalSeconds }
+    visits: {}, // { qid: count }
+
+    // Focus / tab tracking
+    blurCount: 0,
+    focusCount: 0,
+    tabSwitchCount: 0,
+    lastBlurAt: null,
+    lastFocusAt: null,
+    isFocused: true
   };
 
   // -----------------------
@@ -167,6 +180,8 @@
   // -----------------------
   // Local storage save / restore
   // -----------------------
+  let lastRemoteSaveMs = 0;
+
   function save() {
     if (!exam.storageKey) return;
 
@@ -176,41 +191,49 @@
     });
 
     try {
-      localStorage.setItem(
-        exam.storageKey,
-        JSON.stringify({
-          answers: state.answers,
-          flags: state.flags,
-          elims: elimsObj,
-          remaining: state.remaining,
-          index: state.index
-        })
-      );
+      const payload = {
+        answers: state.answers,
+        flags: state.flags,
+        elims: elimsObj,
+        remaining: state.remaining,
+        index: state.index,
+        startedAt: state.startedAt,
+        attemptId: state.attemptId
+      };
+
+      localStorage.setItem(exam.storageKey, JSON.stringify(payload));
     } catch (e) {
       // storage may be full or disabled; fail silently
     }
 
-    // Optional: push in-progress state to Firestore via quiz-data.js
+    // Throttled remote save of in-progress state to Firestore via quiz-data.js
     if (
       window.quizData &&
       typeof window.quizData.saveSessionProgress === "function"
     ) {
-      try {
-        const progressState = buildProgressState(state);
-        window.quizData.saveSessionProgress(progressState).catch(() => {});
-      } catch (e) {
-        // ignore progress sync errors
+      const now = Date.now();
+      if (now - lastRemoteSaveMs >= 20000) {
+        lastRemoteSaveMs = now;
+        try {
+          const progressState = buildProgressState(state);
+          window.quizData.saveSessionProgress(progressState).catch(() => {});
+        } catch (e) {
+          // ignore progress sync errors
+        }
       }
     }
   }
 
   function restore() {
-    if (!exam.storageKey) return;
+    if (!exam.storageKey) return false;
     let raw;
+    let had = false;
     try {
       raw = localStorage.getItem(exam.storageKey);
-      if (!raw) return;
+      if (!raw) return false;
       const data = JSON.parse(raw);
+
+      had = true;
 
       if (data.answers && typeof data.answers === "object") {
         state.answers = data.answers;
@@ -233,9 +256,17 @@
       if (typeof data.index === "number") {
         state.index = clamp(data.index, 0, exam.questions.length - 1);
       }
+      if (typeof data.startedAt === "number") {
+        state.startedAt = data.startedAt;
+      }
+      if (typeof data.attemptId === "string") {
+        state.attemptId = data.attemptId;
+      }
     } catch (e) {
       // ignore bad JSON
+      return false;
     }
+    return had;
   }
 
   // -----------------------
@@ -275,6 +306,13 @@
     state.timerId = setInterval(tick, 1000);
   }
 
+  function stopTimer() {
+    if (state.timerId) {
+      clearInterval(state.timerId);
+      state.timerId = null;
+    }
+  }
+
   if (el.toggleTimer && el.timeLeft) {
     el.toggleTimer.addEventListener("click", () => {
       state.timerHidden = !state.timerHidden;
@@ -296,6 +334,30 @@
       el.qcard.style.display = "";
       el.checkPage.style.display = "none";
     }
+  }
+
+  // -----------------------
+  // Per-question timing helpers
+  // -----------------------
+  function commitQuestionTime() {
+    const q = exam.questions[state.index];
+    if (!q || !state.currentQuestionEnterTs) return;
+    const now = Date.now();
+    const deltaSec = Math.max(
+      0,
+      Math.round((now - state.currentQuestionEnterTs) / 1000)
+    );
+    const prev = state.questionTimes[q.id] || 0;
+    state.questionTimes[q.id] = prev + deltaSec;
+    state.currentQuestionEnterTs = now;
+  }
+
+  function enterCurrentQuestion() {
+    const q = exam.questions[state.index];
+    state.currentQuestionEnterTs = Date.now();
+    if (!q) return;
+    if (!state.visits[q.id]) state.visits[q.id] = 0;
+    state.visits[q.id] += 1;
   }
 
   // -----------------------
@@ -448,10 +510,13 @@
       if (flagged) b.classList.add("review");
 
       b.addEventListener("click", () => {
+        commitQuestionTime();
         state.index = i;
         state.reviewMode = false;
+        enterCurrentQuestion();
         closePopover();
         render();
+        save();
       });
 
       el.popGrid.appendChild(b);
@@ -474,10 +539,13 @@
       if (flagged) b.classList.add("review");
 
       b.addEventListener("click", () => {
+        commitQuestionTime();
         state.index = i;
         state.reviewMode = false;
+        enterCurrentQuestion();
         render();
         window.scrollTo(0, 0);
+        save();
       });
 
       el.checkGrid.appendChild(b);
@@ -500,9 +568,13 @@
       render();
       return;
     }
+
     const k = clamp(state.index + delta, 0, exam.questions.length - 1);
     if (k === state.index) return;
+
+    commitQuestionTime();
     state.index = k;
+    enterCurrentQuestion();
     save();
     render();
   }
@@ -510,6 +582,7 @@
   function toggleFlag() {
     if (state.reviewMode) return;
     const q = exam.questions[state.index];
+    if (!q) return;
     state.flags[q.id] = !state.flags[q.id];
     save();
     updateFlagVisuals();
@@ -532,14 +605,43 @@
   if (el.back) el.back.addEventListener("click", () => go(-1));
   if (el.next) el.next.addEventListener("click", () => go(1));
 
+  // Keyboard shortcuts: arrows, F flag, E eliminate
+  document.addEventListener("keydown", (e) => {
+    if (state.finished) return;
+    const tag = (e.target && e.target.tagName || "").toLowerCase();
+    if (tag === "input" || tag === "textarea" || tag === "select") return;
+
+    if (e.key === "ArrowRight") {
+      e.preventDefault();
+      go(1);
+    } else if (e.key === "ArrowLeft") {
+      e.preventDefault();
+      go(-1);
+    } else if (e.key === "f" || e.key === "F") {
+      e.preventDefault();
+      toggleFlag();
+    } else if (e.key === "e" || e.key === "E") {
+      e.preventDefault();
+      if (el.elimToggle && el.elimHint) {
+        state.eliminateMode = !state.eliminateMode;
+        el.elimToggle.classList.toggle("on", state.eliminateMode);
+        el.elimToggle.setAttribute("aria-pressed", String(state.eliminateMode));
+        el.elimHint.style.display = state.eliminateMode ? "block" : "none";
+      }
+    }
+  });
+
   // -----------------------
   // Finish + summary
   // -----------------------
   function finishExam() {
     if (state.finished) return;
     state.finished = true;
-    if (state.timerId) clearInterval(state.timerId);
+    stopTimer();
     closePopover();
+
+    // Credit time to the final question
+    commitQuestionTime();
 
     const items = exam.questions.map((q, i) => {
       const chosen =
@@ -552,7 +654,9 @@
         correctIndex: q.answerIndex,
         chosenIndex: chosen,
         correct: chosen === q.answerIndex,
-        explanation: q.explanation || ""
+        explanation: q.explanation || "",
+        timeSpentSec: state.questionTimes[q.id] || 0,
+        visits: state.visits[q.id] || 0
       };
     });
 
@@ -588,6 +692,13 @@
         timerHidden: state.timerHidden,
         reviewMode: state.reviewMode,
         lastQuestionIndex: state.index
+      },
+      sessionMeta: {
+        blurCount: state.blurCount,
+        focusCount: state.focusCount,
+        tabSwitchCount: state.tabSwitchCount,
+        questionTimes: state.questionTimes,
+        visits: state.visits
       }
     };
 
@@ -657,6 +768,7 @@
 
   if (el.goReview) {
     el.goReview.addEventListener("click", () => {
+      commitQuestionTime();
       state.reviewMode = true;
       closePopover();
       render();
@@ -674,9 +786,55 @@
   });
 
   // -----------------------
+  // Focus / blur tracking
+  // -----------------------
+  function handleWindowBlur() {
+    if (state.finished) return;
+    state.blurCount += 1;
+    state.tabSwitchCount += 1;
+    state.isFocused = false;
+    state.lastBlurAt = Date.now();
+    if (exam.pauseOnBlur) {
+      stopTimer();
+    }
+  }
+
+  function handleWindowFocus() {
+    if (state.finished) return;
+    state.focusCount += 1;
+    state.isFocused = true;
+    state.lastFocusAt = Date.now();
+    if (exam.pauseOnBlur && state.remaining > 0 && !state.timerId) {
+      startTimer();
+    }
+  }
+
+  window.addEventListener("blur", handleWindowBlur);
+  window.addEventListener("focus", handleWindowFocus);
+
+  // -----------------------
+  // Leave-page warning
+  // -----------------------
+  window.addEventListener("beforeunload", (e) => {
+    if (state.finished) return;
+
+    const hasWork =
+      Object.keys(state.answers).length > 0 ||
+      Object.keys(state.flags).length > 0 ||
+      (exam.timeLimitSec && state.remaining < exam.timeLimitSec);
+
+    if (!hasWork) return;
+
+    e.preventDefault();
+    e.returnValue = "";
+  });
+
+  // -----------------------
   // Init
   // -----------------------
   function resetPractice() {
+    stopTimer();
+
     state.index = 0;
     state.answers = {};
     state.flags = {};
@@ -688,12 +846,43 @@
     state.timerHidden = false;
     state.startedAt = Date.now();
     state.attemptId = createAttemptId();
+
+    state.currentQuestionEnterTs = null;
+    state.questionTimes = {};
+    state.visits = {};
+
+    state.blurCount = 0;
+    state.focusCount = 0;
+    state.tabSwitchCount = 0;
+    state.lastBlurAt = null;
+    state.lastFocusAt = null;
+    state.isFocused = document.hasFocus();
+    if (state.isFocused) {
+      state.focusCount = 1;
+      state.lastFocusAt = Date.now();
+    }
   }
 
   function init() {
     resetPractice();
-    restore(); // pull saved work if it exists
+    const hadSaved = restore();
+
+    if (hadSaved) {
+      const resume = window.confirm(
+        "Resume your last attempt for this quiz?"
+      );
+      if (!resume) {
+        try {
+          if (exam.storageKey) {
+            localStorage.removeItem(exam.storageKey);
+          }
+        } catch (e) {}
+        resetPractice();
+      }
+    }
+
     render();
+    enterCurrentQuestion();
     startTimer();
   }
 
