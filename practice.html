@@ -5,17 +5,97 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Practice – Dream School Academy</title>
   <link rel="stylesheet" href="style.css" />
+
   <style>
-    main { padding: 40px 20px; display: grid; gap: 40px; max-width: 960px; margin: 0 auto; }
-    section { background: #1c1c1c; border-radius: 8px; padding: 24px; }
-    h3 { color: #00d8ff; margin: 0 0 12px; }
+    body { background:#111; color:#eee; font-family:Arial, sans-serif; }
+
+    main {
+      padding: 40px 20px;
+      max-width: 1100px;
+      margin: 0 auto;
+      display: grid;
+      gap: 48px;
+    }
+
+    section {
+      background: #1c1c1c;
+      border-radius: 10px;
+      padding: 28px;
+    }
+
+    h3 {
+      color: #00d8ff;
+      margin-bottom: 12px;
+    }
+
     p { color:#ccc; }
-    ul.practice-list { list-style: disc; padding-left: 22px; color:#ccc; }
-    ul.practice-list li { margin-bottom: 10px; }
-    ul.practice-list a { color:#ccc; text-decoration:none; }
-    ul.practice-list a:hover { color:#00d8ff; }
+
+    /* Search + filter row */
+    .search-row {
+      margin: 20px 0 30px;
+      display: flex;
+      gap: 14px;
+      flex-wrap: wrap;
+    }
+    .search-row input,
+    .search-row select {
+      padding: 10px 14px;
+      background:#222;
+      border:1px solid #333;
+      border-radius:6px;
+      color:#eee;
+      font-size: 15px;
+    }
+
+    /* Grid of cards */
+    .quiz-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 18px;
+      margin-top: 20px;
+    }
+
+    .quiz-card {
+      background:#181818;
+      border:1px solid #2a2a2a;
+      border-radius:10px;
+      padding:18px;
+      transition:0.2s;
+    }
+    .quiz-card:hover {
+      border-color:#00d8ff;
+      transform: translateY(-2px);
+    }
+
+    .quiz-title {
+      color:#eee;
+      font-size: 17px;
+      margin-bottom: 6px;
+      font-weight: bold;
+    }
+
+    .quiz-meta {
+      color:#aaa;
+      font-size: 13px;
+      margin-bottom: 14px;
+    }
+
+    .quiz-card a {
+      display:inline-block;
+      padding:8px 12px;
+      background:#00d8ff;
+      color:#000;
+      border-radius:6px;
+      text-decoration:none;
+      font-size:14px;
+      font-weight:bold;
+    }
+    .quiz-card a:hover {
+      background:#04e4ff;
+    }
   </style>
 </head>
+
 <body>
   <header>
     <div class="header-container">
@@ -29,57 +109,236 @@
   </header>
 
   <main>
-    <!-- Full-length practice modules -->
+
+    <!-- FULL TESTS -->
     <section>
       <h3>📝 Full Practice Tests</h3>
       <p>Choose from realistic, timed modules:</p>
-      <ul class="practice-list">
-        <li><a href="module1.html">Module 1 – Reading (32 mins)</a></li>
-        <li><a href="module2.html">Module 2 – Reading (32 mins)</a></li>
-        <li><a href="module3.html">Module 3 – Math (35 mins)</a></li>
-        <li><a href="module4.html">Module 4 – Math (35 mins)</a></li>
-      </ul>
+
+      <div class="quiz-grid">
+        <div class="quiz-card">
+          <div class="quiz-title">Module 1 – Reading</div>
+          <div class="quiz-meta">32 minutes · Full-length</div>
+          <a href="preview/module1.html">Preview</a>
+        </div>
+        <div class="quiz-card">
+          <div class="quiz-title">Module 2 – Reading</div>
+          <div class="quiz-meta">32 minutes · Full-length</div>
+          <a href="preview/module2.html">Preview</a>
+        </div>
+        <div class="quiz-card">
+          <div class="quiz-title">Module 3 – Math</div>
+          <div class="quiz-meta">35 minutes · Full-length</div>
+          <a href="preview/module3.html">Preview</a>
+        </div>
+        <div class="quiz-card">
+          <div class="quiz-title">Module 4 – Math</div>
+          <div class="quiz-meta">35 minutes · Full-length</div>
+          <a href="preview/module4.html">Preview</a>
+        </div>
+      </div>
     </section>
 
-    <!-- Topic-based quizzes (each file lives under /practice/...) -->
+    <!-- TOPIC QUIZZES -->
     <section>
       <h3>🎯 Practice by Topic</h3>
       <p>Select a topic for a focused 10-question quiz:</p>
 
-      <ul class="practice-list">
-        <!-- Reading & Writing -->
-        <li><a href="practice/central-ideas.html">Central Ideas and Details</a></li>
-        <li><a href="practice/inferences.html">Inferences</a></li>
-        <li><a href="practice/command-evidence.html">Command of Evidence</a></li>
-        <li><a href="practice/words-context.html">Words in Context</a></li>
-        <li><a href="practice/text-structure.html">Text Structure and Purpose</a></li>
-        <li><a href="practice/cross-text.html">Cross-Text Connections</a></li>
-        <li><a href="practice/rhetorical-synthesis.html">Rhetorical Synthesis</a></li>
-        <li><a href="practice/transitions.html">Transitions</a></li>
-        <li><a href="practice/boundaries.html">Boundaries</a></li>
-        <li><a href="practice/form-structure-sense.html">Form, Structure, and Sense</a></li>
+      <!-- Search + filter -->
+      <div class="search-row">
+        <input type="text" placeholder="Search topics…">
+        <select>
+          <option value="">All Subjects</option>
+          <option>Reading & Writing</option>
+          <option>Math</option>
+        </select>
+      </div>
 
-        <!-- Math -->
-        <li><a href="practice/linear-equations-one-variable.html">Linear Equations in One Variable</a></li>
-        <li><a href="practice/linear-functions.html">Linear Functions</a></li>
-        <li><a href="practice/linear-equations-two-variables.html">Linear Equations in Two Variables</a></li>
-        <li><a href="practice/systems-linear-equations.html">Systems of Two Linear Equations in Two Variables</a></li>
-        <li><a href="practice/linear-inequalities.html">Linear Inequalities in One or Two Variables</a></li>
-        <li><a href="practice/nonlinear-functions.html">Nonlinear Functions</a></li>
-        <li><a href="practice/nonlinear-equations.html">Nonlinear Equations and Systems</a></li>
-        <li><a href="practice/equivalent-expressions.html">Equivalent Expressions</a></li>
-        <li><a href="practice/ratios-units.html">Ratios, Rates, Proportional Relationships, and Units</a></li>
-        <li><a href="practice/percentages.html">Percentages</a></li>
-        <li><a href="practice/one-variable-data.html">One-Variable Data</a></li>
-        <li><a href="practice/two-variable-data.html">Two-Variable Data</a></li>
-        <li><a href="practice/probability.html">Probability and Conditional Probability</a></li>
-        <li><a href="practice/inference-statistics.html">Inference from Sample Statistics</a></li>
-        <li><a href="practice/statistical-claims.html">Evaluating Statistical Claims</a></li>
-        <li><a href="practice/area-volume.html">Area and Volume</a></li>
-        <li><a href="practice/lines-angles-triangles.html">Lines, Angles, and Triangles</a></li>
-        <li><a href="practice/right-triangles.html">Right Triangles and Trigonometry</a></li>
-        <li><a href="practice/circles.html">Circles</a></li>
-      </ul>
+      <div class="quiz-grid">
+
+        <!-- ====================== -->
+        <!-- READING & WRITING TOPICS -->
+        <!-- ====================== -->
+
+        <div class="quiz-card">
+          <div class="quiz-title">Central Ideas & Details</div>
+          <div class="quiz-meta">Reading · 10 questions · ~12 min</div>
+          <a href="preview/central-ideas.html">Preview</a>
+        </div>
+
+        <div class="quiz-card">
+          <div class="quiz-title">Inferences</div>
+          <div class="quiz-meta">Reading · 10 questions · ~12 min</div>
+          <a href="preview/inferences.html">Preview</a>
+        </div>
+
+        <div class="quiz-card">
+          <div class="quiz-title">Command of Evidence</div>
+          <div class="quiz-meta">Reading · 10 questions · ~12 min</div>
+          <a href="preview/command-evidence.html">Preview</a>
+        </div>
+
+        <div class="quiz-card">
+          <div class="quiz-title">Words in Context</div>
+          <div class="quiz-meta">Reading · 10 questions · ~12 min</div>
+          <a href="preview/words-context.html">Preview</a>
+        </div>
+
+        <div class="quiz-card">
+          <div class="quiz-title">Text Structure & Purpose</div>
+          <div class="quiz-meta">Reading · 10 questions · ~12 min</div>
+          <a href="preview/text-structure.html">Preview</a>
+        </div>
+
+        <div class="quiz-card">
+          <div class="quiz-title">Cross-Text Connections</div>
+          <div class="quiz-meta">Reading · 10 questions · ~12 min</div>
+          <a href="preview/cross-text.html">Preview</a>
+        </div>
+
+        <div class="quiz-card">
+          <div class="quiz-title">Rhetorical Synthesis</div>
+          <div class="quiz-meta">Reading · 10 questions · ~12 min</div>
+          <a href="preview/rhetorical-synthesis.html">Preview</a>
+        </div>
+
+        <div class="quiz-card">
+          <div class="quiz-title">Transitions</div>
+          <div class="quiz-meta">Writing · 10 questions · ~12 min</div>
+          <a href="preview/transitions.html">Preview</a>
+        </div>
+
+        <div class="quiz-card">
+          <div class="quiz-title">Boundaries (Grammar)</div>
+          <div class="quiz-meta">Writing · 10 questions · ~12 min</div>
+          <a href="preview/boundaries.html">Preview</a>
+        </div>
+
+        <div class="quiz-card">
+          <div class="quiz-title">Form, Structure, & Sense</div>
+          <div class="quiz-meta">Writing · 10 questions · ~12 min</div>
+          <a href="preview/form-structure-sense.html">Preview</a>
+        </div>
+
+        <!-- ====================== -->
+        <!-- MATH TOPICS -->
+        <!-- ====================== -->
+
+        <div class="quiz-card">
+          <div class="quiz-title">Linear Equations (One Variable)</div>
+          <div class="quiz-meta">Math · 10 questions · ~12 min</div>
+          <a href="preview/linear-equations-one-variable.html">Preview</a>
+        </div>
+
+        <div class="quiz-card">
+          <div class="quiz-title">Linear Functions</div>
+          <div class="quiz-meta">Math · 10 questions · ~12 min</div>
+          <a href="preview/linear-functions.html">Preview</a>
+        </div>
+
+        <div class="quiz-card">
+          <div class="quiz-title">Linear Equations (Two Variables)</div>
+          <div class="quiz-meta">Math · 10 questions · ~12 min</div>
+          <a href="preview/linear-equations-two-variables.html">Preview</a>
+        </div>
+
+        <div class="quiz-card">
+          <div class="quiz-title">Systems of Linear Equations</div>
+          <div class="quiz-meta">Math · 10 questions · ~12 min</div>
+          <a href="preview/systems-linear-equations.html">Preview</a>
+        </div>
+
+        <div class="quiz-card">
+          <div class="quiz-title">Linear Inequalities</div>
+          <div class="quiz-meta">Math · 10 questions · ~12 min</div>
+          <a href="preview/linear-inequalities.html">Preview</a>
+        </div>
+
+        <div class="quiz-card">
+          <div class="quiz-title">Nonlinear Functions</div>
+          <div class="quiz-meta">Math · 10 questions · ~12 min</div>
+          <a href="preview/nonlinear-functions.html">Preview</a>
+        </div>
+
+        <div class="quiz-card">
+          <div class="quiz-title">Nonlinear Equations & Systems</div>
+          <div class="quiz-meta">Math · 10 questions · ~12 min</div>
+          <a href="preview/nonlinear-equations.html">Preview</a>
+        </div>
+
+        <div class="quiz-card">
+          <div class="quiz-title">Equivalent Expressions</div>
+          <div class="quiz-meta">Math · 10 questions · ~12 min</div>
+          <a href="preview/equivalent-expressions.html">Preview</a>
+        </div>
+
+        <div class="quiz-card">
+          <div class="quiz-title">Ratios, Rates, & Units</div>
+          <div class="quiz-meta">Math · 10 questions · ~12 min</div>
+          <a href="preview/ratios-units.html">Preview</a>
+        </div>
+
+        <div class="quiz-card">
+          <div class="quiz-title">Percentages</div>
+          <div class="quiz-meta">Math · 10 questions · ~12 min</div>
+          <a href="preview/percentages.html">Preview</a>
+        </div>
+
+        <div class="quiz-card">
+          <div class="quiz-title">One-Variable Data</div>
+          <div class="quiz-meta">Math · 10 questions · ~12 min</div>
+          <a href="preview/one-variable-data.html">Preview</a>
+        </div>
+
+        <div class="quiz-card">
+          <div class="quiz-title">Two-Variable Data</div>
+          <div class="quiz-meta">Math · 10 questions · ~12 min</div>
+          <a href="preview/two-variable-data.html">Preview</a>
+        </div>
+
+        <div class="quiz-card">
+          <div class="quiz-title">Probability & Conditional Probability</div>
+          <div class="quiz-meta">Math · 10 questions · ~12 min</div>
+          <a href="preview/probability.html">Preview</a>
+        </div>
+
+        <div class="quiz-card">
+          <div class="quiz-title">Inference from Sample Statistics</div>
+          <div class="quiz-meta">Math · 10 questions · ~12 min</div>
+          <a href="preview/inference-statistics.html">Preview</a>
+        </div>
+
+        <div class="quiz-card">
+          <div class="quiz-title">Evaluating Statistical Claims</div>
+          <div class="quiz-meta">Math · 10 questions · ~12 min</div>
+          <a href="preview/statistical-claims.html">Preview</a>
+        </div>
+
+        <div class="quiz-card">
+          <div class="quiz-title">Area & Volume</div>
+          <div class="quiz-meta">Math · 10 questions · ~12 min</div>
+          <a href="preview/area-volume.html">Preview</a>
+        </div>
+
+        <div class="quiz-card">
+          <div class="quiz-title">Lines, Angles, & Triangles</div>
+          <div class="quiz-meta">Math · 10 questions · ~12 min</div>
+          <a href="preview/lines-angles-triangles.html">Preview</a>
+        </div>
+
+        <div class="quiz-card">
+          <div class="quiz-title">Right Triangles & Trigonometry</div>
+          <div class="quiz-meta">Math · 10 questions · ~12 min</div>
+          <a href="preview/right-triangles.html">Preview</a>
+        </div>
+
+        <div class="quiz-card">
+          <div class="quiz-title">Circles</div>
+          <div class="quiz-meta">Math · 10 questions · ~12 min</div>
+          <a href="preview/circles.html">Preview</a>
+        </div>
+
+      </div>
     </section>
   </main>
 
