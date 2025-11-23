@@ -38,7 +38,6 @@ async function initShell() {
   try {
     const [headerHtml, footerHtml] = await Promise.all([
       fetch("/assets/html/header.html", { cache: "no-store" }).then(r => r.text()),
-      // adjust this if you later move footer.html
       fetch("/assets/structure/footer.html", { cache: "no-store" })
         .then(r => r.text())
         .catch(() => "")
@@ -62,13 +61,14 @@ async function initShell() {
       "/": "home",
       "/home.html": "home",
 
-      // Study section
+      // Study
       "/study/": "study",
       "/study": "study",
       "/study/index.html": "study",
 
-      // Practice section
+      // Practice
       "/practice/": "practice",
+      "/practice": "practice",
       "/practice/index.html": "practice",
 
       // My Progress
@@ -93,6 +93,7 @@ async function initShell() {
   }
 
   // 4) Auth greeting + login/logout UI
+
   const greetingEl = $("#user-greeting");
   const loginLink  = $("#login-link");
   const logoutBtn  = $("#logout-btn");
@@ -107,8 +108,7 @@ async function initShell() {
   logoutBtn.addEventListener("click", async () => {
     try {
       await signOut(auth);
-      // send them back to your home page
-      window.location.href = "/home.html";
+      window.location.href = "/home.html"; // back to home as logged-out
     } catch (e) {
       console.error("Sign out failed:", e);
     }
@@ -140,15 +140,22 @@ async function initShell() {
 
   // Watch auth state and update header
   onAuthStateChanged(auth, async (user) => {
+    if (!greetingEl || !loginLink || !logoutBtn) return;
+
     if (user) {
       const first = await getFirstName(user);
-      greetingEl.textContent   = `Hi, ${first}`;
-      loginLink.style.display  = "none";
-      logoutBtn.style.display  = "inline-flex";
+
+      greetingEl.textContent     = `Hi, ${first}`;
+      greetingEl.style.display   = "inline-flex";
+
+      loginLink.style.display    = "none";
+      logoutBtn.style.display    = "inline-flex";
     } else {
-      greetingEl.textContent   = "";
-      loginLink.style.display  = "inline-flex";
-      logoutBtn.style.display  = "none";
+      greetingEl.textContent     = "";
+      greetingEl.style.display   = "none";
+
+      loginLink.style.display    = "inline-flex";
+      logoutBtn.style.display    = "none";
     }
   });
 }
