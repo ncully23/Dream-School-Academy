@@ -12,29 +12,34 @@
     </a>
 
     <nav class="site-nav">
-      <a href="/home.html"      data-nav="home">Home</a>
-      <a href="/study/index.html"         data-nav="study">Study</a>
-      <a href="/practice/index.html"      data-nav="practice">Practice</a>
-      <a href="/progress/index.html"      data-nav="progress">My Progress</a>
+      <a href="/home.html"           data-nav="home">Home</a>
+      <a href="/study/index.html"    data-nav="study">Study</a>
+      <a href="/practice/index.html" data-nav="practice">Practice</a>
+      <a href="/progress/index.html" data-nav="progress">My Progress</a>
 
-      <!-- Greeting (shown only when signed in) -->
-      <span id="user-greeting"
-            class="greeting"
-            data-when="signed-in"></span>
+      <!-- Greeting (shown when signed in) -->
+      <span
+        id="user-greeting"
+        class="nav-greeting"
+        data-when="signed-in">
+      </span>
 
-      <!-- Login (shown only when signed out) -->
-      <a id="login-link"
-         href="/profile/login.html"
-         class="nav-btn cta"
-         data-when="signed-out">
+      <!-- Login (shown when signed out) -->
+      <a
+        id="login-link"
+        href="/profile/login.html"
+        class="nav-btn cta"
+        data-when="signed-out">
         Log in / Sign up
       </a>
 
-      <!-- Logout (shown only when signed in) -->
-      <button id="logout-btn"
-              class="nav-btn"
-              data-when="signed-in"
-              style="display:none;">
+      <!-- Logout (shown when signed in) -->
+      <button
+        id="logout-btn"
+        type="button"
+        class="nav-btn logout"
+        data-when="signed-in"
+        style="display:none;">
         Log out
       </button>
     </nav>
