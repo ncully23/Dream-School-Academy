@@ -35,10 +35,11 @@ p { color: var(--muted); font-weight: 400; }
 .center { text-align: center; }
 
 /* Hero */
-.hero{
+.hero {
   padding: 8rem 0 6rem;
-  background: radial-gradient(1200px 600px at 50% -10%, rgba(105,229,255,0.18), transparent 60%), linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0));
+  background: var(--bg);
 }
+
 .hero p{
   font-size: clamp(1rem, 1.6vw, 1.25rem);
   margin-top: 0.75rem;
