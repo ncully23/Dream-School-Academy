@@ -60,7 +60,7 @@ async function initShell() {
       "/study.html": "study",
       "/practice/index.html": "practice",
       "/contactus.html": "contact",
-      "/login.html": "login",
+      "/profile/login.html": "login",
     };
 
     const path = (location.pathname || "/").toLowerCase();
