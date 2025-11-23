@@ -1,7 +1,6 @@
 // /assets/js/shell.js
 // Injects shared header/footer, highlights active nav, and wires up auth UI.
 
-// Use a relative import so this works from /assets/js/
 import { auth, db } from "./firebase-init.js";
 
 import {
@@ -18,7 +17,6 @@ import {
 const $  = (sel) => document.querySelector(sel);
 const $$ = (sel) => Array.from(document.querySelectorAll(sel));
 
-// Main shell initializer
 async function initShell() {
   // 1) Ensure header/footer mount points exist
   function ensureMount(id, where = "start") {
@@ -40,7 +38,10 @@ async function initShell() {
   try {
     const [headerHtml, footerHtml] = await Promise.all([
       fetch("/assets/html/header.html", { cache: "no-store" }).then(r => r.text()),
-      fetch("/assets/html/footer.html", { cache: "no-store" }).then(r => r.text()).catch(() => "")
+      // adjust this if you later move footer.html
+      fetch("/assets/structure/footer.html", { cache: "no-store" })
+        .then(r => r.text())
+        .catch(() => "")
     ]);
 
     const headerMount = $("#site-header");
@@ -55,10 +56,28 @@ async function initShell() {
   // 3) Highlight active nav item based on data-page or URL
   try {
     const pageAttr = document.documentElement.getAttribute("data-page"); // e.g. "home"
+
     const map = {
+      // Home
+      "/": "home",
       "/home.html": "home",
+
+      // Study section
+      "/study/": "study",
+      "/study": "study",
       "/study/index.html": "study",
+
+      // Practice section
+      "/practice/": "practice",
+      "/practice": "practice",
       "/practice/index.html": "practice",
+
+      // My Progress
+      "/progress/": "progress",
+      "/progress": "progress",
+      "/progress/index.html": "progress",
+
+      // Login/profile
       "/profile/login.html": "login",
     };
 
@@ -89,7 +108,8 @@ async function initShell() {
   logoutBtn.addEventListener("click", async () => {
     try {
       await signOut(auth);
-      window.location.href = "/"; // back to home as logged-out
+      // send them back to your home page
+      window.location.href = "/home.html";
     } catch (e) {
       console.error("Sign out failed:", e);
     }
