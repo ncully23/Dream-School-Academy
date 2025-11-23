@@ -36,8 +36,8 @@ async function initShell() {
   // 2) Inject header + footer HTML
   try {
     const [headerHtml, footerHtml] = await Promise.all([
-      fetch("/assets/header.html", { cache: "no-store" }).then(r => r.text()),
-      fetch("/assets/footer.html", { cache: "no-store" }).then(r => r.text()).catch(() => "")
+      fetch("/assets/html/header.html", { cache: "no-store" }).then(r => r.text()),
+      fetch("/assets/html/footer.html", { cache: "no-store" }).then(r => r.text()).catch(() => "")
     ]);
     $("#site-header").innerHTML = headerHtml;
     if (footerHtml) {
