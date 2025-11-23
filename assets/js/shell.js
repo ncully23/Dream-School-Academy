@@ -52,7 +52,6 @@ async function initShell() {
     const pageAttr = document.documentElement.getAttribute("data-page"); // e.g. "home"
     const map = {
       "/": "home",
-      "/index.html": "home",
       "/study.html": "study",
       "/practice.html": "practice",
       "/contactus.html": "contact",
