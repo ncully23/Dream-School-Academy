@@ -69,7 +69,6 @@ async function initShell() {
 
       // Practice section
       "/practice/": "practice",
-      "/practice": "practice",
       "/practice/index.html": "practice",
 
       // My Progress
