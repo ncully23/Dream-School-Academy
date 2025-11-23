@@ -1,32 +1,362 @@
 <!DOCTYPE html>
-<html lang="en" data-page="home">
+<html lang="en" data-page="practice">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Dream School Academy — SAT Prep</title>
-  <meta name="description" content="Master the SAT with real practice, smart feedback, and pro-level strategy — all free.">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Practice – Dream School Academy</title>
 
-  <!-- Modern, friendly font -->
+  <!-- Font + global site styles -->
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/assets/css/site.css" />
+  <script type="module" src="/assets/js/shell.js"></script>
 
-  <link rel="stylesheet" href="/assets/site.css" />
-  <script defer src="/assets/shell.js"></script>
-  <script type="module" src="/assets/shell.js"></script>
+  <!-- Page-specific layout styling -->
+  <style>
+    main#practice {
+      padding: 4rem 0 5rem;
+    }
+
+    .practice-wrap {
+      width: min(1100px, 92vw);
+      margin: 0 auto;
+      display: grid;
+      gap: 3rem;
+    }
+
+    .practice-section {
+      background: var(--surface);
+      border-radius: 18px;
+      padding: 1.9rem 1.8rem 2.2rem;
+      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.35);
+      border: 1px solid rgba(255, 255, 255, 0.04);
+    }
+
+    .practice-section h2 {
+      font-size: 1.3rem;
+      margin: 0 0 0.4rem;
+    }
+
+    .practice-section p {
+      margin: 0 0 1.2rem;
+    }
+
+    .practice-section h2 span {
+      color: var(--brand);
+    }
+
+    /* Search + filter row */
+    .search-row {
+      margin: 1rem 0 1.6rem;
+      display: flex;
+      gap: 0.8rem;
+      flex-wrap: wrap;
+    }
+
+    .search-row input,
+    .search-row select {
+      padding: 0.55rem 0.8rem;
+      background: var(--surface-2);
+      border-radius: 999px;
+      border: 1px solid rgba(148, 163, 184, 0.35);
+      color: var(--text);
+      font-size: 0.9rem;
+      min-width: 180px;
+    }
+
+    .search-row input::placeholder {
+      color: var(--muted);
+    }
+
+    /* Grid of quiz cards */
+    .quiz-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 1rem;
+      margin-top: 0.5rem;
+    }
+
+    .quiz-card {
+      background: var(--surface-2);
+      border-radius: 14px;
+      padding: 1rem 1rem 1.1rem;
+      border: 1px solid rgba(148, 163, 184, 0.25);
+      transition: border-color 0.16s ease, transform 0.16s ease,
+                  box-shadow 0.16s ease;
+    }
+
+    .quiz-card:hover {
+      border-color: var(--brand);
+      transform: translateY(-2px);
+      box-shadow: 0 14px 30px rgba(0, 0, 0, 0.5);
+    }
+
+    .quiz-title {
+      font-size: 0.98rem;
+      font-weight: 600;
+      margin-bottom: 0.25rem;
+    }
+
+    .quiz-meta {
+      font-size: 0.8rem;
+      color: var(--muted);
+      margin-bottom: 0.8rem;
+    }
+
+    .quiz-card a {
+      display: inline-block;
+      padding: 0.4rem 0.8rem;
+      border-radius: 999px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      text-decoration: none;
+      background: var(--brand);
+      color: var(--brand-ink);
+    }
+
+    .quiz-card a:hover {
+      transform: translateY(-1px);
+    }
+  </style>
 </head>
+
 <body>
-  <!-- site-header/footer will be injected by shell.js -->
-<div id="site-header"></div>
-  <main id="home">
-    <section class="hero">
-      <div class="container center">
-        <h1>Don’t let the SAT get in the way of your dreams</h1>
-        <p>Learn the SAT from a 99th percentile scorer.</p>
-        <!-- CTA intentionally removed -->
-      </div>
-    </section>
-    <!-- Removed the "What you'll get" section per request -->
+  <!-- Header injected by shell.js -->
+  <div id="site-header"></div>
+
+  <main id="practice">
+    <div class="practice-wrap">
+
+      <!-- FULL TESTS -->
+      <section class="practice-section">
+        <h2><span>📝 Full practice tests</span></h2>
+        <p>Simulate the real SAT with timed modules.</p>
+
+        <div class="quiz-grid">
+          <div class="quiz-card">
+            <div class="quiz-title">Module 1 – Reading</div>
+            <div class="quiz-meta">32 minutes · full-length</div>
+            <a href="/preview/module1.html">Preview</a>
+          </div>
+
+          <div class="quiz-card">
+            <div class="quiz-title">Module 2 – Reading</div>
+            <div class="quiz-meta">32 minutes · full-length</div>
+            <a href="/preview/module2.html">Preview</a>
+          </div>
+
+          <div class="quiz-card">
+            <div class="quiz-title">Module 3 – Math</div>
+            <div class="quiz-meta">35 minutes · full-length</div>
+            <a href="/preview/module3.html">Preview</a>
+          </div>
+
+          <div class="quiz-card">
+            <div class="quiz-title">Module 4 – Math</div>
+            <div class="quiz-meta">35 minutes · full-length</div>
+            <a href="/preview/module4.html">Preview</a>
+          </div>
+        </div>
+      </section>
+
+      <!-- TOPIC QUIZZES -->
+      <section class="practice-section">
+        <h2><span>🎯 Practice by topic</span></h2>
+        <p>Pick a topic and drill with a focused 10-question quiz.</p>
+
+        <!-- Search + filter (UI only for now) -->
+        <div class="search-row">
+          <input type="text" placeholder="Search topics…" aria-label="Search topics" />
+          <select aria-label="Filter by subject">
+            <option value="">All subjects</option>
+            <option>Reading &amp; Writing</option>
+            <option>Math</option>
+          </select>
+        </div>
+
+        <div class="quiz-grid">
+          <!-- READING & WRITING -->
+          <div class="quiz-card">
+            <div class="quiz-title">Central Ideas &amp; Details</div>
+            <div class="quiz-meta">Reading · 10 questions · ~12 min</div>
+            <a href="/preview/central-ideas.html">Preview</a>
+          </div>
+
+          <div class="quiz-card">
+            <div class="quiz-title">Inferences</div>
+            <div class="quiz-meta">Reading · 10 questions · ~12 min</div>
+            <a href="/preview/inferences.html">Preview</a>
+          </div>
+
+          <div class="quiz-card">
+            <div class="quiz-title">Command of Evidence</div>
+            <div class="quiz-meta">Reading · 10 questions · ~12 min</div>
+            <a href="/preview/command-evidence.html">Preview</a>
+          </div>
+
+          <div class="quiz-card">
+            <div class="quiz-title">Words in Context</div>
+            <div class="quiz-meta">Reading · 10 questions · ~12 min</div>
+            <a href="/preview/words-context.html">Preview</a>
+          </div>
+
+          <div class="quiz-card">
+            <div class="quiz-title">Text Structure &amp; Purpose</div>
+            <div class="quiz-meta">Reading · 10 questions · ~12 min</div>
+            <a href="/preview/text-structure.html">Preview</a>
+          </div>
+
+          <div class="quiz-card">
+            <div class="quiz-title">Cross-Text Connections</div>
+            <div class="quiz-meta">Reading · 10 questions · ~12 min</div>
+            <a href="/preview/cross-text.html">Preview</a>
+          </div>
+
+          <div class="quiz-card">
+            <div class="quiz-title">Rhetorical Synthesis</div>
+            <div class="quiz-meta">Reading · 10 questions · ~12 min</div>
+            <a href="/preview/rhetorical-synthesis.html">Preview</a>
+          </div>
+
+          <div class="quiz-card">
+            <div class="quiz-title">Transitions</div>
+            <div class="quiz-meta">Writing · 10 questions · ~12 min</div>
+            <a href="/preview/transitions.html">Preview</a>
+          </div>
+
+          <div class="quiz-card">
+            <div class="quiz-title">Boundaries (Grammar)</div>
+            <div class="quiz-meta">Writing · 10 questions · ~12 min</div>
+            <a href="/preview/boundaries.html">Preview</a>
+          </div>
+
+          <div class="quiz-card">
+            <div class="quiz-title">Form, Structure, &amp; Sense</div>
+            <div class="quiz-meta">Writing · 10 questions · ~12 min</div>
+            <a href="/preview/form-structure-sense.html">Preview</a>
+          </div>
+
+          <!-- MATH -->
+          <div class="quiz-card">
+            <div class="quiz-title">Linear Equations (One Variable)</div>
+            <div class="quiz-meta">Math · 10 questions · ~12 min</div>
+            <a href="/preview/linear-equations-one-variable.html">Preview</a>
+          </div>
+
+          <div class="quiz-card">
+            <div class="quiz-title">Linear Functions</div>
+            <div class="quiz-meta">Math · 10 questions · ~12 min</div>
+            <a href="/preview/linear-functions.html">Preview</a>
+          </div>
+
+          <div class="quiz-card">
+            <div class="quiz-title">Linear Equations (Two Variables)</div>
+            <div class="quiz-meta">Math · 10 questions · ~12 min</div>
+            <a href="/preview/linear-equations-two-variables.html">Preview</a>
+          </div>
+
+          <div class="quiz-card">
+            <div class="quiz-title">Systems of Linear Equations</div>
+            <div class="quiz-meta">Math · 10 questions · ~12 min</div>
+            <a href="/preview/systems-linear-equations.html">Preview</a>
+          </div>
+
+          <div class="quiz-card">
+            <div class="quiz-title">Linear Inequalities</div>
+            <div class="quiz-meta">Math · 10 questions · ~12 min</div>
+            <a href="/preview/linear-inequalities.html">Preview</a>
+          </div>
+
+          <div class="quiz-card">
+            <div class="quiz-title">Nonlinear Functions</div>
+            <div class="quiz-meta">Math · 10 questions · ~12 min</div>
+            <a href="/preview/nonlinear-functions.html">Preview</a>
+          </div>
+
+          <div class="quiz-card">
+            <div class="quiz-title">Nonlinear Equations &amp; Systems</div>
+            <div class="quiz-meta">Math · 10 questions · ~12 min</div>
+            <a href="/preview/nonlinear-equations.html">Preview</a>
+          </div>
+
+          <div class="quiz-card">
+            <div class="quiz-title">Equivalent Expressions</div>
+            <div class="quiz-meta">Math · 10 questions · ~12 min</div>
+            <a href="/preview/equivalent-expressions.html">Preview</a>
+          </div>
+
+          <div class="quiz-card">
+            <div class="quiz-title">Ratios, Rates, &amp; Units</div>
+            <div class="quiz-meta">Math · 10 questions · ~12 min</div>
+            <a href="/preview/ratios-units.html">Preview</a>
+          </div>
+
+          <div class="quiz-card">
+            <div class="quiz-title">Percentages</div>
+            <div class="quiz-meta">Math · 10 questions · ~12 min</div>
+            <a href="/preview/percentages.html">Preview</a>
+          </div>
+
+          <div class="quiz-card">
+            <div class="quiz-title">One-Variable Data</div>
+            <div class="quiz-meta">Math · 10 questions · ~12 min</div>
+            <a href="/preview/one-variable-data.html">Preview</a>
+          </div>
+
+          <div class="quiz-card">
+            <div class="quiz-title">Two-Variable Data</div>
+            <div class="quiz-meta">Math · 10 questions · ~12 min</div>
+            <a href="/preview/two-variable-data.html">Preview</a>
+          </div>
+
+          <div class="quiz-card">
+            <div class="quiz-title">Probability &amp; Conditional Probability</div>
+            <div class="quiz-meta">Math · 10 questions · ~12 min</div>
+            <a href="/preview/probability.html">Preview</a>
+          </div>
+
+          <div class="quiz-card">
+            <div class="quiz-title">Inference from Sample Statistics</div>
+            <div class="quiz-meta">Math · 10 questions · ~12 min</div>
+            <a href="/preview/inference-statistics.html">Preview</a>
+          </div>
+
+          <div class="quiz-card">
+            <div class="quiz-title">Evaluating Statistical Claims</div>
+            <div class="quiz-meta">Math · 10 questions · ~12 min</div>
+            <a href="/preview/statistical-claims.html">Preview</a>
+          </div>
+
+          <div class="quiz-card">
+            <div class="quiz-title">Area &amp; Volume</div>
+            <div class="quiz-meta">Math · 10 questions · ~12 min</div>
+            <a href="/preview/area-volume.html">Preview</a>
+          </div>
+
+          <div class="quiz-card">
+            <div class="quiz-title">Lines, Angles, &amp; Triangles</div>
+            <div class="quiz-meta">Math · 10 questions · ~12 min</div>
+            <a href="/preview/lines-angles-triangles.html">Preview</a>
+          </div>
+
+          <div class="quiz-card">
+            <div class="quiz-title">Right Triangles &amp; Trigonometry</div>
+            <div class="quiz-meta">Math · 10 questions · ~12 min</div>
+            <a href="/preview/right-triangles.html">Preview</a>
+          </div>
+
+          <div class="quiz-card">
+            <div class="quiz-title">Circles</div>
+            <div class="quiz-meta">Math · 10 questions · ~12 min</div>
+            <a href="/preview/circles.html">Preview</a>
+          </div>
+
+        </div>
+      </section>
+    </div>
   </main>
 
+  <!-- Footer injected by shell.js -->
+  <div id="site-footer"></div>
 </body>
 </html>
