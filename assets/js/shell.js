@@ -1,35 +1,38 @@
-// /assets/shell.js (module)
+// /assets/js/shell.js
+// Injects shared header/footer, highlights active nav, and wires up auth UI.
 
-// Reuse shared Firebase instances
-import { auth, db } from "/assets/firebase-init.js";
+// Use a relative import so this works from /assets/js/
+import { auth, db } from "./firebase-init.js";
 
-// Pull in helpers that work *with* those instances
 import {
   onAuthStateChanged,
-  signOut
+  signOut,
 } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-auth.js";
+
 import {
   doc,
-  getDoc
+  getDoc,
 } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-firestore.js";
 
 // Small DOM helpers
 const $  = (sel) => document.querySelector(sel);
 const $$ = (sel) => Array.from(document.querySelectorAll(sel));
 
-// Inject header/footer, then wire everything up
+// Main shell initializer
 async function initShell() {
-  // 1) Ensure header/footer mount points
+  // 1) Ensure header/footer mount points exist
   function ensureMount(id, where = "start") {
     if (!document.getElementById(id)) {
       const el = document.createElement("div");
       el.id = id;
+      if (!document.body) return;
       document.body.insertAdjacentElement(
         where === "start" ? "afterbegin" : "beforeend",
         el
       );
     }
   }
+
   ensureMount("site-header", "start");
   ensureMount("site-footer", "end");
 
@@ -39,25 +42,32 @@ async function initShell() {
       fetch("/assets/html/header.html", { cache: "no-store" }).then(r => r.text()),
       fetch("/assets/html/footer.html", { cache: "no-store" }).then(r => r.text()).catch(() => "")
     ]);
-    $("#site-header").innerHTML = headerHtml;
-    if (footerHtml) {
-      $("#site-footer").innerHTML = footerHtml;
-    }
+
+    const headerMount = $("#site-header");
+    const footerMount = $("#site-footer");
+
+    if (headerMount) headerMount.innerHTML = headerHtml;
+    if (footerMount && footerHtml) footerMount.innerHTML = footerHtml;
   } catch (e) {
     console.error("Header/footer inject failed:", e);
   }
 
-  // 3) Highlight active nav
+  // 3) Highlight active nav item based on data-page or URL
   try {
     const pageAttr = document.documentElement.getAttribute("data-page"); // e.g. "home"
     const map = {
       "/": "home",
+      "/index.html": "home",
+      "/home.html": "home",
       "/study.html": "study",
       "/practice.html": "practice",
       "/contactus.html": "contact",
       "/login.html": "login",
     };
-    const key = pageAttr || map[(location.pathname || "/").toLowerCase()];
+
+    const path = (location.pathname || "/").toLowerCase();
+    const key  = pageAttr || map[path];
+
     if (key) {
       $$(".site-nav a[data-nav]").forEach(a => {
         a.classList.toggle("active", a.getAttribute("data-nav") === key);
@@ -67,12 +77,12 @@ async function initShell() {
     console.warn("Nav highlight failed:", e);
   }
 
-  // 4) Auth greeting + login/logout — *modelled exactly after your working script*
+  // 4) Auth greeting + login/logout UI
   const greetingEl = $("#user-greeting");
   const loginLink  = $("#login-link");
   const logoutBtn  = $("#logout-btn");
 
-  // If header didn't load for some reason, bail out
+  // If header markup isn’t present, don’t try to wire auth UI
   if (!greetingEl || !loginLink || !logoutBtn) {
     console.warn("Auth UI elements not found in header.");
     return;
@@ -88,7 +98,7 @@ async function initShell() {
     }
   });
 
-  // Helper to get first name from Firestore or Auth
+  // Helper: get first name from Firestore or Auth object
   async function getFirstName(user) {
     if (!user) return null;
 
@@ -106,7 +116,7 @@ async function initShell() {
       console.warn("Failed to load profile from Firestore:", e);
     }
 
-    // Fallbacks
+    // Fallbacks from auth object
     if (user.displayName) return user.displayName.split(" ")[0];
     if (user.email)       return user.email.split("@")[0];
     return "there";
@@ -116,7 +126,7 @@ async function initShell() {
   onAuthStateChanged(auth, async (user) => {
     if (user) {
       const first = await getFirstName(user);
-      greetingEl.textContent = `Hi, ${first}`;
+      greetingEl.textContent   = `Hi, ${first}`;
       loginLink.style.display  = "none";
       logoutBtn.style.display  = "inline-flex";
     } else {
@@ -127,5 +137,9 @@ async function initShell() {
   });
 }
 
-// Run once
-initShell();
+// Ensure we run after the DOM is ready (so <body> exists)
+if (document.readyState === "loading") {
+  document.addEventListener("DOMContentLoaded", initShell);
+} else {
+  initShell();
+}
