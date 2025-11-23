@@ -10,13 +10,16 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;800&display=swap" rel="stylesheet">
 
-  <link rel="stylesheet" href="/assets/css/site.css" />
-  <script defer src="/assets/shell.js"></script>
-  <script type="module" src="/assets/shell.js"></script>
+  <!-- Site styles (note: updated relative path) -->
+  <link rel="stylesheet" href="./assets/css/site.css" />
+
+  <!-- Shell: injects header/footer, handles nav + auth (module only, correct path) -->
+  <script type="module" src="./assets/js/shell.js"></script>
 </head>
 <body>
-  <!-- site-header/footer will be injected by shell.js -->
-<div id="site-header"></div>
+  <!-- Header is injected into this mount by shell.js -->
+  <div id="site-header"></div>
+
   <main id="home">
     <section class="hero">
       <div class="container center">
@@ -25,7 +28,10 @@
         <!-- CTA intentionally removed -->
       </div>
     </section>
+    <!-- "What you'll get" section removed per your request -->
   </main>
 
+  <!-- Footer mount (shell.js will fill this if footer.html exists) -->
+  <div id="site-footer"></div>
 </body>
 </html>
