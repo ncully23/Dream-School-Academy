@@ -1,4 +1,6 @@
 (function () {
+  "use strict";
+
   const exam = window.examConfig;
   if (!exam) {
     console.error("quiz-engine.js: window.examConfig is missing.");
@@ -17,9 +19,12 @@
     return "t_" + Date.now() + "_" + Math.floor(Math.random() * 10000);
   }
 
-  const ATTEMPT_STORAGE_KEY = "dreamschool:attempts:v1";
+  // Shared attempt history key (read by progress.js)
+  const ATTEMPT_STORAGE_KEY =
+    window.DSA_ATTEMPT_KEY || "dreamschool:attempts:v1";
+  window.DSA_ATTEMPT_KEY = ATTEMPT_STORAGE_KEY;
 
-  // Minimal local attempt history (recorder-style)
+  // Minimal local attempt history (used by progress page)
   function recordLocalAttempt(summary) {
     try {
       const raw = localStorage.getItem(ATTEMPT_STORAGE_KEY);
@@ -33,7 +38,8 @@
 
       const record = {
         id: summary.attemptId || createAttemptId(),
-        sectionId: summary.sectionId || exam.sectionId || null,
+        sectionId:
+          summary.sectionId || exam.sectionId || "unknown-section",
         title: summary.title || exam.sectionTitle || "",
         timestamp: summary.generatedAt || new Date().toISOString(),
         score,
@@ -50,7 +56,7 @@
     }
   }
 
-  // Build a lightweight progressState for quiz-data.js
+  // Build a lightweight progressState for quiz-data.js (Firestore in-progress)
   function buildProgressState(state) {
     const currentQ = exam.questions[state.index];
     const answers = {};
@@ -702,7 +708,7 @@
       }
     };
 
-    // Local attempt history (recorder-style)
+    // Local attempt history (for progress/index.html)
     recordLocalAttempt(summary);
 
     // Save to Firestore via quiz-data.js if available
