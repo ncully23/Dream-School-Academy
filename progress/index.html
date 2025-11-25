@@ -1,45 +1,20 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" data-page="progress">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>My Progress — Dream School Academy</title>
 
-  <!-- Main CSS for this page -->
+  <!-- Global site styles + progress page styles -->
+  <link rel="stylesheet" href="/assets/css/site.css" />
   <link rel="stylesheet" href="/assets/css/progress.css" />
-  <!-- Optional: global styles / fonts if you use them -->
-  <!-- <link rel="stylesheet" href="/assets/css/site.css" /> -->
+
+  <!-- Shared shell: inject header/footer, auth UI, nav highlight -->
+  <script type="module" src="/assets/js/shell.js"></script>
 </head>
 <body>
-  <!-- Site-wide header injected from a shared partial -->
+  <!-- Header + footer will be injected by shell.js -->
   <div id="site-header"></div>
-  <script>
-    // Reuse your global header snippet
-    fetch('/assets/header.html')
-      .then(response => response.text())
-      .then(data => {
-        const headerEl = document.getElementById('site-header');
-        if (headerEl) headerEl.innerHTML = data;
-      })
-      .catch(() => {
-        // Fallback if header.html is missing
-        const headerEl = document.getElementById('site-header');
-        if (headerEl) {
-          headerEl.innerHTML = `
-            <header class="site-header">
-              <div class="site-header-inner">
-                <h1 class="site-title">Dream School Academy</h1>
-                <nav class="site-nav">
-                  <a href="/index.html">Home</a>
-                  <a href="/practice.html">Practice</a>
-                  <a href="/my-progress.html" aria-current="page">My Progress</a>
-                </nav>
-              </div>
-            </header>
-          `;
-        }
-      });
-  </script>
 
   <main class="container">
     <!-- Page title / intro -->
@@ -103,6 +78,9 @@
     </section>
   </main>
 
+  <!-- Footer injected by shell.js -->
+  <div id="site-footer"></div>
+
   <!-- Optional modal for attempt details (my-progress.js will use this if present) -->
   <dialog id="detailsModal" class="details-modal">
     <div class="details-content">
@@ -123,7 +101,7 @@
   <!-- Legacy local recorder (for older practice pages, used as fallback) -->
   <script src="/assets/js/quiz-recorder.js"></script>
 
-  <!-- Progress page logic (the rewritten my-progress.js I gave you) -->
+  <!-- Progress page logic -->
   <script src="/assets/js/my-progress.js"></script>
 </body>
 </html>
