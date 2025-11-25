@@ -51,6 +51,7 @@
       font-weight:bold;
       border-radius:8px;
       text-decoration:none;
+      cursor:pointer;
     }
     .btn:hover { background:#04e4ff; }
 
@@ -62,6 +63,18 @@
       background:#444;
     }
   </style>
+
+  <script>
+    function openQuizWindow() {
+      // Opens in actual NEW WINDOW, not a tab
+      window.open(
+        "/practice/circles/quiz.html",
+        "circlesQuizWindow",
+        "width=1200,height=800,noopener"
+      );
+    }
+  </script>
+
 </head>
 
 <body>
@@ -73,19 +86,21 @@
     <p>
       This 10-question quiz tests your understanding of key SAT concepts involving circles:
       equations, arc length, area, circumference, angle relationships, and interpreting circle-based
-      graphs or geometry scenarios. These appear frequently on the SAT Math Module.
+      geometry scenarios. These appear frequently on the SAT Math Module.
     </p>
 
     <div class="meta">
       <div><strong>Questions:</strong> 10</div>
       <div><strong>Estimated Time:</strong> ~12 minutes</div>
       <div><strong>Difficulty:</strong> Easy → Medium</div>
-      <div><strong>Skills Included:</strong> Circle equations, radius/diameter, area, circumference, angles, arc length, geometric reasoning</div>
+      <div><strong>Skills Included:</strong> Circle equations, radius/diameter, area, circumference,
+        angles, arc length, geometric reasoning
+      </div>
     </div>
 
     <div class="btn-row">
-      <!-- IMPORTANT: Update the path to your actual quiz file -->
-      <a class="btn" href="/practice/circles.html" target="_blank">Start Quiz</a>
+      <!-- OPEN A NEW WINDOW INSTEAD OF NEW TAB -->
+      <button class="btn" onclick="openQuizWindow()">Start Quiz</button>
 
       <a class="btn secondary" href="/study/circles.html">Study Topic</a>
       <a class="btn secondary" href="/practice.html">Back to Practice</a>
@@ -97,5 +112,6 @@
   <p>Contact: info@dreamschool.academy</p>
   <p>© 2025 Dream School Academy. All rights reserved.</p>
 </footer>
+
 </body>
 </html>
