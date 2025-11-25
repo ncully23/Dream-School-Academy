@@ -250,26 +250,28 @@
   <!-- Exam configuration -->
   <script>
     window.examConfig = {
-      sectionId: "math-circles-m1",
+      // This sectionId is what progress.js / quiz-data.js will use
+      sectionId: "math-circles",
       storageKey: "dsa-circles-bluebook-v7",
       summaryKey: "dsa-circles-summary-v1",
       summaryHref: "summary.html",
       sectionTitle: "Section 1, Module 1: Math — Circles (Practice)",
-      timeLimitSec: 14 * 60, // 14 minutes for 10 questions
+      timeLimitSec: 14 * 60, // 14 minutes
+      pauseOnBlur: false,
       questions: [
         {
           id: "q1",
           prompt: "A circle has radius 5 cm. What is its circumference?",
           choices: ["10\u03c0 cm","25\u03c0 cm","5\u03c0 cm","50\u03c0 cm"],
           answerIndex: 0,
-          explanation: "Use C = 2\u03c0r. With r = 5, C = 2 \u00b7 \u03c0 \u00b7 5 = 10\u03c0 cm."
+          explanation: "Use the circumference formula C = 2\u03c0r. Substitute r = 5: C = 2 \u00d7 \u03c0 \u00d7 5 = 10\u03c0 cm."
         },
         {
           id: "q2",
           prompt: "If a circle\u2019s area is 49\u03c0, what is its radius?",
           choices: ["3","7","14","24.5"],
           answerIndex: 1,
-          explanation: "Area A = \u03c0r\u00b2. If A = 49\u03c0, then r\u00b2 = 49 and r = 7."
+          explanation: "Area formula: A = \u03c0r\u00b2. Set \u03c0r\u00b2 = 49\u03c0, divide by \u03c0 to get r\u00b2 = 49, so r = \u221a49 = 7."
         },
         {
           id: "q3",
@@ -281,35 +283,35 @@
             "(x - 0)\u00b2 + (y - 6)\u00b2 = 3"
           ],
           answerIndex: 0,
-          explanation: "Center (0, 3); radius is the distance to (0, 0): \u221a[(0 - 0)\u00b2 + (0 - 3)\u00b2] = 3. Equation: (x - 0)\u00b2 + (y - 3)\u00b2 = 3\u00b2 = 9."
+          explanation: "The center is (0, 3). The radius is the distance from (0, 3) to (0, 0): r = 3. Standard form is (x - h)\u00b2 + (y - k)\u00b2 = r\u00b2, so (x - 0)\u00b2 + (y - 3)\u00b2 = 9."
         },
         {
           id: "q4",
-          prompt: "For r = 10 and \u03b8 = \u03c0/3, what is the arc length s?",
+          prompt: "For a circle with radius r = 10 and central angle \u03b8 = \u03c0/3 (in radians), what is the arc length s?",
           choices: ["10\u03c0/3","20\u03c0/3","30\u03c0","10","\u03c0/3"],
           answerIndex: 0,
-          explanation: "Arc length s = r\u03b8 (with \u03b8 in radians). So s = 10 \u00b7 (\u03c0/3) = 10\u03c0/3."
+          explanation: "Arc length formula: s = r\u03b8. Substitute r = 10 and \u03b8 = \u03c0/3: s = 10 \u00d7 (\u03c0/3) = 10\u03c0/3."
         },
         {
           id: "q5",
           prompt: "What is the area of a sector of a circle with radius 6 and central angle \u03b8 = \u03c0/2?",
           choices: ["9\u03c0","18\u03c0","36\u03c0","3\u03c0"],
           answerIndex: 1,
-          explanation: "Sector area = (1/2) r\u00b2 \u03b8 = (1/2) \u00b7 36 \u00b7 (\u03c0/2) = 18\u03c0."
+          explanation: "Sector area formula: A = (1/2)r\u00b2\u03b8. Substitute r = 6 and \u03b8 = \u03c0/2: A = (1/2) \u00d7 36 \u00d7 (\u03c0/2) = 18\u03c0."
         },
         {
           id: "q6",
           prompt: "A circle has diameter 18 units. What is its area?",
           choices: ["81\u03c0","36\u03c0","18\u03c0","9\u03c0"],
           answerIndex: 0,
-          explanation: "Diameter 18 \u2192 r = 9. Area = \u03c0r\u00b2 = \u03c0 \u00b7 81 = 81\u03c0."
+          explanation: "Diameter 18 \u2192 radius r = 9. Area A = \u03c0r\u00b2 = \u03c0 \u00d7 9\u00b2 = 81\u03c0."
         },
         {
           id: "q7",
           prompt: "The circumference of a circle is 24\u03c0 units. What is its area?",
           choices: ["24\u03c0","48\u03c0","72\u03c0","144\u03c0"],
           answerIndex: 3,
-          explanation: "C = 2\u03c0r = 24\u03c0 \u2192 r = 12. Area = \u03c0r\u00b2 = \u03c0 \u00b7 144 = 144\u03c0."
+          explanation: "From C = 2\u03c0r = 24\u03c0, divide by 2\u03c0 to get r = 12. Then area A = \u03c0r\u00b2 = \u03c0 \u00d7 12\u00b2 = 144\u03c0."
         },
         {
           id: "q8",
@@ -321,21 +323,21 @@
             "(x - 2)\u00b2 + (y + 4)\u00b2 = 25"
           ],
           answerIndex: 1,
-          explanation: "Standard form: (x - h)\u00b2 + (y - k)\u00b2 = r\u00b2. Here h = -2, k = 4, r = 5 \u2192 (x + 2)\u00b2 + (y - 4)\u00b2 = 25."
+          explanation: "Standard form: (x - h)\u00b2 + (y - k)\u00b2 = r\u00b2. Here h = -2 and k = 4, so (x - (-2))\u00b2 + (y - 4)\u00b2 = (x + 2)\u00b2 + (y - 4)\u00b2 = 25."
         },
         {
           id: "q9",
           prompt: "A sector of a circle with radius 8 has area 16\u03c0. What is the central angle of the sector in radians?",
           choices: ["\u03c0/4","\u03c0/2","\u03c0","2\u03c0"],
           answerIndex: 1,
-          explanation: "Sector area = (1/2) r\u00b2 \u03b8. So 16\u03c0 = (1/2)\u00b7 64 \u00b7 \u03b8 = 32\u03b8, giving \u03b8 = 16\u03c0 / 32 = \u03c0/2."
+          explanation: "Sector area A = (1/2)r\u00b2\u03b8. Substitute r = 8: A = (1/2) \u00d7 64 \u00d7 \u03b8 = 32\u03b8. Set 32\u03b8 = 16\u03c0, so \u03b8 = (16\u03c0)/32 = \u03c0/2."
         },
         {
           id: "q10",
           prompt: "A circular track has radius 40 meters. A runner completes one full lap in 20 seconds. What is the runner\u2019s average speed, in meters per second, in terms of \u03c0?",
           choices: ["2\u03c0","3\u03c0","4\u03c0","8\u03c0"],
           answerIndex: 2,
-          explanation: "One lap distance is the circumference: 2\u03c0r = 2 \u00b7 \u03c0 \u00b7 40 = 80\u03c0. Divide by 20 seconds: 80\u03c0 / 20 = 4\u03c0 m/s."
+          explanation: "One lap distance is the circumference: 2\u03c0r = 2 \u00d7 \u03c0 \u00d7 40 = 80\u03c0 meters. Average speed = distance/time = 80\u03c0 / 20 = 4\u03c0 m/s."
         }
       ]
     };
