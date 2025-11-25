@@ -1,0 +1,255 @@
+/* ---------------------------------------------------------
+   PROGRESS PAGE — Dream School Academy
+   Clean, modern, dark-mode friendly layout
+   --------------------------------------------------------- */
+
+/* --------------------------
+   Root variables (inherits from site.css)
+   -------------------------- */
+:root {
+  --card-bg: #161b22;
+  --card-border: #232933;
+  --card-shadow: 0 4px 14px rgba(0, 0, 0, 0.35);
+
+  --text-main: #e2e8f0;
+  --text-muted: #8b97a8;
+
+  --accent-blue: #3b82f6;
+  --accent-green: #10b981;
+  --accent-yellow: #facc15;
+  --accent-red: #ef4444;
+
+  --radius: 12px;
+  --radius-small: 8px;
+  --radius-pill: 999px;
+
+  --transition-fast: 0.15s ease;
+}
+
+/* --------------------------
+   Page container
+   -------------------------- */
+.progress-page {
+  padding-top: 20px;
+  padding-bottom: 60px;
+  color: var(--text-main);
+}
+
+/* --------------------------
+   Page Header
+   -------------------------- */
+.page-header h1 {
+  font-size: 2rem;
+  margin-bottom: 0.25rem;
+}
+
+.page-header .page-subtitle {
+  color: var(--text-muted);
+  margin-bottom: 1.5rem;
+}
+
+/* --------------------------
+   Status banners
+   -------------------------- */
+.status-banner {
+  padding: 10px 14px;
+  border-radius: var(--radius);
+  background: #1f242d;
+  border: 1px solid var(--card-border);
+  margin-bottom: 12px;
+  font-size: 0.95rem;
+}
+
+.status-banner.warning {
+  border-color: var(--accent-yellow);
+  background: rgba(250, 204, 21, 0.08);
+}
+
+/* --------------------------
+   Summary Cards
+   -------------------------- */
+.summary {
+  margin-top: 20px;
+  margin-bottom: 36px;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 14px;
+}
+
+.stat {
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: var(--radius);
+  box-shadow: var(--card-shadow);
+  padding: 18px 20px;
+  text-align: center;
+  transition: transform var(--transition-fast);
+}
+
+.stat:hover {
+  transform: translateY(-3px);
+}
+
+.stat-value {
+  font-size: 1.6rem;
+  font-weight: 700;
+  margin-bottom: 4px;
+  color: var(--accent-blue);
+}
+
+.stat-label {
+  color: var(--text-muted);
+  font-size: 0.90rem;
+}
+
+/* --------------------------
+   History Section
+   -------------------------- */
+.history-section {
+  margin-top: 40px;
+}
+
+.history-section h2 {
+  font-size: 1.5rem;
+  margin-bottom: 0.4rem;
+}
+
+.history-caption {
+  margin-bottom: 14px;
+  color: var(--text-muted);
+}
+
+/* --------------------------
+   History Table
+   -------------------------- */
+.table-wrap {
+  overflow-x: auto;
+  background: var(--card-bg);
+  border-radius: var(--radius);
+  border: 1px solid var(--card-border);
+  box-shadow: var(--card-shadow);
+}
+
+.history-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.95rem;
+}
+
+.history-table thead {
+  background: #1e242d;
+}
+
+.history-table th {
+  text-align: left;
+  padding: 12px;
+  color: var(--text-muted);
+  font-weight: 500;
+  border-bottom: 1px solid var(--card-border);
+  white-space: nowrap;
+}
+
+.history-table td {
+  padding: 12px;
+  border-bottom: 1px solid #1f242d;
+}
+
+.history-table tr:nth-child(even) {
+  background: #13171f;
+}
+
+.group-row td {
+  background: rgba(59, 130, 246, 0.06);
+  color: var(--accent-blue);
+  font-weight: 600;
+  padding: 10px;
+  border-bottom: 1px solid var(--card-border);
+}
+
+/* --------------------------
+   Details Button
+   -------------------------- */
+.details-btn {
+  padding: 6px 12px;
+  background: var(--accent-blue);
+  border: none;
+  border-radius: var(--radius-small);
+  color: white;
+  cursor: pointer;
+  font-size: 0.85rem;
+  transition: background var(--transition-fast);
+}
+
+.details-btn:hover {
+  background: #2563eb;
+}
+
+/* --------------------------
+   Duration + Un-synced Icons
+   -------------------------- */
+.unsynced-icon {
+  color: var(--accent-yellow);
+  margin-left: 4px;
+}
+
+/* --------------------------
+   Modal (Attempt Details)
+   -------------------------- */
+.details-modal {
+  border: none;
+  background: rgba(0,0,0,0.55);
+  backdrop-filter: blur(6px);
+  padding: 0;
+}
+
+.details-content {
+  background: #1f242d;
+  border: 1px solid var(--card-border);
+  border-radius: var(--radius);
+  width: min(600px, 90%);
+  padding: 20px;
+  margin: 80px auto;
+  box-shadow: var(--card-shadow);
+}
+
+.details-body {
+  background: #13171f;
+  padding: 14px;
+  border-radius: var(--radius-small);
+  border: 1px solid var(--card-border);
+  color: var(--text-main);
+  font-size: 0.9rem;
+  overflow-x: auto;
+  max-height: 400px;
+}
+
+#detailsClose {
+  margin-top: 14px;
+  background: var(--accent-blue);
+  color: white;
+  border-radius: var(--radius-small);
+  padding: 8px 16px;
+  border: none;
+  cursor: pointer;
+}
+
+#detailsClose:hover {
+  background: #2563eb;
+}
+
+/* --------------------------
+   Responsive tweaks
+   -------------------------- */
+@media (max-width: 600px) {
+  .stat-value {
+    font-size: 1.4rem;
+  }
+
+  .history-table th,
+  .history-table td {
+    padding: 10px;
+  }
+}
