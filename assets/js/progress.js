@@ -1,233 +1,455 @@
 // /assets/js/progress.js
+// "My Progress" page: combines Firestore attempts (via quizData)
+// with local attempt history (ATTEMPT_KEY from quiz-engine.js).
+
 (function () {
   "use strict";
 
-  // Shared key (set by quiz-engine.js); fall back if needed
+  // Prevent double initialization if script is loaded twice
+  if (window.__dsa_progress_initialized) return;
+  window.__dsa_progress_initialized = true;
+
+  // Shared local-storage key (set by quiz-engine.js)
   const ATTEMPT_KEY =
     window.DSA_ATTEMPT_KEY || "dreamschool:attempts:v1";
 
-  // -------------
-  // DOM cache
-  // -------------
-  const el = {
-    summary: document.getElementById("summary"),
-    historyTable: document.getElementById("historyTable"),
-    exportBtn: document.getElementById("exportBtn"),
-    clearBtn: document.getElementById("clearBtn")
-  };
+  document.addEventListener("DOMContentLoaded", function () {
+    // -----------------------------
+    // DOM cache
+    // -----------------------------
+    const summaryEl = document.getElementById("summary");
+    const historyTable = document.getElementById("historyTable");
+    // Some layouts use a separate tbody with its own ID
+    const historyBody =
+      document.getElementById("historyBody") ||
+      (historyTable ? historyTable.querySelector("tbody") : null);
 
-  // -------------
-  // Data helpers
-  // -------------
-  function loadAttempts() {
-    try {
-      const raw = localStorage.getItem(ATTEMPT_KEY);
-      if (!raw) return [];
-      const list = JSON.parse(raw);
-      if (!Array.isArray(list)) return [];
-      // Sort newest first
-      return list
-        .filter((r) => r && r.timestamp)
-        .sort(
-          (a, b) =>
-            new Date(b.timestamp).getTime() -
-            new Date(a.timestamp).getTime()
+    const exportBtn = document.getElementById("exportBtn");
+    const clearBtn = document.getElementById("clearBtn");
+
+    // Optional elements
+    const loadingEl = document.getElementById("progressLoading");
+    const unsyncedEl = document.getElementById("unsyncedBanner");
+
+    if (!summaryEl || !historyBody) {
+      // Page isn't wired for this script; exit quietly
+      return;
+    }
+
+    // Store latest list in memory so export uses exactly what’s on-screen
+    const state = {
+      attempts: []
+    };
+
+    // -----------------------------
+    // Helpers
+    // -----------------------------
+    function secToHMS(sec) {
+      if (!sec || sec <= 0) return "—";
+      const h = Math.floor(sec / 3600);
+      const m = Math.floor((sec % 3600) / 60);
+      const s = sec % 60;
+      if (h) return `${h}h ${m}m ${s}s`;
+      if (m) return `${m}m ${s.toString().padStart(2, "0")}s`;
+      return `${s}s`;
+    }
+
+    function computePercent(score, total) {
+      if (!total || total <= 0) return 0;
+      return Math.round((score / total) * 10000) / 100; // 2 decimals
+    }
+
+    function toDateMaybe(ts) {
+      if (!ts) return new Date();
+      if (ts instanceof Date) return ts;
+      if (typeof ts === "string") return new Date(ts);
+      if (typeof ts.toDate === "function") return ts.toDate(); // Firestore Timestamp
+      return new Date();
+    }
+
+    function escapeHtml(str) {
+      if (!str) return "";
+      return String(str).replace(/[&<>"']/g, (m) => {
+        return {
+          "&": "&amp;",
+          "<": "&lt;",
+          ">": "&gt;",
+          '"': "&quot;",
+          "'": "&#39;"
+        }[m];
+      });
+    }
+
+    /**
+     * Normalize any attempt to a common shape:
+     * {
+     *   id: string,
+     *   timestamp: Date,
+     *   score: number,
+     *   total: number,
+     *   percent: number,
+     *   durationSeconds: number,
+     *   title: string,
+     *   sectionId: string | null,
+     *   synced: boolean      // true = Firestore, false = local-only
+     * }
+     */
+    function normalizeAttempt(raw, options) {
+      const opts = options || {};
+      const fromFirestore = !!opts.fromFirestore;
+
+      // Case 1: Firestore summary created by quiz-data.appendAttempt
+      // shape: { totals, items, sectionId, title, generatedAt/createdAt, ... }
+      if (raw && raw.totals && Array.isArray(raw.items)) {
+        const totals = raw.totals;
+        const items = raw.items;
+
+        const score =
+          typeof totals.correct === "number" ? totals.correct : 0;
+        const total =
+          typeof totals.total === "number" ? totals.total : items.length;
+        const percent =
+          typeof totals.scorePercent === "number"
+            ? totals.scorePercent
+            : computePercent(score, total);
+
+        const durationSeconds =
+          typeof totals.timeSpentSec === "number"
+            ? totals.timeSpentSec
+            : 0;
+
+        const ts =
+          raw.createdAt || raw.generatedAt || raw.timestamp || null;
+        const timestamp = toDateMaybe(ts);
+
+        const sectionId = raw.sectionId || null;
+        const title =
+          raw.title || raw.sectionTitle || sectionId || "Practice";
+
+        return {
+          id: raw.id || raw.attemptId || "fs_" + timestamp.getTime(),
+          timestamp,
+          score,
+          total,
+          percent,
+          durationSeconds,
+          title,
+          sectionId,
+          synced: true
+        };
+      }
+
+      // Case 2: localStorage record from quiz-engine.js recordLocalAttempt
+      // shape: { id, sectionId, title, timestamp, score, total, percent, durationSeconds }
+      if (
+        raw &&
+        typeof raw.score === "number" &&
+        typeof raw.total === "number"
+      ) {
+        const score = raw.score;
+        const total = raw.total;
+        const percent =
+          typeof raw.percent === "number"
+            ? raw.percent
+            : computePercent(score, total);
+
+        const durationSeconds =
+          typeof raw.durationSeconds === "number"
+            ? raw.durationSeconds
+            : 0;
+
+        const timestamp = toDateMaybe(raw.timestamp);
+        const title =
+          raw.title || raw.sectionId || "Practice";
+
+        return {
+          id: raw.id || "local_" + timestamp.getTime(),
+          timestamp,
+          score,
+          total,
+          percent,
+          durationSeconds,
+          title,
+          sectionId: raw.sectionId || null,
+          synced: fromFirestore ? true : false
+        };
+      }
+
+      // Fallback: super minimal
+      const fallbackTime = toDateMaybe(raw && raw.timestamp);
+      return {
+        id: (raw && raw.id) || "unknown_" + fallbackTime.getTime(),
+        timestamp: fallbackTime,
+        score: 0,
+        total: 0,
+        percent: 0,
+        durationSeconds: 0,
+        title: "Practice",
+        sectionId: null,
+        synced: fromFirestore
+      };
+    }
+
+    // -----------------------------
+    // Data loading: Firestore + local
+    // -----------------------------
+    async function fetchAllResults() {
+      let firestoreAttempts = [];
+      let localAttempts = [];
+      let hasUnsynced = false;
+
+      // 1) Firestore attempts via quizData (if available)
+      if (
+        window.quizData &&
+        typeof window.quizData.loadAllResultsForUser === "function"
+      ) {
+        try {
+          const rawFs =
+            (await window.quizData.loadAllResultsForUser()) || [];
+          firestoreAttempts = rawFs.map((r) =>
+            normalizeAttempt(r, { fromFirestore: true })
+          );
+        } catch (err) {
+          console.error(
+            "progress.js: failed to load Firestore attempts",
+            err
+          );
+        }
+      }
+
+      // 2) Local attempts via ATTEMPT_KEY (quiz-engine.js)
+      try {
+        const raw = localStorage.getItem(ATTEMPT_KEY);
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          if (Array.isArray(parsed)) {
+            localAttempts = parsed.map((r) =>
+              normalizeAttempt(r, { fromFirestore: false })
+            );
+          }
+        }
+      } catch (err) {
+        console.warn(
+          "progress.js: failed to read local attempts from storage",
+          err
         );
-    } catch (e) {
-      console.warn("progress.js: bad attempts JSON", e);
-      return [];
-    }
-  }
+      }
 
-  function formatDate(iso) {
-    if (!iso) return "";
-    const d = new Date(iso);
-    if (Number.isNaN(d.getTime())) return iso;
-    return d.toLocaleString(undefined, {
-      year: "numeric",
-      month: "short",
-      day: "numeric",
-      hour: "numeric",
-      minute: "2-digit"
-    });
-  }
+      // Merge + sort newest → oldest
+      const all = [...firestoreAttempts, ...localAttempts].sort(
+        (a, b) => b.timestamp - a.timestamp
+      );
 
-  function formatDuration(sec) {
-    if (!sec || sec <= 0) return "—";
-    const m = Math.floor(sec / 60);
-    const s = sec % 60;
-    if (m === 0) return `${s}s`;
-    return `${m}m ${s.toString().padStart(2, "0")}s`;
-  }
+      hasUnsynced =
+        localAttempts.length > 0 &&
+        localAttempts.some((r) => !r.synced);
 
-  // -------------
-  // Render summary cards
-  // -------------
-  function renderSummary(attempts) {
-    if (!el.summary) return;
-
-    if (!attempts.length) {
-      el.summary.innerHTML = `
-        <div class="empty-state">
-          <h2>No practice data yet</h2>
-          <p>Take a quiz like <strong>Circles — Practice</strong>, then come back to see your progress.</p>
-        </div>
-      `;
-      return;
+      return {
+        list: all,
+        hasUnsynced
+      };
     }
 
-    const totalAttempts = attempts.length;
-    let totalQuestions = 0;
-    let totalCorrect = 0;
-    let bestPercent = 0;
-    let totalTime = 0;
+    // -----------------------------
+    // Rendering
+    // -----------------------------
+    function renderSummary(list) {
+      if (!list || !list.length) {
+        summaryEl.innerHTML = `
+          <div class="empty-state">
+            <h2>No practice data yet</h2>
+            <p>Take a quiz like <strong>Circles — Practice</strong>, then come back to see your progress.</p>
+          </div>
+        `;
+        return;
+      }
 
-    attempts.forEach((a) => {
-      const correct = Number(a.score || 0);
-      const total = Number(a.total || 0);
-      const percent =
-        total > 0 ? Math.round((correct / total) * 10000) / 100 : 0;
+      const totalTests = list.length;
 
-      totalQuestions += total;
-      totalCorrect += correct;
-      totalTime += Number(a.durationSeconds || 0);
-      if (percent > bestPercent) bestPercent = percent;
-    });
+      let totalQuestions = 0;
+      let totalCorrect = 0;
+      let bestPercent = 0;
+      let totalTime = 0;
 
-    const avgPercent =
-      totalQuestions > 0
-        ? Math.round((totalCorrect / totalQuestions) * 10000) / 100
-        : 0;
+      list.forEach((r) => {
+        const score = Number(r.score || 0);
+        const total = Number(r.total || 0);
+        const percent =
+          total > 0 ? computePercent(score, total) : 0;
 
-    el.summary.innerHTML = `
-      <div class="summary-grid">
-        <div class="summary-card">
-          <div class="label">Total quizzes</div>
-          <div class="value">${totalAttempts}</div>
-          <div class="hint">Each completed module (like Circles) counts once.</div>
-        </div>
+        totalQuestions += total;
+        totalCorrect += score;
+        totalTime += Number(r.durationSeconds || 0);
+        if (percent > bestPercent) bestPercent = percent;
+      });
 
-        <div class="summary-card">
-          <div class="label">Average score</div>
-          <div class="value">${avgPercent.toFixed(1)}%</div>
-          <div class="hint">Based on all questions answered.</div>
-        </div>
-
-        <div class="summary-card">
-          <div class="label">Best score</div>
-          <div class="value">${bestPercent.toFixed(1)}%</div>
-          <div class="hint">Highest score on any single quiz.</div>
-        </div>
-
-        <div class="summary-card">
-          <div class="label">Total time spent</div>
-          <div class="value">${formatDuration(totalTime)}</div>
-          <div class="hint">Approximate time across all modules.</div>
-        </div>
-      </div>
-    `;
-  }
-
-  // -------------
-  // Render history table
-  // -------------
-  function renderHistory(attempts) {
-    if (!el.historyTable) return;
-
-    let tbody = el.historyTable.querySelector("tbody");
-    if (!tbody) {
-      tbody = document.createElement("tbody");
-      el.historyTable.appendChild(tbody);
-    }
-    tbody.innerHTML = "";
-
-    if (!attempts.length) {
-      // Optionally hide table if no attempts
-      el.historyTable.style.display = "none";
-      return;
-    }
-
-    el.historyTable.style.display = "";
-
-    attempts.forEach((a) => {
-      const tr = document.createElement("tr");
-
-      const percent =
-        a.total > 0
-          ? Math.round((a.score / a.total) * 10000) / 100
+      const avgPercent =
+        totalQuestions > 0
+          ? computePercent(totalCorrect, totalQuestions)
           : 0;
 
-      tr.innerHTML = `
-        <td class="cell-date">${formatDate(a.timestamp)}</td>
-        <td class="cell-title">${a.title || a.sectionId || "Quiz"}</td>
-        <td class="cell-score">
-          <span class="score-pill">${percent.toFixed(1)}%</span>
-        </td>
-        <td class="cell-detail">${a.score || 0} / ${a.total || 0}</td>
-        <td class="cell-time">${formatDuration(a.durationSeconds)}</td>
+      summaryEl.innerHTML = `
+        <div class="summary-grid">
+          <div class="summary-card">
+            <div class="label">Total quizzes</div>
+            <div class="value">${totalTests}</div>
+            <div class="hint">Each completed module counts once.</div>
+          </div>
+
+          <div class="summary-card">
+            <div class="label">Average score</div>
+            <div class="value">${avgPercent.toFixed(1)}%</div>
+            <div class="hint">Across all questions answered.</div>
+          </div>
+
+          <div class="summary-card">
+            <div class="label">Best score</div>
+            <div class="value">${bestPercent.toFixed(1)}%</div>
+            <div class="hint">Highest score on any quiz.</div>
+          </div>
+
+          <div class="summary-card">
+            <div class="label">Total time</div>
+            <div class="value">${secToHMS(totalTime)}</div>
+            <div class="hint">Approximate time on practice.</div>
+          </div>
+        </div>
       `;
-
-      tbody.appendChild(tr);
-    });
-  }
-
-  // -------------
-  // Export / Clear
-  // -------------
-  function wireControls(attemptsRef) {
-    if (el.exportBtn) {
-      el.exportBtn.addEventListener("click", () => {
-        try {
-          const data = JSON.stringify(attemptsRef.current, null, 2);
-          const blob = new Blob([data], { type: "application/json" });
-          const url = URL.createObjectURL(blob);
-          const a = document.createElement("a");
-          a.href = url;
-          a.download = "dreamschool-progress.json";
-          document.body.appendChild(a);
-          a.click();
-          a.remove();
-          URL.revokeObjectURL(url);
-        } catch (e) {
-          console.error("progress.js: export failed", e);
-          alert("Could not export data. Check console for details.");
-        }
-      });
     }
 
-    if (el.clearBtn) {
-      el.clearBtn.addEventListener("click", () => {
-        const ok = window.confirm(
-          "Clear all saved progress from this browser? This cannot be undone."
-        );
-        if (!ok) return;
+    function renderHistory(list) {
+      if (!historyTable) {
+        // Simple tbody-only layout
+        historyBody.innerHTML = "";
+      } else {
+        // Ensure table is visible if we use it
+        historyTable.style.display = "";
+      }
 
-        try {
-          localStorage.removeItem(ATTEMPT_KEY);
-        } catch (e) {
-          console.warn("progress.js: failed to clear localStorage", e);
-        }
-        attemptsRef.current = [];
-        renderSummary(attemptsRef.current);
-        renderHistory(attemptsRef.current);
+      if (!list || !list.length) {
+        historyBody.innerHTML = `
+          <tr>
+            <td colspan="5">No quizzes recorded yet.</td>
+          </tr>
+        `;
+        return;
+      }
+
+      const rows = list.map((r) => {
+        const dateStr = r.timestamp.toLocaleString();
+        const percentStr = `${r.percent.toFixed(1)}%`;
+        const unsyncedIcon = r.synced ? "" : " ⚠";
+
+        return `
+          <tr>
+            <td class="cell-date">${escapeHtml(dateStr)}</td>
+            <td class="cell-title">${escapeHtml(
+              r.title || "Practice"
+            )}${unsyncedIcon}</td>
+            <td class="cell-score">
+              <span class="score-pill">${escapeHtml(percentStr)}</span>
+            </td>
+            <td class="cell-detail">${r.score || 0} / ${
+          r.total || 0
+        }</td>
+            <td class="cell-time">${secToHMS(
+              r.durationSeconds
+            )}</td>
+          </tr>
+        `;
       });
+
+      historyBody.innerHTML = rows.join("");
     }
-  }
 
-  // -------------
-  // Init
-  // -------------
-  function init() {
-    const attemptsRef = { current: loadAttempts() };
+    // -----------------------------
+    // Export / Clear
+    // -----------------------------
+    function wireControls() {
+      if (exportBtn) {
+        exportBtn.addEventListener("click", function () {
+          try {
+            const data = JSON.stringify(state.attempts, null, 2);
+            const blob = new Blob([data], {
+              type: "application/json"
+            });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = "dreamschool-progress.json";
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+            URL.revokeObjectURL(url);
+          } catch (err) {
+            console.error("progress.js: export failed", err);
+            alert(
+              "Could not export data. Please check the console for details."
+            );
+          }
+        });
+      }
 
-    renderSummary(attemptsRef.current);
-    renderHistory(attemptsRef.current);
-    wireControls(attemptsRef);
-  }
+      if (clearBtn) {
+        clearBtn.addEventListener("click", function () {
+          const ok = window.confirm(
+            "Clear all locally saved quiz attempts on this browser? Cloud-synced results in your account will not be deleted."
+          );
+          if (!ok) return;
 
-  if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", init);
-  } else {
+          try {
+            localStorage.removeItem(ATTEMPT_KEY);
+          } catch (err) {
+            console.warn(
+              "progress.js: failed to clear local attempts",
+              err
+            );
+          }
+
+          // Reload from Firestore only
+          refresh().catch(() => {});
+        });
+      }
+    }
+
+    // -----------------------------
+    // Main refresh
+    // -----------------------------
+    async function refresh() {
+      try {
+        if (loadingEl) loadingEl.style.display = "block";
+        if (unsyncedEl) unsyncedEl.style.display = "none";
+
+        const { list, hasUnsynced } = await fetchAllResults();
+        state.attempts = list;
+
+        renderSummary(list);
+        renderHistory(list);
+
+        if (unsyncedEl) {
+          unsyncedEl.style.display = hasUnsynced ? "block" : "none";
+        }
+      } catch (err) {
+        console.error("progress.js: refresh failed", err);
+        summaryEl.innerHTML =
+          "<p>Could not load your progress. Please try again later.</p>";
+        historyBody.innerHTML =
+          '<tr><td colspan="5">Error loading results.</td></tr>';
+      } finally {
+        if (loadingEl) loadingEl.style.display = "none";
+      }
+    }
+
+    // -----------------------------
+    // Init
+    // -----------------------------
+    function init() {
+      wireControls();
+      refresh().catch((err) =>
+        console.error("progress.js: initial refresh failed", err)
+      );
+    }
+
     init();
-  }
+  });
 })();
