@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!DOCTYPE html> 
 <html lang="en">
 <head>
 <meta charset="utf-8" />
@@ -59,28 +59,6 @@
     font-size:13px;
     font-weight:500;
     opacity:.9;
-  }
-  .actions{
-    display:flex;
-    gap:10px;
-    flex-wrap:wrap;
-    margin-top:6px;
-  }
-  .btn{
-    border:1px solid var(--line);
-    background:#fff;
-    border-radius:999px;
-    padding:8px 12px;
-    font-weight:700;
-    cursor:pointer;
-    text-decoration:none;
-    color:inherit;
-    font-size:14px;
-  }
-  .btn.primary{
-    background:var(--blue);
-    border-color:var(--blue);
-    color:#fff;
   }
 
   /* grid of Qs */
@@ -187,6 +165,14 @@
     color:var(--muted);
   }
   .exp b{color:var(--ink)}
+  .exp ul{
+    margin:6px 0 0;
+    padding-left:18px;
+  }
+  .exp li{
+    margin:2px 0;
+  }
+
   .empty{
     max-width:760px;
     margin:40px auto;
@@ -206,11 +192,7 @@
           <!-- Filled by JS -->
         </div>
       </div>
-      <div class="actions">
-        <a class="btn" href="circles.html">← Back to practice</a>
-        <button class="btn primary" id="retake">Retake this set</button>
-        <button class="btn" id="clear">Clear my summary</button>
-      </div>
+      <!-- top buttons removed on purpose -->
     </div>
 
     <div class="qs" id="qs"></div>
@@ -287,7 +269,20 @@
 
     const prompt = it.prompt || "";
 
-    const choiceHtml = (it.choices || []).map((c, i) => {
+    const choices = it.choices || [];
+    const correctLetter = typeof it.correctIndex === "number" ? letter(it.correctIndex) : "—";
+    const correctText   = typeof it.correctIndex === "number" && choices[it.correctIndex] != null
+      ? choices[it.correctIndex]
+      : "";
+
+    let yourLetter = "—";
+    let yourText   = "";
+    if (!unanswered && userIndex !== null && choices[userIndex] != null) {
+      yourLetter = letter(userIndex);
+      yourText   = choices[userIndex];
+    }
+
+    const choiceHtml = choices.map((c, i) => {
       const isAns   = i === it.correctIndex;
       const isUser  = i === userIndex;
 
@@ -316,6 +311,44 @@
       ? '<span class="tag unanswered">You left this blank</span>'
       : "";
 
+    const skillLabel = it.skill || it.skillLabel || "";
+    const difficulty = it.difficulty || "";
+
+    const reasoning = it.explanation || "";
+    const steps = Array.isArray(it.steps) ? it.steps : null;
+
+    // Build a more thorough solution block:
+    let solutionHtml = `
+      <ul>
+        <li><b>Correct answer:</b> ${correctLetter}. ${correctText || ""}</li>
+    `;
+
+    if (unanswered) {
+      solutionHtml += `<li><b>Your answer:</b> (no answer selected)</li>`;
+    } else {
+      solutionHtml += `<li><b>Your answer:</b> ${yourLetter}. ${yourText || ""} ${isCorrect ? "(matches the correct answer)" : "(does not match the correct answer)"}.</li>`;
+    }
+
+    if (skillLabel) {
+      solutionHtml += `<li><b>What this question is testing:</b> ${skillLabel}${difficulty ? " — " + difficulty : ""}</li>`;
+    } else if (difficulty) {
+      solutionHtml += `<li><b>Difficulty:</b> ${difficulty}</li>`;
+    }
+
+    if (reasoning) {
+      solutionHtml += `<li><b>Reasoning:</b> ${reasoning}</li>`;
+    }
+
+    if (steps && steps.length > 0) {
+      solutionHtml += `<li><b>Step-by-step outline:</b><ul>`;
+      steps.forEach((s) => {
+        solutionHtml += `<li>${s}</li>`;
+      });
+      solutionHtml += `</ul></li>`;
+    }
+
+    solutionHtml += `</ul>`;
+
     sec.innerHTML = `
       <div class="qhead">
         <div class="badge ${isCorrect ? "ok" : "no"}">${it.number ?? ""}</div>
@@ -325,36 +358,15 @@
         ${choiceHtml}
       </div>
       <div class="exp">
-        <b>Explanation:</b> ${it.explanation || "—"} ${unansweredTag}
+        <b>Solution:</b>
+        ${solutionHtml}
+        ${unansweredTag}
       </div>
     `;
     qsEl.appendChild(sec);
   });
 
-  // Buttons
-  document.getElementById("retake").addEventListener("click", () => {
-    try {
-      const PRACTICE_KEY = "dsa-circles-bluebook-v7"; // matches examConfig.storageKey
-      const rawPractice  = localStorage.getItem(PRACTICE_KEY);
-      if (rawPractice) {
-        const obj = JSON.parse(rawPractice);
-        obj.answers = {};
-        obj.flags   = {};
-        obj.elims   = {};
-        localStorage.setItem(PRACTICE_KEY, JSON.stringify(obj));
-      }
-    } catch (e) {
-      console.warn("Circles summary: failed to reset practice state", e);
-    }
-    location.href = "circles.html";
-  });
-
-  document.getElementById("clear").addEventListener("click", () => {
-    localStorage.removeItem(SUMMARY_KEY);
-    localStorage.removeItem(FALLBACK_KEY);
-    alert("Circles summary cleared from this browser.");
-    location.reload();
-  });
+  // note: retake / clear buttons removed
 })();
 </script>
 </body>
