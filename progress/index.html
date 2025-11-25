@@ -37,18 +37,10 @@
 
     <!-- Summary cards (tests taken, avg score, best, last taken) -->
     <section id="summary" class="summary">
-      <!-- Filled by my-progress.js -->
+      <!-- Filled by progress.js -->
     </section>
 
-    <!-- Controls: export + clear local history -->
-    <section class="controls">
-      <button id="exportBtn" type="button" class="btn">
-        Export all results (JSON)
-      </button>
-      <button id="clearBtn" type="button" class="btn danger">
-        Clear local history
-      </button>
-    </section>
+    <!-- (Controls removed: no export / clear buttons for now) -->
 
     <!-- Test history table -->
     <section class="history-section">
@@ -71,7 +63,7 @@
             </tr>
           </thead>
           <tbody id="historyBody">
-            <!-- Rows inserted by my-progress.js -->
+            <!-- Rows inserted by progress.js -->
           </tbody>
         </table>
       </div>
@@ -81,7 +73,7 @@
   <!-- Footer injected by shell.js -->
   <div id="site-footer"></div>
 
-  <!-- Optional modal for attempt details (my-progress.js will use this if present) -->
+  <!-- Optional modal for attempt details (used by progress.js if present) -->
   <dialog id="detailsModal" class="details-modal">
     <div class="details-content">
       <h2>Attempt details</h2>
@@ -101,7 +93,7 @@
   <!-- Legacy local recorder (for older practice pages, used as fallback) -->
   <script src="/assets/js/quiz-recorder.js"></script>
 
-  <!-- Progress page logic -->
-  <script src="/assets/js/my-progress.js"></script>
+  <!-- Progress page logic (new script) -->
+  <script src="/assets/js/progress.js"></script>
 </body>
 </html>
