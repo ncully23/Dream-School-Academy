@@ -13,10 +13,10 @@
   <script type="module" src="/assets/js/shell.js"></script>
 </head>
 <body>
-  <!-- Header + footer will be injected by shell.js -->
+  <!-- Header injected by shell.js -->
   <div id="site-header"></div>
 
-  <main class="container">
+  <main class="container progress-page">
     <!-- Page title / intro -->
     <header class="page-header">
       <h1>My Progress</h1>
@@ -30,24 +30,28 @@
       <div id="progressLoading" class="status-banner" style="display:none;">
         Loading your progress…
       </div>
+    </section>
+
+    <!-- Summary cards (tests taken, avg score, best, time) -->
+    <section id="summary" class="summary" aria-label="Progress summary">
+      <!-- Filled by progress.js with stat cards + totals text -->
+    </section>
+
+    <!-- Unsynced notice (shown only when needed) -->
+    <section aria-live="polite">
       <div id="unsyncedBanner" class="status-banner warning" style="display:none;">
         ⚠ Some attempts are only stored locally on this device and are not yet synced to your account.
       </div>
     </section>
 
-    <!-- Summary cards (tests taken, avg score, best, last taken) -->
-    <section id="summary" class="summary">
-      <!-- Filled by progress.js -->
-    </section>
-
-    <!-- (Controls removed: no export / clear buttons for now) -->
-
     <!-- Test history table -->
-    <section class="history-section">
-      <h2>Test History</h2>
-      <p class="history-caption">
-        Each row shows one completed practice exam. Sections are grouped by module or category.
-      </p>
+    <section class="history-section" aria-label="Test history">
+      <div class="history-header">
+        <h2>Test History</h2>
+        <p class="history-caption">
+          Each row shows one completed practice quiz or module. Sections are grouped by module or category.
+        </p>
+      </div>
 
       <div class="table-wrap">
         <table id="historyTable" class="history-table">
