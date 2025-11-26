@@ -1,6 +1,6 @@
 // /assets/js/progress.js
-// "My Progress" page: combines Firestore attempts (via quizData)
-// with local attempt history (ATTEMPT_KEY from quiz-engine.js).
+// "My Progress" page: shows ONLY Firestore attempts for the logged-in user.
+// No localStorage fallback. If the user isn't signed in, we show a friendly message.
 
 (function () {
   "use strict";
@@ -9,34 +9,25 @@
   if (window.__dsa_progress_initialized) return;
   window.__dsa_progress_initialized = true;
 
-  // Shared local-storage key (set by quiz-engine.js)
-  const ATTEMPT_KEY =
-    window.DSA_ATTEMPT_KEY || "dreamschool:attempts:v1";
-
   document.addEventListener("DOMContentLoaded", function () {
     // -----------------------------
     // DOM cache
     // -----------------------------
     const summaryEl = document.getElementById("summary");
     const historyTable = document.getElementById("historyTable");
-    // Some layouts use a separate tbody with its own ID
     const historyBody =
       document.getElementById("historyBody") ||
       (historyTable ? historyTable.querySelector("tbody") : null);
 
-    const exportBtn = document.getElementById("exportBtn");
-    const clearBtn = document.getElementById("clearBtn");
-
     // Optional elements
     const loadingEl = document.getElementById("progressLoading");
-    const unsyncedEl = document.getElementById("unsyncedBanner");
+    const bannerEl = document.getElementById("unsyncedBanner"); // repurposed as info/error banner
 
     if (!summaryEl || !historyBody) {
       // Page isn't wired for this script; exit quietly
       return;
     }
 
-    // Store latest list in memory so export uses exactly what’s on-screen
     const state = {
       attempts: []
     };
@@ -81,7 +72,9 @@
     }
 
     /**
-     * Normalize any attempt to a common shape:
+     * Normalize a Firestore attempt (from quizData.loadAllResultsForUser)
+     * into a shape used by the UI:
+     *
      * {
      *   id: string,
      *   timestamp: Date,
@@ -90,164 +83,82 @@
      *   percent: number,
      *   durationSeconds: number,
      *   title: string,
-     *   sectionId: string | null,
-     *   synced: boolean      // true = Firestore, false = local-only
+     *   sectionId: string | null
      * }
      */
-    function normalizeAttempt(raw, options) {
-      const opts = options || {};
-      const fromFirestore = !!opts.fromFirestore;
-
-      // Case 1: Firestore summary created by quiz-data.appendAttempt
-      // shape: { totals, items, sectionId, title, generatedAt/createdAt, ... }
-      if (raw && raw.totals && Array.isArray(raw.items)) {
-        const totals = raw.totals;
-        const items = raw.items;
-
-        const score =
-          typeof totals.correct === "number" ? totals.correct : 0;
-        const total =
-          typeof totals.total === "number" ? totals.total : items.length;
-        const percent =
-          typeof totals.scorePercent === "number"
-            ? totals.scorePercent
-            : computePercent(score, total);
-
-        const durationSeconds =
-          typeof totals.timeSpentSec === "number"
-            ? totals.timeSpentSec
-            : 0;
-
-        const ts =
-          raw.createdAt || raw.generatedAt || raw.timestamp || null;
-        const timestamp = toDateMaybe(ts);
-
-        const sectionId = raw.sectionId || null;
-        const title =
-          raw.title || raw.sectionTitle || sectionId || "Practice";
-
+    function normalizeAttempt(raw) {
+      if (!raw || !raw.totals || !Array.isArray(raw.items)) {
+        // Fallback very minimal record
+        const fallbackTime = toDateMaybe(raw && (raw.createdAt || raw.timestamp));
         return {
-          id: raw.id || raw.attemptId || "fs_" + timestamp.getTime(),
-          timestamp,
-          score,
-          total,
-          percent,
-          durationSeconds,
-          title,
-          sectionId,
-          synced: true
+          id: (raw && raw.id) || "unknown_" + fallbackTime.getTime(),
+          timestamp: fallbackTime,
+          score: 0,
+          total: 0,
+          percent: 0,
+          durationSeconds: 0,
+          title: "Practice",
+          sectionId: raw && raw.sectionId ? raw.sectionId : null
         };
       }
 
-      // Case 2: localStorage record from quiz-engine.js recordLocalAttempt
-      // shape: { id, sectionId, title, timestamp, score, total, percent, durationSeconds }
-      if (
-        raw &&
-        typeof raw.score === "number" &&
-        typeof raw.total === "number"
-      ) {
-        const score = raw.score;
-        const total = raw.total;
-        const percent =
-          typeof raw.percent === "number"
-            ? raw.percent
-            : computePercent(score, total);
+      const totals = raw.totals;
+      const items = raw.items;
 
-        const durationSeconds =
-          typeof raw.durationSeconds === "number"
-            ? raw.durationSeconds
-            : 0;
+      const score =
+        typeof totals.correct === "number" ? totals.correct : 0;
+      const total =
+        typeof totals.total === "number" ? totals.total : items.length;
+      const percent =
+        typeof totals.scorePercent === "number"
+          ? totals.scorePercent
+          : computePercent(score, total);
 
-        const timestamp = toDateMaybe(raw.timestamp);
-        const title =
-          raw.title || raw.sectionId || "Practice";
+      const durationSeconds =
+        typeof totals.timeSpentSec === "number"
+          ? totals.timeSpentSec
+          : (typeof raw.durationSeconds === "number" ? raw.durationSeconds : 0);
 
-        return {
-          id: raw.id || "local_" + timestamp.getTime(),
-          timestamp,
-          score,
-          total,
-          percent,
-          durationSeconds,
-          title,
-          sectionId: raw.sectionId || null,
-          synced: fromFirestore ? true : false
-        };
-      }
+      const ts = raw.createdAt || raw.generatedAt || raw.timestamp || null;
+      const timestamp = toDateMaybe(ts);
 
-      // Fallback: super minimal
-      const fallbackTime = toDateMaybe(raw && raw.timestamp);
+      const sectionId = raw.sectionId || null;
+      const title =
+        raw.title || raw.sectionTitle || sectionId || "Practice";
+
       return {
-        id: (raw && raw.id) || "unknown_" + fallbackTime.getTime(),
-        timestamp: fallbackTime,
-        score: 0,
-        total: 0,
-        percent: 0,
-        durationSeconds: 0,
-        title: "Practice",
-        sectionId: null,
-        synced: fromFirestore
+        id: raw.id || raw.attemptId || "fs_" + timestamp.getTime(),
+        timestamp,
+        score,
+        total,
+        percent,
+        durationSeconds,
+        title,
+        sectionId
       };
     }
 
     // -----------------------------
-    // Data loading: Firestore + local
+    // Data loading: Firestore only
     // -----------------------------
     async function fetchAllResults() {
-      let firestoreAttempts = [];
-      let localAttempts = [];
-      let hasUnsynced = false;
-
-      // 1) Firestore attempts via quizData (if available)
       if (
-        window.quizData &&
-        typeof window.quizData.loadAllResultsForUser === "function"
+        !window.quizData ||
+        typeof window.quizData.loadAllResultsForUser !== "function"
       ) {
-        try {
-          const rawFs =
-            (await window.quizData.loadAllResultsForUser()) || [];
-          firestoreAttempts = rawFs.map((r) =>
-            normalizeAttempt(r, { fromFirestore: true })
-          );
-        } catch (err) {
-          console.error(
-            "progress.js: failed to load Firestore attempts",
-            err
-          );
-        }
-      }
-
-      // 2) Local attempts via ATTEMPT_KEY (quiz-engine.js)
-      try {
-        const raw = localStorage.getItem(ATTEMPT_KEY);
-        if (raw) {
-          const parsed = JSON.parse(raw);
-          if (Array.isArray(parsed)) {
-            localAttempts = parsed.map((r) =>
-              normalizeAttempt(r, { fromFirestore: false })
-            );
-          }
-        }
-      } catch (err) {
-        console.warn(
-          "progress.js: failed to read local attempts from storage",
-          err
+        throw new Error(
+          "Progress: quizData API not available. Make sure quiz-data.js is loaded."
         );
       }
 
-      // Merge + sort newest → oldest
-      const all = [...firestoreAttempts, ...localAttempts].sort(
-        (a, b) => b.timestamp - a.timestamp
-      );
+      // This internally calls requireUser(), so it will reject if not signed in
+      const rawFs = (await window.quizData.loadAllResultsForUser()) || [];
 
-      hasUnsynced =
-        localAttempts.length > 0 &&
-        localAttempts.some((r) => !r.synced);
+      const list = rawFs
+        .map((r) => normalizeAttempt(r))
+        .sort((a, b) => b.timestamp - a.timestamp); // newest → oldest
 
-      return {
-        list: all,
-        hasUnsynced
-      };
+      return list;
     }
 
     // -----------------------------
@@ -258,7 +169,7 @@
         summaryEl.innerHTML = `
           <div class="empty-state">
             <h2>No practice data yet</h2>
-            <p>Take a quiz like <strong>Circles — Practice</strong>, then come back to see your progress.</p>
+            <p>Complete a practice module while signed in, then return here to see your progress.</p>
           </div>
         `;
         return;
@@ -274,8 +185,7 @@
       list.forEach((r) => {
         const score = Number(r.score || 0);
         const total = Number(r.total || 0);
-        const percent =
-          total > 0 ? computePercent(score, total) : 0;
+        const percent = total > 0 ? computePercent(score, total) : 0;
 
         totalQuestions += total;
         totalCorrect += score;
@@ -311,7 +221,7 @@
           <div class="summary-card">
             <div class="label">Total time</div>
             <div class="value">${secToHMS(totalTime)}</div>
-            <div class="hint">Approximate time on practice.</div>
+            <div class="hint">Approximate time spent practicing.</div>
           </div>
         </div>
       `;
@@ -322,7 +232,6 @@
         // Simple tbody-only layout
         historyBody.innerHTML = "";
       } else {
-        // Ensure table is visible if we use it
         historyTable.style.display = "";
       }
 
@@ -338,23 +247,16 @@
       const rows = list.map((r) => {
         const dateStr = r.timestamp.toLocaleString();
         const percentStr = `${r.percent.toFixed(1)}%`;
-        const unsyncedIcon = r.synced ? "" : " ⚠";
 
         return `
           <tr>
             <td class="cell-date">${escapeHtml(dateStr)}</td>
-            <td class="cell-title">${escapeHtml(
-              r.title || "Practice"
-            )}${unsyncedIcon}</td>
+            <td class="cell-title">${escapeHtml(r.title || "Practice")}</td>
             <td class="cell-score">
               <span class="score-pill">${escapeHtml(percentStr)}</span>
             </td>
-            <td class="cell-detail">${r.score || 0} / ${
-          r.total || 0
-        }</td>
-            <td class="cell-time">${secToHMS(
-              r.durationSeconds
-            )}</td>
+            <td class="cell-detail">${r.score || 0} / ${r.total || 0}</td>
+            <td class="cell-time">${secToHMS(r.durationSeconds)}</td>
           </tr>
         `;
       });
@@ -363,78 +265,41 @@
     }
 
     // -----------------------------
-    // Export / Clear
-    // -----------------------------
-    function wireControls() {
-      if (exportBtn) {
-        exportBtn.addEventListener("click", function () {
-          try {
-            const data = JSON.stringify(state.attempts, null, 2);
-            const blob = new Blob([data], {
-              type: "application/json"
-            });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement("a");
-            a.href = url;
-            a.download = "dreamschool-progress.json";
-            document.body.appendChild(a);
-            a.click();
-            a.remove();
-            URL.revokeObjectURL(url);
-          } catch (err) {
-            console.error("progress.js: export failed", err);
-            alert(
-              "Could not export data. Please check the console for details."
-            );
-          }
-        });
-      }
-
-      if (clearBtn) {
-        clearBtn.addEventListener("click", function () {
-          const ok = window.confirm(
-            "Clear all locally saved quiz attempts on this browser? Cloud-synced results in your account will not be deleted."
-          );
-          if (!ok) return;
-
-          try {
-            localStorage.removeItem(ATTEMPT_KEY);
-          } catch (err) {
-            console.warn(
-              "progress.js: failed to clear local attempts",
-              err
-            );
-          }
-
-          // Reload from Firestore only
-          refresh().catch(() => {});
-        });
-      }
-    }
-
-    // -----------------------------
     // Main refresh
     // -----------------------------
     async function refresh() {
       try {
         if (loadingEl) loadingEl.style.display = "block";
-        if (unsyncedEl) unsyncedEl.style.display = "none";
+        if (bannerEl) bannerEl.style.display = "none";
 
-        const { list, hasUnsynced } = await fetchAllResults();
+        const list = await fetchAllResults();
         state.attempts = list;
 
         renderSummary(list);
         renderHistory(list);
-
-        if (unsyncedEl) {
-          unsyncedEl.style.display = hasUnsynced ? "block" : "none";
-        }
       } catch (err) {
         console.error("progress.js: refresh failed", err);
-        summaryEl.innerHTML =
-          "<p>Could not load your progress. Please try again later.</p>";
+
+        const msg =
+          (err && err.message && err.message.includes("Not signed in")) ||
+          (err && err.message && err.message.includes("Not signed"))
+            ? "Sign in to your account to see your saved progress."
+            : "Could not load your progress. Please try again later.";
+
+        summaryEl.innerHTML = `
+          <div class="empty-state">
+            <h2>Progress unavailable</h2>
+            <p>${escapeHtml(msg)}</p>
+          </div>
+        `;
         historyBody.innerHTML =
-          '<tr><td colspan="5">Error loading results.</td></tr>';
+          '<tr><td colspan="5">No data to display.</td></tr>';
+
+        if (bannerEl) {
+          bannerEl.textContent = msg;
+          bannerEl.classList.add("warning");
+          bannerEl.style.display = "block";
+        }
       } finally {
         if (loadingEl) loadingEl.style.display = "none";
       }
@@ -444,7 +309,6 @@
     // Init
     // -----------------------------
     function init() {
-      wireControls();
       refresh().catch((err) =>
         console.error("progress.js: initial refresh failed", err)
       );
