@@ -14,46 +14,9 @@
     return Math.max(min, Math.min(max, n));
   }
 
-  // Simple attempt ID generator (used for local + Firestore records)
+  // Simple attempt ID generator (used for Firestore records + summaryKey)
   function createAttemptId() {
     return "t_" + Date.now() + "_" + Math.floor(Math.random() * 10000);
-  }
-
-  // Shared attempt history key (read by progress.js)
-  const ATTEMPT_STORAGE_KEY =
-    window.DSA_ATTEMPT_KEY || "dreamschool:attempts:v1";
-  window.DSA_ATTEMPT_KEY = ATTEMPT_STORAGE_KEY;
-
-  // Minimal local attempt history (used by progress page)
-  function recordLocalAttempt(summary) {
-    try {
-      const raw = localStorage.getItem(ATTEMPT_STORAGE_KEY);
-      const list = raw ? JSON.parse(raw) : [];
-
-      const totals = summary.totals || {};
-      const score = totals.correct || 0;
-      const total = totals.total || 0;
-      const percent =
-        total > 0 ? Math.round((score / total) * 10000) / 100 : 0;
-
-      const record = {
-        id: summary.attemptId || createAttemptId(),
-        sectionId:
-          summary.sectionId || exam.sectionId || "unknown-section",
-        title: summary.title || exam.sectionTitle || "",
-        timestamp: summary.generatedAt || new Date().toISOString(),
-        score,
-        total,
-        percent,
-        durationSeconds: totals.timeSpentSec || 0
-      };
-
-      list.push(record);
-      localStorage.setItem(ATTEMPT_STORAGE_KEY, JSON.stringify(list));
-    } catch (e) {
-      // non-fatal; just a convenience history
-      console.warn("quiz-engine: failed to record local attempt", e);
-    }
   }
 
   // Build a lightweight progressState for quiz-data.js (Firestore in-progress)
@@ -97,8 +60,8 @@
   const state = {
     index: 0,
     answers: {}, // { qid: choiceIndex }
-    flags: {}, // { qid: true/false }
-    elims: {}, // { qid: Set(choiceIndex) }
+    flags: {},   // { qid: true/false }
+    elims: {},   // { qid: Set(choiceIndex) }
     eliminateMode: false,
     remaining: exam.timeLimitSec || 0,
     timerId: null,
@@ -111,7 +74,7 @@
     // Per-question timing
     currentQuestionEnterTs: null,
     questionTimes: {}, // { qid: totalSeconds }
-    visits: {}, // { qid: count }
+    visits: {},        // { qid: count }
 
     // Focus / tab tracking
     blurCount: 0,
@@ -184,7 +147,7 @@
   })();
 
   // -----------------------
-  // Local storage save / restore
+  // Local storage save / restore (per-exam state)
   // -----------------------
   let lastRemoteSaveMs = 0;
 
@@ -708,10 +671,7 @@
       }
     };
 
-    // Local attempt history (for progress/index.html)
-    recordLocalAttempt(summary);
-
-    // Save to Firestore via quiz-data.js if available
+    // Save to Firestore + local attempt history via quiz-data.js
     if (window.quizData && typeof window.quizData.appendAttempt === "function") {
       window.quizData
         .appendAttempt(summary)
