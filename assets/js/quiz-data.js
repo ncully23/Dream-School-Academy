@@ -5,7 +5,9 @@
 // UNIVERSAL: it does NOT define window.examConfig.
 // Each quiz page should define its own examConfig, for example:
 //
-// <script>window.examConfig = { ... }</script>
+// <script>
+//   window.examConfig = { sectionId: "math-circles-m1", sectionTitle: "..." };
+// </script>
 // <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
 // <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
 // <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
@@ -13,24 +15,31 @@
 // <script src="/assets/js/quiz-engine.js"></script>
 
 (function () {
-  // Simple debug flag – flip to true when you want console logging
   const DEBUG = false;
   function dbg(...args) {
     if (DEBUG) console.log("[quiz-data]", ...args);
   }
 
-  // -----------------------------
-  // 1. Firebase setup
-  // -----------------------------
+  // -----------------------------------
+  // 1. Firebase setup (compat SDK)
+  // -----------------------------------
+  if (typeof firebase === "undefined") {
+    console.error(
+      "quiz-data.js: global 'firebase' is not defined. " +
+        "Make sure firebase-app-compat/auth-compat/firestore-compat scripts are loaded before this file."
+    );
+    return;
+  }
 
+  // Your web app's Firebase configuration (from console)
   const firebaseConfig = {
     apiKey: "AIzaSyD7R7ZsmTpGojgLNt7w_R0tm_mWg_FZEYE",
     authDomain: "dream-school-academy.firebaseapp.com",
     projectId: "dream-school-academy",
     storageBucket: "dream-school-academy.firebasestorage.app",
     messagingSenderId: "665412130733",
-    appId: "1:665412130733:web:c3d59ab2c20f65a2277324",
-    measurementId: "G-HCJWBWZXKZ"
+    appId: "1:665412130733:web:fc73f3ed574ffb6d277324",
+    measurementId: "G-7LY2V2HQ4G"
   };
 
   if (!firebase.apps.length) {
@@ -40,10 +49,9 @@
   const auth = firebase.auth();
   const db = firebase.firestore();
 
-  // -----------------------------
+  // -----------------------------------
   // 2. Local recorder-style store
-  // -----------------------------
-
+  // -----------------------------------
   const LOCAL_ATTEMPT_KEY = "dreamschool:attempts:v1";
 
   function loadLocalAttempts() {
@@ -76,7 +84,7 @@
     return "t_" + Date.now() + "_" + Math.floor(Math.random() * 10000);
   }
 
-  // Build the "recorder-style" core record from a normalized summary
+  // Build the core “recorder” record from a normalized summary
   function buildCoreRecordFromSummary(normalized, attemptId) {
     const totals = normalized.totals || {};
     const score = typeof totals.correct === "number" ? totals.correct : 0;
@@ -92,9 +100,7 @@
     const durationSeconds =
       typeof totals.timeSpentSec === "number" ? totals.timeSpentSec : 0;
 
-    const timestamp =
-      normalized.generatedAt || new Date().toISOString();
-
+    const timestamp = normalized.generatedAt || new Date().toISOString();
     const sectionId = normalized.sectionId || null;
     const title = normalized.title || null;
 
@@ -103,13 +109,9 @@
           number: item.number || null,
           id: item.id || null,
           chosenIndex:
-            typeof item.chosenIndex === "number"
-              ? item.chosenIndex
-              : null,
+            typeof item.chosenIndex === "number" ? item.chosenIndex : null,
           correctIndex:
-            typeof item.correctIndex === "number"
-              ? item.correctIndex
-              : null,
+            typeof item.correctIndex === "number" ? item.correctIndex : null,
           correct: !!item.correct
         }))
       : [];
@@ -130,9 +132,7 @@
   // Upsert core record into local store, marking synced true/false
   function upsertLocalAttemptFromSummary(normalized, options) {
     const attemptId =
-      normalized.attemptId ||
-      normalized.id ||
-      createAttemptId();
+      normalized.attemptId || normalized.id || createAttemptId();
 
     normalized.attemptId = attemptId;
 
@@ -158,10 +158,9 @@
     return record;
   }
 
-  // -----------------------------
-  // 3. Helper: examConfig access
-  // -----------------------------
-
+  // -----------------------------------
+  // 3. examConfig helpers
+  // -----------------------------------
   function getExamConfig() {
     return typeof window !== "undefined" && window.examConfig
       ? window.examConfig
@@ -184,9 +183,9 @@
     return null;
   }
 
-  // -----------------------------
-  // 4. Helper: ensure we have a logged-in user
-  // -----------------------------
+  // -----------------------------------
+  // 4. Auth helpers
+  // -----------------------------------
   async function requireUser() {
     const current = auth.currentUser;
     if (current) return current;
@@ -200,7 +199,6 @@
     });
   }
 
-  // A tiny helper if you just want to await auth state (user or null)
   function waitForAuthReady() {
     return new Promise((resolve) => {
       const existing = auth.currentUser;
@@ -215,10 +213,9 @@
     });
   }
 
-  // -----------------------------
-  // 5. Helpers for scoring/summary normalization
-  // -----------------------------
-
+  // -----------------------------------
+  // 5. Scoring / summary normalization
+  // -----------------------------------
   function computeTotalsFromItems(items) {
     if (!Array.isArray(items) || items.length === 0) {
       return {
@@ -241,9 +238,7 @@
         item.chosenIndex !== undefined &&
         item.chosenIndex !== "";
 
-      if (hasAnswer) {
-        answered += 1;
-      }
+      if (hasAnswer) answered += 1;
 
       let isCorrect = false;
       if (typeof item.correct === "boolean") {
@@ -254,9 +249,7 @@
       ) {
         isCorrect = item.chosenIndex === item.correctIndex;
       }
-      if (isCorrect) {
-        correct += 1;
-      }
+      if (isCorrect) correct += 1;
 
       if (typeof item.timeSpentSec === "number") {
         timeSpentSec += item.timeSpentSec;
@@ -278,7 +271,6 @@
     const title = safe.title || defaultTitle || null;
     const items = Array.isArray(safe.items) ? safe.items : [];
 
-    // Normalize totals
     let totals = safe.totals || {};
     if (
       typeof totals.answered !== "number" ||
@@ -321,27 +313,11 @@
     };
   }
 
-  // -----------------------------
-  // 6. Firestore helpers — completed attempts
-  // -----------------------------
-  //
-  // Firestore document shape:
-  // users/{uid}/examAttempts/{autoId}
-  //   attemptId: "t_..."
-  //   sectionId: "...",
-  //   title: "...",
-  //   timestamp: "ISO string"
-  //   scorePercent: number
-  //   durationSeconds: number
-  //   totals: { answered, correct, total, timeSpentSec, scorePercent }
-  //   items:  [ { number, id, correctIndex, chosenIndex, correct, ... } ]
-  //   uiState: { timerHidden, reviewMode, lastQuestionIndex }
-  //   userId: uid
-  //   createdAt: serverTimestamp()
-  //
-
+  // -----------------------------------
+  // 6. Firestore – completed attempts
+  // -----------------------------------
+  // Collection path: users/{uid}/examAttempts/{autoId}
   async function appendAttempt(summary) {
-    // Normalize and always log a local record.
     const normalized = normalizeAttemptSummary(summary);
 
     const localRecord = upsertLocalAttemptFromSummary(normalized, {
@@ -361,7 +337,6 @@
       );
     }
 
-    // Enrich with core recorder fields for Firestore
     const timestamp = localRecord.timestamp;
     const scorePercent = localRecord.scorePercent;
     const durationSeconds = localRecord.durationSeconds;
@@ -398,11 +373,10 @@
         .collection("users")
         .doc(user.uid)
         .collection("examAttempts")
-        .doc(); // auto id
+        .doc(); // auto ID
 
       await ref.set(payload);
 
-      // Mark local record as synced:true
       upsertLocalAttemptFromSummary(normalized, { synced: true });
 
       return {
@@ -457,10 +431,10 @@
     return snap.docs.map((d) => ({ id: d.id, ...d.data() }));
   }
 
-  // -----------------------------
-  // 7. Firestore helpers — in-progress session
-  // -----------------------------
-
+  // -----------------------------------
+  // 7. Firestore – in-progress sessions
+  // -----------------------------------
+  // Collection path: users/{uid}/examSessions/{sectionId}
   async function saveSessionProgress(progressState) {
     if (!progressState) return;
 
@@ -468,13 +442,8 @@
     const exam = getExamConfig();
 
     const sectionId =
-      progressState.sectionId ||
-      (exam && exam.sectionId) ||
-      null;
-    const title =
-      progressState.title ||
-      (exam && exam.sectionTitle) ||
-      null;
+      progressState.sectionId || (exam && exam.sectionId) || null;
+    const title = progressState.title || (exam && exam.sectionTitle) || null;
 
     if (!sectionId) {
       console.warn(
@@ -602,10 +571,9 @@
     await batch.commit();
   }
 
-  // -----------------------------
+  // -----------------------------------
   // 8. Export attempts (local + remote)
-  // -----------------------------
-
+  // -----------------------------------
   async function exportAttempts() {
     const local = loadLocalAttempts();
     let remote = [];
@@ -641,11 +609,9 @@
     }
   }
 
-  // -----------------------------
-  // 9. Section stats / latest attempt helpers
-  // -----------------------------
-  // These are for preview/progress pages.
-
+  // -----------------------------------
+  // 9. Section stats / latest attempt
+  // -----------------------------------
   function computeStatsFromAttemptList(list) {
     if (!Array.isArray(list) || list.length === 0) {
       return {
@@ -668,14 +634,13 @@
       if (p !== null) {
         if (bestPercent === null || p > bestPercent) bestPercent = p;
         sumPercent += p;
-        lastPercent = idx === 0 ? p : lastPercent; // assume sorted newest first if you pass it that way
+        if (idx === 0) lastPercent = p;
       }
-      if (idx === 0 && r.timestamp) {
-        lastTakenAt = r.timestamp;
-      }
+      if (idx === 0 && r.timestamp) lastTakenAt = r.timestamp;
     });
 
-    const avgPercent = bestPercent === null ? null : Math.round(sumPercent / count);
+    const avgPercent =
+      bestPercent === null ? null : Math.round(sumPercent / count);
 
     return {
       count,
@@ -700,7 +665,6 @@
       };
     }
 
-    // Try remote first; fall back to local if not signed in or no remote data.
     let remote = [];
     let remoteError = null;
 
@@ -729,7 +693,6 @@
       };
     }
 
-    // Local fallback
     const local = loadLocalAttempts()
       .filter((a) => a.sectionId === effectiveSectionId)
       .sort((a, b) => {
@@ -750,7 +713,6 @@
     const effectiveSectionId = sectionId || getDefaultSectionId();
     if (!effectiveSectionId) return null;
 
-    // Remote first
     try {
       const user = await requireUser();
       const snap = await db
@@ -770,7 +732,6 @@
       dbg("loadLatestAttemptForSection: remote failed, trying local", e);
     }
 
-    // Fallback to local history
     const local = loadLocalAttempts()
       .filter((a) => a.sectionId === effectiveSectionId)
       .sort((a, b) => {
@@ -780,18 +741,12 @@
       });
 
     if (local.length === 0) return null;
-
     return { source: "local", ...local[0] };
   }
 
-  // -----------------------------
-  // 10. Compatibility API: recordTestResult
-  // -----------------------------
-  //
-  // Thin wrapper so legacy pages can call:
-  // quizData.recordTestResult({ score, total, durationSeconds, category, answers })
-  // and it will go through the new appendAttempt pipeline.
-
+  // -----------------------------------
+  // 10. Legacy: recordTestResult helper
+  // -----------------------------------
   async function recordTestResult({
     score,
     total,
@@ -803,8 +758,7 @@
       throw new Error("recordTestResult: score and total must be numbers");
     }
 
-    const scorePercent =
-      total > 0 ? Math.round((score / total) * 100) : 0;
+    const scorePercent = total > 0 ? Math.round((score / total) * 100) : 0;
 
     const items = Array.isArray(answers)
       ? answers.map((a, idx) => {
@@ -815,16 +769,12 @@
               ? a.answer
               : null;
           const correctIndex =
-            typeof a.correctIndex === "number"
-              ? a.correctIndex
-              : null;
+            typeof a.correctIndex === "number" ? a.correctIndex : null;
+
           let correctFlag = false;
           if (typeof a.correct === "boolean") {
             correctFlag = a.correct;
-          } else if (
-            chosen !== null &&
-            correctIndex !== null
-          ) {
+          } else if (chosen !== null && correctIndex !== null) {
             correctFlag = chosen === correctIndex;
           }
 
@@ -861,31 +811,11 @@
     return appendAttempt(summary);
   }
 
-  // -----------------------------
-  // 11. Expose API
-  // -----------------------------
-  //
-  // quiz-engine.js can use:
-  //   quizData.appendAttempt(summary)
-  //   quizData.saveSessionProgress(progressState)
-  //   quizData.loadSessionProgress(sectionId?)
-  //   quizData.clearSessionProgress(sectionId?)
-  //   quizData.logReviewChanges(sectionId?, changes)
-  //
-  // Practice / preview / debug pages can use:
-  //   quizData.loadResultsForSection(sectionId?)
-  //   quizData.loadAllResultsForUser()
-  //   quizData.loadSectionStats(sectionId?)
-  //   quizData.loadLatestAttemptForSection(sectionId?)
-  //   quizData.getLocalAttempts()
-  //   quizData.clearLocalAttempts()
-  //   quizData.exportAttempts()
-  //
-  // Legacy-style:
-  //   quizData.recordTestResult({ score, total, ... })
-
+  // -----------------------------------
+  // 11. Public API
+  // -----------------------------------
   window.quizData = {
-    VERSION: "1.1.0",
+    VERSION: "1.1.1",
     auth,
     db,
     requireUser,
@@ -904,12 +834,12 @@
     clearSessionProgress,
     logReviewChanges,
 
-    // Recorder-style helpers
+    // Recorder helpers
     exportAttempts,
     getLocalAttempts: loadLocalAttempts,
     clearLocalAttempts,
 
-    // Legacy
+    // Legacy helper
     recordTestResult
   };
 })();
