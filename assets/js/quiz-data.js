@@ -1,18 +1,16 @@
-// quiz-data.js
-// Handles Firebase persistence for results, statistics,
-// in-progress session state, and a recorder-style local history.
+// /assets/js/quiz-data.js
+// Central Firebase + quiz persistence layer.
 //
-// UNIVERSAL: it does NOT define window.examConfig.
-// Each quiz page should define its own examConfig, for example:
+// - Does NOT define window.examConfig (each quiz page must do that).
+// - Exposes window.quizData with helpers used by:
+//   * quiz-engine.js  → appendAttempt(), saveSessionProgress(), etc.
+//   * progress.js     → loadAllResultsForUser()
+//   * legacy pages    → recordTestResult(), exportAttempts()
 //
-// <script>
-//   window.examConfig = { sectionId: "math-circles-m1", sectionTitle: "..." };
-// </script>
+// Required in HTML BEFORE this file:
 // <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
 // <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
 // <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
-// <script src="/assets/js/quiz-data.js"></script>
-// <script src="/assets/js/quiz-engine.js"></script>
 
 (function () {
   const DEBUG = false;
@@ -31,7 +29,6 @@
     return;
   }
 
-  // Your web app's Firebase configuration (from console)
   const firebaseConfig = {
     apiKey: "AIzaSyD7R7ZsmTpGojgLNt7w_R0tm_mWg_FZEYE",
     authDomain: "dream-school-academy.firebaseapp.com",
@@ -50,7 +47,7 @@
   const db = firebase.firestore();
 
   // -----------------------------------
-  // 2. Local recorder-style store
+  // 2. Local recorder-style store (backup only)
   // -----------------------------------
   const LOCAL_ATTEMPT_KEY = "dreamschool:attempts:v1";
 
@@ -84,7 +81,7 @@
     return "t_" + Date.now() + "_" + Math.floor(Math.random() * 10000);
   }
 
-  // Build the core “recorder” record from a normalized summary
+  // Build a compact local record from a normalized summary
   function buildCoreRecordFromSummary(normalized, attemptId) {
     const totals = normalized.totals || {};
     const score = typeof totals.correct === "number" ? totals.correct : 0;
@@ -320,6 +317,7 @@
   async function appendAttempt(summary) {
     const normalized = normalizeAttemptSummary(summary);
 
+    // Local backup (for export/offline tools only)
     const localRecord = upsertLocalAttemptFromSummary(normalized, {
       synced: false
     });
@@ -377,6 +375,7 @@
 
       await ref.set(payload);
 
+      // Mark local copy synced
       upsertLocalAttemptFromSummary(normalized, { synced: true });
 
       return {
@@ -418,6 +417,7 @@
     return snap.docs.map((d) => ({ id: d.id, ...d.data() }));
   }
 
+  // Used by progress.js
   async function loadAllResultsForUser() {
     const user = await requireUser();
 
@@ -815,7 +815,7 @@
   // 11. Public API
   // -----------------------------------
   window.quizData = {
-    VERSION: "1.1.1",
+    VERSION: "1.1.2",
     auth,
     db,
     requireUser,
@@ -834,7 +834,7 @@
     clearSessionProgress,
     logReviewChanges,
 
-    // Recorder helpers
+    // Recorder helpers (backup / exports only)
     exportAttempts,
     getLocalAttempts: loadLocalAttempts,
     clearLocalAttempts,
