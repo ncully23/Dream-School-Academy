@@ -9,7 +9,7 @@
   <link rel="stylesheet" href="/assets/css/site.css" />
   <link rel="stylesheet" href="/assets/css/progress.css" />
 
-  <!-- Shared shell: inject header/footer, auth UI, nav highlight -->
+  <!-- Shared shell: inject header/footer, auth UI, nav highlight (uses firebase-init.js) -->
   <script type="module" src="/assets/js/shell.js"></script>
 </head>
 <body>
@@ -86,18 +86,13 @@
     </div>
   </dialog>
 
-  <!-- Firebase (needed for quiz-data.js / quizData) -->
-  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
-
-  <!-- Shared quiz persistence layer (Firestore + local fallback API) -->
-  <script src="/assets/js/quiz-data.js"></script>
-
   <!-- Legacy local recorder (for older practice pages, used as fallback) -->
   <script src="/assets/js/quiz-recorder.js"></script>
 
-  <!-- Progress page logic (new script) -->
-  <script src="/assets/js/progress.js"></script>
+  <!-- Shared quiz persistence layer (Firestore + local fallback API) – now modular -->
+  <script type="module" src="/assets/js/quiz-data.js"></script>
+
+  <!-- Progress page logic – also modular so it runs after quiz-data.js in order -->
+  <script type="module" src="/assets/js/progress.js"></script>
 </body>
 </html>
