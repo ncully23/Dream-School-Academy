@@ -603,6 +603,9 @@
   // -----------------------
   // Finish + summary
   // -----------------------
+  // -----------------------
+  // Finish + summary
+  // -----------------------
   function finishExam() {
     if (state.finished) return;
     state.finished = true;
@@ -628,6 +631,92 @@
         visits: state.visits[q.id] || 0
       };
     });
+
+    const answeredCount = items.filter((it) => it.chosenIndex !== null).length;
+    const correctCount  = items.filter((it) => it.correct).length;
+    const totalCount    = items.length;
+
+    const elapsedSec = state.startedAt
+      ? Math.max(0, Math.round((Date.now() - state.startedAt) / 1000))
+      : Math.max(0, (exam.timeLimitSec || 0) - state.remaining);
+
+    const totals = {
+      answered:   answeredCount,
+      correct:    correctCount,
+      total:      totalCount,
+      timeSpentSec: elapsedSec,
+      scorePercent: totalCount > 0
+        ? Math.round((correctCount / totalCount) * 100)
+        : 0
+    };
+
+    const attemptId = state.attemptId || createAttemptId();
+
+    const summary = {
+      attemptId,
+      sectionId: exam.sectionId,
+      title:     exam.sectionTitle,
+      generatedAt: new Date().toISOString(),
+      totals,
+      items,
+      uiState: {
+        timerHidden:      state.timerHidden,
+        reviewMode:       state.reviewMode,
+        lastQuestionIndex: state.index
+      },
+      sessionMeta: {
+        blurCount:      state.blurCount,
+        focusCount:     state.focusCount,
+        tabSwitchCount: state.tabSwitchCount,
+        questionTimes:  state.questionTimes,
+        visits:         state.visits
+      }
+    };
+
+    // Helper to clear local state + redirect AFTER we’re done trying to save
+    function finalizeAndRedirect() {
+      // Clear local in-progress state
+      try {
+        if (exam.storageKey) {
+          localStorage.removeItem(exam.storageKey);
+        }
+      } catch (e) {}
+
+      // Keep local summary for the summary.html page
+      try {
+        if (exam.summaryKey) {
+          localStorage.setItem(exam.summaryKey, JSON.stringify(summary));
+        }
+      } catch (e) {}
+
+      if (exam.summaryHref) {
+        window.location.href = exam.summaryHref;
+      }
+    }
+
+    // If quizData is available, save to Firestore FIRST, then redirect
+    if (window.quizData && typeof window.quizData.appendAttempt === "function") {
+      window.quizData.appendAttempt(summary)
+        .then((res) => {
+          console.log("quiz-engine: attempt saved to Firestore", res);
+          if (window.quizData.clearSessionProgress) {
+            return window.quizData.clearSessionProgress(exam.sectionId).catch(() => {});
+          }
+        })
+        .catch((err) => {
+          console.error("quiz-engine: failed to save attempt to Firestore", err);
+        })
+        .finally(() => {
+          finalizeAndRedirect();
+        });
+    } else {
+      // No quizData available – just do local summary + redirect
+      finalizeAndRedirect();
+    }
+  }
+
+  if (el.finish) el.finish.addEventListener("click", finishExam);
+
 
     const answeredCount = items.filter((it) => it.chosenIndex !== null).length;
     const correctCount = items.filter((it) => it.correct).length;
