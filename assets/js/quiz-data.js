@@ -174,7 +174,11 @@
 
   function getDefaultTitle() {
     const exam = getExamConfig();
-    if (exam && typeof exam.sectionTitle === "string" && exam.sectionTitle.trim()) {
+    if (
+      exam &&
+      typeof exam.sectionTitle === "string" &&
+      exam.sectionTitle.trim()
+    ) {
       return exam.sectionTitle;
     }
     return null;
@@ -253,8 +257,7 @@
       }
     });
 
-    const scorePercent =
-      total > 0 ? Math.round((correct / total) * 100) : 0;
+    const scorePercent = total > 0 ? Math.round((correct / total) * 100) : 0;
 
     return { answered, correct, total, timeSpentSec, scorePercent };
   }
@@ -313,7 +316,7 @@
   // -----------------------------------
   // 6. Firestore – completed attempts
   // -----------------------------------
-  // Collection path: users/{uid}/examAttempts/{autoId}
+  // Collection path: users/{uid}/attempts/{autoId}
   async function appendAttempt(summary) {
     const normalized = normalizeAttemptSummary(summary);
 
@@ -367,13 +370,12 @@
         createdAt: firebase.firestore.FieldValue.serverTimestamp()
       };
 
-      const ref = db
+      // NEW DOC every time under users/{uid}/attempts
+      const ref = await db
         .collection("users")
         .doc(user.uid)
-        .collection("examAttempts")
-        .doc(); // auto ID
-
-      await ref.set(payload);
+        .collection("attempts")
+        .add(payload);
 
       // Mark local copy synced
       upsertLocalAttemptFromSummary(normalized, { synced: true });
@@ -409,7 +411,7 @@
     const snap = await db
       .collection("users")
       .doc(user.uid)
-      .collection("examAttempts")
+      .collection("attempts")
       .where("sectionId", "==", effectiveSectionId)
       .orderBy("createdAt", "desc")
       .get();
@@ -424,7 +426,7 @@
     const snap = await db
       .collection("users")
       .doc(user.uid)
-      .collection("examAttempts")
+      .collection("attempts")
       .orderBy("createdAt", "desc")
       .get();
 
@@ -673,7 +675,7 @@
       const snap = await db
         .collection("users")
         .doc(user.uid)
-        .collection("examAttempts")
+        .collection("attempts")
         .where("sectionId", "==", effectiveSectionId)
         .orderBy("createdAt", "desc")
         .get();
@@ -718,7 +720,7 @@
       const snap = await db
         .collection("users")
         .doc(user.uid)
-        .collection("examAttempts")
+        .collection("attempts")
         .where("sectionId", "==", effectiveSectionId)
         .orderBy("createdAt", "desc")
         .limit(1)
@@ -815,7 +817,7 @@
   // 11. Public API
   // -----------------------------------
   window.quizData = {
-    VERSION: "1.1.2",
+    VERSION: "1.1.3",
     auth,
     db,
     requireUser,
