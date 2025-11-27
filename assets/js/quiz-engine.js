@@ -603,9 +603,6 @@
   // -----------------------
   // Finish + summary
   // -----------------------
-  // -----------------------
-  // Finish + summary
-  // -----------------------
   function finishExam() {
     if (state.finished) return;
     state.finished = true;
@@ -712,84 +709,6 @@
     } else {
       // No quizData available – just do local summary + redirect
       finalizeAndRedirect();
-    }
-  }
-
-  if (el.finish) el.finish.addEventListener("click", finishExam);
-
-
-    const answeredCount = items.filter((it) => it.chosenIndex !== null).length;
-    const correctCount = items.filter((it) => it.correct).length;
-    const totalCount = items.length;
-
-    const elapsedSec = state.startedAt
-      ? Math.max(0, Math.round((Date.now() - state.startedAt) / 1000))
-      : Math.max(0, (exam.timeLimitSec || 0) - state.remaining);
-
-    const totals = {
-      answered: answeredCount,
-      correct: correctCount,
-      total: totalCount,
-      timeSpentSec: elapsedSec,
-      scorePercent:
-        totalCount > 0
-          ? Math.round((correctCount / totalCount) * 100)
-          : 0
-    };
-
-    const attemptId = state.attemptId || createAttemptId();
-
-    const summary = {
-      attemptId,
-      sectionId: exam.sectionId,
-      title: exam.sectionTitle,
-      generatedAt: new Date().toISOString(),
-      totals,
-      items,
-      uiState: {
-        timerHidden: state.timerHidden,
-        reviewMode: state.reviewMode,
-        lastQuestionIndex: state.index
-      },
-      sessionMeta: {
-        blurCount: state.blurCount,
-        focusCount: state.focusCount,
-        tabSwitchCount: state.tabSwitchCount,
-        questionTimes: state.questionTimes,
-        visits: state.visits
-      }
-    };
-
-    // Save to Firestore + local attempt history via quiz-data.js
-    if (window.quizData && typeof window.quizData.appendAttempt === "function") {
-      window.quizData
-        .appendAttempt(summary)
-        .catch((err) =>
-          console.error("quiz-engine: failed to save attempt to Firestore", err)
-        );
-
-      // Clear remote in-progress session if supported
-      if (typeof window.quizData.clearSessionProgress === "function") {
-        window.quizData.clearSessionProgress(exam.sectionId).catch(() => {});
-      }
-    }
-
-    // Clear local in-progress state now that we're done
-    try {
-      if (exam.storageKey) {
-        localStorage.removeItem(exam.storageKey);
-      }
-    } catch (e) {}
-
-    // Also keep local summary for module-specific review pages
-    try {
-      if (exam.summaryKey) {
-        localStorage.setItem(exam.summaryKey, JSON.stringify(summary));
-      }
-    } catch (e) {}
-
-    if (exam.summaryHref) {
-      window.location.href = exam.summaryHref;
     }
   }
 
