@@ -199,6 +199,17 @@
         </div>
       </article>
     </div>
+    
+<script>
+firebase.auth().onAuthStateChanged((user) => {
+  if (!user) {
+    console.log("Not signed in on quiz page. Showing login.");
+    window.location.href = "/login.html";  // or your login page
+    return;
+  }
+  console.log("Signed in:", user.uid);
+});
+</script>
 
     <!-- Review page (optional mid-test) -->
     <section class="check-wrap" id="checkPage" aria-label="Check Your Work">
@@ -356,7 +367,7 @@
 
   <!-- Shared quiz persistence (Firestore + glue for progress page) -->
   <script src="/assets/js/quiz-data.js"></script>
-
+  
   <!-- Quiz engine (renders questions, handles timer, saves attempts) -->
   <script src="/assets/js/quiz-engine.js"></script>
 
