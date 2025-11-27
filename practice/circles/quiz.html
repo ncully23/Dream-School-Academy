@@ -1,9 +1,10 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-page="practice">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Section 1, Module 1: Math — Circles (Practice)</title>
+
   <style>
     :root{
       --bb-bg:#eef2fb;            /* page bg */
@@ -153,7 +154,7 @@
     .grid-nums .nbtn{height:44px}
   </style>
 
-  <!-- Shared shell: header/footer + auth + nav highlight -->
+  <!-- Shared shell: header/footer + auth + nav highlight (uses firebase-init.js internally) -->
   <script type="module" src="/assets/js/shell.js"></script>
 </head>
 <body>
@@ -349,16 +350,11 @@
     };
   </script>
 
-  <!-- Firebase compat SDKs required by quiz-data.js -->
-  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+  <!-- Shared quiz persistence (Firestore + glue for progress page) – modular -->
+  <script type="module" src="/assets/js/quiz-data.js"></script>
 
-  <!-- Shared quiz persistence (Firestore + glue for progress page) -->
-  <script src="/assets/js/quiz-data.js"></script>
-  
-  <!-- Quiz engine (renders questions, handles timer, saves attempts) -->
-  <script src="/assets/js/quiz-engine.js"></script>
+  <!-- Quiz engine (renders questions, handles timer, saves attempts) – run after examConfig + quizData -->
+  <script type="module" src="/assets/js/quiz-engine.js"></script>
 
   <!-- Footer injected by shell.js -->
   <div id="site-footer"></div>
