@@ -1,3 +1,5 @@
+import { routes } from "/assets/js/lib/routes.js";
+
 (function () {
   "use strict";
 
