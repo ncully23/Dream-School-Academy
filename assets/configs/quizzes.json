@@ -1,0 +1,10 @@
+{
+  "topic.math.circles": {
+    "quizId": "topic.math.circles",
+    "title": "Circles (Practice)",
+    "sectionTitle": "Section 1, Module 1: Math — Circles (Practice)",
+    "timeLimitSec": 840,
+    "bank": "/assets/question-bank/math/circles.json",
+    "mode": "practice"
+  }
+}
