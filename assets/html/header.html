@@ -2,7 +2,7 @@
   <div class="container bar">
 
     <!-- Brand -->
-    <a class="brand" href="/home.html" data-nav="home" aria-label="Dream School Academy – Home">
+    <a class="brand" href="/" data-nav="home" aria-label="Dream School Academy – Home">
       <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true">
         <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" />
         <path d="M7 13.5c3-2 7-2 10 0" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
@@ -11,36 +11,36 @@
       Dream School Academy
     </a>
 
+    <!-- Primary nav -->
     <nav class="site-nav">
-      <a href="/home.html"           data-nav="home">Home</a>
-      <a href="/study/index.html"    data-nav="study">Study</a>
-      <a href="/practice/index.html" data-nav="practice">Practice</a>
-      <!-- <a href="/progress/index.html" data-nav="progress">My Progress</a> -->
-      <a href="/progress.html" data-nav="progress">My Progress</a>
+      <a href="/"              data-nav="home">Home</a>
+      <a href="/study"         data-nav="study">Study</a>
+      <a href="/practice"      data-nav="practice">Practice</a>
+      <a href="/progress"      data-nav="progress">My Progress</a>
 
-      <!-- Greeting (shown when signed in) -->
+      <!-- Greeting (signed in) -->
       <span
         id="user-greeting"
         class="nav-greeting"
         data-when="signed-in">
       </span>
 
-      <!-- Login (shown when signed out) -->
+      <!-- Login (signed out) -->
       <a
         id="login-link"
-        href="/profile/login.html"
+        href="/profile/login"
         class="nav-btn cta"
         data-when="signed-out">
         Log in / Sign up
       </a>
 
-      <!-- Logout (shown when signed in) -->
+      <!-- Logout (signed in) -->
       <button
         id="logout-btn"
         type="button"
         class="nav-btn logout"
         data-when="signed-in"
-        style="display:none;">
+        hidden>
         Log out
       </button>
     </nav>
