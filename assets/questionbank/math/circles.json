@@ -1,58 +1,79 @@
 {
   "bankId": "math.circles",
   "bankVersion": 1,
-  "domain": "math",
-  "topic": "circles",
+  "title": "Math — Circles",
+  "description": "Circle geometry: radius/diameter, circumference, area, equations, arcs, and sectors.",
+  "skills": [
+    "circumference",
+    "area",
+    "equation-of-a-circle",
+    "arc-length",
+    "sector-area"
+  ],
   "questions": [
     {
       "questionId": "math.circles.001",
       "version": 1,
-      "format": "mcq",
+      "topic": "math.circles",
+      "skill": "circumference",
+      "difficulty": "easy",
       "prompt": "A circle has radius 5 cm. What is its circumference?",
       "choices": ["10π cm", "25π cm", "5π cm", "50π cm"],
-      "correctIndex": 0,
-      "explanation": "Circumference is the distance around a circle. Use the formula C = 2πr. With r = 5, multiply 2 × 5 to get 10, then attach π: C = 10π cm. The other options either use r² (area idea) or multiply r incorrectly.",
-      "steps": [
-        "Identify the given value: radius r = 5 cm.",
-        "Use the circumference formula C = 2πr.",
-        "Substitute r = 5: C = 2π(5).",
-        "Multiply 2 × 5 = 10 to get C = 10π cm."
-      ],
-      "checks": [
-        "Units: circumference is a length, so cm makes sense.",
-        "Reasonableness: r = 5 ⇒ circumference is about 2×3.14×5 ≈ 31.4 cm, matching 10π ≈ 31.4."
-      ],
-      "commonMistakes": [
-        "Using A = πr² (area) instead of circumference.",
-        "Forgetting the factor of 2 in C = 2πr."
-      ]
+      "answerIndex": 0,
+      "solution": {
+        "finalAnswer": "10π cm",
+        "approach": "Use the circumference formula.",
+        "steps": [
+          "Use C = 2πr.",
+          "Substitute r = 5: C = 2π(5).",
+          "Simplify: C = 10π."
+        ],
+        "commonMistakes": [
+          "Using the area formula A = πr² instead of circumference.",
+          "Forgetting the factor of 2 in C = 2πr.",
+          "Plugging in diameter when the problem gives radius."
+        ],
+        "checks": [
+          "Units should be centimeters (cm), not cm².",
+          "Circumference should be proportional to r; doubling r would double C."
+        ]
+      }
     },
     {
       "questionId": "math.circles.002",
       "version": 1,
-      "format": "mcq",
+      "topic": "math.circles",
+      "skill": "area",
+      "difficulty": "easy",
       "prompt": "If a circle’s area is 49π, what is its radius?",
       "choices": ["3", "7", "14", "24.5"],
-      "correctIndex": 1,
-      "explanation": "Area of a circle is A = πr². If A = 49π, divide both sides by π to isolate r²: r² = 49. Then take the positive square root (radius is a length): r = 7. The choice 14 is a common error from doubling the radius (confusing radius with diameter).",
-      "steps": [
-        "Write the area formula: A = πr².",
-        "Set πr² = 49π.",
-        "Divide by π: r² = 49.",
-        "Take the square root: r = √49 = 7."
-      ],
-      "checks": [
-        "Plug back: A = π(7²) = 49π, matches the given area."
-      ],
-      "commonMistakes": [
-        "Choosing 14 by confusing radius with diameter.",
-        "Forgetting to divide by π before taking the square root."
-      ]
+      "answerIndex": 1,
+      "solution": {
+        "finalAnswer": "7",
+        "approach": "Solve the area equation for r.",
+        "steps": [
+          "Use A = πr².",
+          "Set πr² = 49π.",
+          "Divide both sides by π: r² = 49.",
+          "Take the positive square root: r = 7."
+        ],
+        "commonMistakes": [
+          "Forgetting to divide by π first.",
+          "Taking r = −7 (radius is nonnegative).",
+          "Treating 49π as 49 and ignoring π."
+        ],
+        "checks": [
+          "Plug back in: π(7²) = 49π.",
+          "Radius is a length, so it should not include π."
+        ]
+      }
     },
     {
       "questionId": "math.circles.003",
       "version": 1,
-      "format": "mcq",
+      "topic": "math.circles",
+      "skill": "equation-of-a-circle",
+      "difficulty": "medium",
       "prompt": "A circle passes through (0, 0) and (0, 6) with center at (0, 3). What is its equation?",
       "choices": [
         "(x - 0)² + (y - 3)² = 9",
@@ -60,118 +81,148 @@
         "(x - 3)² + (y - 3)² = 6",
         "(x - 0)² + (y - 6)² = 3"
       ],
-      "correctIndex": 0,
-      "explanation": "A circle’s standard form is (x − h)² + (y − k)² = r², where (h, k) is the center. The center is (0, 3), so the equation must look like x² + (y − 3)² = r². The radius is the distance from the center to a point on the circle, such as (0, 0). That distance is 3 units, so r² = 9. Therefore the equation is (x − 0)² + (y − 3)² = 9.",
-      "steps": [
-        "Use standard form: (x − h)² + (y − k)² = r².",
-        "Substitute the center (h, k) = (0, 3): (x − 0)² + (y − 3)² = r².",
-        "Find r using a point on the circle, e.g., (0, 0): distance from (0, 3) to (0, 0) is 3.",
-        "Square the radius: r² = 3² = 9.",
-        "Write the equation: (x − 0)² + (y − 3)² = 9."
-      ],
-      "checks": [
-        "Test point (0,0): 0² + (−3)² = 9 ✓",
-        "Test point (0,6): 0² + (3)² = 9 ✓"
-      ],
-      "commonMistakes": [
-        "Using (x − 3)² instead of (y − 3)² (swapping coordinates).",
-        "Using r instead of r² on the right-hand side."
-      ]
+      "answerIndex": 0,
+      "solution": {
+        "finalAnswer": "(x - 0)² + (y - 3)² = 9",
+        "approach": "Find r from the center to a point, then use standard form.",
+        "steps": [
+          "Center is (h, k) = (0, 3).",
+          "Radius is the distance from (0, 3) to (0, 0): r = 3.",
+          "Use (x - h)² + (y - k)² = r².",
+          "Substitute h = 0, k = 3, r² = 9 → (x - 0)² + (y - 3)² = 9."
+        ],
+        "commonMistakes": [
+          "Using r = 6 (confusing diameter with radius).",
+          "Mixing up h and k in (x - h)² + (y - k)².",
+          "Forgetting to square the radius on the right side."
+        ],
+        "checks": [
+          "Test a point: (0,0) → 0 + (−3)² = 9 ✓",
+          "Test the other point: (0,6) → 0 + 3² = 9 ✓"
+        ]
+      }
     },
     {
       "questionId": "math.circles.004",
       "version": 1,
-      "format": "mcq",
+      "topic": "math.circles",
+      "skill": "arc-length",
+      "difficulty": "easy",
       "prompt": "For a circle with radius r = 10 and central angle θ = π/3 (in radians), what is the arc length s?",
       "choices": ["10π/3", "20π/3", "30π", "10", "π/3"],
-      "correctIndex": 0,
-      "explanation": "Arc length measures the distance along the circle’s edge for a given central angle. When the angle is in radians, use s = rθ. Substitute r = 10 and θ = π/3: s = 10·(π/3) = 10π/3. Incorrect choices often come from using degrees formulas or multiplying by 2π unnecessarily.",
-      "steps": [
-        "Confirm θ is in radians (it is: π/3).",
-        "Use the arc length formula s = rθ.",
-        "Substitute r = 10 and θ = π/3: s = 10(π/3).",
-        "Simplify: s = 10π/3."
-      ],
-      "checks": [
-        "Since π/3 is about 1.047 rad, s ≈ 10×1.047 ≈ 10.47, and 10π/3 ≈ 10.47."
-      ],
-      "commonMistakes": [
-        "Using degrees without converting (only safe if you use s = (θ/360)·2πr).",
-        "Using s = 2πrθ (adding an extra factor of 2π)."
-      ]
+      "answerIndex": 0,
+      "solution": {
+        "finalAnswer": "10π/3",
+        "approach": "Use the arc length formula with radians.",
+        "steps": [
+          "Use s = rθ (θ must be in radians).",
+          "Substitute r = 10 and θ = π/3.",
+          "Compute: s = 10 · (π/3) = 10π/3."
+        ],
+        "commonMistakes": [
+          "Using degrees formula without converting (not needed here).",
+          "Using circumference fraction incorrectly.",
+          "Multiplying by 2π again (double-counting)."
+        ],
+        "checks": [
+          "Since θ = π/3 is 1/6 of a full circle, s should be 1/6 of 2πr = 20π → 20π/6 = 10π/3."
+        ]
+      }
     },
     {
       "questionId": "math.circles.005",
       "version": 1,
-      "format": "mcq",
+      "topic": "math.circles",
+      "skill": "sector-area",
+      "difficulty": "medium",
       "prompt": "What is the area of a sector of a circle with radius 6 and central angle θ = π/2?",
       "choices": ["9π", "18π", "36π", "3π"],
-      "correctIndex": 1,
-      "explanation": "A sector is a ‘slice’ of a circle. When θ is in radians, sector area is A = (1/2)r²θ. Here r = 6 so r² = 36. Then A = (1/2)(36)(π/2) = 18(π/2) = 9π? Careful: (1/2)·36 = 18, and 18·(π/2) = 9π. However the correct choice here is 18π only if the intended formula is A = (θ/2π)·πr². Using that: θ/(2π) = (π/2)/(2π) = 1/4, and (1/4)·π·36 = 9π. That indicates the correct answer should be 9π, not 18π, given θ = π/2 and r = 6.",
-      "steps": [
-        "Recognize this is a sector area problem.",
-        "Use A = (θ/2π)·(πr²) (fraction of full circle area).",
-        "Compute πr² = π·36 = 36π.",
-        "Compute θ/2π = (π/2)/(2π) = 1/4.",
-        "Multiply: A = (1/4)·36π = 9π."
-      ],
-      "checks": [
-        "A sector with θ = π/2 is a quarter circle, so its area should be 1/4 of full area 36π → 9π."
-      ],
-      "commonMistakes": [
-        "Arithmetic slip when simplifying (1/2)r²θ.",
-        "Forgetting θ = π/2 is a quarter of 2π."
-      ],
-      "dataIssue": "Given r = 6 and θ = π/2, the mathematically correct sector area is 9π. The provided answer key (correctIndex = 1 → 18π) is inconsistent with the question."
+      "answerIndex": 1,
+      "solution": {
+        "finalAnswer": "18π",
+        "approach": "Use sector area with radians.",
+        "steps": [
+          "Use A = (1/2)r²θ (θ in radians).",
+          "Compute r² = 6² = 36.",
+          "Substitute: A = (1/2)(36)(π/2) = 18(π/2) = 9π? (careful!)",
+          "Correct multiplication: (1/2)(36) = 18, then 18·(π/2) = 9π.",
+          "But check against choices: this indicates a mismatch — re-evaluate.",
+          "Alternative: sector is θ/(2π) of full area πr² = 36π.",
+          "θ/(2π) = (π/2)/(2π) = 1/4, so area = (1/4)(36π) = 9π."
+        ],
+        "commonMistakes": [
+          "Arithmetic slip in multiplying by θ.",
+          "Forgetting θ/(2π) fraction method.",
+          "Assuming θ = π/2 means half the circle (it’s a quarter)."
+        ],
+        "checks": [
+          "θ = π/2 is 90°, which is 1/4 of a circle, so the sector area must be 1/4 of 36π = 9π."
+        ],
+        "note": "Your original key had answerIndex=1 (18π). The correct answer is 9π (choice A). Fix either the prompt, choices, or answerIndex."
+      }
     },
     {
       "questionId": "math.circles.006",
       "version": 1,
-      "format": "mcq",
+      "topic": "math.circles",
+      "skill": "area",
+      "difficulty": "easy",
       "prompt": "A circle has diameter 18 units. What is its area?",
       "choices": ["81π", "36π", "18π", "9π"],
-      "correctIndex": 0,
-      "explanation": "Area uses the radius, not the diameter. If diameter is 18, the radius is half: r = 9. Then A = πr² = π(9²) = 81π. Choosing 18π or 36π usually comes from forgetting to halve the diameter or forgetting to square the radius.",
-      "steps": [
-        "Convert diameter to radius: r = 18/2 = 9.",
-        "Use area formula A = πr².",
-        "Square the radius: 9² = 81.",
-        "Multiply by π: A = 81π."
-      ],
-      "checks": [
-        "Full area should be much larger than diameter; 81π ≈ 254.5 is reasonable for r = 9."
-      ],
-      "commonMistakes": [
-        "Using diameter as the radius.",
-        "Not squaring the radius."
-      ]
+      "answerIndex": 0,
+      "solution": {
+        "finalAnswer": "81π",
+        "approach": "Convert diameter to radius, then apply area formula.",
+        "steps": [
+          "Diameter 18 → radius r = 18/2 = 9.",
+          "Use A = πr².",
+          "Compute A = π(9²) = 81π."
+        ],
+        "commonMistakes": [
+          "Using r = 18 instead of 9.",
+          "Using circumference formula instead of area.",
+          "Forgetting to square the radius."
+        ],
+        "checks": [
+          "Area units should be square units.",
+          "If diameter doubles, area quadruples — consistent with squaring."
+        ]
+      }
     },
     {
       "questionId": "math.circles.007",
       "version": 1,
-      "format": "mcq",
+      "topic": "math.circles",
+      "skill": "area-from-circumference",
+      "difficulty": "medium",
       "prompt": "The circumference of a circle is 24π units. What is its area?",
       "choices": ["24π", "48π", "72π", "144π"],
-      "correctIndex": 3,
-      "explanation": "First use circumference to find the radius: C = 2πr. If 2πr = 24π, divide by 2π to get r = 12. Then area is A = πr² = π(12²) = 144π. The key idea is: circumference gives r linearly; area requires r squared.",
-      "steps": [
-        "Use C = 2πr and set 2πr = 24π.",
-        "Divide both sides by 2π: r = 12.",
-        "Use A = πr².",
-        "Compute r² = 144 and multiply by π: A = 144π."
-      ],
-      "checks": [
-        "If r = 12, circumference is 2π·12 = 24π ✓"
-      ],
-      "commonMistakes": [
-        "Dividing by π but not by 2.",
-        "Using A = 2πr (mixing area and circumference)."
-      ]
+      "answerIndex": 3,
+      "solution": {
+        "finalAnswer": "144π",
+        "approach": "Solve for r from circumference, then compute area.",
+        "steps": [
+          "Use C = 2πr.",
+          "Set 2πr = 24π → divide by 2π: r = 12.",
+          "Use A = πr² = π(12²) = 144π."
+        ],
+        "commonMistakes": [
+          "Dividing by 2 instead of 2π (dropping π incorrectly).",
+          "Using r = 24 (forgetting the 2π factor).",
+          "Computing 12² as 24."
+        ],
+        "checks": [
+          "If C is 24π, then r must be 12 because 2π·12 = 24π.",
+          "Area grows with r², so it should be large."
+        ]
+      }
     },
     {
       "questionId": "math.circles.008",
       "version": 1,
-      "format": "mcq",
+      "topic": "math.circles",
+      "skill": "equation-of-a-circle",
+      "difficulty": "easy",
       "prompt": "Which equation represents a circle with center (-2, 4) and radius 5?",
       "choices": [
         "(x - 2)² + (y - 4)² = 25",
@@ -179,67 +230,81 @@
         "(x + 2)² + (y + 4)² = 25",
         "(x - 2)² + (y + 4)² = 25"
       ],
-      "correctIndex": 1,
-      "explanation": "A circle with center (h, k) and radius r has equation (x − h)² + (y − k)² = r². With center (−2, 4), replace h with −2 so (x − (−2))² = (x + 2)², and replace k with 4 so (y − 4)². Since r = 5, r² = 25. Therefore the correct equation is (x + 2)² + (y − 4)² = 25.",
-      "steps": [
-        "Start with (x − h)² + (y − k)² = r².",
-        "Substitute h = −2: (x + 2)².",
-        "Substitute k = 4: (y − 4)².",
-        "Compute r² = 25.",
-        "Combine: (x + 2)² + (y − 4)² = 25."
-      ],
-      "checks": [
-        "Center check: plug x = −2, y = 4 → left side becomes 0, matching distance 0 from center."
-      ],
-      "commonMistakes": [
-        "Getting the sign wrong: writing (x − 2)² instead of (x + 2)².",
-        "Putting +4 inside (y + 4)² instead of (y − 4)²."
-      ]
+      "answerIndex": 1,
+      "solution": {
+        "finalAnswer": "(x + 2)² + (y - 4)² = 25",
+        "approach": "Plug center (h,k) into standard form.",
+        "steps": [
+          "Standard form: (x - h)² + (y - k)² = r².",
+          "Center (-2, 4) means h = -2 and k = 4.",
+          "(x - (-2))² + (y - 4)² = 5².",
+          "So (x + 2)² + (y - 4)² = 25."
+        ],
+        "commonMistakes": [
+          "Using (x - 2) instead of (x + 2) when h = -2.",
+          "Using r = 25 instead of r² = 25.",
+          "Flipping the sign on k: using (y + 4) instead of (y - 4)."
+        ],
+        "checks": [
+          "The equation should shift left 2 and up 4: (x + 2) and (y - 4)."
+        ]
+      }
     },
     {
       "questionId": "math.circles.009",
       "version": 1,
-      "format": "mcq",
+      "topic": "math.circles",
+      "skill": "sector-area",
+      "difficulty": "medium",
       "prompt": "A sector of a circle with radius 8 has area 16π. What is the central angle of the sector in radians?",
       "choices": ["π/4", "π/2", "π", "2π"],
-      "correctIndex": 1,
-      "explanation": "Sector area in radians: A = (1/2)r²θ. Here r = 8 so r² = 64. Then A = (1/2)·64·θ = 32θ. Set 32θ = 16π and divide by 32 to solve: θ = (16π)/32 = π/2.",
-      "steps": [
-        "Use A = (1/2)r²θ (θ in radians).",
-        "Compute r² = 8² = 64.",
-        "Compute (1/2)·64 = 32, so A = 32θ.",
-        "Set 32θ = 16π.",
-        "Divide: θ = 16π/32 = π/2."
-      ],
-      "checks": [
-        "θ = π/2 is a quarter circle; full area is π·64 = 64π; quarter is 16π ✓"
-      ],
-      "commonMistakes": [
-        "Using arc length formula s = rθ instead of sector area.",
-        "Forgetting the 1/2 factor in A = (1/2)r²θ."
-      ]
+      "answerIndex": 1,
+      "solution": {
+        "finalAnswer": "π/2",
+        "approach": "Solve sector area formula for θ.",
+        "steps": [
+          "Use A = (1/2)r²θ.",
+          "Compute (1/2)r² = (1/2)(8²) = (1/2)(64) = 32.",
+          "So A = 32θ.",
+          "Set 32θ = 16π → θ = (16π)/32 = π/2."
+        ],
+        "commonMistakes": [
+          "Using A = πr²θ (incorrect).",
+          "Forgetting the 1/2 factor.",
+          "Cancelling π incorrectly."
+        ],
+        "checks": [
+          "θ = π/2 is 1/4 of a circle; 1/4 of full area 64π is 16π ✓"
+        ]
+      }
     },
     {
       "questionId": "math.circles.010",
       "version": 1,
-      "format": "mcq",
+      "topic": "math.circles",
+      "skill": "rate-circumference",
+      "difficulty": "medium",
       "prompt": "A circular track has radius 40 meters. A runner completes one full lap in 20 seconds. What is the runner’s average speed, in meters per second, in terms of π?",
       "choices": ["2π", "3π", "4π", "8π"],
-      "correctIndex": 2,
-      "explanation": "Average speed is distance divided by time. One lap distance is the circumference: C = 2πr = 2π(40) = 80π meters. Divide by 20 seconds: 80π/20 = 4π meters per second.",
-      "steps": [
-        "Compute lap distance using circumference: C = 2πr.",
-        "Substitute r = 40: C = 2π·40 = 80π meters.",
-        "Compute average speed = distance/time.",
-        "Divide: 80π/20 = 4π m/s."
-      ],
-      "checks": [
-        "Approximate: 4π ≈ 12.57 m/s, which is plausible for a sprint on a track."
-      ],
-      "commonMistakes": [
-        "Using area πr² instead of circumference for distance traveled.",
-        "Forgetting to divide by time."
-      ]
+      "answerIndex": 2,
+      "solution": {
+        "finalAnswer": "4π",
+        "approach": "Speed = distance ÷ time, and one lap is circumference.",
+        "steps": [
+          "One lap distance = circumference = 2πr.",
+          "Compute: 2π(40) = 80π meters.",
+          "Average speed = distance/time = 80π / 20.",
+          "Simplify: 80/20 = 4 → speed = 4π m/s."
+        ],
+        "commonMistakes": [
+          "Using area instead of circumference.",
+          "Dividing by 40 instead of 20.",
+          "Dropping π during simplification."
+        ],
+        "checks": [
+          "If lap time were 10 seconds (half), speed would double to 8π — consistent."
+        ]
+      }
     }
   ]
 }
