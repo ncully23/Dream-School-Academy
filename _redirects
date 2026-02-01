@@ -1,1 +1,2 @@
-https://dreamschool.academy/*  https://www.dreamschool.academy/:splat  301!
+/    /pages/home.html    200
+/*   /pages/:splat       200
