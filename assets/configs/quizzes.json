@@ -1,10 +1,19 @@
 {
-  "topic.math.circles": {
-    "quizId": "topic.math.circles",
-    "title": "Circles (Practice)",
+  "math.circles": {
+    "quizId": "math.circles",
+    "title": "Circles",
     "sectionTitle": "Section 1, Module 1: Math — Circles (Practice)",
+    "bank": "/assets/question-banks/math/circles/circles.json",
     "timeLimitSec": 840,
-    "bank": "/assets/question-bank/math/circles.json",
-    "mode": "practice"
+    "difficulty": "hard",
+    "skills": [
+      "circle equation (standard form)",
+      "radius/diameter relationships",
+      "circumference and area",
+      "arc length and sector area",
+      "interpreting circle geometry"
+    ],
+    "studyHref": "/study/circles.html",
+    "previewDescription": "Timed practice on the core SAT circle skills that show up repeatedly."
   }
 }
