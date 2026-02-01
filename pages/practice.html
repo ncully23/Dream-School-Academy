@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en" data-page="practice">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Practice – Dream School Academy</title>
+
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="/assets/css/site.css" />
+  <script type="module" src="/assets/js/shell.js"></script>
+
+  <style>
+    main#practice { padding: 4rem 0 5rem; }
+
+    .practice-wrap{
+      width:min(1100px,92vw);
+      margin:0 auto;
+      display:grid;
+      gap:3rem;
+    }
+
+    .practice-section{
+      background:var(--surface);
+      border-radius:18px;
+      padding:1.9rem 1.8rem 2.2rem;
+      box-shadow:0 16px 40px rgba(0,0,0,.35);
+      border:1px solid rgba(255,255,255,.04);
+    }
+
+    .practice-section h2{ font-size:1.3rem; margin:0 0 .4rem; }
+    .practice-section p{ margin:0 0 1.2rem; }
+    .practice-section h2 span{ color:var(--brand); }
+
+    .search-row{
+      margin:1rem 0 1.6rem;
+      display:flex;
+      gap:.8rem;
+      flex-wrap:wrap;
+      align-items:center;
+    }
+
+    .search-row input,
+    .search-row select{
+      padding:.55rem .8rem;
+      background:var(--surface-2);
+      border-radius:999px;
+      border:1px solid rgba(148,163,184,.35);
+      color:var(--text);
+      font-size:.9rem;
+      min-width:200px;
+    }
+    .search-row input::placeholder{ color:var(--muted); }
+
+    .quiz-grid{
+      display:grid;
+      grid-template-columns:repeat(auto-fill, minmax(260px,1fr));
+      gap:1rem;
+      margin-top:.5rem;
+    }
+
+    .quiz-card{
+      background:var(--surface-2);
+      border-radius:14px;
+      padding:1rem 1rem 1.1rem;
+      border:1px solid rgba(148,163,184,.25);
+      transition:border-color .16s ease, transform .16s ease, box-shadow .16s ease;
+      display:grid;
+      gap:.25rem;
+    }
+    .quiz-card:hover{
+      border-color:var(--brand);
+      transform:translateY(-2px);
+      box-shadow:0 14px 30px rgba(0,0,0,.5);
+    }
+
+    .quiz-title{ font-size:.98rem; font-weight:700; margin-bottom:.15rem; }
+    .quiz-meta{ font-size:.8rem; color:var(--muted); margin-bottom:.6rem; }
+
+    .btn-row{ display:flex; gap:.5rem; flex-wrap:wrap; }
+    .pill-link{
+      display:inline-block;
+      padding:.4rem .8rem;
+      border-radius:999px;
+      font-size:.8rem;
+      font-weight:800;
+      text-decoration:none;
+      background:var(--brand);
+      color:var(--brand-ink);
+    }
+    .pill-link.secondary{
+      background:transparent;
+      color:var(--text);
+      border:1px solid rgba(148,163,184,.35);
+    }
+  </style>
+
+  <!-- Page controller -->
+  <script type="module" src="/assets/js/pages/practicepage.js"></script>
+</head>
+
+<body>
+  <div id="site-header"></div>
+
+  <main id="practice">
+    <div class="practice-wrap">
+
+      <!-- FULL TESTS -->
+      <section class="practice-section">
+        <h2><span>📝 Full practice tests</span></h2>
+        <p>Simulate the real SAT with timed modules.</p>
+
+        <!-- JS renders cards here -->
+        <div class="quiz-grid" id="fullTestsGrid" aria-label="Full practice tests"></div>
+      </section>
+
+      <!-- TOPIC QUIZZES -->
+      <section class="practice-section">
+        <h2><span>🎯 Practice by topic</span></h2>
+        <p>Pick a topic and drill with a focused quiz.</p>
+
+        <div class="search-row">
+          <input id="qSearch" type="text" placeholder="Search topics…" aria-label="Search topics" />
+          <select id="qSubject" aria-label="Filter by subject">
+            <option value="">All subjects</option>
+            <option value="rw">Reading &amp; Writing</option>
+            <option value="math">Math</option>
+          </select>
+        </div>
+
+        <!-- JS renders cards here -->
+        <div class="quiz-grid" id="topicGrid" aria-label="Practice by topic"></div>
+      </section>
+
+    </div>
+  </main>
+
+  <div id="site-footer"></div>
+</body>
+</html>
