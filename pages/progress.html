@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="en" data-page="progress">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>My Progress — Dream School Academy</title>
+
+  <!-- Global site styles + progress page styles -->
+  <link rel="stylesheet" href="/assets/css/site.css" />
+  <link rel="stylesheet" href="/assets/css/progress.css" />
+
+  <!-- Shared shell: inject header/footer, auth UI, nav highlight -->
+  <script type="module" src="/assets/js/shell.js"></script>
+</head>
+<body>
+  <div id="site-header"></div>
+
+  <main class="container progress-page">
+    <header class="page-header">
+      <h1>My Progress</h1>
+      <p class="page-subtitle">
+        See your practice history, best scores, and how your performance changes over time.
+      </p>
+    </header>
+
+    <!-- Status banners -->
+    <section class="status-bar" aria-live="polite">
+      <div id="progressLoading" class="status-banner" style="display:none;">
+        Loading your progress…
+      </div>
+    </section>
+
+    <!-- Summary cards -->
+    <section id="summary" class="summary" aria-label="Progress summary"></section>
+
+    <!-- Unsynced notice -->
+    <section aria-live="polite">
+      <div id="unsyncedBanner" class="status-banner warning" style="display:none;">
+        ⚠ Some attempts are only stored locally on this device and are not yet synced to your account.
+      </div>
+    </section>
+
+    <!-- Test history table -->
+    <section class="history-section" aria-label="Test history">
+      <div class="history-header">
+        <h2>Test History</h2>
+        <p class="history-caption">
+          Each row shows one completed practice quiz or module.
+        </p>
+      </div>
+
+      <div class="table-wrap">
+        <table id="historyTable" class="history-table">
+          <thead>
+            <tr>
+              <th scope="col">Date</th>
+              <th scope="col">Quiz</th>
+              <th scope="col">Score</th>
+              <th scope="col">Total</th>
+              <th scope="col">% Correct</th>
+              <th scope="col">Duration</th>
+              <th scope="col">Details</th>
+            </tr>
+          </thead>
+          <tbody id="historyBody"></tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <div id="site-footer"></div>
+
+  <!-- Keep modal if your CSS already styles it -->
+  <dialog id="detailsModal" class="details-modal">
+    <div class="details-content">
+      <h2>Attempt details</h2>
+      <pre id="detailsBody" class="details-body"></pre>
+      <button id="detailsClose" type="button" class="btn">Close</button>
+    </div>
+  </dialog>
+
+  <!-- Your shared persistence layer (Firestore + local fallback API) -->
+  <script type="module" src="/assets/js/quiz-data.js"></script>
+
+  <!-- NEW: Progress page controller (replaces /assets/js/progress.js) -->
+  <script type="module" src="/assets/js/pages/progresspage.js"></script>
+</body>
+</html>
