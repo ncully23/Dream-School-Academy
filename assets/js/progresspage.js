@@ -1,24 +1,46 @@
 // /assets/js/pages/progresspage.js
-// Renders progress from localStorage (dsa:attempt:*) and optionally Firestore via window.quizData.
+// Best-of merge (history.js + your current progresspage.js):
+// - Loads attempts from localStorage (dsa:attempt:*)
+// - Loads attempts from Firestore *if* window.quizData supports it
+// - Optional: requires login if the page is meant to be account-bound
+// - Renders summary + history table with Review links
+// - Shows "unsynced" banner when local attempts exist but aren’t in remote
+// - Keeps a click-row JSON modal for debugging (optional)
 
 function $(id) {
   return document.getElementById(id);
 }
 
 function safeParse(raw) {
-  try { return raw ? JSON.parse(raw) : null; } catch { return null; }
+  if (!raw) return null;
+  try {
+    return JSON.parse(raw);
+  } catch (e) {
+    console.warn("progresspage: JSON parse failed", e);
+    return null;
+  }
 }
 
-function fmtDate(iso) {
-  if (!iso) return "—";
-  try { return new Date(iso).toLocaleString(); } catch { return "—"; }
+function fmtDate(isoOrDateLike) {
+  if (!isoOrDateLike) return "—";
+  try {
+    return new Date(isoOrDateLike).toLocaleString();
+  } catch {
+    return "—";
+  }
 }
 
 function fmtDuration(sec) {
   const s = Math.max(0, Number(sec) || 0);
-  const m = Math.floor(s / 60);
-  const r = s % 60;
-  return s ? `${m}m ${String(r).padStart(2, "0")}s` : "—";
+  if (!s) return "—";
+
+  const h = Math.floor(s / 3600);
+  const m = Math.floor((s % 3600) / 60);
+  const r = Math.floor(s % 60);
+
+  if (h) return `${h}h ${m}m ${r}s`;
+  if (m) return `${m}m ${String(r).padStart(2, "0")}s`;
+  return `${r}s`;
 }
 
 function pct(correct, total) {
@@ -27,67 +49,171 @@ function pct(correct, total) {
   return t > 0 ? Math.round((c / t) * 100) : 0;
 }
 
-function getLocalAttempts() {
+function setLoading(isLoading) {
+  const el = $("progressLoading");
+  if (!el) return;
+  el.style.display = isLoading ? "block" : "none";
+}
+
+function setUnsyncedBanner(show) {
+  const el = $("unsyncedBanner");
+  if (!el) return;
+  el.style.display = show ? "block" : "none";
+}
+
+/**
+ * If your shell/auth exposes a boolean on window, use it.
+ * This is intentionally defensive: it won’t crash if not present.
+ */
+function getAuthState() {
+  // Preferred: your shell.js can set window.DSA_AUTH = { user, isSignedIn }
+  const a = window.DSA_AUTH;
+  if (a && typeof a.isSignedIn === "boolean") return a;
+
+  // Common fallback patterns you might add later:
+  // window.currentUser, window.authUser, etc.
+  if (window.currentUser) return { isSignedIn: true, user: window.currentUser };
+
+  return { isSignedIn: false, user: null };
+}
+
+/**
+ * If you want Progress to require login (like history.js did),
+ * set window.pageConfig.requireLogin = true on the page.
+ */
+function enforceLoginIfConfigured() {
+  const cfg = window.pageConfig || {};
+  if (!cfg.requireLogin) return;
+
+  const { isSignedIn } = getAuthState();
+  if (!isSignedIn) {
+    // Use your new route (adjust if your login URL differs)
+    location.href = "/profile/login";
+  }
+}
+
+// -------- Local attempts --------
+
+function getLocalAttemptsRaw() {
   const attempts = [];
   for (let i = 0; i < localStorage.length; i++) {
     const k = localStorage.key(i);
     if (!k || !k.startsWith("dsa:attempt:")) continue;
 
     const data = safeParse(localStorage.getItem(k));
-    if (!data || !data.attemptId) continue;
+    if (!data) continue;
 
-    attempts.push({
-      source: "local",
-      ...data
-    });
+    // attemptId should exist; if not, infer from key
+    const attemptId = data.attemptId || k.replace("dsa:attempt:", "");
+    attempts.push({ source: "local", attemptId, ...data });
   }
   return attempts;
 }
 
-function normalizeAttempt(a) {
-  // Accept both your new summary shape and a few common variants.
+/**
+ * Normalizes multiple shapes:
+ * - Your new local attempt shape: { attemptId, quizId, title, generatedAt, totals, items... }
+ * - QuizData/Firestore shapes you may return later
+ * - Light legacy variants
+ */
+function normalizeAttempt(raw) {
+  const a = raw || {};
   const totals = a.totals || {};
-  const total = Number(totals.total ?? a.total ?? (Array.isArray(a.items) ? a.items.length : 0)) || 0;
-  const correct = Number(totals.correct ?? a.correct) || 0;
-  const answered = Number(totals.answered ?? a.answered) || 0;
-  const timeSpentSec = Number(totals.timeSpentSec ?? a.timeSpentSec) || 0;
 
-  const quizId = a.quizId || a.sectionId || a.meta?.quizId || "";
-  const title = a.title || a.sectionTitle || a.meta?.title || quizId || "Quiz";
+  const itemsLen = Array.isArray(a.items) ? a.items.length : 0;
+
+  const total = Number.isFinite(totals.total)
+    ? totals.total
+    : Number(a.total ?? a.numQuestions ?? itemsLen) || 0;
+
+  const correct = Number.isFinite(totals.correct)
+    ? totals.correct
+    : Number(a.correct ?? a.numCorrect) || 0;
+
+  const answered = Number.isFinite(totals.answered)
+    ? totals.answered
+    : Number(a.answered) || (Array.isArray(a.items) ? a.items.filter(it => it?.chosenIndex != null).length : 0);
+
+  const timeSpentSec = Number.isFinite(totals.timeSpentSec)
+    ? totals.timeSpentSec
+    : Number(a.timeSpentSec ?? a.durationSeconds ?? a.durationSec) || 0;
+
+  const attemptId =
+    a.attemptId ||
+    a.id ||
+    a.attemptID ||
+    "";
+
+  const quizId =
+    a.quizId ||
+    a.sectionId ||
+    a.examType ||
+    a.meta?.quizId ||
+    "";
+
+  const title =
+    a.title ||
+    a.sectionTitle ||
+    a.examType ||
+    a.meta?.title ||
+    quizId ||
+    "Quiz";
+
+  // Use the most likely timestamp field:
+  // - your local: generatedAt
+  // - old Firestore patterns: completedAt / createdAt (maybe Timestamp-like)
+  let generatedAt =
+    a.generatedAt ||
+    a.completedAt ||
+    a.createdAt ||
+    a.timestamp ||
+    "";
+
+  // Firestore Timestamp objects sometimes appear here.
+  if (generatedAt && typeof generatedAt?.toDate === "function") {
+    generatedAt = generatedAt.toDate().toISOString();
+  } else if (generatedAt instanceof Date) {
+    generatedAt = generatedAt.toISOString();
+  }
 
   return {
-    attemptId: a.attemptId,
-    quizId,
-    title,
-    generatedAt: a.generatedAt || a.completedAt || a.createdAt || "",
+    attemptId: String(attemptId || ""),
+    quizId: String(quizId || ""),
+    title: String(title || "Quiz"),
+    generatedAt: generatedAt || "",
     totals: { total, correct, answered, timeSpentSec },
-    raw: a,
-    source: a.source || "unknown"
+    source: a.source || "unknown",
+    raw: a
   };
 }
+
+// -------- Remote attempts (quizData) --------
 
 async function getRemoteAttemptsIfAvailable() {
   const qd = window.quizData;
   if (!qd) return [];
 
-  // Try a few likely APIs without assuming your exact naming.
-  const fns = [
+  // We don't assume your exact API; we probe common names.
+  const candidates = [
     qd.listAttempts,
     qd.getAttempts,
-    qd.fetchAttempts
+    qd.fetchAttempts,
+    qd.loadAllResultsForUser // from your older progress tooling
   ].filter((fn) => typeof fn === "function");
 
-  if (fns.length === 0) return [];
+  if (candidates.length === 0) return [];
 
   try {
-    const res = await fns[0].call(qd);
-    if (Array.isArray(res)) {
-      return res.map((x) => ({ source: "remote", ...x }));
-    }
-    // if wrapped
-    if (res && Array.isArray(res.attempts)) {
-      return res.attempts.map((x) => ({ source: "remote", ...x }));
-    }
+    const res = await candidates[0].call(qd);
+
+    // Allow either:
+    // - array of attempts
+    // - { attempts: [...] }
+    // - { list: [...] }
+    if (Array.isArray(res)) return res.map((x) => ({ source: "remote", ...x }));
+    if (res && Array.isArray(res.attempts)) return res.attempts.map((x) => ({ source: "remote", ...x }));
+    if (res && Array.isArray(res.list)) return res.list.map((x) => ({ source: "remote", ...x }));
+
     return [];
   } catch (e) {
     console.warn("progresspage: remote attempts load failed", e);
@@ -95,11 +221,20 @@ async function getRemoteAttemptsIfAvailable() {
   }
 }
 
-function mergeAttempts(localList, remoteList) {
+function mergeAttempts(normalizedLocal, normalizedRemote) {
   // Dedupe by attemptId; prefer remote if both exist.
   const map = new Map();
-  for (const a of localList) map.set(a.attemptId, a);
-  for (const a of remoteList) map.set(a.attemptId, a);
+
+  for (const a of normalizedLocal) {
+    if (!a.attemptId) continue;
+    map.set(a.attemptId, a);
+  }
+
+  for (const a of normalizedRemote) {
+    if (!a.attemptId) continue;
+    map.set(a.attemptId, a);
+  }
+
   return Array.from(map.values());
 }
 
@@ -111,23 +246,36 @@ function sortNewestFirst(list) {
   });
 }
 
+// -------- Rendering --------
+
 function renderSummary(attempts) {
   const el = $("summary");
   if (!el) return;
 
+  if (!attempts.length) {
+    el.innerHTML = `
+      <div class="muted" style="padding:12px;">
+        No practice history yet. Take a quiz and your results will show up here.
+      </div>
+    `;
+    return;
+  }
+
   const n = attempts.length;
-  const totals = attempts.reduce((acc, a) => {
-    const t = a.totals || {};
-    acc.total += Number(t.total) || 0;
-    acc.correct += Number(t.correct) || 0;
-    acc.time += Number(t.timeSpentSec) || 0;
 
-    const p = pct(t.correct, t.total);
-    acc.best = Math.max(acc.best, p);
-    return acc;
-  }, { total: 0, correct: 0, time: 0, best: 0 });
+  // Weighted average (correct/total) across all attempts
+  const agg = attempts.reduce(
+    (acc, a) => {
+      acc.total += Number(a.totals.total) || 0;
+      acc.correct += Number(a.totals.correct) || 0;
+      acc.time += Number(a.totals.timeSpentSec) || 0;
+      acc.best = Math.max(acc.best, pct(a.totals.correct, a.totals.total));
+      return acc;
+    },
+    { total: 0, correct: 0, time: 0, best: 0 }
+  );
 
-  const avg = totals.total ? Math.round((totals.correct / totals.total) * 100) : 0;
+  const avg = agg.total ? Math.round((agg.correct / agg.total) * 100) : 0;
 
   el.innerHTML = `
     <div class="stat-card">
@@ -140,11 +288,11 @@ function renderSummary(attempts) {
     </div>
     <div class="stat-card">
       <div class="stat-label">Best</div>
-      <div class="stat-value">${totals.best}%</div>
+      <div class="stat-value">${agg.best}%</div>
     </div>
     <div class="stat-card">
       <div class="stat-label">Time Practiced</div>
-      <div class="stat-value">${fmtDuration(totals.time)}</div>
+      <div class="stat-value">${fmtDuration(agg.time)}</div>
     </div>
   `;
 }
@@ -155,7 +303,7 @@ function renderTable(attempts) {
 
   body.innerHTML = "";
 
-  if (attempts.length === 0) {
+  if (!attempts.length) {
     body.innerHTML = `
       <tr>
         <td colspan="7" class="muted" style="padding:14px;">
@@ -170,12 +318,16 @@ function renderTable(attempts) {
     const t = a.totals || {};
     const p = pct(t.correct, t.total);
 
+    // Small warning marker if local-only
+    const localOnly = a.source === "local";
+    const title = localOnly ? `${a.title} ⚠` : a.title;
+
     const tr = document.createElement("tr");
     tr.innerHTML = `
       <td>${fmtDate(a.generatedAt)}</td>
-      <td>${a.title}</td>
-      <td>${t.correct}</td>
-      <td>${t.total}</td>
+      <td>${title}</td>
+      <td>${Number(t.correct) || 0}</td>
+      <td>${Number(t.total) || 0}</td>
       <td>${p}%</td>
       <td>${fmtDuration(t.timeSpentSec)}</td>
       <td>
@@ -197,11 +349,15 @@ function wireModal(attempts) {
 
   if (!modal || !pre || !closeBtn || !tbody) return;
 
-  closeBtn.addEventListener("click", () => modal.close());
+  closeBtn.addEventListener("click", () => {
+    try {
+      modal.close();
+    } catch {}
+  });
 
   tbody.addEventListener("click", (e) => {
-    const a = e.target.closest("a");
-    if (a) return; // don't intercept review link clicks
+    const link = e.target.closest("a");
+    if (link) return; // don't intercept review link clicks
 
     const row = e.target.closest("tr");
     if (!row) return;
@@ -210,51 +366,52 @@ function wireModal(attempts) {
     if (idx < 0 || idx >= attempts.length) return;
 
     pre.textContent = JSON.stringify(attempts[idx].raw, null, 2);
-    modal.showModal();
+
+    // <dialog> support
+    if (typeof modal.showModal === "function") modal.showModal();
   });
 }
 
-function setLoading(isLoading) {
-  const el = $("progressLoading");
-  if (!el) return;
-  el.style.display = isLoading ? "block" : "none";
-}
-
-function setUnsyncedBanner(show) {
-  const el = $("unsyncedBanner");
-  if (!el) return;
-  el.style.display = show ? "block" : "none";
-}
+// -------- Main --------
 
 async function init() {
+  enforceLoginIfConfigured();
+
   setLoading(true);
+  setUnsyncedBanner(false);
 
-  const localRaw = getLocalAttempts();
+  // local
+  const localRaw = getLocalAttemptsRaw();
+  const normalizedLocal = localRaw.map(normalizeAttempt).filter(a => a.attemptId);
+
+  // remote
   const remoteRaw = await getRemoteAttemptsIfAvailable();
+  const normalizedRemote = remoteRaw
+    .map((x) => normalizeAttempt({ source: "remote", ...x }))
+    .filter(a => a.attemptId);
 
-  const normalizedLocal = localRaw.map(normalizeAttempt);
-  const normalizedRemote = remoteRaw.map((x) => normalizeAttempt({ source: "remote", ...x }));
+  // merge + sort
+  const merged = sortNewestFirst(mergeAttempts(normalizedLocal, normalizedRemote));
 
-  const merged = mergeAttempts(normalizedLocal, normalizedRemote);
-  const sorted = sortNewestFirst(merged);
+  renderSummary(merged);
+  renderTable(merged);
+  wireModal(merged);
 
-  renderSummary(sorted);
-  renderTable(sorted);
-  wireModal(sorted);
+  // Unsynced banner logic:
+  // show only if:
+  // - there are local attempts
+  // - remote support exists
+  // - and at least one local attemptId is missing from remote set
+  const hasRemoteSupport =
+    typeof window.quizData?.listAttempts === "function" ||
+    typeof window.quizData?.getAttempts === "function" ||
+    typeof window.quizData?.fetchAttempts === "function" ||
+    typeof window.quizData?.loadAllResultsForUser === "function";
 
-  // Show unsynced banner if:
-  // - you have local attempts
-  // - and there is *some* auth presence + remote loader exists
-  // - but remote does not contain them all
-  const hasRemoteSupport = typeof window.quizData?.listAttempts === "function"
-    || typeof window.quizData?.getAttempts === "function"
-    || typeof window.quizData?.fetchAttempts === "function";
+  const remoteIds = new Set(normalizedRemote.map(a => a.attemptId));
+  const missingInRemote = normalizedLocal.some(a => !remoteIds.has(a.attemptId));
 
-  const localCount = normalizedLocal.length;
-  const remoteCount = normalizedRemote.length;
-
-  // If you prefer "signed-in only", update this when your shell exposes auth state.
-  setUnsyncedBanner(hasRemoteSupport && localCount > remoteCount && localCount > 0);
+  setUnsyncedBanner(hasRemoteSupport && normalizedLocal.length > 0 && missingInRemote);
 
   setLoading(false);
 }
@@ -262,4 +419,15 @@ async function init() {
 init().catch((e) => {
   console.error("progresspage: init failed", e);
   setLoading(false);
+
+  const body = $("historyBody");
+  if (body) {
+    body.innerHTML = `
+      <tr>
+        <td colspan="7" class="muted" style="padding:14px;">
+          Sorry — we couldn't load your progress.
+        </td>
+      </tr>
+    `;
+  }
 });
