@@ -12,23 +12,24 @@
     </a>
 
     <!-- Primary nav -->
-    <nav class="site-nav">
-      <a href="/"              data-nav="home">Home</a>
-      <a href="/study"         data-nav="study">Study</a>
-      <a href="/practice"      data-nav="practice">Practice</a>
-      <a href="/progress"      data-nav="progress">My Progress</a>
+    <nav class="site-nav" aria-label="Primary">
+      <a href="/"         data-nav="home">Home</a>
+      <a href="/study"    data-nav="study">Study</a>
+      <a href="/practice" data-nav="practice">Practice</a>
+      <a href="/progress" data-nav="progress">My Progress</a>
 
       <!-- Greeting (signed in) -->
       <span
         id="user-greeting"
         class="nav-greeting"
-        data-when="signed-in">
+        data-when="signed-in"
+        aria-live="polite">
       </span>
 
       <!-- Login (signed out) -->
       <a
         id="login-link"
-        href="/profile/login"
+        href="/pages/profile/login.html"
         class="nav-btn cta"
         data-when="signed-out">
         Log in / Sign up
@@ -40,7 +41,7 @@
         type="button"
         class="nav-btn logout"
         data-when="signed-in"
-        hidden>
+        style="display:none;">
         Log out
       </button>
     </nav>
