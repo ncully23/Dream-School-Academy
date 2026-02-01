@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="en" data-page="review">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Review</title>
+
+  <style>
+    :root{
+      --bg:#eef2fb;
+      --surface:#fff;
+      --ink:#0f172a;
+      --muted:#64748b;
+      --line:#d9e0f2;
+      --good:#11a36a;
+      --bad:#d33;
+      --pill:#0b1227;
+      --blue:#1f4dd8;
+      --shadow:0 6px 14px rgba(16,24,40,.08);
+
+      --chip:#f1f5ff;
+      --chip-line:#c7d2fe;
+    }
+    body{
+      margin:0;
+      background:var(--bg);
+      color:var(--ink);
+      font:16px/1.5 Inter, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+    }
+    .wrap{
+      max-width:1100px;
+      margin:0 auto;
+      padding:20px 16px 80px;
+    }
+    .card{
+      background:var(--surface);
+      border:1px solid var(--line);
+      border-radius:14px;
+      box-shadow:var(--shadow);
+      padding:16px;
+    }
+    h1{margin:.25rem 0 .35rem; font-size:28px}
+    h2{margin:.25rem 0 .35rem}
+    .muted{color:var(--muted)}
+    .top{
+      display:flex;
+      justify-content:space-between;
+      align-items:flex-start;
+      gap:12px;
+      margin-bottom:10px;
+    }
+    .score{
+      background:var(--pill);
+      color:#fff;
+      border-radius:999px;
+      padding:10px 12px;
+      font-weight:900;
+      display:inline-flex;
+      gap:10px;
+      align-items:center;
+      white-space:nowrap;
+    }
+    .score span.small{
+      font-size:13px;
+      font-weight:600;
+      opacity:.9;
+    }
+    .chips{
+      display:flex;
+      flex-wrap:wrap;
+      gap:8px;
+      margin-top:10px;
+    }
+    .chip{
+      font-size:13px;
+      border-radius:999px;
+      padding:6px 10px;
+      border:1px solid var(--chip-line);
+      background:var(--chip);
+      color:#1e2a6b;
+      font-weight:700;
+    }
+
+    /* grid of Qs */
+    .qs{
+      margin-top:14px;
+      display:grid;
+      gap:12px;
+    }
+    .q{
+      border:1px solid var(--line);
+      border-radius:12px;
+      padding:14px;
+      background:#fff;
+    }
+    .q.ok{
+      border-color:rgba(17,163,106,.35);
+      background:linear-gradient(to bottom, #f0fdf4, #ffffff);
+    }
+    .q.no{
+      border-color:rgba(211,51,51,.3);
+      background:linear-gradient(to bottom, #fff1f2, #ffffff);
+    }
+    .qhead{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      margin-bottom:8px;
+    }
+    .badge{
+      width:32px;
+      height:32px;
+      border-radius:6px;
+      display:grid;
+      place-items:center;
+      font-weight:900;
+      color:#fff;
+      flex:0 0 auto;
+    }
+    .badge.ok{background:var(--good)}
+    .badge.no{background:var(--bad)}
+    .prompt{font-weight:900}
+
+    .submeta{
+      margin-top:6px;
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+      align-items:center;
+      color:var(--muted);
+      font-size:13px;
+      font-weight:700;
+    }
+    .submeta .dot{opacity:.55}
+
+    .choices{
+      margin-top:10px;
+      display:grid;
+      gap:6px;
+    }
+    .choice{
+      border:1px solid var(--line);
+      border-radius:10px;
+      padding:8px 10px;
+      background:#f7f8fd;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:10px;
+    }
+    .choice.correct{
+      border-color:#a7f3d0;
+      background:#ecfdf5;
+    }
+    .choice.your{
+      border-color:#c7d2fe;
+      background:#eef2ff;
+    }
+    .tags{
+      display:flex;
+      gap:6px;
+      align-items:center;
+      flex-wrap:wrap;
+      justify-content:flex-end;
+    }
+    .tag{
+      font-size:12px;
+      border-radius:999px;
+      padding:3px 8px;
+      border:1px solid transparent;
+      white-space:nowrap;
+      font-weight:800;
+    }
+    .tag.you{
+      background:#eef2ff;
+      color:#3730a3;
+      border-color:#c7d2fe;
+    }
+    .tag.correct{
+      background:#f0fdf4;
+      color:#166534;
+      border-color:#bbf7d0;
+    }
+    .tag.wrong{
+      background:#fff1f2;
+      color:#991b1b;
+      border-color:#fecdd3;
+    }
+    .tag.unanswered{
+      background:#f9fafb;
+      color:#4b5563;
+      border-color:#e5e7eb;
+    }
+
+    .solution{
+      margin-top:10px;
+      border-top:1px solid var(--line);
+      padding-top:10px;
+      color:var(--muted);
+    }
+    .solution b{color:var(--ink)}
+    .solution ul{
+      margin:6px 0 0;
+      padding-left:18px;
+    }
+    .solution li{margin:2px 0}
+
+    .empty{
+      max-width:760px;
+      margin:40px auto;
+      text-align:center;
+    }
+    .btn{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      gap:8px;
+      border-radius:999px;
+      border:1px solid var(--line);
+      background:#fff;
+      padding:10px 14px;
+      font-weight:900;
+      cursor:pointer;
+      text-decoration:none;
+      color:var(--ink);
+    }
+    .btn.primary{
+      background:var(--blue);
+      border-color:var(--blue);
+      color:#fff;
+    }
+    .btn.primary:hover{filter:brightness(.95)}
+    .btnrow{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      margin-top:12px;
+    }
+    code{
+      background:#0b1227;
+      color:#fff;
+      padding:2px 6px;
+      border-radius:6px;
+      font-size:13px;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="wrap">
+    <div class="card" id="headerCard">
+      <div class="top">
+        <div>
+          <h1 id="title">Review</h1>
+          <div class="muted" id="meta"></div>
+          <div class="chips" id="chips"></div>
+          <div class="btnrow" id="actions" style="display:none">
+            <a class="btn" id="backToQuiz" href="/pages/quiz.html">Back to Quiz</a>
+          </div>
+        </div>
+        <div class="score" id="scorePill"></div>
+      </div>
+    </div>
+
+    <div class="qs" id="qs"></div>
+
+    <div class="card empty" id="empty" style="display:none">
+      <h2>No attempt found</h2>
+      <p class="muted">
+        This review page expects <code>?attemptId=...</code> and the attempt stored in localStorage.
+      </p>
+      <div class="btnrow">
+        <a class="btn primary" href="/pages/quiz.html">Go to Quiz</a>
+      </div>
+      <p class="muted" style="margin-top:12px">
+        If you came here manually, run a quiz first so it can redirect you here automatically.
+      </p>
+    </div>
+  </div>
+
+<script>
+(function () {
+  // -----------------------
+  // Load attempt
+  // -----------------------
+  const params = new URLSearchParams(location.search);
+  const attemptId = params.get("attemptId");
+
+  // New standard key from Step 5A
+  const attemptKey = attemptId ? `dsa:attempt:${attemptId}` : null;
+
+  // Old/fallback keys (for when you open review.html directly)
+  const FALLBACK_KEYS = [
+    "dsa-last-summary",
+    "dsa-circles-summary-v1"
+  ];
+
+  function safeParse(raw) {
+    try { return raw ? JSON.parse(raw) : null; }
+    catch (e) { return null; }
+  }
+
+  function loadAttempt() {
+    if (attemptKey) {
+      const raw = localStorage.getItem(attemptKey);
+      const parsed = safeParse(raw);
+      if (parsed) return parsed;
+    }
+    for (const k of FALLBACK_KEYS) {
+      const raw = localStorage.getItem(k);
+      const parsed = safeParse(raw);
+      if (parsed) return parsed;
+    }
+    return null;
+  }
+
+  const data = loadAttempt();
+
+  const qsEl   = document.getElementById("qs");
+  const title  = document.getElementById("title");
+  const meta   = document.getElementById("meta");
+  const pill   = document.getElementById("scorePill");
+  const empty  = document.getElementById("empty");
+  const header = document.getElementById("headerCard");
+  const chips  = document.getElementById("chips");
+  const actions = document.getElementById("actions");
+  const backToQuiz = document.getElementById("backToQuiz");
+
+  if (!data || !Array.isArray(data.items) || data.items.length === 0) {
+    header.style.display = "none";
+    empty.style.display = "block";
+    return;
+  }
+
+  // -----------------------
+  // Header rendering
+  // -----------------------
+  const totals   = data.totals || {};
+  const answered = typeof totals.answered === "number" ? totals.answered : 0;
+  const correct  = typeof totals.correct === "number"  ? totals.correct  : 0;
+  const total    = typeof totals.total === "number"    ? totals.total    : data.items.length;
+  const scorePct = total ? Math.round((correct / total) * 100) : 0;
+
+  const timeSpentSec = typeof totals.timeSpentSec === "number" ? totals.timeSpentSec : 0;
+  const mins = Math.floor(timeSpentSec / 60);
+  const secs = timeSpentSec % 60;
+  const timeLabel = timeSpentSec ? `${mins}m ${String(secs).padStart(2,"0")}s` : "—";
+
+  const finishedAt = data.generatedAt || new Date().toISOString();
+  const finishedLabel = new Date(finishedAt).toLocaleString();
+
+  const titleText =
+    data.title ||
+    data.sectionTitle ||
+    "Review";
+
+  document.title = titleText;
+  title.textContent = titleText;
+
+  const qidLabel = (data.quizId || data.sectionId) ? (data.quizId || data.sectionId) : "";
+  const attemptLabel = data.attemptId || attemptId || "";
+
+  meta.textContent =
+    `Answered ${answered}/${total} • Correct ${correct} • Time ${timeLabel} • Completed ${finishedLabel}`;
+
+  pill.innerHTML = `<span>${scorePct}%</span><span class="small">Score</span>`;
+
+  // chips
+  chips.innerHTML = "";
+  if (qidLabel) chips.insertAdjacentHTML("beforeend", `<span class="chip">quizId: ${qidLabel}</span>`);
+  if (attemptLabel) chips.insertAdjacentHTML("beforeend", `<span class="chip">attemptId: ${attemptLabel}</span>`);
+
+  // show a back-to-quiz link that preserves quizId (nice UX)
+  if (data.quizId) {
+    actions.style.display = "flex";
+    backToQuiz.href = `/pages/quiz.html?quizId=${encodeURIComponent(data.quizId)}`;
+  }
+
+  // -----------------------
+  // Per-question rendering
+  // -----------------------
+  const letter = (i) => String.fromCharCode(65 + i);
+
+  data.items.forEach((it) => {
+    const userIndex = (typeof it.chosenIndex === "number") ? it.chosenIndex : null;
+    const isCorrect = userIndex !== null && userIndex === it.correctIndex;
+    const unanswered = userIndex === null || userIndex === undefined;
+
+    const sec = document.createElement("section");
+    sec.className = "q " + (isCorrect ? "ok" : "no");
+
+    const prompt = it.prompt || "";
+    const choices = Array.isArray(it.choices) ? it.choices : [];
+
+    const correctLetter = typeof it.correctIndex === "number" ? letter(it.correctIndex) : "—";
+    const correctText   =
+      (typeof it.correctIndex === "number" && choices[it.correctIndex] != null)
+        ? choices[it.correctIndex]
+        : "";
+
+    let yourLetter = "—";
+    let yourText = "";
+    if (!unanswered && choices[userIndex] != null) {
+      yourLetter = letter(userIndex);
+      yourText = choices[userIndex];
+    }
+
+    const choiceHtml = choices.map((c, i) => {
+      const isAns = i === it.correctIndex;
+      const isUser = i === userIndex;
+
+      const tags = [];
+      if (isUser) tags.push('<span class="tag you">Your choice</span>');
+      if (isAns) tags.push('<span class="tag correct">Correct</span>');
+      if (!isAns && isUser && !isCorrect) tags.push('<span class="tag wrong">Wrong</span>');
+      if (unanswered && isAns) tags.push('<span class="tag unanswered">You left blank</span>');
+
+      const cls = ["choice", isAns ? "correct" : "", isUser ? "your" : ""].join(" ").trim();
+
+      return `
+        <div class="${cls}">
+          <div><b>${letter(i)}.</b> ${c}</div>
+          <div class="tags">${tags.join(" ")}</div>
+        </div>
+      `;
+    }).join("");
+
+    // IDs for Step 4
+    const qid = it.questionId || it.id || "";
+    const ver = it.version || "";
+    const metaBits = [];
+    if (qid) metaBits.push(`questionId: ${qid}${ver ? ` (v${ver})` : ""}`);
+    if (typeof it.timeSpentSec === "number") metaBits.push(`time: ${it.timeSpentSec}s`);
+    if (typeof it.visits === "number") metaBits.push(`visits: ${it.visits}`);
+
+    const skillLabel = it.skill || it.skillLabel || "";
+    const difficulty = it.difficulty || "";
+
+    const reasoning = it.explanation || "";
+    const steps = Array.isArray(it.steps) ? it.steps : null;
+
+    let solutionHtml = `
+      <ul>
+        <li><b>Correct answer:</b> ${correctLetter}. ${correctText || ""}</li>
+    `;
+
+    if (unanswered) {
+      solutionHtml += `<li><b>Your answer:</b> (no answer selected)</li>`;
+    } else {
+      solutionHtml += `<li><b>Your answer:</b> ${yourLetter}. ${yourText || ""} ${isCorrect ? "(correct)" : "(incorrect)"}.</li>`;
+    }
+
+    if (skillLabel) {
+      solutionHtml += `<li><b>What this tested:</b> ${skillLabel}${difficulty ? " — " + difficulty : ""}</li>`;
+    } else if (difficulty) {
+      solutionHtml += `<li><b>Difficulty:</b> ${difficulty}</li>`;
+    }
+
+    if (reasoning) {
+      solutionHtml += `<li><b>Reasoning:</b> ${reasoning}</li>`;
+    }
+
+    if (steps && steps.length > 0) {
+      solutionHtml += `<li><b>Step-by-step:</b><ul>`;
+      steps.forEach((s) => { solutionHtml += `<li>${s}</li>`; });
+      solutionHtml += `</ul></li>`;
+    }
+
+    solutionHtml += `</ul>`;
+
+    sec.innerHTML = `
+      <div class="qhead">
+        <div class="badge ${isCorrect ? "ok" : "no"}">${it.number ?? ""}</div>
+        <div>
+          <div class="prompt">${prompt}</div>
+          ${metaBits.length ? `<div class="submeta">${metaBits.map((x, idx) => `${idx ? '<span class="dot">•</span>' : ""}<span>${x}</span>`).join(" ")}</div>` : ""}
+        </div>
+      </div>
+
+      <div class="choices">${choiceHtml}</div>
+
+      <div class="solution">
+        <b>Solution:</b>
+        ${solutionHtml}
+      </div>
+    `;
+
+    qsEl.appendChild(sec);
+  });
+})();
+</script>
+</body>
+</html>
