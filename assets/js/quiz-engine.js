@@ -684,7 +684,8 @@ import { routes } from "/assets/js/lib/routes.js";
       }
     };
 
-    const reviewUrl = `/pages/review.html?attemptId=${encodeURIComponent(attemptId)}`;
+    const reviewUrl = routes.review(attemptId);
+
 
     function finalizeAndRedirect() {
       // Step 6: clear draft using standardized key
