@@ -166,11 +166,9 @@
 </head>
 
 <body>
-  <!-- Optional: header/footer placeholders (safe even if shell is off) -->
   <div id="site-header"></div>
 
   <div class="app">
-    <!-- Header -->
     <div class="header" role="banner">
       <div>
         <div class="title" id="sectionTitle">Quiz</div>
@@ -183,11 +181,9 @@
       <div aria-hidden="true"></div>
     </div>
 
-    <!-- Practice banner + ticks (hide in JS later for exam mode) -->
     <div class="ticks" id="practiceBanner">THIS IS A PRACTICE SET</div>
     <div class="dashrow" id="dashrow"></div>
 
-    <!-- ONE-COLUMN QUESTION CARD -->
     <div class="qwrap">
       <article class="qcard" id="qcard">
         <header class="qtop">
@@ -209,7 +205,6 @@
       </article>
     </div>
 
-    <!-- Check Your Work (optional mid-test) -->
     <section class="check-wrap" id="checkPage" aria-label="Check Your Work">
       <h1 class="check-head">Check Your Work</h1>
       <p class="check-sub">On test day, you won’t be able to move on to the next module until time expires.</p>
@@ -232,7 +227,6 @@
     </section>
   </div>
 
-  <!-- Bottom rail -->
   <div class="rail" role="contentinfo">
     <div class="rail-inner">
       <div class="progress" id="progress"></div>
@@ -250,7 +244,6 @@
     </div>
   </div>
 
-  <!-- Review popover -->
   <div class="popover" id="popover" role="dialog" aria-modal="false" aria-label="Question Navigator">
     <button class="close" id="popClose" aria-label="Close">×</button>
     <div class="title" id="popTitle">Questions</div>
@@ -263,13 +256,8 @@
     <button class="go-review" id="goReview" type="button">Go to Review Page</button>
   </div>
 
-  <!-- Modules (order matters) -->
-  <!-- 1) quiz-data defines window.quizData (Firestore/progress hooks) -->
-  <script type="module" src="/assets/js/quiz-data.js"></script>
-
-<script type="module" src="/assets/js/pages/quizpage.js"></script>
-<script type="module" src="/assets/js/quiz-engine.js"></script>
-
+  <!-- Load ONLY the boot module. It will set window.dsaQuizConfig and import the engine once. -->
+  <script type="module" src="/assets/js/pages/quizpage.js"></script>
 
   <div id="site-footer"></div>
 </body>
