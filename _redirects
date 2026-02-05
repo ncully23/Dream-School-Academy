@@ -1,8 +1,5 @@
 # MAIN PAGES
 /            /pages/home.html        200!
-/study       /pages/study.html       200
-/practice    /pages/practice.html    200
-/progress    /pages/progress.html    200
 
 # PROFILE PAGES
 /profile/login  /pages/profile/login.html  200
