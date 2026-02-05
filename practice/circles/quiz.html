@@ -11,48 +11,132 @@
   <!-- Shared shell (header/footer injection, auth UI, etc.) -->
   <script type="module" src="/assets/js/shell.js"></script>
 
-  <!-- Optional: only include if you want Firestore saving to work on this page -->
+  <!-- Optional (required if you want Firestore persistence) -->
   <script type="module" src="/assets/js/firebase-init.js"></script>
   <script type="module" src="/assets/js/quiz-data.js"></script>
 
-  <!-- Boot loader: requires ?quizId=... then loads quiz-engine.js -->
+  <!-- Quiz registry: maps quizId -> bankUrl, pickCount, etc. -->
+  <script type="module" src="/assets/js/quiz-registry.js"></script>
+
+  <!-- Boot loader:
+       - requires ?quizId=...
+       - validates registry + bankUrl (fast precheck)
+       - imports quiz-engine.js (engine reads quizId + registry)
+  -->
   <script type="module">
     const ENGINE_URL = "/assets/js/quiz-engine.js";
 
-    function showError(message) {
+    const escapeHtml = (s) =>
+      String(s)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+
+    function safePrepend(node) {
+      (document.body || document.documentElement).prepend(node);
+    }
+
+    function setHeader(title, timeText) {
+      const titleEl = document.getElementById("sectionTitle");
+      if (titleEl) titleEl.textContent = title;
+      const timeEl = document.getElementById("timeLeft");
+      if (timeEl) timeEl.textContent = timeText;
+      document.title = title;
+    }
+
+    function showError(messageHtml) {
       const banner = document.createElement("div");
       banner.className = "load-error";
       banner.innerHTML = `
         <h2>Quiz failed to load</h2>
-        <p>${message}</p>
+        <p>${messageHtml}</p>
       `;
-      document.body.prepend(banner);
-
-      const titleEl = document.getElementById("sectionTitle");
-      if (titleEl) titleEl.textContent = "Quiz failed to load";
-      const timeEl = document.getElementById("timeLeft");
-      if (timeEl) timeEl.textContent = "--:--";
-      document.title = "Quiz failed to load";
+      safePrepend(banner);
+      setHeader("Quiz failed to load", "--:--");
     }
 
-    const params = new URLSearchParams(location.search);
-    const quizId = params.get("quizId");
-
-    if (!quizId) {
-      showError('Missing required URL parameter: <code>?quizId=...</code>');
-    } else {
-      const titleEl = document.getElementById("sectionTitle");
-      if (titleEl) titleEl.textContent = "Loading…";
-      const timeEl = document.getElementById("timeLeft");
-      if (timeEl) timeEl.textContent = "--:--";
-      document.title = "Loading…";
-
-      const s = document.createElement("script");
-      s.type = "module";
-      s.src = ENGINE_URL;
-      s.onerror = () => showError(`Failed to load <code>${ENGINE_URL}</code>.`);
-      document.head.appendChild(s);
+    function getQuizId() {
+      return new URLSearchParams(location.search).get("quizId");
     }
+
+    function getRegistry() {
+      // Expect quiz-registry.js to set ONE of these.
+      return (
+        window.QUIZ_REGISTRY ||
+        window.quizRegistry ||
+        window.QUIZZES ||
+        null
+      );
+    }
+
+    async function precheckBankUrl(bankUrl) {
+      // Fail fast with a clear error if the bank path is wrong in prod.
+      const res = await fetch(bankUrl, { cache: "no-store" });
+      if (!res.ok) {
+        throw new Error(`HTTP ${res.status} while fetching ${bankUrl}`);
+      }
+      // no parse here: engine will parse it (and can validate schema)
+    }
+
+    async function boot() {
+      const quizId = getQuizId();
+      if (!quizId) {
+        showError('Missing required URL parameter: <code>?quizId=...</code>');
+        return;
+      }
+
+      // Wait for DOM elements (we’re running after DOMContentLoaded)
+      setHeader("Loading…", "--:--");
+
+      const registry = getRegistry();
+      if (!registry) {
+        showError(
+          "Quiz registry not found. Expected <code>/assets/js/quiz-registry.js</code> to define " +
+          "<code>window.QUIZ_REGISTRY</code> (or <code>window.quizRegistry</code>)."
+        );
+        return;
+      }
+
+      const cfg = registry[quizId];
+      if (!cfg) {
+        showError(
+          `Unknown quizId: <code>${escapeHtml(quizId)}</code>. ` +
+          `No entry found in the registry.`
+        );
+        return;
+      }
+
+      const bankUrl = cfg.bankUrl || cfg.jsonUrl || cfg.url;
+      if (!bankUrl) {
+        showError(
+          `Quiz <code>${escapeHtml(quizId)}</code> exists in registry, but has no JSON bank URL. ` +
+          `Expected <code>bankUrl</code> (recommended).`
+        );
+        return;
+      }
+
+      try {
+        await precheckBankUrl(bankUrl);
+      } catch (err) {
+        console.error("Bank precheck failed:", err);
+        showError(
+          `Could not fetch quiz bank at <code>${escapeHtml(bankUrl)}</code>. ` +
+          `Check the path/case and that it's deployed.`
+        );
+        return;
+      }
+
+      try {
+        await import(ENGINE_URL);
+      } catch (err) {
+        console.error("quiz-engine failed to import:", err);
+        showError(`Engine error: <code>${escapeHtml(err?.message || String(err))}</code>`);
+      }
+    }
+
+    window.addEventListener("DOMContentLoaded", boot);
   </script>
 </head>
 
@@ -63,36 +147,41 @@
     <div class="header" role="banner">
       <div>
         <div class="title" id="sectionTitle">Loading…</div>
-        <button class="directions" aria-label="Directions">Directions ▾</button>
+        <button class="directions" aria-label="Directions" type="button">Directions ▾</button>
       </div>
 
       <div class="timer" aria-live="polite">
         <b id="timeLeft">--:--</b>
-        <button id="toggleTimer" class="btn ghost" aria-pressed="false">Hide</button>
+        <button id="toggleTimer" class="btn ghost" aria-pressed="false" type="button">Hide</button>
       </div>
 
       <div aria-hidden="true"></div>
     </div>
 
     <div class="ticks">THIS IS A PRACTICE SET</div>
-    <div class="dashrow" id="dashrow"></div>
+    <div class="dashrow" id="dashrow" aria-hidden="true"></div>
 
     <div class="qwrap">
       <article class="qcard" id="qcard">
         <header class="qtop">
           <div class="qbadge" id="qbadge">1</div>
           <div class="qdash" aria-hidden="true"></div>
-          <button id="flagTop" class="flagbtn" aria-pressed="false">
-            <span class="flagicon"></span><span id="flagLabel">Mark for review</span>
+
+          <button id="flagTop" class="flagbtn" aria-pressed="false" type="button">
+            <span class="flagicon" aria-hidden="true"></span>
+            <span id="flagLabel">Mark for review</span>
           </button>
-          <button id="elimToggle" class="elimbtn" aria-pressed="false" title="Eliminate answers">
-            <span class="elimicon" aria-hidden="true"></span> Eliminate
+
+          <button id="elimToggle" class="elimbtn" aria-pressed="false" title="Eliminate answers" type="button">
+            <span class="elimicon" aria-hidden="true"></span>
+            Eliminate
           </button>
         </header>
 
         <h2 class="qtitle" id="qtitle">Loading question…</h2>
         <div class="choices" id="choices" role="radiogroup" aria-label="Choices"></div>
-        <div class="hint" id="elimHint" style="display:none">
+
+        <div class="hint" id="elimHint" hidden>
           Eliminate mode is on — click an answer to gray it out. Click again to restore.
         </div>
       </article>
@@ -101,20 +190,24 @@
     <section class="check-wrap" id="checkPage" aria-label="Check Your Work">
       <h1 class="check-head">Check Your Work</h1>
       <p class="check-sub">On test day, you won’t be able to move on to the next module until time expires.</p>
+
       <div class="check-card">
         <div class="check-row">
           <div id="checkTitle">Questions</div>
           <div class="check-leg">
             <span>
-              <span class="box" style="width:16px;height:16px;border:2px dashed #2b3350;border-radius:4px;display:inline-block;margin-right:6px"></span>
+              <span class="box" aria-hidden="true"
+                style="width:16px;height:16px;border:2px dashed #2b3350;border-radius:4px;display:inline-block;margin-right:6px"></span>
               Unanswered
             </span>
             <span>
-              <span class="flag" style="width:12px;height:12px;background:var(--flag);display:inline-block;margin-right:6px"></span>
+              <span class="flag" aria-hidden="true"
+                style="width:12px;height:12px;background:var(--flag);display:inline-block;margin-right:6px"></span>
               For Review
             </span>
           </div>
         </div>
+
         <div class="grid-nums" id="checkGrid"></div>
       </div>
     </section>
@@ -122,34 +215,37 @@
 
   <div class="rail" role="contentinfo">
     <div class="rail-inner">
-      <div class="progress" id="progress"></div>
+      <div class="progress" id="progress" aria-hidden="true"></div>
 
-      <button class="center-pill" id="centerPill" aria-haspopup="dialog" aria-expanded="false">
-        <div class="pill-flag" id="pillFlag" style="display:none"></div>
-        <span id="pillText">Question 1 of …</span><span class="caret">▾</span>
+      <button class="center-pill" id="centerPill" aria-haspopup="dialog" aria-expanded="false" type="button">
+        <div class="pill-flag" id="pillFlag" style="display:none" aria-hidden="true"></div>
+        <span id="pillText">Question 1 of …</span>
+        <span class="caret" aria-hidden="true">▾</span>
       </button>
 
       <div class="rail-left">
-        <button id="btnBack" class="btn nav">Back</button>
+        <button id="btnBack" class="btn nav" type="button">Back</button>
       </div>
 
       <div class="rail-actions">
-        <button id="btnNext" class="btn nav primary">Next</button>
-        <button id="btnFinish" class="btn nav primary" style="display:none">End &amp; Score</button>
+        <button id="btnNext" class="btn nav primary" type="button">Next</button>
+        <button id="btnFinish" class="btn nav primary" style="display:none" type="button">End &amp; Score</button>
       </div>
     </div>
   </div>
 
   <div class="popover" id="popover" role="dialog" aria-modal="false" aria-label="Question Navigator">
-    <button class="close" id="popClose" aria-label="Close">×</button>
+    <button class="close" id="popClose" aria-label="Close" type="button">×</button>
     <div class="title" id="popTitle">Questions</div>
+
     <div class="legend">
       <span>📍 Current</span>
-      <span><span class="box"></span> Unanswered</span>
-      <span><span class="flag"></span> For Review</span>
+      <span><span class="box" aria-hidden="true"></span> Unanswered</span>
+      <span><span class="flag" aria-hidden="true"></span> For Review</span>
     </div>
+
     <div class="grid" id="popGrid"></div>
-    <button class="go-review" id="goReview">Go to Review Page</button>
+    <button class="go-review" id="goReview" type="button">Go to Review Page</button>
   </div>
 
   <div id="site-footer"></div>
