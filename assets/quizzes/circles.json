@@ -1,20 +1,90 @@
 {
+  "quizId": "math-circles",
   "title": "Circles",
-  "timeLimitSec": 1800,
+  "sectionTitle": "Section 1, Module 1: Math — Circles (Practice)",
+  "timeLimitSec": 840,
+  "summaryHref": "/practice/circles/summary.html",
+  "pauseOnBlur": false,
   "questions": [
     {
       "id": "q1",
       "prompt": "A circle has radius 5 cm. What is its circumference?",
       "choices": ["10π cm", "25π cm", "5π cm", "50π cm"],
       "answerIndex": 0,
-      "explanation": "Use C = 2πr → 10π cm"
+      "explanation": "Use C = 2πr. With r = 5, C = 2π(5) = 10π cm."
     },
     {
       "id": "q2",
       "prompt": "If a circle’s area is 49π, what is its radius?",
       "choices": ["3", "7", "14", "24.5"],
       "answerIndex": 1,
-      "explanation": "Area = πr² → r = 7"
+      "explanation": "Use A = πr². If 49π = πr², then r² = 49, so r = 7."
+    },
+    {
+      "id": "q3",
+      "prompt": "A circle passes through (0, 0) and (0, 6) with center at (0, 3). What is its equation?",
+      "choices": [
+        "(x − 0)² + (y − 3)² = 9",
+        "(x − 3)² + (y − 0)² = 9",
+        "(x − 3)² + (y − 3)² = 6",
+        "(x − 0)² + (y − 6)² = 3"
+      ],
+      "answerIndex": 0,
+      "explanation": "Center is (0, 3). Radius is distance to (0, 0): r = 3. Equation: (x − 0)² + (y − 3)² = 3² = 9."
+    },
+    {
+      "id": "q4",
+      "prompt": "For a circle with radius r = 10 and central angle θ = π/3 (in radians), what is the arc length s?",
+      "choices": ["10π/3", "20π/3", "30π", "10", "π/3"],
+      "answerIndex": 0,
+      "explanation": "Arc length: s = rθ. With r = 10 and θ = π/3, s = 10(π/3) = 10π/3."
+    },
+    {
+      "id": "q5",
+      "prompt": "What is the area of a sector of a circle with radius 6 and central angle θ = π/2?",
+      "choices": ["9π", "18π", "36π", "3π"],
+      "answerIndex": 1,
+      "explanation": "Sector area: A = (1/2)r²θ. With r = 6, A = (1/2)(36)(π/2) = 18π."
+    },
+    {
+      "id": "q6",
+      "prompt": "A circle has diameter 18 units. What is its area?",
+      "choices": ["81π", "36π", "18π", "9π"],
+      "answerIndex": 0,
+      "explanation": "Diameter 18 ⇒ radius 9. Area: A = πr² = π(9²) = 81π."
+    },
+    {
+      "id": "q7",
+      "prompt": "The circumference of a circle is 24π units. What is its area?",
+      "choices": ["24π", "48π", "72π", "144π"],
+      "answerIndex": 3,
+      "explanation": "C = 2πr = 24π ⇒ r = 12. Area: A = πr² = π(12²) = 144π."
+    },
+    {
+      "id": "q8",
+      "prompt": "Which equation represents a circle with center (−2, 4) and radius 5?",
+      "choices": [
+        "(x − 2)² + (y − 4)² = 25",
+        "(x + 2)² + (y − 4)² = 25",
+        "(x + 2)² + (y + 4)² = 25",
+        "(x − 2)² + (y + 4)² = 25"
+      ],
+      "answerIndex": 1,
+      "explanation": "Standard form: (x − h)² + (y − k)² = r². With h = −2, k = 4, r = 5: (x + 2)² + (y − 4)² = 25."
+    },
+    {
+      "id": "q9",
+      "prompt": "A sector of a circle with radius 8 has area 16π. What is the central angle of the sector in radians?",
+      "choices": ["π/4", "π/2", "π", "2π"],
+      "answerIndex": 1,
+      "explanation": "Sector area: A = (1/2)r²θ = (1/2)(64)θ = 32θ. Set 32θ = 16π ⇒ θ = π/2."
+    },
+    {
+      "id": "q10",
+      "prompt": "A circular track has radius 40 meters. A runner completes one full lap in 20 seconds. What is the runner’s average speed, in meters per second, in terms of π?",
+      "choices": ["2π", "3π", "4π", "8π"],
+      "answerIndex": 2,
+      "explanation": "One lap distance is circumference: 2πr = 2π(40) = 80π. Speed = distance/time = 80π/20 = 4π m/s."
     }
   ]
 }
