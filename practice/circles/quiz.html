@@ -145,52 +145,105 @@
     .grid-nums .nbtn{height:44px}
   </style>
 
-  <!-- Shared shell: header/footer + auth + nav highlight -->
   <script type="module" src="/assets/js/shell.js"></script>
 
   <!-- Disable saving/resume + warn on leaving -->
   <script>
     (function () {
-      // Treat the attempt as "in progress" until user finishes.
       window.__dsaAttemptInProgress = true;
 
-      // Hard-disable client-side storage writes (prevents "resume" drafts).
       function noOp() {}
-      function blocked() { return null; }
 
       try {
-        // localStorage
         localStorage.setItem = noOp;
         localStorage.removeItem = noOp;
         localStorage.clear = noOp;
-        // sessionStorage (some engines use this too)
+
         sessionStorage.setItem = noOp;
         sessionStorage.removeItem = noOp;
         sessionStorage.clear = noOp;
-      } catch (e) {
-        // If storage is unavailable, nothing to do.
-      }
+      } catch (e) {}
 
-      // Warn user on navigation/refresh/closing tab while in-progress.
       window.addEventListener("beforeunload", function (e) {
         if (!window.__dsaAttemptInProgress) return;
         const msg = "If you leave this page, your quiz attempt will NOT be saved.";
         e.preventDefault();
-        e.returnValue = msg; // required for some browsers
+        e.returnValue = msg;
         return msg;
       });
 
-      // When the user ends the quiz, stop warning.
       document.addEventListener("click", function (e) {
         const t = e.target;
         if (!t) return;
-
-        // Covers the "End & Score" button as written in this HTML.
         if (t.id === "btnFinish") {
           window.__dsaAttemptInProgress = false;
         }
       }, true);
     })();
+  </script>
+
+  <!-- Point this page at the JSON -->
+  <script>
+    window.quizJsonUrl = "/assets/quizzes/math-circles.json";
+  </script>
+
+  <!-- Load JSON -> build examConfig -> load engine -->
+  <script type="module">
+    async function loadQuizJson(url) {
+      const res = await fetch(url, { cache: "no-store" });
+      if (!res.ok) throw new Error(`Failed to load quiz JSON (${res.status})`);
+      return await res.json();
+    }
+
+    function normalizeQuizJson(raw) {
+      if (!raw || !Array.isArray(raw.questions)) {
+        throw new Error("Quiz JSON is missing a 'questions' array.");
+      }
+
+      return {
+        sectionId: raw.quizId || "quiz",
+        sectionTitle: raw.sectionTitle || raw.title || "Practice Quiz",
+        summaryHref: raw.summaryHref || null,
+        timeLimitSec: Number.isFinite(raw.timeLimitSec) ? raw.timeLimitSec : 0,
+        pauseOnBlur: !!raw.pauseOnBlur,
+        // Explicitly no persistence keys
+        storageKey: null,
+        summaryKey: null,
+        questions: raw.questions.map((q, idx) => ({
+          id: q.id ?? `q${idx + 1}`,
+          prompt: String(q.prompt ?? ""),
+          choices: Array.isArray(q.choices) ? q.choices.map(String) : [],
+          answerIndex: Number(q.answerIndex),
+          explanation: q.explanation != null ? String(q.explanation) : ""
+        }))
+      };
+    }
+
+    function injectEngine() {
+      const s = document.createElement("script");
+      s.type = "module";
+      s.src = "/assets/js/quiz-engine.js";
+      document.head.appendChild(s);
+    }
+
+    try {
+      const raw = await loadQuizJson(window.quizJsonUrl);
+      window.examConfig = normalizeQuizJson(raw);
+
+      // Update visible title if present
+      const titleEl = document.getElementById("sectionTitle");
+      if (titleEl) titleEl.textContent = window.examConfig.sectionTitle;
+
+      injectEngine();
+    } catch (err) {
+      console.error(err);
+      const msg = document.createElement("div");
+      msg.style.cssText = "max-width:900px;margin:24px auto;padding:16px;border:1px solid #c00;background:#fff;color:#111;border-radius:10px";
+      msg.innerHTML = `<h2 style="margin:0 0 8px">Quiz failed to load</h2><p style="margin:0">${err.message}</p>`;
+      document.body.prepend(msg);
+      // If quiz can't load, don't warn on leave
+      window.__dsaAttemptInProgress = false;
+    }
   </script>
 </head>
 
@@ -200,11 +253,11 @@
   <div class="app">
     <div class="header" role="banner">
       <div>
-        <div class="title" id="sectionTitle">Section 1, Module 1: Math — Circles (Practice)</div>
+        <div class="title" id="sectionTitle">Loading…</div>
         <button class="directions" aria-label="Directions">Directions ▾</button>
       </div>
       <div class="timer" aria-live="polite">
-        <b id="timeLeft">14:00</b>
+        <b id="timeLeft">--:--</b>
         <button id="toggleTimer" class="btn ghost" aria-pressed="false">Hide</button>
       </div>
       <div aria-hidden="true"></div>
@@ -239,7 +292,7 @@
       <p class="check-sub">On test day, you won’t be able to move on to the next module until time expires.</p>
       <div class="check-card">
         <div class="check-row">
-          <div>Section 1, Module 1: Math — Circles Questions</div>
+          <div>Questions</div>
           <div class="check-leg">
             <span>
               <span class="box" style="width:16px;height:16px;border:2px dashed #2b3350;border-radius:4px;display:inline-block;margin-right:6px"></span>
@@ -261,7 +314,7 @@
       <div class="progress" id="progress"></div>
       <button class="center-pill" id="centerPill" aria-haspopup="dialog" aria-expanded="false">
         <div class="pill-flag" id="pillFlag" style="display:none"></div>
-        <span id="pillText">Question 1 of 10</span><span class="caret">▾</span>
+        <span id="pillText">Question 1 of …</span><span class="caret">▾</span>
       </button>
       <div class="rail-left">
         <button id="btnBack" class="btn nav">Back</button>
@@ -275,7 +328,7 @@
 
   <div class="popover" id="popover" role="dialog" aria-modal="false" aria-label="Question Navigator">
     <button class="close" id="popClose" aria-label="Close">×</button>
-    <div class="title">Section 1, Module 1: Math — Circles Questions</div>
+    <div class="title">Questions</div>
     <div class="legend">
       <span>📍 Current</span>
       <span><span class="box"></span> Unanswered</span>
@@ -284,108 +337,6 @@
     <div class="grid" id="popGrid"></div>
     <button class="go-review" id="goReview">Go to Review Page</button>
   </div>
-
-  <script>
-    window.examConfig = {
-      sectionId: "math-circles",
-      sectionTitle: "Section 1, Module 1: Math — Circles (Practice)",
-
-      // Remove storage keys so your engine has nothing "intended" to resume from.
-      storageKey: null,
-      summaryKey: null,
-
-      // You can still navigate to a summary if your engine uses it.
-      summaryHref: "/practice/circles/summary.html",
-
-      timeLimitSec: 14 * 60,
-      pauseOnBlur: false,
-      questions: [
-        {
-          id: "q1",
-          prompt: "A circle has radius 5 cm. What is its circumference?",
-          choices: ["10\u03c0 cm","25\u03c0 cm","5\u03c0 cm","50\u03c0 cm"],
-          answerIndex: 0,
-          explanation: "Use the circumference formula C = 2\u03c0r. Substitute r = 5: C = 2 \u00d7 \u03c0 \u00d7 5 = 10\u03c0 cm."
-        },
-        {
-          id: "q2",
-          prompt: "If a circle\u2019s area is 49\u03c0, what is its radius?",
-          choices: ["3","7","14","24.5"],
-          answerIndex: 1,
-          explanation: "Area formula: A = \u03c0r\u00b2. Set \u03c0r\u00b2 = 49\u03c0, divide by \u03c0 to get r\u00b2 = 49, so r = \u221a49 = 7."
-        },
-        {
-          id: "q3",
-          prompt: "A circle passes through (0, 0) and (0, 6) with center at (0, 3). What is its equation?",
-          choices: [
-            "(x - 0)\u00b2 + (y - 3)\u00b2 = 9",
-            "(x - 3)\u00b2 + (y - 0)\u00b2 = 9",
-            "(x - 3)\u00b2 + (y - 3)\u00b2 = 6",
-            "(x - 0)\u00b2 + (y - 6)\u00b2 = 3"
-          ],
-          answerIndex: 0,
-          explanation: "The center is (0, 3). The radius is the distance from (0, 3) to (0, 0): r = 3. Standard form is (x - h)\u00b2 + (y - k)\u00b2 = r\u00b2, so (x - 0)\u00b2 + (y - 3)\u00b2 = 9."
-        },
-        {
-          id: "q4",
-          prompt: "For a circle with radius r = 10 and central angle \u03b8 = \u03c0/3 (in radians), what is the arc length s?",
-          choices: ["10\u03c0/3","20\u03c0/3","30\u03c0","10","\u03c0/3"],
-          answerIndex: 0,
-          explanation: "Arc length formula: s = r\u03b8. Substitute r = 10 and \u03b8 = \u03c0/3: s = 10 \u00d7 (\u03c0/3) = 10\u03c0/3."
-        },
-        {
-          id: "q5",
-          prompt: "What is the area of a sector of a circle with radius 6 and central angle \u03b8 = \u03c0/2?",
-          choices: ["9\u03c0","18\u03c0","36\u03c0","3\u03c0"],
-          answerIndex: 1,
-          explanation: "Sector area formula: A = (1/2)r\u00b2\u03b8. Substitute r = 6 and \u03b8 = \u03c0/2: A = (1/2) \u00d7 36 \u00d7 (\u03c0/2) = 18\u03c0."
-        },
-        {
-          id: "q6",
-          prompt: "A circle has diameter 18 units. What is its area?",
-          choices: ["81\u03c0","36\u03c0","18\u03c0","9\u03c0"],
-          answerIndex: 0,
-          explanation: "Diameter 18 \u2192 radius r = 9. Area A = \u03c0r\u00b2 = \u03c0 \u00d7 9\u00b2 = 81\u03c0."
-        },
-        {
-          id: "q7",
-          prompt: "The circumference of a circle is 24\u03c0 units. What is its area?",
-          choices: ["24\u03c0","48\u03c0","72\u03c0","144\u03c0"],
-          answerIndex: 3,
-          explanation: "From C = 2\u03c0r = 24\u03c0, divide by 2\u03c0 to get r = 12. Then area A = \u03c0r\u00b2 = \u03c0 \u00d7 12\u00b2 = 144\u03c0."
-        },
-        {
-          id: "q8",
-          prompt: "Which equation represents a circle with center (-2, 4) and radius 5?",
-          choices: [
-            "(x - 2)\u00b2 + (y - 4)\u00b2 = 25",
-            "(x + 2)\u00b2 + (y - 4)\u00b2 = 25",
-            "(x + 2)\u00b2 + (y + 4)\u00b2 = 25",
-            "(x - 2)\u00b2 + (y + 4)\u00b2 = 25"
-          ],
-          answerIndex: 1,
-          explanation: "Standard form: (x - h)\u00b2 + (y - k)\u00b2 = r\u00b2. Here h = -2 and k = 4, so (x - (-2))\u00b2 + (y - 4)\u00b2 = (x + 2)\u00b2 + (y - 4)\u00b2 = 25."
-        },
-        {
-          id: "q9",
-          prompt: "A sector of a circle with radius 8 has area 16\u03c0. What is the central angle of the sector in radians?",
-          choices: ["\u03c0/4","\u03c0/2","\u03c0","2\u03c0"],
-          answerIndex: 1,
-          explanation: "Sector area A = (1/2)r\u00b2\u03b8. Substitute r = 8: A = (1/2) \u00d7 64 \u00d7 \u03b8 = 32\u03b8. Set 32\u03b8 = 16\u03c0, so \u03b8 = (16\u03c0)/32 = \u03c0/2."
-        },
-        {
-          id: "q10",
-          prompt: "A circular track has radius 40 meters. A runner completes one full lap in 20 seconds. What is the runner\u2019s average speed, in meters per second, in terms of \u03c0?",
-          choices: ["2\u03c0","3\u03c0","4\u03c0","8\u03c0"],
-          answerIndex: 2,
-          explanation: "One lap distance is the circumference: 2\u03c0r = 2 \u00d7 \u03c0 \u00d7 40 = 80\u03c0 meters. Average speed = distance/time = 80\u03c0 / 20 = 4\u03c0 m/s."
-        }
-      ]
-    };
-  </script>
-
-  <!-- Keep the quiz engine, but remove the persistence module above -->
-  <script type="module" src="/assets/js/quiz-engine.js"></script>
 
   <div id="site-footer"></div>
 </body>
