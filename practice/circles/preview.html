@@ -63,18 +63,6 @@
       background:#444;
     }
   </style>
-
-  <script>
-    function openQuizWindow() {
-      // Opens in actual NEW WINDOW, not a tab
-      window.open(
-        "/practice/circles/quiz.html",
-        "circlesQuizWindow",
-        "width=1200,height=800,noopener"
-      );
-    }
-  </script>
-
 </head>
 
 <body>
@@ -92,15 +80,15 @@
     <div class="meta">
       <div><strong>Questions:</strong> 10</div>
       <div><strong>Estimated Time:</strong> ~12 minutes</div>
-      <div><strong>Difficulty:</strong> Easy → Medium</div>
+      <div><strong>Difficulty:</strong>Hard</div>
       <div><strong>Skills Included:</strong> Circle equations, radius/diameter, area, circumference,
         angles, arc length, geometric reasoning
       </div>
     </div>
 
     <div class="btn-row">
-      <!-- OPEN A NEW WINDOW INSTEAD OF NEW TAB -->
-      <button class="btn" onclick="openQuizWindow()">Start Quiz</button>
+      <!-- Normal same-tab navigation -->
+      <a class="btn" href="/practice/circles/quiz.html">Start Quiz</a>
 
       <a class="btn secondary" href="/study/circles.html">Study Topic</a>
       <a class="btn secondary" href="/practice.html">Back to Practice</a>
