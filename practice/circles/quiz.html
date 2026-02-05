@@ -143,8 +143,24 @@
     .check-leg{display:flex;gap:18px;align-items:center;color:var(--bb-muted)}
     .grid-nums{display:grid;grid-template-columns:repeat(10,1fr);gap:10px;margin-top:12px}
     .grid-nums .nbtn{height:44px}
+
+    /* simple error banner */
+    .load-error{
+      max-width: 980px;
+      margin: 12px auto 0;
+      padding: 12px 14px;
+      background:#fff;
+      border:1px solid #c00;
+      border-radius:10px;
+      box-shadow: var(--shadow);
+      color:#111;
+    }
+    .load-error h2{margin:0 0 6px;font-size:18px}
+    .load-error p{margin:0}
+    .load-error code{background:#f6f7fb;padding:2px 6px;border-radius:6px}
   </style>
 
+  <!-- Shared shell: header/footer + auth + nav highlight -->
   <script type="module" src="/assets/js/shell.js"></script>
 
   <!-- Disable saving/resume + warn on leaving -->
@@ -182,67 +198,125 @@
     })();
   </script>
 
-  <!-- Point this page at the JSON -->
-  <script>
-    window.quizJsonUrl = "/assets/quizzes/math-circles.json";
-  </script>
-
-  <!-- Load JSON -> build examConfig -> load engine -->
+  <!-- JSON-only loader: build window.examConfig from /assets/quizzes/circles.json -->
   <script type="module">
+    const QUIZ_JSON_URL = "/assets/quizzes/circles.json";
+    const ENGINE_URL = "/assets/js/quiz-engine.js";
+
+    function showError(message) {
+      const banner = document.createElement("div");
+      banner.className = "load-error";
+      banner.innerHTML = `
+        <h2>Quiz failed to load</h2>
+        <p>${message}</p>
+      `;
+      document.body.prepend(banner);
+      // If quiz can't load, don't warn on leave
+      window.__dsaAttemptInProgress = false;
+
+      // Also update the visible title to make it obvious.
+      const titleEl = document.getElementById("sectionTitle");
+      if (titleEl) titleEl.textContent = "Quiz failed to load";
+      const timeEl = document.getElementById("timeLeft");
+      if (timeEl) timeEl.textContent = "--:--";
+    }
+
     async function loadQuizJson(url) {
-      const res = await fetch(url, { cache: "no-store" });
-      if (!res.ok) throw new Error(`Failed to load quiz JSON (${res.status})`);
+      const res = await fetch(url, {
+        cache: "no-store",
+        headers: { "Accept": "application/json" }
+      });
+      if (!res.ok) {
+        throw new Error(`HTTP ${res.status} while fetching <code>${url}</code>`);
+      }
       return await res.json();
     }
 
     function normalizeQuizJson(raw) {
       if (!raw || !Array.isArray(raw.questions)) {
-        throw new Error("Quiz JSON is missing a 'questions' array.");
+        throw new Error("Quiz JSON must include a <code>questions</code> array.");
+      }
+
+      // Support flexible metadata keys while keeping engine expectations stable.
+      const sectionId = raw.quizId || raw.sectionId || "math-circles";
+      const sectionTitle =
+        raw.sectionTitle ||
+        raw.title ||
+        "Practice Quiz";
+
+      const timeLimitSec =
+        Number.isFinite(raw.timeLimitSec) ? raw.timeLimitSec :
+        Number.isFinite(raw.timeLimitSeconds) ? raw.timeLimitSeconds :
+        0;
+
+      const questions = raw.questions.map((q, idx) => {
+        const choices = Array.isArray(q.choices) ? q.choices
+                      : Array.isArray(q.options) ? q.options
+                      : [];
+
+        return {
+          id: q.id ?? `q${idx + 1}`,
+          prompt: String(q.prompt ?? q.question ?? ""),
+          choices: choices.map(String),
+          answerIndex: Number(q.answerIndex),
+          explanation: q.explanation != null ? String(q.explanation) : ""
+        };
+      });
+
+      // Basic validation that prevents weird runtime behavior later.
+      if (questions.length === 0) {
+        throw new Error("Quiz JSON contains zero questions.");
+      }
+      for (const [i, q] of questions.entries()) {
+        if (!q.prompt) throw new Error(`Question ${i + 1} is missing prompt text.`);
+        if (!Array.isArray(q.choices) || q.choices.length < 2) {
+          throw new Error(`Question ${i + 1} must have at least 2 choices.`);
+        }
+        if (!Number.isInteger(q.answerIndex) || q.answerIndex < 0 || q.answerIndex >= q.choices.length) {
+          throw new Error(`Question ${i + 1} has an invalid answerIndex.`);
+        }
       }
 
       return {
-        sectionId: raw.quizId || "quiz",
-        sectionTitle: raw.sectionTitle || raw.title || "Practice Quiz",
-        summaryHref: raw.summaryHref || null,
-        timeLimitSec: Number.isFinite(raw.timeLimitSec) ? raw.timeLimitSec : 0,
+        sectionId,
+        sectionTitle,
+        summaryHref: raw.summaryHref || "/practice/circles/summary.html",
+        timeLimitSec,
         pauseOnBlur: !!raw.pauseOnBlur,
-        // Explicitly no persistence keys
+        // explicitly disable persistence
         storageKey: null,
         summaryKey: null,
-        questions: raw.questions.map((q, idx) => ({
-          id: q.id ?? `q${idx + 1}`,
-          prompt: String(q.prompt ?? ""),
-          choices: Array.isArray(q.choices) ? q.choices.map(String) : [],
-          answerIndex: Number(q.answerIndex),
-          explanation: q.explanation != null ? String(q.explanation) : ""
-        }))
+        questions
       };
     }
 
     function injectEngine() {
       const s = document.createElement("script");
       s.type = "module";
-      s.src = "/assets/js/quiz-engine.js";
+      s.src = ENGINE_URL;
       document.head.appendChild(s);
     }
 
     try {
-      const raw = await loadQuizJson(window.quizJsonUrl);
+      const raw = await loadQuizJson(QUIZ_JSON_URL);
       window.examConfig = normalizeQuizJson(raw);
 
-      // Update visible title if present
+      // Update visible header + popover labels to match JSON title
       const titleEl = document.getElementById("sectionTitle");
       if (titleEl) titleEl.textContent = window.examConfig.sectionTitle;
 
+      const popTitle = document.querySelector("#popover .title");
+      if (popTitle) popTitle.textContent = `${window.examConfig.sectionTitle} Questions`;
+
+      // Your HTML default "14:00" is misleading—let engine render timer from config.
+      const timeEl = document.getElementById("timeLeft");
+      if (timeEl) timeEl.textContent = "--:--";
+
+      // Finally load the engine after examConfig exists
       injectEngine();
     } catch (err) {
       console.error(err);
-      const msg = document.createElement("div");
-      msg.style.cssText = "max-width:900px;margin:24px auto;padding:16px;border:1px solid #c00;background:#fff;color:#111;border-radius:10px";
-      msg.innerHTML = `<h2 style="margin:0 0 8px">Quiz failed to load</h2><p style="margin:0">${err.message}</p>`;
-      document.body.prepend(msg);
-      // If quiz can't load, don't warn on leave
-      window.__dsaAttemptInProgress = false;
+      showError(err?.message ? String(err.message) : "Unknown error");
     }
   </script>
 </head>
@@ -292,7 +366,7 @@
       <p class="check-sub">On test day, you won’t be able to move on to the next module until time expires.</p>
       <div class="check-card">
         <div class="check-row">
-          <div>Questions</div>
+          <div id="checkTitle">Questions</div>
           <div class="check-leg">
             <span>
               <span class="box" style="width:16px;height:16px;border:2px dashed #2b3350;border-radius:4px;display:inline-block;margin-right:6px"></span>
