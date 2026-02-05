@@ -1,15 +1,3 @@
-// /assets/js/quiz-engine.js
-// Unified quiz engine:
-// - Loads quiz metadata + question bank (via ?quizId=... registry)
-// - Renders Bluebook-style UI (expects the same IDs you already use)
-// - Handles timer, flags, elimination mode, popover navigator, "Check Your Work"
-// - Records per-question time + visits + focus/blur counts
-// - On finish: writes attempt summary to localStorage (dsa:attempt:{attemptId})
-//              and (if available) to Firestore via window.quizData.appendAttempt()
-// - CRITICAL REQUIREMENT:
-//   ALWAYS START FRESH. If user returns to the page without finishing,
-//   the engine clears any draft/session state and does NOT resume.
-
 import { routes } from "/assets/js/lib/routes.js";
 
 (function () {
