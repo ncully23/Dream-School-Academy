@@ -1,3 +1,9 @@
+/* /assets/css/quiz.css
+   Bluebook-style quiz UI shell
+   - Uses CSS variables for theme
+   - Styles all elements referenced by quiz.html + quiz-engine.js
+*/
+
 :root{
   --bb-bg:#eef2fb;            /* page bg */
   --bb-rail:#e7edf9;          /* bottom rail */
@@ -13,6 +19,7 @@
   --shadow:0 1px 2px rgba(16,24,40,.06), 0 6px 14px rgba(16,24,40,.08);
 }
 
+*{box-sizing:border-box}
 html,body{height:100%}
 
 body{
@@ -21,6 +28,10 @@ body{
   color:var(--bb-ink);
   font:16px/1.5 Inter, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
 }
+
+button{font:inherit}
+button:focus{outline:none}
+button:focus-visible{outline:3px solid rgba(31,77,216,.35); outline-offset:2px}
 
 .app{
   max-width:1280px;
@@ -54,6 +65,7 @@ body{
   background:transparent;
   border:0;
   font-weight:600;
+  cursor:pointer;
 }
 
 .timer{
@@ -77,7 +89,10 @@ body{
   padding:6px 12px;
   font-weight:600;
   cursor:pointer;
+  transition:background .12s ease, border-color .12s ease, transform .06s ease;
 }
+
+.btn:active{transform:translateY(1px)}
 
 .btn.primary{
   background:var(--bb-blue);
@@ -91,6 +106,7 @@ body{
 }
 
 .btn.ghost{background:#fff}
+.btn.nav{min-width:78px}
 
 /* PRACTICE banner + ticks */
 .ticks{
@@ -190,8 +206,7 @@ body{
   border-color:var(--flag);
   background:var(--flag-soft);
 }
-
-.flagbtn.on .flagicon{opacity:1;}
+.flagbtn.on .flagicon{opacity:1}
 
 .elimbtn{
   margin-left:8px;
@@ -254,10 +269,18 @@ body{
   background:#f7f8fd;
   padding:12px 14px;
   position:relative;
-  transition:opacity .12s ease;
+  transition:opacity .12s ease, background .12s ease, border-color .12s ease;
 }
 
-.choice input{transform:scale(1.1);}
+/* If you wrap choice text in <span class="text"> ... </span>, this will apply */
+.choice .text{display:block}
+
+.choice:hover{
+  border-color:#b7c1dd;
+  background:#f3f6ff;
+}
+
+.choice input{transform:scale(1.1)}
 
 .letter{
   margin-left:auto;
@@ -272,16 +295,9 @@ body{
 }
 
 /* Eliminated styling */
-.choice.eliminated{opacity:.4;}
-
-.choice.eliminated .text{
-  text-decoration:line-through 2px;
-}
-
-.choice.eliminated .letter{
-  position:relative;
-}
-
+.choice.eliminated{opacity:.4}
+.choice.eliminated .text{ text-decoration:line-through 2px }
+.choice.eliminated .letter{ position:relative }
 .choice.eliminated .letter::after{
   content:"";
   position:absolute;
@@ -330,7 +346,7 @@ body{
   background:#0b0b0b;
 }
 
-.seg.active{background:#00a6e7;}
+.seg.active{background:#00a6e7}
 
 .center-pill{
   position:absolute;
@@ -350,7 +366,7 @@ body{
   border:0;
 }
 
-.center-pill .caret{font-weight:900;}
+.center-pill .caret{font-weight:900}
 
 .pill-flag{
   display:none;
@@ -379,8 +395,6 @@ body{
   align-items:center;
 }
 
-.btn.nav{min-width:78px;}
-
 /* REVIEW POPOVER */
 .popover{
   position:fixed;
@@ -405,6 +419,7 @@ body{
 
 .popover .legend{
   display:flex;
+  flex-wrap:wrap;
   gap:18px;
   align-items:center;
   margin:10px 0;
@@ -451,11 +466,13 @@ body{
   color:#1f4dd8;
   font-weight:800;
   cursor:pointer;
+  position:relative;
 }
+
+.nbtn:hover{background:#f6f7fb}
 
 .nbtn.current{
   box-shadow:0 0 0 2px #111 inset;
-  position:relative;
 }
 
 .pin{
@@ -475,6 +492,34 @@ body{
   border-color:var(--flag);
   border-style:solid;
 }
+
+/* Popover controls */
+.popover .close{
+  position:absolute;
+  right:10px;
+  top:10px;
+  width:34px;
+  height:34px;
+  border-radius:8px;
+  border:1px solid var(--bb-line);
+  background:#fff;
+  cursor:pointer;
+  font-size:20px;
+  line-height:34px;
+}
+
+.popover .go-review{
+  margin-top:12px;
+  width:100%;
+  border-radius:10px;
+  border:1px solid var(--bb-line);
+  padding:10px 12px;
+  font-weight:800;
+  cursor:pointer;
+  background:#fff;
+}
+
+.popover .go-review:hover{background:#f6f7fb}
 
 /* REVIEW PAGE */
 .check-wrap{
@@ -516,6 +561,7 @@ body{
 
 .check-leg{
   display:flex;
+  flex-wrap:wrap;
   gap:18px;
   align-items:center;
   color:var(--bb-muted);
@@ -528,4 +574,33 @@ body{
   margin-top:12px;
 }
 
-.grid-nums .nbtn{height:44px;}
+.grid-nums .nbtn{height:44px}
+
+/* Loader error banner (used by boot loader) */
+.load-error{
+  max-width: 980px;
+  margin: 12px auto 0;
+  padding: 12px 14px;
+  background:#fff;
+  border:1px solid #c00;
+  border-radius:10px;
+  box-shadow: var(--shadow);
+  color:#111;
+}
+
+.load-error h2{margin:0 0 6px;font-size:18px}
+.load-error p{margin:0}
+.load-error code{background:#f6f7fb;padding:2px 6px;border-radius:6px}
+
+/* Responsive tweaks */
+@media (max-width: 720px){
+  .header{gap:10px}
+  .timer b{font-size:22px}
+  .qtitle{font-size:18px}
+  .popover .grid{grid-template-columns:repeat(5,1fr)}
+  .grid-nums{grid-template-columns:repeat(5,1fr)}
+}
+
+@media (prefers-reduced-motion: reduce){
+  .btn, .choice{transition:none}
+}
