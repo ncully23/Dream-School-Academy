@@ -254,6 +254,11 @@ function renderAttempt(summary, attemptIdFromUrl) {
     const difficulty = it.difficulty || "";
     const reasoning = it.explanation || "";
     const steps = Array.isArray(it.steps) ? it.steps : [];
+    
+    // Extract full solution object data
+    const solution = it.solution || {};
+    const commonMistakes = Array.isArray(solution.commonMistakes) ? solution.commonMistakes : [];
+    const checks = Array.isArray(solution.checks) ? solution.checks : [];
 
     let solutionHtml = `<ul>`;
     solutionHtml += `<li><b>Correct answer:</b> ${correctLetter}. ${correctText}</li>`;
@@ -265,6 +270,12 @@ function renderAttempt(summary, attemptIdFromUrl) {
     if (reasoning) solutionHtml += `<li><b>Reasoning:</b> ${reasoning}</li>`;
     if (steps.length) {
       solutionHtml += `<li><b>Step-by-step:</b><ul>${steps.map((s) => `<li>${s}</li>`).join("")}</ul></li>`;
+    }
+    if (commonMistakes.length) {
+      solutionHtml += `<li><b>Common mistakes to avoid:</b><ul>${commonMistakes.map((m) => `<li>${m}</li>`).join("")}</ul></li>`;
+    }
+    if (checks.length) {
+      solutionHtml += `<li><b>How to check your answer:</b><ul>${checks.map((c) => `<li>${c}</li>`).join("")}</ul></li>`;
     }
     solutionHtml += `</ul>`;
 
