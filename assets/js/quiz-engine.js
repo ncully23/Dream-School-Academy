@@ -3,45 +3,127 @@ import { routes } from "/assets/js/lib/routes.js";
 (function () {
   "use strict";
 
-  // -----------------------
-  // 0) Quiz registry (move this into /assets/quizzes/quizzes.json later if desired)
-  // -----------------------
-  const QUIZ_REGISTRY = {
-    "math.circles.practice": {
-      quizId: "math.circles.practice",
-      title: "Circles (Practice)",
-      sectionTitle: "Section 1, Module 1: Math — Circles (Practice)",
-      timeLimitSec: 14 * 60,
-      bank: "/assets/question-bank/math/circles.json",
-      pauseOnBlur: false
-    }
-    // Add more here:
-    // "math.linear_functions.practice": { ... bank: "/assets/question-bank/math/linear-functions.json", timeLimitSec: 14*60 }
-  };
+  // =========================================================
+  // Quiz Engine (scalable):
+  // - Reads quizId from URL (?quizId=circles)
+  // - Looks up config in window.QUIZ_REGISTRY (from quiz-registry.js)
+  // - Fetches JSON bank (e.g., /assets/questionbank/math/circles.json)
+  // - Picks N questions randomly (optionally seeded)
+  // - Runs Bluebook-style UI + saves attempt + redirects to review
+  // =========================================================
 
+  // -----------------------
+  // 0) URL + registry helpers
+  // -----------------------
   function getQuizIdFromUrl() {
     try {
-      const params = new URLSearchParams(location.search);
-      return params.get("quizId");
+      return new URLSearchParams(location.search).get("quizId");
     } catch {
       return null;
     }
   }
 
+  function getQuizIdFromPathFallback() {
+    // Optional: /practice/circles/preview -> "circles"
+    // Only used if ?quizId is missing.
+    try {
+      const parts = location.pathname.split("/").filter(Boolean);
+      // e.g. ["practice","circles","preview"] -> circles
+      const practiceIdx = parts.indexOf("practice");
+      if (practiceIdx >= 0 && parts.length > practiceIdx + 1) {
+        const candidate = parts[practiceIdx + 1];
+        if (candidate && candidate !== "quiz.html") return candidate;
+      }
+      return null;
+    } catch {
+      return null;
+    }
+  }
+
+  function getRegistry() {
+    // quiz-registry.js should define ONE of these; prefer QUIZ_REGISTRY
+    return window.QUIZ_REGISTRY || window.quizRegistry || window.QUIZZES || null;
+  }
+
+  function resolveQuizId() {
+    return getQuizIdFromUrl() || getQuizIdFromPathFallback();
+  }
+
+  function resolveReviewUrl(attemptId) {
+    try {
+      if (routes && typeof routes.review === "function") return routes.review(attemptId);
+    } catch {}
+    return `/practice/review.html?attemptId=${encodeURIComponent(attemptId)}`;
+  }
+
   async function loadJson(url) {
-    const res = await fetch(url, { cache: "no-store", headers: { Accept: "application/json" } });
+    const res = await fetch(url, {
+      cache: "no-store",
+      headers: { Accept: "application/json" }
+    });
     if (!res.ok) throw new Error(`Failed to fetch ${url}: HTTP ${res.status}`);
     return res.json();
   }
 
-  function pickQuestions(bank /*, meta */) {
-    // For now: use all questions in the bank
+  // -----------------------
+  // 1) Random picking (seeded optional)
+  // -----------------------
+  function hashStringToUint32(str) {
+    // FNV-1a-ish simple hash
+    let h = 2166136261;
+    for (let i = 0; i < str.length; i++) {
+      h ^= str.charCodeAt(i);
+      h = Math.imul(h, 16777619);
+    }
+    return h >>> 0;
+  }
+
+  function mulberry32(seed) {
+    let a = seed >>> 0;
+    return function () {
+      a |= 0;
+      a = (a + 0x6D2B79F5) | 0;
+      let t = Math.imul(a ^ (a >>> 15), 1 | a);
+      t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+      return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+    };
+  }
+
+  function shuffleInPlace(arr, rng) {
+    for (let i = arr.length - 1; i > 0; i--) {
+      const j = Math.floor(rng() * (i + 1));
+      [arr[i], arr[j]] = [arr[j], arr[i]];
+    }
+    return arr;
+  }
+
+  function pickQuestionsFromBank(bank, cfg, attemptIdForSeed) {
     if (!bank || !Array.isArray(bank.questions)) return [];
-    return bank.questions;
+
+    const all = bank.questions.slice();
+    const pickCount = Number(cfg.pickCount || cfg.count || 0) || all.length;
+
+    // Seed modes:
+    // - "perAttempt": stable per attempt id (same set if you reload within same attempt id)
+    // - "perQuiz": stable per quiz id
+    // - undefined: non-deterministic
+    const seedMode = cfg.seedMode || null;
+
+    let rng = Math.random;
+    if (seedMode === "perAttempt" && attemptIdForSeed) {
+      rng = mulberry32(hashStringToUint32(String(attemptIdForSeed)));
+    } else if (seedMode === "perQuiz" && cfg.__quizId) {
+      rng = mulberry32(hashStringToUint32(String(cfg.__quizId)));
+    }
+
+    shuffleInPlace(all, rng);
+
+    const n = Math.max(0, Math.min(pickCount, all.length));
+    return all.slice(0, n);
   }
 
   // -----------------------
-  // 1) Key helpers (Step 6 keys)
+  // 2) Storage keys (your Step 6 keys)
   // -----------------------
   function createAttemptId() {
     return "t_" + Date.now() + "_" + Math.floor(Math.random() * 10000);
@@ -64,7 +146,7 @@ import { routes } from "/assets/js/lib/routes.js";
   }
 
   // -----------------------
-  // 2) DOM cache
+  // 3) DOM cache
   // -----------------------
   const el = {
     sectionTitle: document.getElementById("sectionTitle"),
@@ -99,9 +181,9 @@ import { routes } from "/assets/js/lib/routes.js";
 
     dashrow: document.getElementById("dashrow"),
 
-    popTitle: document.getElementById("popTitle"),     // optional
-    checkTitle: document.getElementById("checkTitle"), // optional
-    practiceBanner: document.getElementById("practiceBanner") // optional
+    popTitle: document.getElementById("popTitle"),
+    checkTitle: document.getElementById("checkTitle"),
+    practiceBanner: document.getElementById("practiceBanner")
   };
 
   function showFatal(message) {
@@ -110,16 +192,29 @@ import { routes } from "/assets/js/lib/routes.js";
     box.style.cssText =
       "max-width:980px;margin:14px auto;padding:12px 14px;background:#fff;border:1px solid #c00;border-radius:10px;" +
       "font:16px/1.45 system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;color:#111;";
-    box.innerHTML = `<h2 style="margin:0 0 6px;font-size:18px">Quiz failed to load</h2><p style="margin:0">${message}</p>`;
+    box.innerHTML = `<h2 style="margin:0 0 6px;font-size:18px">Quiz failed to load</h2><p style="margin:0">${String(message)}</p>`;
     document.body.prepend(box);
+
+    if (el.sectionTitle) el.sectionTitle.textContent = "Quiz failed to load";
+    if (el.timeLeft) el.timeLeft.textContent = "--:--";
+    document.title = "Quiz failed to load";
   }
 
   function clamp(n, min, max) {
     return Math.max(min, Math.min(max, n));
   }
 
+  function escapeHtml(s) {
+    return String(s)
+      .replaceAll("&", "&amp;")
+      .replaceAll("<", "&lt;")
+      .replaceAll(">", "&gt;")
+      .replaceAll('"', "&quot;")
+      .replaceAll("'", "&#039;");
+  }
+
   // -----------------------
-  // 3) Build ticks / progress skeletons (UI)
+  // 4) UI scaffolding
   // -----------------------
   function buildTicks() {
     if (!el.dashrow) return;
@@ -144,7 +239,75 @@ import { routes } from "/assets/js/lib/routes.js";
   }
 
   // -----------------------
-  // 4) Core engine (runs after config+bank are loaded)
+  // 5) Normalize bank question objects -> engine format
+  // -----------------------
+  function normalizeQuestion(raw, idx) {
+    const questionId = raw.questionId || raw.id || `q_${idx + 1}`;
+    const version = raw.version ?? 1;
+
+    const promptText = raw.prompt ?? "";
+    const promptHtml = raw.promptHtml ?? null;
+
+    const choices = Array.isArray(raw.choices) ? raw.choices : [];
+    const answerIndex = Number.isFinite(raw.answerIndex) ? raw.answerIndex : null;
+
+    // solution payload (your schema)
+    const sol = raw.solution || {};
+    const explanation =
+      raw.explanation ||
+      sol.approach ||
+      "";
+
+    const steps =
+      raw.steps ||
+      sol.steps ||
+      null;
+
+    return {
+      id: questionId,            // engine key
+      questionId,                // persisted id
+      version,
+      topic: raw.topic,
+      skill: raw.skill,
+      difficulty: raw.difficulty,
+
+      // prompt rendering:
+      // - default: treat as text (safe)
+      // - if promptHtml provided: allow HTML
+      promptText,
+      promptHtml,
+
+      choices,
+      answerIndex,
+
+      // feedback:
+      explanation,
+      steps,
+      solution: sol
+    };
+  }
+
+  function normalizeQuestions(list) {
+    return (list || []).map((q, i) => normalizeQuestion(q, i));
+  }
+
+  function validateQuestions(qs) {
+    if (!Array.isArray(qs) || qs.length === 0) return "No questions were loaded.";
+
+    for (let i = 0; i < qs.length; i++) {
+      const q = qs[i];
+      if (!q.id) return `Question ${i + 1} is missing questionId/id.`;
+      if (!Array.isArray(q.choices) || q.choices.length < 2) return `Question ${q.id} has invalid choices.`;
+      if (!Number.isInteger(q.answerIndex)) return `Question ${q.id} has missing/invalid answerIndex.`;
+      if (q.answerIndex < 0 || q.answerIndex >= q.choices.length) {
+        return `Question ${q.id} answerIndex (${q.answerIndex}) is out of range for ${q.choices.length} choices.`;
+      }
+    }
+    return null;
+  }
+
+  // -----------------------
+  // 6) Core engine (runs after config+bank are loaded)
   // -----------------------
   function runEngine(exam) {
     if (!exam || !Array.isArray(exam.questions) || exam.questions.length === 0) {
@@ -155,7 +318,7 @@ import { routes } from "/assets/js/lib/routes.js";
     const quizIdForKeys = String(exam.quizId || exam.sectionId || "unknown-quiz");
     const draftKey = getDraftKey(quizIdForKeys);
 
-    // CRITICAL: Always start fresh. Clear any draft/session on entry.
+    // Always start fresh (your desired behavior)
     safeRemoveStorage(draftKey);
     if (window.quizData && typeof window.quizData.clearSessionProgress === "function") {
       try { window.quizData.clearSessionProgress(exam.sectionId).catch(() => {}); } catch {}
@@ -178,14 +341,12 @@ import { routes } from "/assets/js/lib/routes.js";
       reviewMode: false,
 
       startedAt: Date.now(),
-      attemptId: createAttemptId(),
+      attemptId: exam.attemptId || createAttemptId(),
 
-      // Per-question timing
       currentQuestionEnterTs: null,
       questionTimes: {}, // { qid: totalSeconds }
       visits: {},        // { qid: count }
 
-      // Focus / tab tracking
       blurCount: 0,
       focusCount: document.hasFocus() ? 1 : 0,
       tabSwitchCount: 0,
@@ -211,7 +372,6 @@ import { routes } from "/assets/js/lib/routes.js";
 
     function tick() {
       if (state.finished) return;
-
       state.remaining = Math.max(0, state.remaining - 1);
       if (state.remaining === 0) {
         updateTimeDisplay();
@@ -298,12 +458,23 @@ import { routes } from "/assets/js/lib/routes.js";
       else s.add(idx);
     }
 
+    function renderPrompt(q) {
+      if (!el.qtitle) return;
+      if (q.promptHtml) {
+        el.qtitle.innerHTML = q.promptHtml;
+      } else {
+        // Safe default: treat prompt as text (prevents accidental HTML injection)
+        el.qtitle.textContent = q.promptText || "";
+      }
+    }
+
     function renderQuestion() {
       const q = exam.questions[state.index];
       if (!q) return;
 
       if (el.qbadge) el.qbadge.textContent = String(state.index + 1);
-      if (el.qtitle) el.qtitle.innerHTML = q.prompt;
+
+      renderPrompt(q);
 
       const elimSet = state.elims[q.id] || new Set();
 
@@ -314,9 +485,9 @@ import { routes } from "/assets/js/lib/routes.js";
             const checked = state.answers[q.id] === i ? "checked" : "";
             const elimClass = elimSet.has(i) ? "eliminated" : "";
             return `
-              <label class="choice ${elimClass}" data-choice="${i}" for="${id}">
-                <input id="${id}" type="radio" name="${q.id}" value="${i}" ${checked} />
-                <div class="text"><b>${letter(i)}.</b> ${t}</div>
+              <label class="choice ${elimClass}" data-choice="${i}" for="${escapeHtml(id)}">
+                <input id="${escapeHtml(id)}" type="radio" name="${escapeHtml(q.id)}" value="${i}" ${checked} />
+                <div class="text"><b>${letter(i)}.</b> ${escapeHtml(String(t))}</div>
                 <div class="letter">${letter(i)}</div>
               </label>
             `;
@@ -328,9 +499,13 @@ import { routes } from "/assets/js/lib/routes.js";
           const idx = Number(choice.dataset.choice);
           const input = choice.querySelector("input");
 
+          // eliminate mode on label click (not on actual input click)
           choice.addEventListener("click", (ev) => {
             if (!state.eliminateMode) return;
+
+            // allow clicking the radio itself to still select (even in eliminate mode)
             if (ev.target && ev.target.tagName && ev.target.tagName.toLowerCase() === "input") return;
+
             ev.preventDefault();
             toggleElimination(q.id, idx);
             choice.classList.toggle("eliminated");
@@ -357,7 +532,7 @@ import { routes } from "/assets/js/lib/routes.js";
       if (el.elimToggle && el.elimHint) {
         el.elimToggle.classList.toggle("on", state.eliminateMode);
         el.elimToggle.setAttribute("aria-pressed", String(state.eliminateMode));
-        el.elimHint.style.display = state.eliminateMode ? "block" : "none";
+        el.elimHint.hidden = !state.eliminateMode;
       }
 
       // MathJax (optional)
@@ -368,11 +543,14 @@ import { routes } from "/assets/js/lib/routes.js";
 
     function renderProgress() {
       if (!el.progress) return;
+
       const segs = el.progress.children.length;
       const active = Math.ceil(((state.index + 1) / exam.questions.length) * segs);
+
       for (let i = 0; i < segs; i++) {
         el.progress.children[i].classList.toggle("active", i < active);
       }
+
       if (el.pillText) el.pillText.textContent = `Question ${state.index + 1} of ${exam.questions.length}`;
       updatePillFlag();
       updateNavs();
@@ -504,7 +682,7 @@ import { routes } from "/assets/js/lib/routes.js";
         state.eliminateMode = !state.eliminateMode;
         el.elimToggle.classList.toggle("on", state.eliminateMode);
         el.elimToggle.setAttribute("aria-pressed", String(state.eliminateMode));
-        el.elimHint.style.display = state.eliminateMode ? "block" : "none";
+        el.elimHint.hidden = !state.eliminateMode;
       });
     }
 
@@ -532,7 +710,7 @@ import { routes } from "/assets/js/lib/routes.js";
           state.eliminateMode = !state.eliminateMode;
           el.elimToggle.classList.toggle("on", state.eliminateMode);
           el.elimToggle.setAttribute("aria-pressed", String(state.eliminateMode));
-          el.elimHint.style.display = state.eliminateMode ? "block" : "none";
+          el.elimHint.hidden = !state.eliminateMode;
         }
       }
     });
@@ -608,7 +786,6 @@ import { routes } from "/assets/js/lib/routes.js";
     // Leave-page behavior: CLEAR ALL DATA (no resume)
     // -----------------------
     window.addEventListener("beforeunload", () => {
-      // We intentionally do NOT preserve draft state for resuming.
       safeRemoveStorage(draftKey);
       if (window.quizData && typeof window.quizData.clearSessionProgress === "function") {
         try { window.quizData.clearSessionProgress(exam.sectionId).catch(() => {}); } catch {}
@@ -616,7 +793,7 @@ import { routes } from "/assets/js/lib/routes.js";
     });
 
     // -----------------------
-    // Finish + redirect to single review.html?attemptId=...
+    // Finish + redirect to review.html?attemptId=...
     // -----------------------
     function finishExam() {
       if (state.finished) return;
@@ -628,18 +805,23 @@ import { routes } from "/assets/js/lib/routes.js";
 
       const items = exam.questions.map((q, i) => {
         const chosen = typeof state.answers[q.id] === "number" ? state.answers[q.id] : null;
+
         return {
           number: i + 1,
           questionId: q.questionId || q.id,
           version: q.version || 1,
           id: q.id,
-          prompt: q.prompt,
+          prompt: q.promptHtml ? q.promptHtml : q.promptText, // stored for review
           choices: q.choices,
           correctIndex: q.answerIndex,
           chosenIndex: chosen,
           correct: chosen === q.answerIndex,
+
+          // feedback sources:
           explanation: q.explanation || "",
           steps: Array.isArray(q.steps) ? q.steps : undefined,
+          solution: q.solution || undefined,
+
           timeSpentSec: state.questionTimes[q.id] || 0,
           visits: state.visits[q.id] || 0
         };
@@ -663,7 +845,7 @@ import { routes } from "/assets/js/lib/routes.js";
 
       const summary = {
         attemptId,
-        quizId: quizIdForKeys,
+        quizId: exam.quizId,
         sectionId: exam.sectionId,
         title: exam.sectionTitle || exam.title,
         generatedAt: new Date().toISOString(),
@@ -683,16 +865,12 @@ import { routes } from "/assets/js/lib/routes.js";
         }
       };
 
-      const reviewUrl = routes.review(attemptId);
+      const reviewUrl = resolveReviewUrl(attemptId);
 
       function finalizeAndRedirect() {
-        // Clear any draft (always)
         safeRemoveStorage(draftKey);
-
-        // Store attempt for review page
         safeSetStorage(getAttemptKey(attemptId), JSON.stringify(summary));
 
-        // Best-effort: clear Firestore session progress
         if (window.quizData && typeof window.quizData.clearSessionProgress === "function") {
           try { window.quizData.clearSessionProgress(exam.sectionId).catch(() => {}); } catch {}
         }
@@ -700,7 +878,6 @@ import { routes } from "/assets/js/lib/routes.js";
         window.location.href = reviewUrl;
       }
 
-      // Save to Firestore FIRST if available, then redirect
       if (window.quizData && typeof window.quizData.appendAttempt === "function") {
         window.quizData
           .appendAttempt(summary)
@@ -724,51 +901,90 @@ import { routes } from "/assets/js/lib/routes.js";
   }
 
   // -----------------------
-  // 5) Boot: load quiz config + question bank, then run
+  // 7) Boot: resolve quizId -> registry -> bank -> pick -> run
   // -----------------------
   async function boot() {
-    // If some page already set window.dsaQuizConfig, use it.
-    // Otherwise: resolve quizId -> registry -> bank.
+    // If some page already set window.dsaQuizConfig, use it
     if (window.dsaQuizConfig && Array.isArray(window.dsaQuizConfig.questions)) {
       const cfg = window.dsaQuizConfig;
+      const norm = normalizeQuestions(cfg.questions);
+      const err = validateQuestions(norm);
+      if (err) {
+        showFatal(err);
+        return;
+      }
+
       runEngine({
+        attemptId: cfg.attemptId,
         quizId: cfg.quizId || cfg.sectionId,
         sectionId: cfg.sectionId || cfg.quizId,
         title: cfg.title || cfg.sectionTitle,
         sectionTitle: cfg.sectionTitle || cfg.title,
         timeLimitSec: cfg.timeLimitSec || 0,
         pauseOnBlur: !!cfg.pauseOnBlur,
-        questions: cfg.questions
+        questions: norm
       });
       return;
     }
 
-    const quizId = getQuizIdFromUrl();
+    const quizId = resolveQuizId();
     if (!quizId) {
       showFatal("Missing required URL parameter: ?quizId=...");
       return;
     }
 
-    const meta = QUIZ_REGISTRY[quizId];
-    if (!meta) {
-      showFatal(`Unknown quizId: ${quizId}`);
+    const registry = getRegistry();
+    if (!registry) {
+      showFatal("Quiz registry not found. Ensure /assets/js/quiz-registry.js defines window.QUIZ_REGISTRY.");
       return;
     }
 
-    const bank = await loadJson(meta.bank);
-    const questions = pickQuestions(bank, meta);
+    const cfg = registry[quizId];
+    if (!cfg) {
+      showFatal(`Unknown quizId: ${escapeHtml(quizId)} (no entry found in window.QUIZ_REGISTRY).`);
+      return;
+    }
+
+    // Keep quizId available for seedMode === "perQuiz"
+    cfg.__quizId = quizId;
+
+    const bankUrl = cfg.bankUrl || cfg.jsonUrl || cfg.url;
+    if (!bankUrl) {
+      showFatal(`Quiz ${escapeHtml(quizId)} exists in registry but is missing bankUrl.`);
+      return;
+    }
+
+    const bank = await loadJson(bankUrl);
+
+    // Pick questions (random subset) then normalize + validate
+    const attemptId = createAttemptId();
+    const pickedRaw = pickQuestionsFromBank(bank, cfg, attemptId);
+    const questions = normalizeQuestions(pickedRaw);
+
+    const err = validateQuestions(questions);
+    if (err) {
+      showFatal(err);
+      return;
+    }
+
+    const title = cfg.title || bank.title || quizId;
+    const sectionTitle = cfg.sectionTitle || title;
+    const timeLimitSec = Number(cfg.timeLimitSec || cfg.timerSec || cfg.timeLimit || 0) || 0;
 
     runEngine({
-      quizId: meta.quizId,
-      sectionId: meta.quizId, // ok for now
-      title: meta.title,
-      sectionTitle: meta.sectionTitle,
-      timeLimitSec: meta.timeLimitSec,
-      pauseOnBlur: !!meta.pauseOnBlur,
+      attemptId,
+      quizId: quizId,
+      sectionId: quizId,
+      title,
+      sectionTitle,
+      timeLimitSec,
+      pauseOnBlur: !!cfg.pauseOnBlur,
       questions
     });
   }
 
+  // Module is imported after DOMContentLoaded by your quiz.html boot loader,
+  // but keep this safe for direct loads too.
   if (document.readyState === "loading") {
     document.addEventListener("DOMContentLoaded", () => {
       boot().catch((err) => showFatal(err?.message ? String(err.message) : "Quiz init failed"));
