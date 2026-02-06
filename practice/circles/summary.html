@@ -1,9 +1,9 @@
-<!DOCTYPE html> 
+<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Circles — Summary</title>
+<title>Summary</title>
 <style>
   :root{
     --bg:#eef2fb;
@@ -14,8 +14,8 @@
     --good:#11a36a;
     --bad:#d33;
     --pill:#0b1227;
-    --blue:#1f4dd8;
     --shadow:0 6px 14px rgba(16,24,40,.08);
+    --neutral:#475569;
   }
   body{
     margin:0;
@@ -61,7 +61,6 @@
     opacity:.9;
   }
 
-  /* grid of Qs */
   .qs{
     margin-top:14px;
     display:grid;
@@ -81,6 +80,10 @@
     border-color:rgba(211,51,51,.3);
     background:linear-gradient(to bottom, #fff1f2, #ffffff);
   }
+  .q.na{
+    border-color:rgba(71,85,105,.25);
+    background:linear-gradient(to bottom, #f8fafc, #ffffff);
+  }
   .qhead{
     display:flex;
     align-items:center;
@@ -98,6 +101,7 @@
   }
   .badge.ok{background:var(--good)}
   .badge.no{background:var(--bad)}
+  .badge.na{background:var(--neutral)}
   .prompt{font-weight:800}
   .choices{
     margin-top:6px;
@@ -112,6 +116,7 @@
     display:flex;
     justify-content:space-between;
     align-items:center;
+    gap:10px;
   }
   .choice.correct{
     border-color:#a7f3d0;
@@ -126,6 +131,8 @@
     display:flex;
     gap:6px;
     align-items:center;
+    flex-wrap:wrap;
+    justify-content:flex-end;
   }
   .tag{
     font-size:12px;
@@ -133,11 +140,6 @@
     padding:3px 8px;
     border:1px solid transparent;
     white-space:nowrap;
-  }
-  .tag.ok{
-    background:#ecfdf5;
-    color:#065f46;
-    border-color:#a7f3d0;
   }
   .tag.you{
     background:#eef2ff;
@@ -178,6 +180,16 @@
     margin:40px auto;
     text-align:center;
   }
+  .btn{
+    display:inline-block;
+    margin-top:10px;
+    padding:10px 14px;
+    border-radius:10px;
+    background:#1f4dd8;
+    color:#fff;
+    text-decoration:none;
+    font-weight:700;
+  }
 </style>
 </head>
 <body>
@@ -188,11 +200,8 @@
           <h1 id="title">Summary</h1>
           <div class="muted" id="meta"></div>
         </div>
-        <div class="score" id="scorePill">
-          <!-- Filled by JS -->
-        </div>
+        <div class="score" id="scorePill"></div>
       </div>
-      <!-- top buttons removed on purpose -->
     </div>
 
     <div class="qs" id="qs"></div>
@@ -200,25 +209,54 @@
     <div class="card empty" id="empty" style="display:none">
       <h2>No summary found</h2>
       <p class="muted">
-        Take the Circles practice first, then you’ll land here automatically with a full breakdown.
+        Take a practice set first, then you’ll land here automatically with a full breakdown.
       </p>
-      <a class="btn primary" href="circles.html">Start Circles practice</a>
+      <a class="btn" href="/practice/circles/quiz.html?quizId=circles">Start Circles practice</a>
     </div>
   </div>
 
 <script>
-(function(){
-  const SUMMARY_KEY  = "dsa-circles-summary-v1";
-  const FALLBACK_KEY = "dsa-last-summary";
+(function () {
+  "use strict";
 
-  let data = null;
-  try {
-    const raw = localStorage.getItem(SUMMARY_KEY) || localStorage.getItem(FALLBACK_KEY);
-    data = raw ? JSON.parse(raw) : null;
-  } catch (e) {
-    console.warn("Circles summary: bad JSON in localStorage", e);
-    data = null;
+  // New engine key format:
+  //   dsa:attempt:<attemptId>
+  // Older fallbacks kept for backwards compatibility.
+  const LEGACY_CIRCLES_KEY = "dsa-circles-summary-v1";
+  const LEGACY_LAST_KEY    = "dsa-last-summary";
+
+  function getAttemptIdFromUrl() {
+    try { return new URLSearchParams(location.search).get("attemptId"); }
+    catch { return null; }
   }
+
+  function getAttemptKey(attemptId) {
+    return `dsa:attempt:${attemptId}`;
+  }
+
+  function safeParse(raw) {
+    try { return raw ? JSON.parse(raw) : null; }
+    catch { return null; }
+  }
+
+  function loadData() {
+    const attemptId = getAttemptIdFromUrl();
+
+    if (attemptId) {
+      const raw = localStorage.getItem(getAttemptKey(attemptId));
+      const parsed = safeParse(raw);
+      if (parsed) return parsed;
+    }
+
+    // legacy fallbacks
+    return (
+      safeParse(localStorage.getItem(LEGACY_CIRCLES_KEY)) ||
+      safeParse(localStorage.getItem(LEGACY_LAST_KEY)) ||
+      null
+    );
+  }
+
+  const data = loadData();
 
   const qsEl   = document.getElementById("qs");
   const title  = document.getElementById("title");
@@ -230,84 +268,80 @@
   if (!data || !Array.isArray(data.items) || data.items.length === 0) {
     header.style.display = "none";
     empty.style.display  = "block";
+    document.title = "Summary";
     return;
   }
 
   const totals   = data.totals || {};
-  const answered = typeof totals.answered === "number" ? totals.answered : 0;
-  const correct  = typeof totals.correct === "number"  ? totals.correct  : 0;
-  const total    = typeof totals.total === "number"    ? totals.total    : data.items.length;
+  const answered = Number.isFinite(totals.answered) ? totals.answered : 0;
+  const correct  = Number.isFinite(totals.correct)  ? totals.correct  : 0;
+  const total    = Number.isFinite(totals.total)    ? totals.total    : data.items.length;
   const scorePct = total ? Math.round((correct / total) * 100) : 0;
 
-  const timeSpentSec = typeof totals.timeSpentSec === "number" ? totals.timeSpentSec : 0;
+  const timeSpentSec = Number.isFinite(totals.timeSpentSec) ? totals.timeSpentSec : 0;
   const mins = Math.floor(timeSpentSec / 60);
   const secs = timeSpentSec % 60;
-  const timeLabel = timeSpentSec
-    ? `${mins}m ${secs.toString().padStart(2,"0")}s`
-    : "—";
+  const timeLabel = timeSpentSec ? `${mins}m ${String(secs).padStart(2,"0")}s` : "—";
 
   const finishedAt = data.generatedAt || new Date().toISOString();
   const finishedLabel = new Date(finishedAt).toLocaleString();
 
-  title.textContent = data.title || "Circles — Summary";
+  const pageTitle = data.title || "Summary";
+  title.textContent = pageTitle;
   meta.textContent  = `Answered ${answered}/${total} • Correct ${correct} • Time ${timeLabel} • Completed ${finishedLabel}`;
-
-  pill.innerHTML = `
-    <span>${scorePct}%</span>
-    <span class="small">Score</span>
-  `;
+  pill.innerHTML = `<span>${scorePct}%</span><span class="small">Score</span>`;
+  document.title = pageTitle;
 
   const letter = (i) => String.fromCharCode(65 + i);
 
   data.items.forEach((it) => {
     const userIndex = (typeof it.chosenIndex === "number") ? it.chosenIndex : null;
-    const isCorrect = userIndex !== null && userIndex === it.correctIndex;
-    const unanswered = userIndex === null || userIndex === undefined;
+    const hasAnswer = userIndex !== null && userIndex !== undefined;
+    const isCorrect = hasAnswer && userIndex === it.correctIndex;
 
     const sec = document.createElement("section");
-    sec.className = "q " + (isCorrect ? "ok" : "no");
+    sec.className = "q " + (hasAnswer ? (isCorrect ? "ok" : "no") : "na");
 
-    const prompt = it.prompt || "";
+    const badgeClass = hasAnswer ? (isCorrect ? "ok" : "no") : "na";
 
-    const choices = it.choices || [];
-    const correctLetter = typeof it.correctIndex === "number" ? letter(it.correctIndex) : "—";
-    const correctText   = typeof it.correctIndex === "number" && choices[it.correctIndex] != null
-      ? choices[it.correctIndex]
+    // IMPORTANT:
+    // quiz-engine stores prompt as either HTML or text, depending on source.
+    // Your current renderer injects it as text in a div, so safest is to treat as text.
+    const promptText = String(it.prompt ?? "");
+
+    const choices = Array.isArray(it.choices) ? it.choices : [];
+    const correctLetter = (typeof it.correctIndex === "number") ? letter(it.correctIndex) : "—";
+    const correctText   = (typeof it.correctIndex === "number" && choices[it.correctIndex] != null)
+      ? String(choices[it.correctIndex])
       : "";
 
     let yourLetter = "—";
-    let yourText   = "";
-    if (!unanswered && userIndex !== null && choices[userIndex] != null) {
+    let yourText = "";
+    if (hasAnswer && choices[userIndex] != null) {
       yourLetter = letter(userIndex);
-      yourText   = choices[userIndex];
+      yourText = String(choices[userIndex]);
     }
 
     const choiceHtml = choices.map((c, i) => {
-      const isAns   = i === it.correctIndex;
-      const isUser  = i === userIndex;
+      const isAns  = i === it.correctIndex;
+      const isUser = hasAnswer && i === userIndex;
 
       const tags = [];
-      if (isUser)  tags.push('<span class="tag you">Your choice</span>');
-      if (isAns)   tags.push('<span class="tag correct">Correct answer</span>');
-      if (!isAns && isUser && !isCorrect) {
-        tags.push('<span class="tag wrong">Marked wrong</span>');
-      }
+      if (isUser) tags.push('<span class="tag you">Your choice</span>');
+      if (isAns)  tags.push('<span class="tag correct">Correct answer</span>');
+      if (isUser && !isAns) tags.push('<span class="tag wrong">Marked wrong</span>');
 
-      const cls = [
-        "choice",
-        isAns ? "correct" : "",
-        isUser ? "your" : ""
-      ].join(" ").trim();
+      const cls = ["choice", isAns ? "correct" : "", isUser ? "your" : ""].join(" ").trim();
 
       return `
         <div class="${cls}">
-          <div><b>${letter(i)}.</b> ${c}</div>
+          <div><b>${letter(i)}.</b> ${String(c)}</div>
           <div class="tags">${tags.join(" ")}</div>
         </div>
       `;
     }).join("");
 
-    const unansweredTag = unanswered
+    const unansweredTag = !hasAnswer
       ? '<span class="tag unanswered">You left this blank</span>'
       : "";
 
@@ -317,16 +351,15 @@
     const reasoning = it.explanation || "";
     const steps = Array.isArray(it.steps) ? it.steps : null;
 
-    // Build a more thorough solution block:
     let solutionHtml = `
       <ul>
-        <li><b>Correct answer:</b> ${correctLetter}. ${correctText || ""}</li>
+        <li><b>Correct answer:</b> ${correctLetter}. ${correctText}</li>
     `;
 
-    if (unanswered) {
+    if (!hasAnswer) {
       solutionHtml += `<li><b>Your answer:</b> (no answer selected)</li>`;
     } else {
-      solutionHtml += `<li><b>Your answer:</b> ${yourLetter}. ${yourText || ""} ${isCorrect ? "(matches the correct answer)" : "(does not match the correct answer)"}.</li>`;
+      solutionHtml += `<li><b>Your answer:</b> ${yourLetter}. ${yourText} ${isCorrect ? "(matches the correct answer)" : "(does not match the correct answer)"}.</li>`;
     }
 
     if (skillLabel) {
@@ -341,9 +374,7 @@
 
     if (steps && steps.length > 0) {
       solutionHtml += `<li><b>Step-by-step outline:</b><ul>`;
-      steps.forEach((s) => {
-        solutionHtml += `<li>${s}</li>`;
-      });
+      steps.forEach((s) => { solutionHtml += `<li>${String(s)}</li>`; });
       solutionHtml += `</ul></li>`;
     }
 
@@ -351,8 +382,8 @@
 
     sec.innerHTML = `
       <div class="qhead">
-        <div class="badge ${isCorrect ? "ok" : "no"}">${it.number ?? ""}</div>
-        <div class="prompt">${prompt}</div>
+        <div class="badge ${badgeClass}">${it.number ?? ""}</div>
+        <div class="prompt"></div>
       </div>
       <div class="choices">
         ${choiceHtml}
@@ -363,10 +394,12 @@
         ${unansweredTag}
       </div>
     `;
+
+    // Inject prompt as TEXT to avoid accidental HTML injection.
+    sec.querySelector(".prompt").textContent = promptText;
+
     qsEl.appendChild(sec);
   });
-
-  // note: retake / clear buttons removed
 })();
 </script>
 </body>
