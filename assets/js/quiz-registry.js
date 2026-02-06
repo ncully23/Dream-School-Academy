@@ -1,81 +1,101 @@
 // /assets/js/quiz-registry.js
+// Defines the canonical quiz registry used by /assets/js/quiz-engine.js.
 //
-// Central registry mapping ?quizId=... -> quiz configuration.
-// quiz.html loads this file and expects it to define window.QUIZ_REGISTRY.
-//
-// Scales to many quizzes:
-// - Add one entry per quizId
-// - Each entry points to a bank JSON (today: a single file like circles.json)
-// - Later, you can migrate to folder-based index.json without changing quiz.html
+// Contract:
+// - Must define window.QUIZ_REGISTRY (preferred) as an object:
+//     { [quizId]: { bankUrl, title?, pickCount?, timeLimitSec?, seedMode?, pauseOnBlur? } }
+// - quizId should match:
+//     - ?quizId=circles
+//     - or location.hash "#circles"
+//     - or folder fallback: /practice/circles/quiz.html -> "circles"
 
-(function initQuizRegistry() {
-  const ORIGIN = window.location.origin;
+(function () {
+  "use strict";
 
-  // Helper: ensure absolute paths resolve correctly in prod + local.
-  const abs = (path) => {
-    if (!path) return path;
-    if (path.startsWith("http://") || path.startsWith("https://")) return path;
-    if (path.startsWith("/")) return path; // absolute to site root
-    return new URL(path, ORIGIN).pathname;
-  };
-
-  // ---- Registry ----
-  // Each key is the quizId used in: /quiz.html?quizId=<key>
-  window.QUIZ_REGISTRY = {
-    // =========================
-    // Math — Circles (topic quiz)
-    // =========================
+  // -----------------------
+  // Registry (edit/add here)
+  // -----------------------
+  const REGISTRY = {
     circles: {
-      quizId: "circles",
-
-      // UI
-      title: "Math — Circles",
-      subtitle: "Practice Set",
-      directions:
-        "Answer the questions. Use Mark for review and Eliminate if helpful. When finished, End & Score to see feedback.",
-
-      // Where the engine should load questions from:
-      // Today: a single bank file containing { bankId, ... , questions:[...] }
-      bankUrl: abs("/assets/questionbank/math/circles.json"),
-
-      // Selection behavior
-      pickCount: 10,              // pick 10 questions from the bank
-      shuffleQuestions: true,     // randomize which 10 + their order
-      shuffleChoices: false,      // set true only if your choices are safe to shuffle
-                                 // (if you do, engine must also update answerIndex accordingly)
-
-      // Filters (optional now, powerful later)
-      // These correspond to fields you already have: skill, difficulty, topic
-      // Leave empty arrays to mean "no filter".
-      filters: {
-        skills: [],               // e.g. ["area", "circumference"]
-        difficulty: [],           // e.g. ["easy","medium"]
-        topic: ["math.circles"]   // helpful guardrail if a bank grows multi-topic later
-      },
-
-      // Timer
-      // If null/0, engine can treat as untimed.
-      timeLimitSec: 15 * 60,      // 15 minutes for a 10-question set (adjust as you like)
-
-      // Persistence keys (keeps attempt/session separation clean)
-      // Engine can use these to standardize storage paths in localStorage/Firestore.
-      storage: {
-        sectionId: "math.circles",
-        attemptPrefix: "dsa:attempt:",
-        draftPrefix: "dsa:draft:"
-      },
-
-      // Versioning / analytics hooks (optional)
-      version: 1
+      title: "Circles",
+      bankUrl: "/assets/questionbank/math/circles.json",
+      pickCount: 20,        // how many questions to draw (default: all in bank)
+      timeLimitSec: 0,      // 0 = no timer (or set to e.g. 32*60)
+      seedMode: null,       // null | "perAttempt" | "perQuiz"
+      pauseOnBlur: false    // if true, timer pauses when tab loses focus
     }
 
-    // =========================
-    // Add more quizzes like this
-    // =========================
-    // algebra_linear: { ... },
-    // grammar_commas: { ... }
+    // Example:
+    // lines: {
+    //   title: "Linear Equations",
+    //   bankUrl: "/assets/questionbank/math/lines.json",
+    //   pickCount: 15,
+    //   timeLimitSec: 20 * 60,
+    //   seedMode: "perQuiz",
+    //   pauseOnBlur: true
+    // }
   };
 
-  // Optional convenience alias for older code
-  window.quizRegistry = window.QUIZ_REGISTRY;
+  // -----------------------
+  // Light validation (keeps failures obvious)
+  // -----------------------
+  function isPlainObject(x) {
+    return !!x && typeof x === "object" && !Array.isArray(x);
+  }
+
+  function validateRegistry(registry) {
+    if (!isPlainObject(registry)) return "QUIZ_REGISTRY must be an object.";
+    const keys = Object.keys(registry);
+    if (!keys.length) return "QUIZ_REGISTRY has no entries.";
+
+    for (const quizId of keys) {
+      const cfg = registry[quizId];
+      if (!isPlainObject(cfg)) return `Registry entry "${quizId}" must be an object.`;
+
+      const bankUrl = cfg.bankUrl || cfg.jsonUrl || cfg.url;
+      if (!bankUrl || typeof bankUrl !== "string") {
+        return `Registry entry "${quizId}" is missing bankUrl (string).`;
+      }
+
+      if (cfg.pickCount != null && !Number.isFinite(Number(cfg.pickCount))) {
+        return `Registry entry "${quizId}" has invalid pickCount.`;
+      }
+
+      if (cfg.timeLimitSec != null && !Number.isFinite(Number(cfg.timeLimitSec))) {
+        return `Registry entry "${quizId}" has invalid timeLimitSec.`;
+      }
+
+      if (cfg.seedMode != null && cfg.seedMode !== "perAttempt" && cfg.seedMode !== "perQuiz") {
+        return `Registry entry "${quizId}" seedMode must be null, "perAttempt", or "perQuiz".`;
+      }
+    }
+
+    return null;
+  }
+
+  const err = validateRegistry(REGISTRY);
+  if (err) {
+    console.error("[quiz-registry] Invalid registry:", err);
+    // Still publish it to window so your loader can show a helpful error,
+    // but leave a loud console signal.
+  }
+
+  // -----------------------
+  // Publish
+  // -----------------------
+  try {
+    // Prefer the canonical name:
+    window.QUIZ_REGISTRY = REGISTRY;
+
+    // Optional compatibility alias (if any older pages referenced it):
+    window.quizRegistry = REGISTRY;
+  } catch (e) {
+    console.error("[quiz-registry] Failed to publish registry:", e);
+  }
+
+  // Optional: freeze so accidental runtime mutation doesn’t happen
+  try {
+    Object.freeze(REGISTRY);
+    for (const k of Object.keys(REGISTRY)) Object.freeze(REGISTRY[k]);
+  } catch {}
 })();
