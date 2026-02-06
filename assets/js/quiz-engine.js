@@ -5,7 +5,7 @@ import { routes } from "/assets/js/lib/routes.js";
 
   // =========================================================
   // Quiz Engine (scalable):
-  // - Reads quizId from URL (?quizId=circles)
+  // - Resolves quizId from URL (?quizId=...), hash (#circles), or folder (/practice/circles/quiz.html)
   // - Looks up config in window.QUIZ_REGISTRY (from quiz-registry.js)
   // - Fetches JSON bank (e.g., /assets/questionbank/math/circles.json)
   // - Picks N questions randomly (optionally seeded)
@@ -23,12 +23,19 @@ import { routes } from "/assets/js/lib/routes.js";
     }
   }
 
+  function getQuizIdFromHash() {
+    try {
+      const h = (location.hash || "").replace(/^#/, "").trim();
+      return h || null; // e.g. "#circles" -> "circles"
+    } catch {
+      return null;
+    }
+  }
+
   function getQuizIdFromPathFallback() {
-    // Optional: /practice/circles/preview -> "circles"
-    // Only used if ?quizId is missing.
+    // /practice/circles/quiz.html -> "circles"
     try {
       const parts = location.pathname.split("/").filter(Boolean);
-      // e.g. ["practice","circles","preview"] -> circles
       const practiceIdx = parts.indexOf("practice");
       if (practiceIdx >= 0 && parts.length > practiceIdx + 1) {
         const candidate = parts[practiceIdx + 1];
@@ -40,13 +47,33 @@ import { routes } from "/assets/js/lib/routes.js";
     }
   }
 
+  function getLastQuizId() {
+    try { return localStorage.getItem("dsa:lastQuizId"); } catch { return null; }
+  }
+
+  function setLastQuizId(quizId) {
+    try { localStorage.setItem("dsa:lastQuizId", String(quizId)); } catch {}
+  }
+
+  function getDefaultQuizId(registry) {
+    if (!registry) return null;
+    const keys = Object.keys(registry);
+    return keys.length ? keys[0] : null;
+  }
+
   function getRegistry() {
     // quiz-registry.js should define ONE of these; prefer QUIZ_REGISTRY
     return window.QUIZ_REGISTRY || window.quizRegistry || window.QUIZZES || null;
   }
 
-  function resolveQuizId() {
-    return getQuizIdFromUrl() || getQuizIdFromPathFallback();
+  function resolveQuizId(registry) {
+    return (
+      getQuizIdFromUrl() ||
+      getQuizIdFromHash() ||
+      getQuizIdFromPathFallback() ||
+      getLastQuizId() ||
+      getDefaultQuizId(registry)
+    );
   }
 
   function resolveReviewUrl(attemptId) {
@@ -914,6 +941,10 @@ import { routes } from "/assets/js/lib/routes.js";
         return;
       }
 
+      // Still remember last quiz id if present (helps /practice/quiz.html w/out params)
+      const explicitId = cfg.quizId || cfg.sectionId || null;
+      if (explicitId) setLastQuizId(explicitId);
+
       runEngine({
         attemptId: cfg.attemptId,
         quizId: cfg.quizId || cfg.sectionId,
@@ -927,17 +958,20 @@ import { routes } from "/assets/js/lib/routes.js";
       return;
     }
 
-    const quizId = resolveQuizId();
-    if (!quizId) {
-      showFatal("Missing required URL parameter: ?quizId=...");
-      return;
-    }
-
     const registry = getRegistry();
     if (!registry) {
       showFatal("Quiz registry not found. Ensure /assets/js/quiz-registry.js defines window.QUIZ_REGISTRY.");
       return;
     }
+
+    const quizId = resolveQuizId(registry);
+    if (!quizId) {
+      showFatal("Missing quiz id. Use /practice/<quizId>/quiz.html or /practice/quiz.html?quizId=...");
+      return;
+    }
+
+    // remember it (useful for /practice/quiz.html with no query)
+    setLastQuizId(quizId);
 
     const cfg = registry[quizId];
     if (!cfg) {
