@@ -19,7 +19,7 @@
   <script type="module" src="/assets/js/quiz-registry.js"></script>
 
   <!-- Boot loader:
-       - requires ?quizId=...
+       - supports /practice/<quizId>/quiz.html (path fallback) OR ?quizId=...
        - validates registry + bankUrl (fast precheck)
        - imports quiz-engine.js (engine reads quizId + registry)
   -->
@@ -57,8 +57,35 @@
       setHeader("Quiz failed to load", "--:--");
     }
 
+    // -----------------------------
+    // quizId resolution
+    // -----------------------------
+    function getQuizIdFromUrl() {
+      try {
+        return new URLSearchParams(location.search).get("quizId");
+      } catch {
+        return null;
+      }
+    }
+
+    function getQuizIdFromPathFallback() {
+      // /practice/circles/quiz.html -> "circles"
+      try {
+        const parts = location.pathname.split("/").filter(Boolean);
+        const practiceIdx = parts.indexOf("practice");
+        if (practiceIdx >= 0 && parts.length > practiceIdx + 1) {
+          const candidate = parts[practiceIdx + 1];
+          if (candidate && candidate !== "quiz.html") return candidate;
+        }
+        return null;
+      } catch {
+        return null;
+      }
+    }
+
     function getQuizId() {
-      return new URLSearchParams(location.search).get("quizId");
+      // Prefer explicit ?quizId=..., but allow folder-based fallback
+      return getQuizIdFromUrl() || getQuizIdFromPathFallback();
     }
 
     function getRegistry() {
@@ -83,7 +110,11 @@
     async function boot() {
       const quizId = getQuizId();
       if (!quizId) {
-        showError('Missing required URL parameter: <code>?quizId=...</code>');
+        showError(
+          "Missing quiz id. Use either " +
+          "<code>/practice/&lt;quizId&gt;/quiz.html</code> " +
+          "or <code>/practice/quiz.html?quizId=...</code>."
+        );
         return;
       }
 
