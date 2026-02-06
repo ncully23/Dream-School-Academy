@@ -1,5 +1,4 @@
 # MAIN PAGES
-/            /pages/home.html        200!
 # Pretty URL -> canonical quiz runner
 /practice/circles/quiz     /practice/quiz.html?quizId=circles   302
 /practice/nonlinear/quiz   /practice/quiz.html?quizId=nonlinear 302
