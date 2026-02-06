@@ -1,3 +1,4 @@
+// /assets/js/quiz-engine.js
 import { routes } from "/assets/js/lib/routes.js";
 
 (function () {
@@ -5,7 +6,8 @@ import { routes } from "/assets/js/lib/routes.js";
 
   // =========================================================
   // Quiz Engine (scalable):
-  // - Resolves quizId from URL (?quizId=...), hash (#circles), or folder (/practice/circles/quiz.html)
+  // - Resolves quizId from: ?quizId -> #hash -> /practice/<id>/quiz.html
+  //   -> localStorage last -> first registry key
   // - Looks up config in window.QUIZ_REGISTRY (from quiz-registry.js)
   // - Fetches JSON bank (e.g., /assets/questionbank/math/circles.json)
   // - Picks N questions randomly (optionally seeded)
@@ -26,7 +28,7 @@ import { routes } from "/assets/js/lib/routes.js";
   function getQuizIdFromHash() {
     try {
       const h = (location.hash || "").replace(/^#/, "").trim();
-      return h || null; // e.g. "#circles" -> "circles"
+      return h || null;
     } catch {
       return null;
     }
@@ -62,7 +64,6 @@ import { routes } from "/assets/js/lib/routes.js";
   }
 
   function getRegistry() {
-    // quiz-registry.js should define ONE of these; prefer QUIZ_REGISTRY
     return window.QUIZ_REGISTRY || window.quizRegistry || window.QUIZZES || null;
   }
 
@@ -96,7 +97,6 @@ import { routes } from "/assets/js/lib/routes.js";
   // 1) Random picking (seeded optional)
   // -----------------------
   function hashStringToUint32(str) {
-    // FNV-1a-ish simple hash
     let h = 2166136261;
     for (let i = 0; i < str.length; i++) {
       h ^= str.charCodeAt(i);
@@ -130,10 +130,6 @@ import { routes } from "/assets/js/lib/routes.js";
     const all = bank.questions.slice();
     const pickCount = Number(cfg.pickCount || cfg.count || 0) || all.length;
 
-    // Seed modes:
-    // - "perAttempt": stable per attempt id (same set if you reload within same attempt id)
-    // - "perQuiz": stable per quiz id
-    // - undefined: non-deterministic
     const seedMode = cfg.seedMode || null;
 
     let rng = Math.random;
@@ -150,7 +146,7 @@ import { routes } from "/assets/js/lib/routes.js";
   }
 
   // -----------------------
-  // 2) Storage keys (your Step 6 keys)
+  // 2) Storage keys
   // -----------------------
   function createAttemptId() {
     return "t_" + Date.now() + "_" + Math.floor(Math.random() * 10000);
@@ -209,8 +205,7 @@ import { routes } from "/assets/js/lib/routes.js";
     dashrow: document.getElementById("dashrow"),
 
     popTitle: document.getElementById("popTitle"),
-    checkTitle: document.getElementById("checkTitle"),
-    practiceBanner: document.getElementById("practiceBanner")
+    checkTitle: document.getElementById("checkTitle")
   };
 
   function showFatal(message) {
@@ -220,7 +215,7 @@ import { routes } from "/assets/js/lib/routes.js";
       "max-width:980px;margin:14px auto;padding:12px 14px;background:#fff;border:1px solid #c00;border-radius:10px;" +
       "font:16px/1.45 system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;color:#111;";
     box.innerHTML = `<h2 style="margin:0 0 6px;font-size:18px">Quiz failed to load</h2><p style="margin:0">${String(message)}</p>`;
-    document.body.prepend(box);
+    (document.body || document.documentElement).prepend(box);
 
     if (el.sectionTitle) el.sectionTitle.textContent = "Quiz failed to load";
     if (el.timeLeft) el.timeLeft.textContent = "--:--";
@@ -268,18 +263,34 @@ import { routes } from "/assets/js/lib/routes.js";
   // -----------------------
   // 5) Normalize bank question objects -> engine format
   // -----------------------
+  function normalizeDifficulty(raw) {
+    if (raw == null) return null;
+    if (typeof raw === "number" && Number.isFinite(raw)) return raw;
+    const s = String(raw).trim().toLowerCase();
+    if (!s) return null;
+    // keep your strings; review page can interpret later if desired
+    return s; // "easy" | "medium" | "hard" | etc.
+  }
+
   function normalizeQuestion(raw, idx) {
     const questionId = raw.questionId || raw.id || `q_${idx + 1}`;
-    const version = raw.version ?? 1;
+    const version =
+      raw.version ??
+      raw.questionVersion ??
+      1;
 
-    const promptText = raw.prompt ?? "";
+    const promptText =
+      raw.prompt ??
+      raw.promptText ??
+      "";
+
     const promptHtml = raw.promptHtml ?? null;
 
     const choices = Array.isArray(raw.choices) ? raw.choices : [];
     const answerIndex = Number.isFinite(raw.answerIndex) ? raw.answerIndex : null;
 
-    // solution payload (your schema)
     const sol = raw.solution || {};
+
     const explanation =
       raw.explanation ||
       sol.approach ||
@@ -291,23 +302,20 @@ import { routes } from "/assets/js/lib/routes.js";
       null;
 
     return {
-      id: questionId,            // engine key
-      questionId,                // persisted id
+      id: questionId,
+      questionId,
       version,
-      topic: raw.topic,
-      skill: raw.skill,
-      difficulty: raw.difficulty,
 
-      // prompt rendering:
-      // - default: treat as text (safe)
-      // - if promptHtml provided: allow HTML
+      topic: raw.topic || null,
+      skill: raw.skill || null,
+      difficulty: normalizeDifficulty(raw.difficulty),
+
       promptText,
       promptHtml,
 
       choices,
       answerIndex,
 
-      // feedback:
       explanation,
       steps,
       solution: sol
@@ -345,20 +353,17 @@ import { routes } from "/assets/js/lib/routes.js";
     const quizIdForKeys = String(exam.quizId || exam.sectionId || "unknown-quiz");
     const draftKey = getDraftKey(quizIdForKeys);
 
-    // Always start fresh (your desired behavior)
+    // Always start fresh (no resume)
     safeRemoveStorage(draftKey);
     if (window.quizData && typeof window.quizData.clearSessionProgress === "function") {
       try { window.quizData.clearSessionProgress(exam.sectionId).catch(() => {}); } catch {}
     }
 
-    // -----------------------
-    // State
-    // -----------------------
     const state = {
       index: 0,
-      answers: {}, // { qid: choiceIndex }
-      flags: {},   // { qid: true/false }
-      elims: {},   // { qid: Set(choiceIndex) }
+      answers: {},
+      flags: {},
+      elims: {},
       eliminateMode: false,
 
       remaining: exam.timeLimitSec || 0,
@@ -371,8 +376,8 @@ import { routes } from "/assets/js/lib/routes.js";
       attemptId: exam.attemptId || createAttemptId(),
 
       currentQuestionEnterTs: null,
-      questionTimes: {}, // { qid: totalSeconds }
-      visits: {},        // { qid: count }
+      questionTimes: {},
+      visits: {},
 
       blurCount: 0,
       focusCount: document.hasFocus() ? 1 : 0,
@@ -430,7 +435,7 @@ import { routes } from "/assets/js/lib/routes.js";
     }
 
     // -----------------------
-    // View mode (question vs "Check Your Work")
+    // View mode
     // -----------------------
     function updateViewMode() {
       if (!el.qcard || !el.checkPage) return;
@@ -471,7 +476,7 @@ import { routes } from "/assets/js/lib/routes.js";
       if (el.sectionTitle) el.sectionTitle.textContent = title;
       if (el.popTitle) el.popTitle.textContent = title ? `${title} Questions` : "Questions";
       if (el.checkTitle) el.checkTitle.textContent = title ? `${title} Questions` : "Questions";
-      document.title = title || document.title;
+      if (title) document.title = title;
     }
 
     function letter(i) {
@@ -490,7 +495,6 @@ import { routes } from "/assets/js/lib/routes.js";
       if (q.promptHtml) {
         el.qtitle.innerHTML = q.promptHtml;
       } else {
-        // Safe default: treat prompt as text (prevents accidental HTML injection)
         el.qtitle.textContent = q.promptText || "";
       }
     }
@@ -521,16 +525,12 @@ import { routes } from "/assets/js/lib/routes.js";
           })
           .join("");
 
-        // Bind events
         el.choices.querySelectorAll(".choice").forEach((choice) => {
           const idx = Number(choice.dataset.choice);
           const input = choice.querySelector("input");
 
-          // eliminate mode on label click (not on actual input click)
           choice.addEventListener("click", (ev) => {
             if (!state.eliminateMode) return;
-
-            // allow clicking the radio itself to still select (even in eliminate mode)
             if (ev.target && ev.target.tagName && ev.target.tagName.toLowerCase() === "input") return;
 
             ev.preventDefault();
@@ -547,7 +547,6 @@ import { routes } from "/assets/js/lib/routes.js";
         });
       }
 
-      // Flag visual
       const flagged = !!state.flags[q.id];
       if (el.flagTop && el.flagLabel) {
         el.flagTop.classList.toggle("on", flagged);
@@ -555,14 +554,12 @@ import { routes } from "/assets/js/lib/routes.js";
         el.flagLabel.textContent = flagged ? "For review" : "Mark for review";
       }
 
-      // Eliminate visual
       if (el.elimToggle && el.elimHint) {
         el.elimToggle.classList.toggle("on", state.eliminateMode);
         el.elimToggle.setAttribute("aria-pressed", String(state.eliminateMode));
         el.elimHint.hidden = !state.eliminateMode;
       }
 
-      // MathJax (optional)
       if (window.MathJax && window.MathJax.typesetPromise) {
         window.MathJax.typesetPromise([el.qtitle, el.choices]).catch(() => {});
       }
@@ -716,7 +713,6 @@ import { routes } from "/assets/js/lib/routes.js";
     if (el.back) el.back.addEventListener("click", () => go(-1));
     if (el.next) el.next.addEventListener("click", () => go(1));
 
-    // Keyboard shortcuts
     document.addEventListener("keydown", (e) => {
       if (state.finished) return;
       const tag = ((e.target && e.target.tagName) || "").toLowerCase();
@@ -809,9 +805,7 @@ import { routes } from "/assets/js/lib/routes.js";
     window.addEventListener("blur", handleWindowBlur);
     window.addEventListener("focus", handleWindowFocus);
 
-    // -----------------------
-    // Leave-page behavior: CLEAR ALL DATA (no resume)
-    // -----------------------
+    // Clear draft on leave-page
     window.addEventListener("beforeunload", () => {
       safeRemoveStorage(draftKey);
       if (window.quizData && typeof window.quizData.clearSessionProgress === "function") {
@@ -820,7 +814,7 @@ import { routes } from "/assets/js/lib/routes.js";
     });
 
     // -----------------------
-    // Finish + redirect to review.html?attemptId=...
+    // Finish + redirect
     // -----------------------
     function finishExam() {
       if (state.finished) return;
@@ -835,18 +829,27 @@ import { routes } from "/assets/js/lib/routes.js";
 
         return {
           number: i + 1,
+
           questionId: q.questionId || q.id,
           version: q.version || 1,
+
+          topic: q.topic || null,
+          skill: q.skill || null,
+          difficulty: q.difficulty || null,
+
           id: q.id,
-          prompt: q.promptHtml ? q.promptHtml : q.promptText, // stored for review
+          prompt: q.promptHtml ? q.promptHtml : q.promptText,
+          promptIsHtml: !!q.promptHtml,
+
           choices: q.choices,
           correctIndex: q.answerIndex,
           chosenIndex: chosen,
           correct: chosen === q.answerIndex,
 
-          // feedback sources:
           explanation: q.explanation || "",
           steps: Array.isArray(q.steps) ? q.steps : undefined,
+
+          // carry your solution object through (finalAnswer/commonMistakes/checks/etc.)
           solution: q.solution || undefined,
 
           timeSpentSec: state.questionTimes[q.id] || 0,
@@ -872,12 +875,25 @@ import { routes } from "/assets/js/lib/routes.js";
 
       const summary = {
         attemptId,
+
+        // quiz identity
         quizId: exam.quizId,
         sectionId: exam.sectionId,
         title: exam.sectionTitle || exam.title,
+
+        // bank metadata (NEW: your preferred schema)
+        bank: {
+          bankId: exam.bankId || null,
+          bankVersion: exam.bankVersion || null,
+          title: exam.bankTitle || (exam.sectionTitle || exam.title) || null,
+          description: exam.bankDescription || null,
+          skills: Array.isArray(exam.bankSkills) ? exam.bankSkills : null
+        },
+
         generatedAt: new Date().toISOString(),
         totals,
         items,
+
         uiState: {
           timerHidden: state.timerHidden,
           reviewMode: state.reviewMode,
@@ -936,21 +952,23 @@ import { routes } from "/assets/js/lib/routes.js";
       const cfg = window.dsaQuizConfig;
       const norm = normalizeQuestions(cfg.questions);
       const err = validateQuestions(norm);
-      if (err) {
-        showFatal(err);
-        return;
-      }
-
-      // Still remember last quiz id if present (helps /practice/quiz.html w/out params)
-      const explicitId = cfg.quizId || cfg.sectionId || null;
-      if (explicitId) setLastQuizId(explicitId);
+      if (err) return void showFatal(err);
 
       runEngine({
         attemptId: cfg.attemptId,
         quizId: cfg.quizId || cfg.sectionId,
         sectionId: cfg.sectionId || cfg.quizId,
+
         title: cfg.title || cfg.sectionTitle,
         sectionTitle: cfg.sectionTitle || cfg.title,
+
+        // bank metadata pass-through if present
+        bankId: cfg.bankId || null,
+        bankVersion: cfg.bankVersion || null,
+        bankTitle: cfg.bankTitle || null,
+        bankDescription: cfg.bankDescription || null,
+        bankSkills: cfg.bankSkills || null,
+
         timeLimitSec: cfg.timeLimitSec || 0,
         pauseOnBlur: !!cfg.pauseOnBlur,
         questions: norm
@@ -966,11 +984,10 @@ import { routes } from "/assets/js/lib/routes.js";
 
     const quizId = resolveQuizId(registry);
     if (!quizId) {
-      showFatal("Missing quiz id. Use /practice/<quizId>/quiz.html or /practice/quiz.html?quizId=...");
+      showFatal("Could not resolve quizId. Use ?quizId=... or ensure registry is populated.");
       return;
     }
 
-    // remember it (useful for /practice/quiz.html with no query)
     setLastQuizId(quizId);
 
     const cfg = registry[quizId];
@@ -979,7 +996,6 @@ import { routes } from "/assets/js/lib/routes.js";
       return;
     }
 
-    // Keep quizId available for seedMode === "perQuiz"
     cfg.__quizId = quizId;
 
     const bankUrl = cfg.bankUrl || cfg.jsonUrl || cfg.url;
@@ -990,16 +1006,12 @@ import { routes } from "/assets/js/lib/routes.js";
 
     const bank = await loadJson(bankUrl);
 
-    // Pick questions (random subset) then normalize + validate
     const attemptId = createAttemptId();
     const pickedRaw = pickQuestionsFromBank(bank, cfg, attemptId);
     const questions = normalizeQuestions(pickedRaw);
 
     const err = validateQuestions(questions);
-    if (err) {
-      showFatal(err);
-      return;
-    }
+    if (err) return void showFatal(err);
 
     const title = cfg.title || bank.title || quizId;
     const sectionTitle = cfg.sectionTitle || title;
@@ -1013,12 +1025,17 @@ import { routes } from "/assets/js/lib/routes.js";
       sectionTitle,
       timeLimitSec,
       pauseOnBlur: !!cfg.pauseOnBlur,
-      questions
+      questions,
+
+      // bank metadata (NEW)
+      bankId: bank.bankId || null,
+      bankVersion: bank.bankVersion ?? null,
+      bankTitle: bank.title || null,
+      bankDescription: bank.description || null,
+      bankSkills: Array.isArray(bank.skills) ? bank.skills : null
     });
   }
 
-  // Module is imported after DOMContentLoaded by your quiz.html boot loader,
-  // but keep this safe for direct loads too.
   if (document.readyState === "loading") {
     document.addEventListener("DOMContentLoaded", () => {
       boot().catch((err) => showFatal(err?.message ? String(err.message) : "Quiz init failed"));
