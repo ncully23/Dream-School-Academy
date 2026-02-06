@@ -1,8 +1,8 @@
 # MAIN PAGES
 /            /pages/home.html        200!
 # Pretty URL -> canonical quiz runner
-/practice/circles     /practice/quiz.html?quizId=circles   302
-/practice/nonlinear   /practice/quiz.html?quizId=nonlinear 302
+/practice/circles/quiz     /practice/quiz.html?quizId=circles   302
+/practice/nonlinear/quiz   /practice/quiz.html?quizId=nonlinear 302
 
 # Back-compat for any legacy URLs you used before
 /practice/circles/*   /practice/quiz.html?quizId=circles   302
