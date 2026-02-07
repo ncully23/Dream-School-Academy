@@ -7,7 +7,8 @@
 
   <!-- Global styles -->
   <link rel="stylesheet" href="/assets/css/site.css" />
-  <script type="module" src="/assets/js/shell.js"></script>
+
+  <!-- Login page styles (keep whichever path you actually use) -->
   <link rel="stylesheet" href="/assets/login.css" />
 
   <!-- Page-specific layout to make the login card look right -->
@@ -114,6 +115,10 @@
       color: #f97373;
     }
 
+    .status.ok {
+      color: #86efac;
+    }
+
     .alt-action {
       margin-top: 4px;
       font-size: 0.85rem;
@@ -127,37 +132,41 @@
 </head>
 
 <body>
-  <!-- Header placeholder; shell.js will inject header.html here -->
+  <!-- Header injected by shell.js -->
   <div id="site-header"></div>
 
   <main>
     <div class="auth-card">
       <!-- Tabs -->
-      <div class="auth-tabs">
-        <button id="tab-login" class="auth-tab active" aria-selected="true">Login</button>
-        <button id="tab-signup" class="auth-tab" aria-selected="false">Sign Up</button>
+      <div class="auth-tabs" role="tablist" aria-label="Authentication">
+        <button id="tab-login" class="auth-tab active" type="button" role="tab" aria-selected="true">
+          Login
+        </button>
+        <button id="tab-signup" class="auth-tab" type="button" role="tab" aria-selected="false">
+          Sign Up
+        </button>
       </div>
 
       <!-- Login form -->
-      <form id="login-form" class="form-block">
+      <form id="login-form" class="form-block" autocomplete="on" novalidate>
         <h2>Welcome back</h2>
 
         <div class="field">
           <label for="login-email">Email</label>
-          <input id="login-email" type="email" required />
+          <input id="login-email" name="email" type="email" inputmode="email" autocomplete="email" required />
         </div>
 
         <div class="field">
           <label for="login-password">Password</label>
-          <input id="login-password" type="password" required />
+          <input id="login-password" name="password" type="password" autocomplete="current-password" required />
         </div>
 
-        <button id="login-submit" class="btn-primary">Log In</button>
+        <button class="btn-primary" type="submit">Log In</button>
 
-        <p id="login-status" class="status"></p>
+        <p id="login-status" class="status" aria-live="polite"></p>
 
         <p class="alt-action">
-          <a id="reset" href="javascript:void(0)">Forgot password?</a>
+          <a id="reset" href="#" role="button">Forgot password?</a>
         </p>
 
         <button id="google-login" class="btn-google" type="button">
@@ -166,27 +175,27 @@
       </form>
 
       <!-- Signup form -->
-      <form id="signup-form" class="form-block" style="display:none;">
+      <form id="signup-form" class="form-block" style="display:none;" autocomplete="on" novalidate>
         <h2>Create your account</h2>
 
         <div class="field">
           <label for="signup-first">First name</label>
-          <input id="signup-first" type="text" />
+          <input id="signup-first" name="firstName" type="text" autocomplete="given-name" />
         </div>
 
         <div class="field">
           <label for="signup-email">Email</label>
-          <input id="signup-email" type="email" required />
+          <input id="signup-email" name="email" type="email" inputmode="email" autocomplete="email" required />
         </div>
 
         <div class="field">
           <label for="signup-password">Password</label>
-          <input id="signup-password" type="password" required />
+          <input id="signup-password" name="password" type="password" autocomplete="new-password" required />
         </div>
 
-        <button id="signup-submit" class="btn-primary">Sign Up</button>
+        <button class="btn-primary" type="submit">Sign Up</button>
 
-        <p id="signup-status" class="status"></p>
+        <p id="signup-status" class="status" aria-live="polite"></p>
 
         <button id="google-signup" class="btn-google" type="button">
           Sign up with Google
@@ -195,12 +204,15 @@
     </div>
   </main>
 
-  <!-- Shell to inject header + handle greeting -->
+  <!-- Footer injected by shell.js -->
+  <div id="site-footer"></div>
+
+  <!-- Inject header/footer + nav highlight (load ONCE) -->
   <script type="module" src="/assets/js/shell.js"></script>
 
   <!-- Login / signup logic -->
   <script type="module">
-    import { auth, db, googleProvider } from "/assets/js/firebase-init.js";
+    import { auth, db, googleProvider, authReady } from "/assets/firebase-init.js";
 
     import {
       onAuthStateChanged,
@@ -209,7 +221,6 @@
       sendPasswordResetEmail,
       updateProfile,
       signInWithPopup,
-      signInWithRedirect,
       getRedirectResult
     } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-auth.js";
 
@@ -220,6 +231,7 @@
       serverTimestamp
     } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-firestore.js";
 
+    // --- Friendly error messages
     const nice = (e) => ({
       "auth/invalid-email":        "That email looks invalid.",
       "auth/missing-password":     "Enter your password.",
@@ -227,14 +239,18 @@
       "auth/email-already-in-use": "That email is already registered.",
       "auth/user-not-found":       "No account with that email.",
       "auth/wrong-password":       "Incorrect password.",
-      "auth/popup-blocked":        "Popup blocked.",
-      "auth/unauthorized-domain":  "Unauthorized domain in Firebase."
+      "auth/popup-blocked":        "Popup blocked. Allow popups and try again.",
+      "auth/popup-closed-by-user": "Popup closed before completing sign-in.",
+      "auth/unauthorized-domain":  "This domain isn't authorized in Firebase Auth."
     }[e?.code] || e?.message || "Something went wrong.");
 
+    // --- Ensure user profile doc exists
     async function ensureProfile(u, first = "") {
       if (!u) return;
+
       const ref  = doc(db, "users", u.uid);
       const snap = await getDoc(ref);
+
       if (!snap.exists()) {
         await setDoc(ref, {
           userId: u.uid,
@@ -245,145 +261,174 @@
       }
     }
 
-    // Grab DOM elements
-    const tabLogin    = document.getElementById("tab-login");
-    const tabSignup   = document.getElementById("tab-signup");
-    const loginForm   = document.getElementById("login-form");
-    const signupForm  = document.getElementById("signup-form");
-    const loginStatus = document.getElementById("login-status");
-    const signupStatus= document.getElementById("signup-status");
-    const btnLogin    = document.getElementById("login-submit");
-    const btnSignup   = document.getElementById("signup-submit");
-    const btnReset    = document.getElementById("reset");
-    const btnGoogleIn = document.getElementById("google-login");
-    const btnGoogleUp = document.getElementById("google-signup");
+    // --- DOM
+    const tabLogin     = document.getElementById("tab-login");
+    const tabSignup    = document.getElementById("tab-signup");
+    const loginForm    = document.getElementById("login-form");
+    const signupForm   = document.getElementById("signup-form");
+    const loginStatus  = document.getElementById("login-status");
+    const signupStatus = document.getElementById("signup-status");
+    const btnReset     = document.getElementById("reset");
+    const btnGoogleIn  = document.getElementById("google-login");
+    const btnGoogleUp  = document.getElementById("google-signup");
 
-    if (!tabLogin || !tabSignup || !loginForm || !signupForm) {
-      console.warn("Login UI missing — skipping login script.");
-    } else {
-      // Tabs
-      const showLogin = () => {
-        tabLogin.classList.add("active");
-        tabSignup.classList.remove("active");
-        loginForm.style.display = "block";
-        signupForm.style.display = "none";
-      };
+    const setStatus = (el, msg, ok = false) => {
+      if (!el) return;
+      el.textContent = msg || "";
+      el.classList.toggle("ok", !!ok);
+    };
 
-      const showSignup = () => {
-        tabSignup.classList.add("active");
-        tabLogin.classList.remove("active");
-        signupForm.style.display = "block";
-        loginForm.style.display = "none";
-      };
+    const disable = (formEl, on) => {
+      if (!formEl) return;
+      Array.from(formEl.querySelectorAll("button, input")).forEach((node) => {
+        node.disabled = !!on;
+      });
+    };
 
-      tabLogin.addEventListener("click", showLogin);
-      tabSignup.addEventListener("click", showSignup);
-      showLogin(); // default
+    // --- Tabs
+    const showLogin = () => {
+      tabLogin.classList.add("active");
+      tabSignup.classList.remove("active");
+      tabLogin.setAttribute("aria-selected", "true");
+      tabSignup.setAttribute("aria-selected", "false");
+      loginForm.style.display = "block";
+      signupForm.style.display = "none";
+      setStatus(loginStatus, "");
+      setStatus(signupStatus, "");
+    };
 
-      // Login
-      if (btnLogin) {
-        btnLogin.addEventListener("click", async (e) => {
-          e.preventDefault();
-          loginStatus.textContent = "Signing in…";
-          try {
-            const email = document.getElementById("login-email").value.trim();
-            const pass  = document.getElementById("login-password").value;
-            const cred  = await signInWithEmailAndPassword(auth, email, pass);
-            await ensureProfile(cred.user);
-            location.href = "/";
-          } catch (err) {
-            console.error(err);
-            loginStatus.textContent = nice(err);
-          }
-        });
-      }
+    const showSignup = () => {
+      tabSignup.classList.add("active");
+      tabLogin.classList.remove("active");
+      tabSignup.setAttribute("aria-selected", "true");
+      tabLogin.setAttribute("aria-selected", "false");
+      signupForm.style.display = "block";
+      loginForm.style.display = "none";
+      setStatus(loginStatus, "");
+      setStatus(signupStatus, "");
+    };
 
-      // Reset password
-      if (btnReset) {
-        btnReset.addEventListener("click", async () => {
-          const email = document.getElementById("login-email").value.trim();
-          if (!email) {
-            loginStatus.textContent = "Enter your email.";
-            return;
-          }
-          try {
-            await sendPasswordResetEmail(auth, email);
-            loginStatus.textContent = "Password reset email sent.";
-          } catch (err) {
-            console.error(err);
-            loginStatus.textContent = nice(err);
-          }
-        });
-      }
+    tabLogin.addEventListener("click", showLogin);
+    tabSignup.addEventListener("click", showSignup);
+    showLogin();
 
-      // Google login
-      if (btnGoogleIn) {
-        btnGoogleIn.addEventListener("click", async () => {
-          loginStatus.textContent = "Opening Google…";
-          try {
-            const res = await signInWithPopup(auth, googleProvider);
-            await ensureProfile(res.user);
-            location.href = "/";
-          } catch (err) {
-            console.error(err);
-            loginStatus.textContent = nice(err);
-          }
-        });
-      }
+    // --- Email/password login (form submit handles Enter key too)
+    loginForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      setStatus(loginStatus, "Signing in…");
+      disable(loginForm, true);
 
-      // Signup
-      if (btnSignup) {
-        btnSignup.addEventListener("click", async (e) => {
-          e.preventDefault();
-          signupStatus.textContent = "Creating account…";
-          try {
-            const first = document.getElementById("signup-first").value.trim();
-            const email = document.getElementById("signup-email").value.trim();
-            const pass  = document.getElementById("signup-password").value;
-            const cred  = await createUserWithEmailAndPassword(auth, email, pass);
-
-            if (first) {
-              try { await updateProfile(cred.user, { displayName: first }); } catch {}
-            }
-
-            await ensureProfile(cred.user, first);
-            location.href = "/";
-          } catch (err) {
-            console.error(err);
-            signupStatus.textContent = nice(err);
-          }
-        });
-      }
-
-      // Google signup
-      if (btnGoogleUp) {
-        btnGoogleUp.addEventListener("click", async () => {
-          signupStatus.textContent = "Opening Google…";
-          try {
-            const res = await signInWithPopup(auth, googleProvider);
-            await ensureProfile(res.user);
-            location.href = "/";
-          } catch (err) {
-            console.error(err);
-            signupStatus.textContent = nice(err);
-          }
-        });
-      }
-    }
-
-    // Handle Google redirect fallback
-    try {
-      const r = await getRedirectResult(auth);
-      if (r?.user) {
-        await ensureProfile(r.user);
+      try {
+        const email = document.getElementById("login-email").value.trim();
+        const pass  = document.getElementById("login-password").value;
+        const cred  = await signInWithEmailAndPassword(auth, email, pass);
+        await ensureProfile(cred.user);
         location.href = "/";
+      } catch (err) {
+        console.error(err);
+        setStatus(loginStatus, nice(err));
+        disable(loginForm, false);
       }
-    } catch (e) {
-      console.warn("Redirect sign-in failed:", e);
-    }
+    });
 
+    // --- Password reset
+    btnReset.addEventListener("click", async (e) => {
+      e.preventDefault();
+      const email = document.getElementById("login-email").value.trim();
+
+      if (!email) {
+        setStatus(loginStatus, "Enter your email first.");
+        return;
+      }
+
+      setStatus(loginStatus, "Sending reset email…");
+      try {
+        await sendPasswordResetEmail(auth, email);
+        setStatus(loginStatus, "Password reset email sent.", true);
+      } catch (err) {
+        console.error(err);
+        setStatus(loginStatus, nice(err));
+      }
+    });
+
+    // --- Google login
+    btnGoogleIn.addEventListener("click", async () => {
+      setStatus(loginStatus, "Opening Google…");
+      disable(loginForm, true);
+
+      try {
+        await authReady;
+        const res = await signInWithPopup(auth, googleProvider);
+        await ensureProfile(res.user);
+        location.href = "/";
+      } catch (err) {
+        console.error(err);
+        setStatus(loginStatus, nice(err));
+        disable(loginForm, false);
+      }
+    });
+
+    // --- Email/password signup
+    signupForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      setStatus(signupStatus, "Creating account…");
+      disable(signupForm, true);
+
+      try {
+        const first = document.getElementById("signup-first").value.trim();
+        const email = document.getElementById("signup-email").value.trim();
+        const pass  = document.getElementById("signup-password").value;
+
+        const cred = await createUserWithEmailAndPassword(auth, email, pass);
+
+        if (first) {
+          try { await updateProfile(cred.user, { displayName: first }); } catch {}
+        }
+
+        await ensureProfile(cred.user, first);
+        location.href = "/";
+      } catch (err) {
+        console.error(err);
+        setStatus(signupStatus, nice(err));
+        disable(signupForm, false);
+      }
+    });
+
+    // --- Google signup
+    btnGoogleUp.addEventListener("click", async () => {
+      setStatus(signupStatus, "Opening Google…");
+      disable(signupForm, true);
+
+      try {
+        await authReady;
+        const res = await signInWithPopup(auth, googleProvider);
+        await ensureProfile(res.user);
+        location.href = "/";
+      } catch (err) {
+        console.error(err);
+        setStatus(signupStatus, nice(err));
+        disable(signupForm, false);
+      }
+    });
+
+    // --- Redirect fallback (if you ever switch to signInWithRedirect)
+    (async () => {
+      try {
+        await authReady;
+        const r = await getRedirectResult(auth);
+        if (r?.user) {
+          await ensureProfile(r.user);
+          location.href = "/";
+        }
+      } catch (e) {
+        // Not fatal; only relevant for redirect flows
+        console.warn("Redirect sign-in check failed:", e);
+      }
+    })();
+
+    // Optional: auto-redirect if already signed in
     onAuthStateChanged(auth, (user) => {
-      // Optional auto-redirect if you want:
+      // If you prefer, uncomment:
       // if (user) location.href = "/";
     });
   </script>
