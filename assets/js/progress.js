@@ -1,6 +1,7 @@
 // /assets/js/progress.js
 // "My Progress" page: shows ONLY Firestore attempts for the logged-in user.
-// No localStorage fallback. If the user isn't signed in, we show a friendly message.
+// Adds hyperlinks to re-open attempt review pages by attemptId.
+// Fixes table column mismatch (renders 7 columns to match progress/index.html).
 
 (function () {
   "use strict";
@@ -39,9 +40,9 @@
       if (!sec || sec <= 0) return "—";
       const h = Math.floor(sec / 3600);
       const m = Math.floor((sec % 3600) / 60);
-      const s = sec % 60;
+      const s = Math.floor(sec % 60);
       if (h) return `${h}h ${m}m ${s}s`;
-      if (m) return `${m}m ${s.toString().padStart(2, "0")}s`;
+      if (m) return `${m}m ${String(s).padStart(2, "0")}s`;
       return `${s}s`;
     }
 
@@ -71,12 +72,18 @@
       });
     }
 
+    function buildReviewHref(attemptId) {
+      // Universal review page (recommended)
+      return `/pages/review.html?attemptId=${encodeURIComponent(attemptId)}`;
+    }
+
     /**
      * Normalize a Firestore attempt (from quizData.loadAllResultsForUser)
      * into a shape used by the UI:
      *
      * {
      *   id: string,
+     *   attemptId: string,
      *   timestamp: Date,
      *   score: number,
      *   total: number,
@@ -87,11 +94,13 @@
      * }
      */
     function normalizeAttempt(raw) {
+      // Minimal fallback record
       if (!raw || !raw.totals || !Array.isArray(raw.items)) {
-        // Fallback very minimal record
         const fallbackTime = toDateMaybe(raw && (raw.createdAt || raw.timestamp));
+        const fallbackId = (raw && (raw.id || raw.attemptId)) || ("unknown_" + fallbackTime.getTime());
         return {
-          id: (raw && raw.id) || "unknown_" + fallbackTime.getTime(),
+          id: fallbackId,
+          attemptId: fallbackId,
           timestamp: fallbackTime,
           score: 0,
           total: 0,
@@ -105,10 +114,11 @@
       const totals = raw.totals;
       const items = raw.items;
 
-      const score =
-        typeof totals.correct === "number" ? totals.correct : 0;
+      const score = typeof totals.correct === "number" ? totals.correct : 0;
+
       const total =
         typeof totals.total === "number" ? totals.total : items.length;
+
       const percent =
         typeof totals.scorePercent === "number"
           ? totals.scorePercent
@@ -123,11 +133,13 @@
       const timestamp = toDateMaybe(ts);
 
       const sectionId = raw.sectionId || null;
-      const title =
-        raw.title || raw.sectionTitle || sectionId || "Practice";
+      const title = raw.title || raw.sectionTitle || sectionId || "Practice";
+
+      const attemptId = raw.id || raw.attemptId || ("fs_" + timestamp.getTime());
 
       return {
-        id: raw.id || raw.attemptId || "fs_" + timestamp.getTime(),
+        id: attemptId,        // keep for backwards compatibility
+        attemptId: attemptId, // explicit for hyperlinks
         timestamp,
         score,
         total,
@@ -142,23 +154,16 @@
     // Data loading: Firestore only
     // -----------------------------
     async function fetchAllResults() {
-      if (
-        !window.quizData ||
-        typeof window.quizData.loadAllResultsForUser !== "function"
-      ) {
-        throw new Error(
-          "Progress: quizData API not available. Make sure quiz-data.js is loaded."
-        );
+      if (!window.quizData || typeof window.quizData.loadAllResultsForUser !== "function") {
+        throw new Error("Progress: quizData API not available. Make sure quiz-data.js is loaded.");
       }
 
       // This internally calls requireUser(), so it will reject if not signed in
       const rawFs = (await window.quizData.loadAllResultsForUser()) || [];
 
-      const list = rawFs
+      return rawFs
         .map((r) => normalizeAttempt(r))
         .sort((a, b) => b.timestamp - a.timestamp); // newest → oldest
-
-      return list;
     }
 
     // -----------------------------
@@ -185,18 +190,15 @@
       list.forEach((r) => {
         const score = Number(r.score || 0);
         const total = Number(r.total || 0);
-        const percent = total > 0 ? computePercent(score, total) : 0;
+        const pct = total > 0 ? computePercent(score, total) : 0;
 
         totalQuestions += total;
         totalCorrect += score;
         totalTime += Number(r.durationSeconds || 0);
-        if (percent > bestPercent) bestPercent = percent;
+        if (pct > bestPercent) bestPercent = pct;
       });
 
-      const avgPercent =
-        totalQuestions > 0
-          ? computePercent(totalCorrect, totalQuestions)
-          : 0;
+      const avgPercent = totalQuestions > 0 ? computePercent(totalCorrect, totalQuestions) : 0;
 
       summaryEl.innerHTML = `
         <div class="summary-grid">
@@ -228,17 +230,12 @@
     }
 
     function renderHistory(list) {
-      if (!historyTable) {
-        // Simple tbody-only layout
-        historyBody.innerHTML = "";
-      } else {
-        historyTable.style.display = "";
-      }
+      if (historyTable) historyTable.style.display = "";
 
       if (!list || !list.length) {
         historyBody.innerHTML = `
           <tr>
-            <td colspan="5">No quizzes recorded yet.</td>
+            <td colspan="7">No quizzes recorded yet.</td>
           </tr>
         `;
         return;
@@ -246,17 +243,29 @@
 
       const rows = list.map((r) => {
         const dateStr = r.timestamp.toLocaleString();
-        const percentStr = `${r.percent.toFixed(1)}%`;
+        const percentStr = `${Number(r.percent || 0).toFixed(1)}%`;
+
+        const href = r.attemptId ? buildReviewHref(r.attemptId) : null;
+
+        const titleHtml = href
+          ? `<a class="history-link" href="${href}">${escapeHtml(r.title || "Practice")}</a>`
+          : escapeHtml(r.title || "Practice");
+
+        const detailsHtml = href
+          ? `<a class="details-link" href="${href}">View</a>`
+          : `<span class="muted">—</span>`;
 
         return `
           <tr>
             <td class="cell-date">${escapeHtml(dateStr)}</td>
-            <td class="cell-title">${escapeHtml(r.title || "Practice")}</td>
+            <td class="cell-title">${titleHtml}</td>
             <td class="cell-score">
               <span class="score-pill">${escapeHtml(percentStr)}</span>
             </td>
-            <td class="cell-detail">${r.score || 0} / ${r.total || 0}</td>
-            <td class="cell-time">${secToHMS(r.durationSeconds)}</td>
+            <td class="cell-total">${Number(r.score || 0)} / ${Number(r.total || 0)}</td>
+            <td class="cell-pct">${escapeHtml(percentStr)}</td>
+            <td class="cell-time">${escapeHtml(secToHMS(r.durationSeconds))}</td>
+            <td class="cell-details">${detailsHtml}</td>
           </tr>
         `;
       });
@@ -292,8 +301,8 @@
             <p>${escapeHtml(msg)}</p>
           </div>
         `;
-        historyBody.innerHTML =
-          '<tr><td colspan="5">No data to display.</td></tr>';
+
+        historyBody.innerHTML = '<tr><td colspan="7">No data to display.</td></tr>';
 
         if (bannerEl) {
           bannerEl.textContent = msg;
@@ -309,9 +318,7 @@
     // Init
     // -----------------------------
     function init() {
-      refresh().catch((err) =>
-        console.error("progress.js: initial refresh failed", err)
-      );
+      refresh().catch((err) => console.error("progress.js: initial refresh failed", err));
     }
 
     init();
