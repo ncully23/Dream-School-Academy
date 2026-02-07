@@ -62,6 +62,8 @@ function pickQuestions(bank, cfg) {
 
   document.title = window.dsaQuizConfig.sectionTitle;
 
+  await import("/assets/js/quiz-engine.js");
+
   // 5) If your engine is not already imported elsewhere, import it here:
   // await import("/assets/js/quiz-engine.js");
 
