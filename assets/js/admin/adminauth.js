@@ -1,4 +1,4 @@
-// /assets/js/admin/adminAuth.js
+// /assets/js/admin/adminauth.js
 (function () {
   "use strict";
 
