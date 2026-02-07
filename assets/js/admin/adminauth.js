@@ -32,7 +32,7 @@
           try { unsub(); } catch (_) {}
 
           if (!user) {
-            window.location.href = "/pages/login.html";
+            window.location.href = "profile/login.html";
             return;
           }
 
