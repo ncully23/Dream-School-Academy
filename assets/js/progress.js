@@ -261,7 +261,6 @@
             <td class="cell-total">${Number(r.score || 0)} / ${Number(r.total || 0)}</td>
             <td class="cell-pct">${escapeHtml(percentStr)}</td>
             <td class="cell-time">${escapeHtml(secToHMS(r.durationSeconds))}</td>
-            <td class="cell-details">${detailsHtml}</td>
           </tr>
         `;
       });
