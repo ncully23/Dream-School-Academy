@@ -1,7 +1,7 @@
 // /assets/js/progress.js
 // "My Progress" page: shows ONLY Firestore attempts for the logged-in user.
-// Adds hyperlinks to re-open attempt review pages by attemptId.
-// Fixes table column mismatch (renders 7 columns to match progress/index.html).
+// Adds hyperlink on the quiz title to re-open attempt review pages by attemptId.
+// Renders 6 columns (Date, Category, Score, Total, % Correct, Duration) — NO "View" link.
 
 (function () {
   "use strict";
@@ -24,14 +24,9 @@
     const loadingEl = document.getElementById("progressLoading");
     const bannerEl = document.getElementById("unsyncedBanner"); // repurposed as info/error banner
 
-    if (!summaryEl || !historyBody) {
-      // Page isn't wired for this script; exit quietly
-      return;
-    }
+    if (!summaryEl || !historyBody) return;
 
-    const state = {
-      attempts: []
-    };
+    const state = { attempts: [] };
 
     // -----------------------------
     // Helpers
@@ -73,31 +68,20 @@
     }
 
     function buildReviewHref(attemptId) {
-      // Universal review page (recommended)
       return `/pages/review.html?attemptId=${encodeURIComponent(attemptId)}`;
     }
 
     /**
      * Normalize a Firestore attempt (from quizData.loadAllResultsForUser)
-     * into a shape used by the UI:
-     *
-     * {
-     *   id: string,
-     *   attemptId: string,
-     *   timestamp: Date,
-     *   score: number,
-     *   total: number,
-     *   percent: number,
-     *   durationSeconds: number,
-     *   title: string,
-     *   sectionId: string | null
-     * }
+     * into a shape used by the UI.
      */
     function normalizeAttempt(raw) {
       // Minimal fallback record
       if (!raw || !raw.totals || !Array.isArray(raw.items)) {
         const fallbackTime = toDateMaybe(raw && (raw.createdAt || raw.timestamp));
-        const fallbackId = (raw && (raw.id || raw.attemptId)) || ("unknown_" + fallbackTime.getTime());
+        const fallbackId =
+          (raw && (raw.id || raw.attemptId)) || ("unknown_" + fallbackTime.getTime());
+
         return {
           id: fallbackId,
           attemptId: fallbackId,
@@ -115,9 +99,7 @@
       const items = raw.items;
 
       const score = typeof totals.correct === "number" ? totals.correct : 0;
-
-      const total =
-        typeof totals.total === "number" ? totals.total : items.length;
+      const total = typeof totals.total === "number" ? totals.total : items.length;
 
       const percent =
         typeof totals.scorePercent === "number"
@@ -135,11 +117,12 @@
       const sectionId = raw.sectionId || null;
       const title = raw.title || raw.sectionTitle || sectionId || "Practice";
 
+      // IMPORTANT: use Firestore doc id (raw.id) when present so links can fetch by doc id.
       const attemptId = raw.id || raw.attemptId || ("fs_" + timestamp.getTime());
 
       return {
-        id: attemptId,        // keep for backwards compatibility
-        attemptId: attemptId, // explicit for hyperlinks
+        id: attemptId,
+        attemptId,
         timestamp,
         score,
         total,
@@ -158,12 +141,11 @@
         throw new Error("Progress: quizData API not available. Make sure quiz-data.js is loaded.");
       }
 
-      // This internally calls requireUser(), so it will reject if not signed in
       const rawFs = (await window.quizData.loadAllResultsForUser()) || [];
 
       return rawFs
         .map((r) => normalizeAttempt(r))
-        .sort((a, b) => b.timestamp - a.timestamp); // newest → oldest
+        .sort((a, b) => b.timestamp - a.timestamp);
     }
 
     // -----------------------------
@@ -198,7 +180,8 @@
         if (pct > bestPercent) bestPercent = pct;
       });
 
-      const avgPercent = totalQuestions > 0 ? computePercent(totalCorrect, totalQuestions) : 0;
+      const avgPercent =
+        totalQuestions > 0 ? computePercent(totalCorrect, totalQuestions) : 0;
 
       summaryEl.innerHTML = `
         <div class="summary-grid">
@@ -233,9 +216,10 @@
       if (historyTable) historyTable.style.display = "";
 
       if (!list || !list.length) {
+        // NOTE: if you removed the "Details" column header, colspan should be 6.
         historyBody.innerHTML = `
           <tr>
-            <td colspan="7">No quizzes recorded yet.</td>
+            <td colspan="6">No quizzes recorded yet.</td>
           </tr>
         `;
         return;
@@ -297,7 +281,8 @@
           </div>
         `;
 
-        historyBody.innerHTML = '<tr><td colspan="7">No data to display.</td></tr>';
+        // NOTE: if you removed the "Details" column header, colspan should be 6.
+        historyBody.innerHTML = '<tr><td colspan="6">No data to display.</td></tr>';
 
         if (bannerEl) {
           bannerEl.textContent = msg;
