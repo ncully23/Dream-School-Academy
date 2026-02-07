@@ -1,0 +1,40 @@
+// /assets/js/admin/adminAuth.js
+(function () {
+  "use strict";
+
+  // Put your admin UID(s) here (same as in Firestore rules allowlist)
+  const ADMIN_UIDS = new Set([
+    "PASTE_ADMIN_UID_HERE",
+  ]);
+
+  function getAuth() {
+    // Assumes firebase app is already initialized elsewhere
+    return firebase.auth();
+  }
+
+  async function requireAdminOrRedirect() {
+    return new Promise((resolve) => {
+      const auth = getAuth();
+      const unsub = auth.onAuthStateChanged((user) => {
+        unsub();
+
+        if (!user) {
+          // Not logged in
+          window.location.href = "/pages/login.html";
+          return;
+        }
+
+        if (!ADMIN_UIDS.has(user.uid)) {
+          // Logged in but not admin
+          window.location.href = "/";
+          return;
+        }
+
+        resolve(user);
+      });
+    });
+  }
+
+  // expose globally
+  window.dsaAdminAuth = { requireAdminOrRedirect };
+})();
