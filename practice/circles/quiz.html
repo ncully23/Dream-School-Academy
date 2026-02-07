@@ -15,17 +15,7 @@
   <script type="module" src="/assets/js/firebase-init.js"></script>
   <script type="module" src="/assets/js/quiz-data.js"></script>
 
-  <!--
-    Revised boot strategy (v2):
-    - This page is a thin compatibility entry point.
-    - It resolves quizId from either:
-        1) ?quizId=... (preferred), OR
-        2) folder path /practice/<topic>/quiz.html
-    - It converts folder-based ids like "circles" into canonical ids like "math.circles".
-    - It loads quiz metadata from /assets/configs/quizzes.json (NOT quiz-registry.js).
-    - It imports the shared page controller (/assets/js/pages/quizpage.js),
-      which should run the quiz UI using the DOM ids in this page.
-  -->
+  <!-- Boot loader -->
   <script type="module">
     const QUIZZES_CONFIG_URL = "/assets/configs/quizzes.json";
     const PAGE_CONTROLLER_URL = "/assets/js/quizpage.js";
@@ -61,9 +51,6 @@
       setHeader("Quiz failed to load", "--:--");
     }
 
-    // -----------------------------
-    // quizId resolution
-    // -----------------------------
     function getQuizIdFromUrl() {
       try {
         return new URLSearchParams(location.search).get("quizId");
@@ -73,13 +60,11 @@
     }
 
     function getTopicFromPathFallback() {
-      // /practice/circles/quiz.html -> "circles"
       try {
         const parts = location.pathname.split("/").filter(Boolean);
         const practiceIdx = parts.indexOf("practice");
         if (practiceIdx >= 0 && parts.length > practiceIdx + 1) {
-          const candidate = parts[practiceIdx + 1];
-          if (candidate && candidate !== "quiz.html") return candidate;
+          return parts[practiceIdx + 1];
         }
         return null;
       } catch {
@@ -89,13 +74,8 @@
 
     function canonicalizeQuizId(rawId) {
       if (!rawId) return null;
-
-      // If already canonical (e.g., "math.circles"), keep it.
       if (rawId.includes(".")) return rawId;
 
-      // Folder-style ids -> canonical ids.
-      // For now, assume practice/ topics are Math topics unless specified otherwise.
-      // You can expand this mapping later (rw., math., etc.).
       const TOPIC_MAP = {
         circles: "math.circles",
       };
@@ -105,77 +85,44 @@
 
     async function loadQuizzesConfig() {
       const res = await fetch(QUIZZES_CONFIG_URL, { cache: "no-store" });
-      if (!res.ok) throw new Error(`HTTP ${res.status} while fetching ${QUIZZES_CONFIG_URL}`);
-      return await res.json();
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      return res.json();
     }
 
     async function boot() {
       setHeader("Loading…", "--:--");
 
-      const urlQuizId = getQuizIdFromUrl();
-      const pathTopic = getTopicFromPathFallback();
+      const quizId = canonicalizeQuizId(
+        getQuizIdFromUrl() || getTopicFromPathFallback()
+      );
 
-      const quizId = canonicalizeQuizId(urlQuizId || pathTopic);
       if (!quizId) {
         showError(
-          "Missing quiz id. Use either " +
-          "<code>/practice/&lt;topic&gt;/quiz.html</code> " +
-          "or <code>?quizId=...</code>."
+          "Missing quiz id. Use <code>?quizId=...</code> or <code>/practice/&lt;topic&gt;/quiz.html</code>."
         );
         return;
       }
 
-      // Load quiz metadata from quizzes.json to validate existence and bank paths.
       let quizzes;
       try {
         quizzes = await loadQuizzesConfig();
-      } catch (err) {
-        console.error("Failed to load quizzes config:", err);
-        showError(
-          `Could not load quiz config at <code>${escapeHtml(QUIZZES_CONFIG_URL)}</code>. ` +
-          `Check that the file exists and is deployed.`
-        );
+      } catch {
+        showError(`Could not load <code>${escapeHtml(QUIZZES_CONFIG_URL)}</code>.`);
         return;
       }
 
       const cfg = quizzes?.[quizId];
-      if (!cfg) {
-        showError(
-          `Unknown quizId: <code>${escapeHtml(quizId)}</code>. ` +
-          `No entry found in <code>assets/configs/quizzes.json</code>.`
-        );
+      if (!cfg || !cfg.bank) {
+        showError(`Invalid quiz config for <code>${escapeHtml(quizId)}</code>.`);
         return;
       }
 
-      const bankUrl = cfg.bank || cfg.bankUrl || cfg.jsonUrl || cfg.url;
-      if (!bankUrl) {
-        showError(
-          `Quiz <code>${escapeHtml(quizId)}</code> exists in config, but has no bank path. ` +
-          `Expected <code>bank</code>.`
-        );
-        return;
-      }
+      window.DSA_BOOT = { quizId, cfg, bankUrl: cfg.bank };
 
-      // Store boot info for the shared controller (simple and explicit).
-      // The controller should:
-      // - read window.DSA_BOOT.quizId
-      // - load quizzes.json (or use window.DSA_BOOT.cfg if it prefers)
-      // - fetch/parse the bank
-      // - run the quiz engine against this page's DOM.
-      window.DSA_BOOT = {
-        quizId,
-        cfg,
-        bankUrl
-      };
-
-      // Import shared page controller (which can then import quiz-engine.js).
       try {
         await import(PAGE_CONTROLLER_URL);
       } catch (err) {
-        console.error("Page controller failed to import:", err);
-        showError(
-          `Controller error: <code>${escapeHtml(err?.message || String(err))}</code>`
-        );
+        showError(`Controller error: <code>${escapeHtml(err.message)}</code>`);
       }
     }
 
@@ -184,120 +131,104 @@
 </head>
 
 <body>
+  <!-- Global site header -->
   <div id="site-header"></div>
 
-  <!-- Explicit policy banner per your requirement: no resume, start over if you leave -->
-  <div class="load-error" style="margin:12px 12px 0; background:#fff7ed; border-color:#fdba74;">
-    <h2 style="margin:0 0 4px; font-size:16px;">Heads up</h2>
-    <p style="margin:0;">
-      Your progress is <b>not saved</b> until you click <b>End &amp; Score</b>.
-      If you refresh, close this tab, or leave this page before submitting, you will start over.
-    </p>
+  <!-- Practice warning -->
+  <div class="quiz-warning">
+    <strong>Heads up:</strong>
+    Your progress is <b>not saved</b> until you click <b>End &amp; Score</b>.
+    Refreshing or leaving will restart the quiz.
   </div>
 
   <div class="app">
+    <!-- Quiz header -->
     <div class="header" role="banner">
       <div>
         <div class="title" id="sectionTitle">Loading…</div>
-        <button class="directions" aria-label="Directions" type="button">Directions ▾</button>
+        <button class="directions" type="button">Directions ▾</button>
       </div>
 
       <div class="timer" aria-live="polite">
         <b id="timeLeft">--:--</b>
-        <button id="toggleTimer" class="btn ghost" aria-pressed="false" type="button">Hide</button>
+        <button id="toggleTimer" class="btn ghost" type="button">Hide</button>
       </div>
 
       <div aria-hidden="true"></div>
     </div>
 
     <div class="ticks">THIS IS A PRACTICE SET</div>
-    <div class="dashrow" id="dashrow" aria-hidden="true"></div>
+    <div class="dashrow" id="dashrow"></div>
 
     <div class="qwrap">
       <article class="qcard" id="qcard">
         <header class="qtop">
           <div class="qbadge" id="qbadge">1</div>
-          <div class="qdash" aria-hidden="true"></div>
+          <div class="qdash"></div>
 
-          <button id="flagTop" class="flagbtn" aria-pressed="false" type="button">
-            <span class="flagicon" aria-hidden="true"></span>
+          <button id="flagTop" class="flagbtn" type="button">
+            <span class="flagicon"></span>
             <span id="flagLabel">Mark for review</span>
           </button>
 
-          <button id="elimToggle" class="elimbtn" aria-pressed="false" title="Eliminate answers" type="button">
-            <span class="elimicon" aria-hidden="true"></span>
+          <button id="elimToggle" class="elimbtn" type="button">
+            <span class="elimicon"></span>
             Eliminate
           </button>
         </header>
 
         <h2 class="qtitle" id="qtitle">Loading question…</h2>
-        <div class="choices" id="choices" role="radiogroup" aria-label="Choices"></div>
+        <div class="choices" id="choices"></div>
 
         <div class="hint" id="elimHint" hidden>
-          Eliminate mode is on — click an answer to gray it out. Click again to restore.
+          Eliminate mode is on — click an answer to gray it out.
         </div>
       </article>
     </div>
 
-    <section class="check-wrap" id="checkPage" aria-label="Check Your Work">
+    <section class="check-wrap" id="checkPage">
       <h1 class="check-head">Check Your Work</h1>
-      <p class="check-sub">On test day, you won’t be able to move on to the next module until time expires.</p>
+      <p class="check-sub">
+        On test day, you won’t be able to move on until time expires.
+      </p>
 
       <div class="check-card">
         <div class="check-row">
-          <div id="checkTitle">Questions</div>
-          <div class="check-leg">
-            <span>
-              <span class="box" aria-hidden="true"
-                style="width:16px;height:16px;border:2px dashed #2b3350;border-radius:4px;display:inline-block;margin-right:6px"></span>
-              Unanswered
-            </span>
-            <span>
-              <span class="flag" aria-hidden="true"
-                style="width:12px;height:12px;background:var(--flag);display:inline-block;margin-right:6px"></span>
-              For Review
-            </span>
-          </div>
+          <div>Questions</div>
         </div>
-
         <div class="grid-nums" id="checkGrid"></div>
       </div>
     </section>
   </div>
 
-  <div class="rail" role="contentinfo">
+  <!-- Bottom rail -->
+  <div class="rail">
     <div class="rail-inner">
-      <div class="progress" id="progress" aria-hidden="true"></div>
+      <div class="progress" id="progress"></div>
 
-      <button class="center-pill" id="centerPill" aria-haspopup="dialog" aria-expanded="false" type="button">
-        <div class="pill-flag" id="pillFlag" style="display:none" aria-hidden="true"></div>
+      <button class="center-pill" id="centerPill" type="button">
         <span id="pillText">Question 1 of …</span>
-        <span class="caret" aria-hidden="true">▾</span>
+        <span class="caret">▾</span>
       </button>
 
       <div class="rail-left">
-        <button id="btnBack" class="btn nav" type="button">Back</button>
+        <button id="btnBack" class="btn nav">Back</button>
       </div>
 
       <div class="rail-actions">
-        <button id="btnNext" class="btn nav primary" type="button">Next</button>
-        <button id="btnFinish" class="btn nav primary" style="display:none" type="button">End &amp; Score</button>
+        <button id="btnNext" class="btn nav primary">Next</button>
+        <button id="btnFinish" class="btn nav primary" style="display:none">
+          End &amp; Score
+        </button>
       </div>
     </div>
   </div>
 
-  <div class="popover" id="popover" role="dialog" aria-modal="false" aria-label="Question Navigator">
-    <button class="close" id="popClose" aria-label="Close" type="button">×</button>
-    <div class="title" id="popTitle">Questions</div>
-
-    <div class="legend">
-      <span>📍 Current</span>
-      <span><span class="box" aria-hidden="true"></span> Unanswered</span>
-      <span><span class="flag" aria-hidden="true"></span> For Review</span>
-    </div>
-
+  <div class="popover" id="popover">
+    <button class="close" id="popClose">×</button>
+    <div class="title">Questions</div>
     <div class="grid" id="popGrid"></div>
-    <button class="go-review" id="goReview" type="button">Go to Review Page</button>
+    <button class="go-review" id="goReview">Go to Review Page</button>
   </div>
 
   <div id="site-footer"></div>
