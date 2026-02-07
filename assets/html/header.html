@@ -13,11 +13,20 @@
 
     <!-- Primary nav -->
     <nav class="site-nav" aria-label="Primary">
-      <a href="/"         data-nav="home">Home</a>
-      <a href="/study/index.html"    data-nav="study">Study</a>
+      <a href="/" data-nav="home">Home</a>
+      <a href="/study/index.html" data-nav="study">Study</a>
       <a href="/practice/index.html" data-nav="practice">Practice</a>
       <a href="/progress/index.html" data-nav="progress">My Progress</a>
-      <a href="/admin/allstudents.html" data-nav="admin">Admin</a>
+
+      <!-- Admin (shown only for allowed admin UID via shell.js) -->
+      <a
+        id="admin-link"
+        href="/admin/allstudents.html"
+        class="nav-btn"
+        data-nav="admin"
+        style="display:none;">
+        Admin
+      </a>
 
       <!-- Greeting (signed in) -->
       <span
@@ -35,14 +44,6 @@
         data-when="signed-out">
         Log in / Sign up
       </a>
-
-<a
-  id="admin-link"
-  href="/admin/allstudents.html"
-  class="nav-btn">
-  Admin
-</a>
-
 
       <!-- Logout (signed in) -->
       <button
