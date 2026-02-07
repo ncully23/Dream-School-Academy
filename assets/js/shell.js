@@ -46,17 +46,11 @@ function onReady(fn) {
 
 function initShell() {
   onReady(async () => {
-    // 1) Ensure header/footer mount points exist
     ensureMount("site-header", "start");
     ensureMount("site-footer", "end");
 
-    // 2) Inject header + footer HTML
     await injectChrome();
-
-    // 3) Highlight active nav item
     highlightNav();
-
-    // 4) Wire up auth greeting + login/logout controls (+ admin link)
     wireAuthUi();
   });
 }
@@ -98,7 +92,6 @@ function highlightNav() {
     const pageAttr = document.documentElement.getAttribute("data-page"); // e.g. "practice"
     const path = (location.pathname || "/").toLowerCase();
 
-    // Basic mapping for top-level pages
     const map = {
       "/": "home",
       "/home.html": "home",
@@ -115,15 +108,17 @@ function highlightNav() {
       "/progress/": "progress",
       "/progress/index.html": "progress",
 
+      "/admin": "admin",
+      "/admin/": "admin",
+      "/admin/allstudents.html": "admin",
+      "/admin/student.html": "admin",
+
       "/pages/profile/login.html": "login",
       "/profile/login.html": "login",
     };
 
-    // Try explicit data-page first
     let key = pageAttr;
 
-    // If no data-page, infer from path, including nested routes like
-    // /practice/circles/preview.html → "practice"
     if (!key) {
       let bestMatch = null;
       for (const route of Object.keys(map)) {
@@ -148,36 +143,31 @@ function highlightNav() {
 }
 
 function wireAuthUi() {
-  // Header elements (must exist after injectChrome())
   const greetingEl = $("#user-greeting");
   const loginLink = $("#login-link");
   const logoutBtn = $("#logout-btn");
   const adminLink = $("#admin-link");
 
-  // If header markup isn’t present, don’t try to wire auth UI
   if (!greetingEl || !loginLink || !logoutBtn) {
     console.warn("[shell] Auth UI elements not found in header.");
     return;
   }
 
-  // Logout handler (avoid double-binding)
   if (!logoutBtn.dataset.bound) {
     logoutBtn.dataset.bound = "1";
     logoutBtn.addEventListener("click", async () => {
       try {
         await signOut(auth);
-        window.location.href = "/"; // safest canonical home
+        window.location.href = "/";
       } catch (e) {
         console.error("[shell] Sign out failed:", e);
       }
     });
   }
 
-  // Helper: first name from Firestore or Auth object
   async function getFirstName(user) {
     if (!user) return null;
 
-    // Try Firestore profile doc: /users/{uid}
     try {
       const ref = doc(db, "users", user.uid);
       const snap = await getDoc(ref);
@@ -187,26 +177,25 @@ function wireAuthUi() {
         if (name) return String(name).split(/\s+/)[0];
       }
     } catch (e) {
-      // Profile read may fail (rules, missing doc) — ok to fall back
       console.warn("[shell] Failed to load profile from Firestore:", e);
     }
 
-    // Fallbacks from auth profile
     if (user.displayName) return user.displayName.split(/\s+/)[0];
     if (user.email) return user.email.split("@")[0];
     return "there";
   }
 
-  // Helper: set admin link visibility (UI only; rules enforce real access)
   function setAdminLinkVisible(user) {
     if (!adminLink) return;
+
     const show = !!(user && ADMIN_UIDS.has(user.uid));
     adminLink.style.display = show ? "inline-flex" : "none";
+
+    // Debug (leave in while you’re testing; remove later)
+    // console.log("[shell] admin gate:", { uid: user?.uid, show });
   }
 
-  // Watch auth state and update header
   onAuthStateChanged(auth, async (user) => {
-    // Admin button gating
     setAdminLinkVisible(user);
 
     if (user) {
