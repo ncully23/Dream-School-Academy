@@ -253,3 +253,21 @@
     padding: 10px;
   }
 }
+
+/* Add to /assets/css/progress.css (or merge into existing file) */
+
+.history-link,
+.details-link {
+  color: var(--brand);
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.history-link:hover,
+.details-link:hover {
+  text-decoration: underline;
+}
+
+.muted {
+  color: var(--muted);
+}
