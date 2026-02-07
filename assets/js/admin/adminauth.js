@@ -4,7 +4,7 @@
 
   // Put your admin UID(s) here (same as in Firestore rules allowlist)
   const ADMIN_UIDS = new Set([
-    "PASTE_ADMIN_UID_HERE",
+    "7mv59VrUnJaZ7D2Kezb7cXCo2U53",
   ]);
 
   function getAuth() {
