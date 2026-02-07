@@ -1,3 +1,4 @@
+<!-- summary.html (fully revised: richer solution rendering + collapsible “Deep dive”) -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -16,6 +17,9 @@
     --pill:#0b1227;
     --shadow:0 6px 14px rgba(16,24,40,.08);
     --neutral:#475569;
+    --blue:#1f4dd8;
+    --hint:#0ea5e9;
+    --warn:#b45309;
   }
   body{
     margin:0;
@@ -37,6 +41,7 @@
   }
   h1{margin:.25rem 0 .35rem}
   h2{margin:.25rem 0 .35rem}
+  h3{margin:.25rem 0 .35rem}
   .muted{color:var(--muted)}
   .top{
     display:flex;
@@ -54,6 +59,7 @@
     display:inline-flex;
     gap:10px;
     align-items:center;
+    white-space:nowrap;
   }
   .score span.small{
     font-size:13px;
@@ -86,9 +92,9 @@
   }
   .qhead{
     display:flex;
-    align-items:center;
+    align-items:flex-start;
     gap:10px;
-    margin-bottom:8px;
+    margin-bottom:10px;
   }
   .badge{
     width:32px;
@@ -98,11 +104,19 @@
     place-items:center;
     font-weight:900;
     color:#fff;
+    flex:0 0 auto;
+    margin-top:1px;
   }
   .badge.ok{background:var(--good)}
   .badge.no{background:var(--bad)}
   .badge.na{background:var(--neutral)}
   .prompt{font-weight:800}
+  .submeta{
+    margin-top:4px;
+    font-size:13px;
+    color:var(--muted);
+  }
+
   .choices{
     margin-top:6px;
     display:grid;
@@ -115,7 +129,7 @@
     background:#f7f8fd;
     display:flex;
     justify-content:space-between;
-    align-items:center;
+    align-items:flex-start;
     gap:10px;
   }
   .choice.correct{
@@ -133,6 +147,7 @@
     align-items:center;
     flex-wrap:wrap;
     justify-content:flex-end;
+    padding-top:2px;
   }
   .tag{
     font-size:12px;
@@ -161,9 +176,19 @@
     color:#4b5563;
     border-color:#e5e7eb;
   }
+  .tag.skill{
+    background:#ecfeff;
+    color:#155e75;
+    border-color:#a5f3fc;
+  }
+  .tag.diff{
+    background:#fff7ed;
+    color:#7c2d12;
+    border-color:#fed7aa;
+  }
 
   .exp{
-    margin-top:8px;
+    margin-top:10px;
     color:var(--muted);
   }
   .exp b{color:var(--ink)}
@@ -173,6 +198,108 @@
   }
   .exp li{
     margin:2px 0;
+  }
+
+  .kv{
+    margin-top:8px;
+    display:grid;
+    gap:8px;
+  }
+  .row{
+    display:flex;
+    gap:10px;
+    flex-wrap:wrap;
+    align-items:center;
+  }
+  .pill{
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    padding:6px 10px;
+    border-radius:999px;
+    border:1px solid var(--line);
+    background:#f8fafc;
+    font-size:13px;
+    color:var(--ink);
+  }
+  .pill strong{font-weight:800}
+  .pill.good{border-color:#bbf7d0; background:#f0fdf4}
+  .pill.bad{border-color:#fecdd3; background:#fff1f2}
+  .pill.info{border-color:#a5f3fc; background:#ecfeff}
+  .pill.warn{border-color:#fed7aa; background:#fff7ed}
+
+  details.deep{
+    margin-top:10px;
+    border:1px solid var(--line);
+    border-radius:12px;
+    background:#ffffff;
+    padding:10px 12px;
+  }
+  details.deep > summary{
+    cursor:pointer;
+    list-style:none;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:12px;
+    font-weight:800;
+    color:var(--ink);
+  }
+  details.deep > summary::-webkit-details-marker{display:none}
+  .chev{
+    width:10px;height:10px;
+    border-right:2px solid #334155;
+    border-bottom:2px solid #334155;
+    transform:rotate(-45deg);
+    transition:transform .15s ease;
+    flex:0 0 auto;
+    margin-top:1px;
+  }
+  details.deep[open] .chev{transform:rotate(45deg)}
+  .deepBody{
+    margin-top:8px;
+    color:var(--muted);
+  }
+  .deepBody h4{
+    margin:10px 0 6px;
+    color:var(--ink);
+    font-size:14px;
+    letter-spacing:.1px;
+  }
+  .rationale{
+    display:grid;
+    gap:8px;
+    margin-top:6px;
+  }
+  .ratItem{
+    border:1px solid var(--line);
+    border-radius:10px;
+    background:#f8fafc;
+    padding:8px 10px;
+  }
+  .ratItem.correct{
+    border-color:#bbf7d0;
+    background:#f0fdf4;
+  }
+  .ratItem.wrong{
+    border-color:#fed7aa;
+    background:#fff7ed;
+  }
+  .ratHdr{
+    display:flex;
+    justify-content:space-between;
+    gap:10px;
+    align-items:flex-start;
+  }
+  .ratHdr b{color:var(--ink)}
+  .ratLbl{
+    font-size:12px;
+    border-radius:999px;
+    padding:2px 8px;
+    border:1px solid var(--line);
+    background:#fff;
+    color:#334155;
+    white-space:nowrap;
   }
 
   .empty{
@@ -185,7 +312,7 @@
     margin-top:10px;
     padding:10px 14px;
     border-radius:10px;
-    background:#1f4dd8;
+    background:var(--blue);
     color:#fff;
     text-decoration:none;
     font-weight:700;
@@ -219,9 +346,9 @@
 (function () {
   "use strict";
 
-  // New engine key format:
+  // Attempt key format:
   //   dsa:attempt:<attemptId>
-  // Older fallbacks kept for backwards compatibility.
+  // Legacy fallbacks kept for backwards compatibility.
   const LEGACY_CIRCLES_KEY = "dsa-circles-summary-v1";
   const LEGACY_LAST_KEY    = "dsa-last-summary";
 
@@ -256,6 +383,94 @@
     );
   }
 
+  // ---------
+  // Helpers
+  // ---------
+  const letter = (i) => String.fromCharCode(65 + i);
+
+  function esc(s) {
+    // Defensive: escape HTML when rendering untrusted strings into innerHTML.
+    return String(s ?? "")
+      .replaceAll("&", "&amp;")
+      .replaceAll("<", "&lt;")
+      .replaceAll(">", "&gt;")
+      .replaceAll('"', "&quot;")
+      .replaceAll("'", "&#039;");
+  }
+
+  function asArray(x) {
+    return Array.isArray(x) ? x : (x ? [x] : []);
+  }
+
+  function normalizeSolution(it) {
+    // Supports multiple shapes:
+    // 1) it.solution (preferred; copied from bank)
+    // 2) legacy: it.explanation + it.steps
+    const sol = (it && typeof it.solution === "object" && it.solution) ? it.solution : null;
+
+    if (sol) {
+      return {
+        finalAnswer: sol.finalAnswer ?? null,
+        approach: sol.approach ?? null,
+        formulas: asArray(sol.formulas || sol.formula),
+        steps: asArray(sol.steps),
+        whyItWorks: sol.whyItWorks ?? null,
+        commonMistakes: asArray(sol.commonMistakes),
+        checks: asArray(sol.checks),
+        takeaway: sol.takeaway ?? null,
+        choiceRationales: (sol.choiceRationales && typeof sol.choiceRationales === "object") ? sol.choiceRationales : null
+      };
+    }
+
+    // legacy fallbacks
+    const legacyReasoning = it.explanation ?? null;
+    const legacySteps = asArray(it.steps);
+
+    return {
+      finalAnswer: null,
+      approach: null,
+      formulas: [],
+      steps: legacySteps,
+      whyItWorks: legacyReasoning,
+      commonMistakes: [],
+      checks: [],
+      takeaway: null,
+      choiceRationales: null
+    };
+  }
+
+  function formatChoiceRationales(choices, correctIndex, rationalesObj) {
+    // rationalesObj expected keys: "0","1","2"... or "A","B"...; tolerate both.
+    if (!rationalesObj) return "";
+
+    const blocks = choices.map((c, i) => {
+      const keyNum = String(i);
+      const keyLet = letter(i);
+      const raw = rationalesObj[keyNum] ?? rationalesObj[keyLet] ?? "";
+      const txt = String(raw || "").trim();
+      if (!txt) return "";
+
+      const isAns = i === correctIndex;
+      const cls = "ratItem " + (isAns ? "correct" : "wrong");
+      const lbl = isAns ? "Why this is correct" : "Why this is tempting / wrong";
+      return `
+        <div class="${cls}">
+          <div class="ratHdr">
+            <div><b>${esc(keyLet)}.</b> ${esc(c)}</div>
+            <span class="ratLbl">${esc(lbl)}</span>
+          </div>
+          <div style="margin-top:6px">${esc(txt)}</div>
+        </div>
+      `;
+    }).join("");
+
+    if (!blocks.trim()) return "";
+    return `<h4>Answer choice reasoning</h4><div class="rationale">${blocks}</div>`;
+  }
+
+  // ---------
+  // Main render
+  // ---------
   const data = loadData();
 
   const qsEl   = document.getElementById("qs");
@@ -292,9 +507,7 @@
   pill.innerHTML = `<span>${scorePct}%</span><span class="small">Score</span>`;
   document.title = pageTitle;
 
-  const letter = (i) => String.fromCharCode(65 + i);
-
-  data.items.forEach((it) => {
+  data.items.forEach((it, idx) => {
     const userIndex = (typeof it.chosenIndex === "number") ? it.chosenIndex : null;
     const hasAnswer = userIndex !== null && userIndex !== undefined;
     const isCorrect = hasAnswer && userIndex === it.correctIndex;
@@ -304,9 +517,7 @@
 
     const badgeClass = hasAnswer ? (isCorrect ? "ok" : "no") : "na";
 
-    // IMPORTANT:
-    // quiz-engine stores prompt as either HTML or text, depending on source.
-    // Your current renderer injects it as text in a div, so safest is to treat as text.
+    // Prompt: treat as text (safe)
     const promptText = String(it.prompt ?? "");
 
     const choices = Array.isArray(it.choices) ? it.choices : [];
@@ -328,70 +539,129 @@
 
       const tags = [];
       if (isUser) tags.push('<span class="tag you">Your choice</span>');
-      if (isAns)  tags.push('<span class="tag correct">Correct answer</span>');
+      if (isAns)  tags.push('<span class="tag correct">Correct</span>');
       if (isUser && !isAns) tags.push('<span class="tag wrong">Marked wrong</span>');
 
       const cls = ["choice", isAns ? "correct" : "", isUser ? "your" : ""].join(" ").trim();
 
       return `
         <div class="${cls}">
-          <div><b>${letter(i)}.</b> ${String(c)}</div>
+          <div><b>${esc(letter(i))}.</b> ${esc(c)}</div>
           <div class="tags">${tags.join(" ")}</div>
         </div>
       `;
     }).join("");
 
+    const skillLabel = it.skillLabel || it.skill || "";
+    const difficulty = it.difficulty || "";
+
+    const sol = normalizeSolution(it);
+
+    // Build top pills
+    const statusPill = hasAnswer
+      ? (isCorrect
+          ? `<span class="pill good"><strong>Status:</strong> Correct</span>`
+          : `<span class="pill bad"><strong>Status:</strong> Incorrect</span>`)
+      : `<span class="pill warn"><strong>Status:</strong> Unanswered</span>`;
+
+    const skillPill = skillLabel
+      ? `<span class="pill info"><strong>Skill:</strong> ${esc(skillLabel)}</span>`
+      : "";
+
+    const diffPill = difficulty
+      ? `<span class="pill warn"><strong>Difficulty:</strong> ${esc(difficulty)}</span>`
+      : "";
+
+    // Core “Solution” block (always visible)
+    const finalLine = (sol.finalAnswer || correctText)
+      ? `${esc(correctLetter)}. ${esc(sol.finalAnswer || correctText)}`
+      : `—`;
+
+    const yourLine = !hasAnswer
+      ? `(no answer selected)`
+      : `${esc(yourLetter)}. ${esc(yourText)} ${isCorrect ? "(matches)" : "(does not match)"}`;
+
+    const approachLine = sol.approach
+      ? `<li><b>Approach:</b> ${esc(sol.approach)}</li>`
+      : "";
+
+    const formulaLine = (sol.formulas && sol.formulas.length)
+      ? `<li><b>Key formula(s):</b> ${sol.formulas.map(f => esc(f)).join(" • ")}</li>`
+      : "";
+
+    const whyLine = sol.whyItWorks
+      ? `<li><b>Why this works:</b> ${esc(sol.whyItWorks)}</li>`
+      : "";
+
+    const stepsHtml = (sol.steps && sol.steps.length)
+      ? `<h4>Steps</h4><ul>${sol.steps.map(s => `<li>${esc(s)}</li>`).join("")}</ul>`
+      : "";
+
+    const mistakesHtml = (sol.commonMistakes && sol.commonMistakes.length)
+      ? `<h4>Common mistakes</h4><ul>${sol.commonMistakes.map(s => `<li>${esc(s)}</li>`).join("")}</ul>`
+      : "";
+
+    const checksHtml = (sol.checks && sol.checks.length)
+      ? `<h4>Quick checks</h4><ul>${sol.checks.map(s => `<li>${esc(s)}</li>`).join("")}</ul>`
+      : "";
+
+    const takeawayHtml = sol.takeaway
+      ? `<h4>Takeaway</h4><div>${esc(sol.takeaway)}</div>`
+      : "";
+
+    const rationalesHtml = formatChoiceRationales(choices, it.correctIndex, sol.choiceRationales);
+
     const unansweredTag = !hasAnswer
       ? '<span class="tag unanswered">You left this blank</span>'
       : "";
 
-    const skillLabel = it.skill || it.skillLabel || "";
-    const difficulty = it.difficulty || "";
-
-    const reasoning = it.explanation || "";
-    const steps = Array.isArray(it.steps) ? it.steps : null;
-
-    let solutionHtml = `
-      <ul>
-        <li><b>Correct answer:</b> ${correctLetter}. ${correctText}</li>
-    `;
-
-    if (!hasAnswer) {
-      solutionHtml += `<li><b>Your answer:</b> (no answer selected)</li>`;
-    } else {
-      solutionHtml += `<li><b>Your answer:</b> ${yourLetter}. ${yourText} ${isCorrect ? "(matches the correct answer)" : "(does not match the correct answer)"}.</li>`;
-    }
-
-    if (skillLabel) {
-      solutionHtml += `<li><b>What this question is testing:</b> ${skillLabel}${difficulty ? " — " + difficulty : ""}</li>`;
-    } else if (difficulty) {
-      solutionHtml += `<li><b>Difficulty:</b> ${difficulty}</li>`;
-    }
-
-    if (reasoning) {
-      solutionHtml += `<li><b>Reasoning:</b> ${reasoning}</li>`;
-    }
-
-    if (steps && steps.length > 0) {
-      solutionHtml += `<li><b>Step-by-step outline:</b><ul>`;
-      steps.forEach((s) => { solutionHtml += `<li>${String(s)}</li>`; });
-      solutionHtml += `</ul></li>`;
-    }
-
-    solutionHtml += `</ul>`;
-
     sec.innerHTML = `
       <div class="qhead">
-        <div class="badge ${badgeClass}">${it.number ?? ""}</div>
-        <div class="prompt"></div>
+        <div class="badge ${badgeClass}">${esc(it.number ?? (idx + 1))}</div>
+        <div style="flex:1 1 auto">
+          <div class="prompt"></div>
+          <div class="submeta">
+            ${skillLabel ? `<span class="tag skill">${esc(skillLabel)}</span>` : ""}
+            ${difficulty ? `<span class="tag diff">${esc(difficulty)}</span>` : ""}
+          </div>
+        </div>
       </div>
+
       <div class="choices">
         ${choiceHtml}
       </div>
+
       <div class="exp">
-        <b>Solution:</b>
-        ${solutionHtml}
-        ${unansweredTag}
+        <b>Solution summary</b>
+        <div class="kv">
+          <div class="row">
+            ${statusPill}
+            ${skillPill}
+            ${diffPill}
+          </div>
+          <ul>
+            <li><b>Correct answer:</b> ${finalLine}</li>
+            <li><b>Your answer:</b> ${yourLine}</li>
+            ${approachLine}
+            ${formulaLine}
+            ${whyLine}
+          </ul>
+          ${unansweredTag}
+        </div>
+
+        <details class="deep">
+          <summary>
+            <span>Deep dive (steps, checks, and why each choice)</span>
+            <span class="chev" aria-hidden="true"></span>
+          </summary>
+          <div class="deepBody">
+            ${stepsHtml || `<div class="muted">No step-by-step details stored for this question yet.</div>`}
+            ${checksHtml}
+            ${mistakesHtml}
+            ${takeawayHtml}
+            ${rationalesHtml}
+          </div>
+        </details>
       </div>
     `;
 
