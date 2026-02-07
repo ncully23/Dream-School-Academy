@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Loading…</title>
+  <title>Circles — Practice Quiz</title>
 
   <!-- Quiz styling (prefer after any global CSS so quiz wins) -->
   <link rel="stylesheet" href="/assets/css/quiz.css" />
@@ -11,20 +11,24 @@
   <!-- Shared shell (header/footer injection, auth UI, etc.) -->
   <script type="module" src="/assets/js/shell.js"></script>
 
-  <!-- Optional (required if you want Firestore persistence) -->
+  <!-- Firebase + persistence helpers -->
   <script type="module" src="/assets/js/firebase-init.js"></script>
   <script type="module" src="/assets/js/quiz-data.js"></script>
 
-  <!-- Quiz registry: maps quizId -> bankUrl, pickCount, etc. -->
-  <script type="module" src="/assets/js/quiz-registry.js"></script>
-
-  <!-- Boot loader:
-       - supports /practice/<quizId>/quiz.html (path fallback) OR ?quizId=...
-       - validates registry + bankUrl (fast precheck)
-       - imports quiz-engine.js (engine reads quizId + registry)
+  <!--
+    Revised boot strategy (v2):
+    - This page is a thin compatibility entry point.
+    - It resolves quizId from either:
+        1) ?quizId=... (preferred), OR
+        2) folder path /practice/<topic>/quiz.html
+    - It converts folder-based ids like "circles" into canonical ids like "math.circles".
+    - It loads quiz metadata from /assets/configs/quizzes.json (NOT quiz-registry.js).
+    - It imports the shared page controller (/assets/js/pages/quizpage.js),
+      which should run the quiz UI using the DOM ids in this page.
   -->
   <script type="module">
-    const ENGINE_URL = "/assets/js/quiz-engine.js";
+    const QUIZZES_CONFIG_URL = "/assets/configs/quizzes.json";
+    const PAGE_CONTROLLER_URL = "/assets/js/pages/quizpage.js";
 
     const escapeHtml = (s) =>
       String(s)
@@ -68,7 +72,7 @@
       }
     }
 
-    function getQuizIdFromPathFallback() {
+    function getTopicFromPathFallback() {
       // /practice/circles/quiz.html -> "circles"
       try {
         const parts = location.pathname.split("/").filter(Boolean);
@@ -83,87 +87,95 @@
       }
     }
 
-    function getQuizId() {
-      // Prefer explicit ?quizId=..., but allow folder-based fallback
-      return getQuizIdFromUrl() || getQuizIdFromPathFallback();
+    function canonicalizeQuizId(rawId) {
+      if (!rawId) return null;
+
+      // If already canonical (e.g., "math.circles"), keep it.
+      if (rawId.includes(".")) return rawId;
+
+      // Folder-style ids -> canonical ids.
+      // For now, assume practice/ topics are Math topics unless specified otherwise.
+      // You can expand this mapping later (rw., math., etc.).
+      const TOPIC_MAP = {
+        circles: "math.circles",
+      };
+
+      return TOPIC_MAP[rawId] || `math.${rawId}`;
     }
 
-    function getRegistry() {
-      // Expect quiz-registry.js to set ONE of these.
-      return (
-        window.QUIZ_REGISTRY ||
-        window.quizRegistry ||
-        window.QUIZZES ||
-        null
-      );
-    }
-
-    async function precheckBankUrl(bankUrl) {
-      // Fail fast with a clear error if the bank path is wrong in prod.
-      const res = await fetch(bankUrl, { cache: "no-store" });
-      if (!res.ok) {
-        throw new Error(`HTTP ${res.status} while fetching ${bankUrl}`);
-      }
-      // no parse here: engine will parse it (and can validate schema)
+    async function loadQuizzesConfig() {
+      const res = await fetch(QUIZZES_CONFIG_URL, { cache: "no-store" });
+      if (!res.ok) throw new Error(`HTTP ${res.status} while fetching ${QUIZZES_CONFIG_URL}`);
+      return await res.json();
     }
 
     async function boot() {
-      const quizId = getQuizId();
+      setHeader("Loading…", "--:--");
+
+      const urlQuizId = getQuizIdFromUrl();
+      const pathTopic = getTopicFromPathFallback();
+
+      const quizId = canonicalizeQuizId(urlQuizId || pathTopic);
       if (!quizId) {
         showError(
           "Missing quiz id. Use either " +
-          "<code>/practice/&lt;quizId&gt;/quiz.html</code> " +
-          "or <code>/practice/quiz.html?quizId=...</code>."
+          "<code>/practice/&lt;topic&gt;/quiz.html</code> " +
+          "or <code>?quizId=...</code>."
         );
         return;
       }
 
-      // Wait for DOM elements (we’re running after DOMContentLoaded)
-      setHeader("Loading…", "--:--");
-
-      const registry = getRegistry();
-      if (!registry) {
+      // Load quiz metadata from quizzes.json to validate existence and bank paths.
+      let quizzes;
+      try {
+        quizzes = await loadQuizzesConfig();
+      } catch (err) {
+        console.error("Failed to load quizzes config:", err);
         showError(
-          "Quiz registry not found. Expected <code>/assets/js/quiz-registry.js</code> to define " +
-          "<code>window.QUIZ_REGISTRY</code> (or <code>window.quizRegistry</code>)."
+          `Could not load quiz config at <code>${escapeHtml(QUIZZES_CONFIG_URL)}</code>. ` +
+          `Check that the file exists and is deployed.`
         );
         return;
       }
 
-      const cfg = registry[quizId];
+      const cfg = quizzes?.[quizId];
       if (!cfg) {
         showError(
           `Unknown quizId: <code>${escapeHtml(quizId)}</code>. ` +
-          `No entry found in the registry.`
+          `No entry found in <code>assets/configs/quizzes.json</code>.`
         );
         return;
       }
 
-      const bankUrl = cfg.bankUrl || cfg.jsonUrl || cfg.url;
+      const bankUrl = cfg.bank || cfg.bankUrl || cfg.jsonUrl || cfg.url;
       if (!bankUrl) {
         showError(
-          `Quiz <code>${escapeHtml(quizId)}</code> exists in registry, but has no JSON bank URL. ` +
-          `Expected <code>bankUrl</code> (recommended).`
+          `Quiz <code>${escapeHtml(quizId)}</code> exists in config, but has no bank path. ` +
+          `Expected <code>bank</code>.`
         );
         return;
       }
 
+      // Store boot info for the shared controller (simple and explicit).
+      // The controller should:
+      // - read window.DSA_BOOT.quizId
+      // - load quizzes.json (or use window.DSA_BOOT.cfg if it prefers)
+      // - fetch/parse the bank
+      // - run the quiz engine against this page's DOM.
+      window.DSA_BOOT = {
+        quizId,
+        cfg,
+        bankUrl
+      };
+
+      // Import shared page controller (which can then import quiz-engine.js).
       try {
-        await precheckBankUrl(bankUrl);
+        await import(PAGE_CONTROLLER_URL);
       } catch (err) {
-        console.error("Bank precheck failed:", err);
+        console.error("Page controller failed to import:", err);
         showError(
-          `Could not fetch quiz bank at <code>${escapeHtml(bankUrl)}</code>. ` +
-          `Check the path/case and that it's deployed.`
+          `Controller error: <code>${escapeHtml(err?.message || String(err))}</code>`
         );
-        return;
-      }
-
-      try {
-        await import(ENGINE_URL);
-      } catch (err) {
-        console.error("quiz-engine failed to import:", err);
-        showError(`Engine error: <code>${escapeHtml(err?.message || String(err))}</code>`);
       }
     }
 
@@ -173,6 +185,15 @@
 
 <body>
   <div id="site-header"></div>
+
+  <!-- Explicit policy banner per your requirement: no resume, start over if you leave -->
+  <div class="load-error" style="margin:12px 12px 0; background:#fff7ed; border-color:#fdba74;">
+    <h2 style="margin:0 0 4px; font-size:16px;">Heads up</h2>
+    <p style="margin:0;">
+      Your progress is <b>not saved</b> until you click <b>End &amp; Score</b>.
+      If you refresh, close this tab, or leave this page before submitting, you will start over.
+    </p>
+  </div>
 
   <div class="app">
     <div class="header" role="banner">
