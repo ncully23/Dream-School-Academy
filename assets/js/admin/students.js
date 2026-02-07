@@ -58,8 +58,7 @@
 
       const email = safeStr(data.email) || "(no email)";
 
-      // Build link relative to this folder (works for /admin/* and /pages/admin/*)
-      const studentUrl = new URL("student.html", window.location.href);
+      const studentUrl = new URL("/admin/student.html", window.location.origin);
       studentUrl.searchParams.set("uid", uid);
 
       const tr = document.createElement("tr");
