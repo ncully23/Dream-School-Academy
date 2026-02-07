@@ -251,10 +251,6 @@
           ? `<a class="history-link" href="${href}">${escapeHtml(r.title || "Practice")}</a>`
           : escapeHtml(r.title || "Practice");
 
-        const detailsHtml = href
-          ? `<a class="details-link" href="${href}">View</a>`
-          : `<span class="muted">—</span>`;
-
         return `
           <tr>
             <td class="cell-date">${escapeHtml(dateStr)}</td>
