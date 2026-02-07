@@ -45,7 +45,7 @@
         },
         (err) => {
           console.error("[adminauth] onAuthStateChanged error:", err);
-          window.location.href = "/pages/login.html";
+          window.location.href = "profile/login.html";
         }
       );
     });
