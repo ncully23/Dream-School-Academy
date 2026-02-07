@@ -4,6 +4,7 @@
     "description": "Circle geometry: radius/diameter, circumference, area, equations, arcs, and sectors.",
     "bank": "/assets/questionbank/math/circles.json",
     "pickCount": 10,
-    "shuffle": false
+    "shuffle": false,
+    "timeLimitSec": 600
   }
 }
