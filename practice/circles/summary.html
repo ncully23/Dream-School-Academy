@@ -1,6 +1,16 @@
 <!-- summary.html (fully revised: richer solution rendering + collapsible “Deep dive”) -->
 <!DOCTYPE html>
 <html lang="en">
+  <div id="site-header"></div>
+<script>
+fetch("/assets/html/header.html")
+  .then(r => r.text())
+  .then(html => {
+    document.getElementById("site-header").innerHTML = html;
+  })
+  .catch(err => console.error("Failed to load header:", err));
+</script>
+
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
