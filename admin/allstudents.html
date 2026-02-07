@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Admin — Students</title>
+  <link rel="stylesheet" href="/assets/css/site.css" />
+</head>
+<body>
+  <div class="wrap">
+    <h1>Students</h1>
+    <p id="adminStatus" class="muted">Loading…</p>
+
+    <table class="table" id="studentsTable">
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Email</th>
+          <th>UID</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody id="studentsBody"></tbody>
+    </table>
+  </div>
+
+  <!-- Your normal Firebase scripts (keep consistent with your site) -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+
+  <!-- Your app firebase init file -->
+  <script src="/assets/js/firebase-init.js"></script>
+
+  <script src="/assets/js/admin/adminAuth.js"></script>
+  <script src="/assets/js/admin/students.js"></script>
+</body>
+</html>
