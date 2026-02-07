@@ -1,42 +1,43 @@
 <!doctype html>
-<html>
+<html lang="en">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Student Progress</title>
   <link rel="stylesheet" href="/assets/css/site.css" />
-  <a href="/admin/allstudents.html">← Back</a>
 </head>
-<body
-  <div id="adminBanner" style="display:none;"></div>
 
-  <a href="/admin/allstudents.html">← Back</a>
+<body>
+  <div class="wrap">
+    <a href="/admin/allstudents.html">← Back</a>
 
-  <h1 id="studentTitle">Student</h1>
-  <p id="studentMeta"></p>
+    <div id="adminBanner" style="display:none;"></div>
 
-  <div id="summary"></div>
+    <h1 id="studentTitle">Student</h1>
+    <p id="studentMeta"></p>
 
-<table class="table">
-  <thead>
-    <tr>
-      <th>Date</th><th>Quiz</th><th>Score</th><th>Time</th><th>Review</th>
-    </tr>
-  </thead>
-  <tbody id="historyBody"></tbody>
-</table>
+    <div id="summary"></div>
 
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Date</th>
+          <th>Quiz</th>
+          <th>Score</th>
+          <th>Time</th>
+          <th>Review</th>
+        </tr>
+      </thead>
+      <tbody id="historyBody"></tbody>
+    </table>
+  </div>
 
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 
-<script src="/assets/js/firebase-init-compat.js"></script>
-
-
-
-<script src="/assets/js/admin/adminauth.js"></script>
-<script src="/assets/js/admin/studentprogress.js"></script>
-
+  <script src="/assets/js/firebase-init-compat.js"></script>
+  <script src="/assets/js/admin/adminauth.js"></script>
+  <script src="/assets/js/admin/studentprogress.js"></script>
 </body>
 </html>
