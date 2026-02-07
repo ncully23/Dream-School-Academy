@@ -14,7 +14,7 @@ import { doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.4/firebase
 // UI-only admin gate (real security enforced by Firestore rules).
 // Put the SAME UID you used in Firestore rules allowlist.
 const ADMIN_UIDS = new Set([
-  "PASTE_YOUR_ADMIN_UID_HERE",
+  "7mv59VrUnJaZ7D2Kezb7cXCo2U53",
 ]);
 
 // Header/footer paths (match your repo)
