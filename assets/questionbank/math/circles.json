@@ -1,311 +1,380 @@
 {
   "bankId": "math.circles",
-  "bankVersion": 1,
+  "bankVersion": 3,
   "title": "Math — Circles",
-  "description": "Circle geometry: radius/diameter, circumference, area, equations, arcs, and sectors.",
+  "description": "10 SAT-style circle questions from the attached PDF set, with expanded solution objects for rich review.",
   "skills": [
-    "circumference",
-    "area",
-    "equation-of-a-circle",
+    "tangent-line-slope",
     "arc-length",
-    "sector-area",
-    "area-from-circumference",
-    "rate-circumference"
+    "central-angle-arc",
+    "circle-equation-standard-form",
+    "complete-the-square",
+    "radius-from-general-form",
+    "center-from-general-form",
+    "diameter-from-equation"
   ],
-  "updatedAt": "2026-02-05",
+  "updatedAt": "2026-02-07",
   "questions": [
     {
-      "questionId": "math.circles.001",
+      "questionId": "math.circles.858fd1cf",
       "version": 1,
       "topic": "math.circles",
-      "skill": "circumference",
-      "difficulty": "easy",
-      "prompt": "A circle has radius 5 cm. What is its circumference?",
+      "skill": "tangent-line-slope",
+      "difficulty": "hard",
+      "prompt": "A circle in the xy-plane has its center at (−1, 1). Line t is tangent to this circle at the point (5, −4). Which of the following points also lies on line t?",
       "promptHtml": null,
-      "choices": ["10π cm", "25π cm", "5π cm", "50π cm"],
-      "answerIndex": 0,
+      "choices": ["(0, 6/5)", "(4, 7)", "(10, 2)", "(11, 1)"],
+      "answerIndex": 2,
       "solution": {
-        "finalAnswer": "10π cm",
-        "approach": "Use the circumference formula.",
+        "finalAnswer": "(10, 2)",
+        "approach": "A tangent is perpendicular to the radius at the point of tangency. Find the radius slope, take the negative reciprocal, then test which option lies on that line through (5, −4).",
+        "formulas": ["slope = (y2 − y1) / (x2 − x1)", "perpendicular slopes: m1 · m2 = −1"],
         "steps": [
-          "Use C = 2πr.",
-          "Substitute r = 5: C = 2π(5).",
-          "Simplify: C = 10π."
+          "Radius goes from center (−1, 1) to tangency point (5, −4).",
+          "Slope of radius: m_r = (−4 − 1) / (5 − (−1)) = −5/6.",
+          "Tangent slope is perpendicular: m_t = 6/5.",
+          "Line t passes through (5, −4). A point (x, y) is on t if (y + 4)/(x − 5) = 6/5.",
+          "Test choices: for (10, 2), slope from (5, −4) is (2 + 4)/(10 − 5) = 6/5, so it lies on t."
         ],
+        "whyItWorks": "At the point of tangency, the radius meets the tangent at a right angle, so their slopes are negative reciprocals.",
+        "choiceRationales": {
+          "A": "From (5, −4) to (0, 6/5), slope is (6/5 + 4)/(0 − 5) = (26/5)/(-5) = −26/25, not 6/5.",
+          "B": "From (5, −4) to (4, 7), slope is (7 + 4)/(4 − 5) = 11/(−1) = −11, not 6/5.",
+          "C": "Correct: (2 + 4)/(10 − 5) = 6/5.",
+          "D": "From (5, −4) to (11, 1), slope is (1 + 4)/(11 − 5) = 5/6, not 6/5."
+        },
         "commonMistakes": [
-          "Using the area formula A = πr² instead of circumference.",
-          "Forgetting the factor of 2 in C = 2πr.",
-          "Plugging in diameter when the problem gives radius."
+          "Using the tangent slope equal to the radius slope instead of the negative reciprocal.",
+          "Forgetting that the tangent must pass through the tangency point (5, −4).",
+          "Arithmetic errors computing slopes."
         ],
         "checks": [
-          "Units should be centimeters (cm), not cm².",
-          "Circumference should be proportional to r; doubling r would double C."
-        ]
+          "If m_r = −5/6, then m_t must be 6/5 so that (−5/6)(6/5)=−1.",
+          "The correct point must keep the same slope from (5, −4)."
+        ],
+        "takeaway": "For tangents: radius-to-tangency ⟂ tangent. Find radius slope → take negative reciprocal → test point."
       }
     },
     {
-      "questionId": "math.circles.002",
-      "version": 1,
-      "topic": "math.circles",
-      "skill": "area",
-      "difficulty": "easy",
-      "prompt": "If a circle’s area is 49π, what is its radius?",
-      "promptHtml": null,
-      "choices": ["3", "7", "14", "24.5"],
-      "answerIndex": 1,
-      "solution": {
-        "finalAnswer": "7",
-        "approach": "Solve the area equation for r.",
-        "steps": [
-          "Use A = πr².",
-          "Set πr² = 49π.",
-          "Divide both sides by π: r² = 49.",
-          "Take the positive square root: r = 7."
-        ],
-        "commonMistakes": [
-          "Forgetting to divide by π first.",
-          "Taking r = −7 (radius is nonnegative).",
-          "Treating 49π as 49 and ignoring π."
-        ],
-        "checks": [
-          "Plug back in: π(7²) = 49π.",
-          "Radius is a length, so it should not include π."
-        ]
-      }
-    },
-    {
-      "questionId": "math.circles.003",
-      "version": 1,
-      "topic": "math.circles",
-      "skill": "equation-of-a-circle",
-      "difficulty": "medium",
-      "prompt": "A circle passes through (0, 0) and (0, 6) with center at (0, 3). What is its equation?",
-      "promptHtml": null,
-      "choices": [
-        "(x - 0)² + (y - 3)² = 9",
-        "(x - 3)² + (y - 0)² = 9",
-        "(x - 3)² + (y - 3)² = 6",
-        "(x - 0)² + (y - 6)² = 3"
-      ],
-      "answerIndex": 0,
-      "solution": {
-        "finalAnswer": "(x - 0)² + (y - 3)² = 9",
-        "approach": "Find r from the center to a point, then use standard form.",
-        "steps": [
-          "Center is (h, k) = (0, 3).",
-          "Radius is the distance from (0, 3) to (0, 0): r = 3.",
-          "Use (x - h)² + (y - k)² = r².",
-          "Substitute h = 0, k = 3, r² = 9 → (x - 0)² + (y - 3)² = 9."
-        ],
-        "commonMistakes": [
-          "Using r = 6 (confusing diameter with radius).",
-          "Mixing up h and k in (x - h)² + (y - k)².",
-          "Forgetting to square the radius on the right side."
-        ],
-        "checks": [
-          "Test (0,0): 0 + (−3)² = 9 ✓",
-          "Test (0,6): 0 + 3² = 9 ✓"
-        ]
-      }
-    },
-    {
-      "questionId": "math.circles.004",
+      "questionId": "math.circles.c8345903",
       "version": 1,
       "topic": "math.circles",
       "skill": "arc-length",
-      "difficulty": "easy",
-      "prompt": "For a circle with radius r = 10 and central angle θ = π/3 (in radians), what is the arc length s?",
+      "difficulty": "hard",
+      "prompt": "The circle above has center O, the length of arc ADC is 5π, and x = 100. What is the length of arc ABC?",
       "promptHtml": null,
-      "choices": ["10π/3", "20π/3", "30π", "10", "π/3"],
-      "answerIndex": 0,
-      "solution": {
-        "finalAnswer": "10π/3",
-        "approach": "Use s = rθ with θ in radians.",
-        "steps": [
-          "Use s = rθ (θ must be in radians).",
-          "Substitute r = 10 and θ = π/3.",
-          "Compute: s = 10 · (π/3) = 10π/3."
-        ],
-        "commonMistakes": [
-          "Using degrees without converting (not needed here).",
-          "Using circumference fraction incorrectly.",
-          "Multiplying by 2π again (double-counting)."
-        ],
-        "checks": [
-          "θ = π/3 is 1/6 of a circle, so s should be (1/6)(2πr) = (1/6)(20π) = 10π/3."
-        ]
-      }
-    },
-    {
-      "questionId": "math.circles.005",
-      "version": 1,
-      "topic": "math.circles",
-      "skill": "sector-area",
-      "difficulty": "medium",
-      "prompt": "What is the area of a sector of a circle with radius 6 and central angle θ = π/2?",
-      "promptHtml": null,
-      "choices": ["9π", "18π", "36π", "3π"],
-      "answerIndex": 0,
-      "solution": {
-        "finalAnswer": "9π",
-        "approach": "Use sector area with radians.",
-        "steps": [
-          "Full area is πr² = π(6²) = 36π.",
-          "θ = π/2 corresponds to a fraction θ/(2π) = (π/2)/(2π) = 1/4 of the circle.",
-          "Sector area = (1/4)(36π) = 9π."
-        ],
-        "commonMistakes": [
-          "Arithmetic slip when multiplying by θ.",
-          "Assuming θ = π/2 is half the circle (it’s a quarter).",
-          "Forgetting the θ/(2π) fraction method."
-        ],
-        "checks": [
-          "90° is 1/4 of a circle, so area must be 1/4 of 36π = 9π."
-        ]
-      }
-    },
-    {
-      "questionId": "math.circles.006",
-      "version": 1,
-      "topic": "math.circles",
-      "skill": "area",
-      "difficulty": "easy",
-      "prompt": "A circle has diameter 18 units. What is its area?",
-      "promptHtml": null,
-      "choices": ["81π", "36π", "18π", "9π"],
-      "answerIndex": 0,
-      "solution": {
-        "finalAnswer": "81π",
-        "approach": "Convert diameter to radius, then apply A = πr².",
-        "steps": [
-          "Diameter 18 → radius r = 9.",
-          "Area A = π(9²) = 81π."
-        ],
-        "commonMistakes": [
-          "Using r = 18 instead of 9.",
-          "Using circumference instead of area.",
-          "Forgetting to square the radius."
-        ],
-        "checks": [
-          "Area units should be square units.",
-          "If diameter doubles, area quadruples."
-        ]
-      }
-    },
-    {
-      "questionId": "math.circles.007",
-      "version": 1,
-      "topic": "math.circles",
-      "skill": "area-from-circumference",
-      "difficulty": "medium",
-      "prompt": "The circumference of a circle is 24π units. What is its area?",
-      "promptHtml": null,
-      "choices": ["24π", "48π", "72π", "144π"],
-      "answerIndex": 3,
-      "solution": {
-        "finalAnswer": "144π",
-        "approach": "Solve for r from C = 2πr, then compute A = πr².",
-        "steps": [
-          "2πr = 24π → r = 12.",
-          "A = π(12²) = 144π."
-        ],
-        "commonMistakes": [
-          "Dropping π incorrectly while dividing.",
-          "Using r = 24 (forgetting the 2 factor).",
-          "Computing 12² as 24."
-        ],
-        "checks": [
-          "2π·12 = 24π ✓",
-          "Area should be large because r is 12."
-        ]
-      }
-    },
-    {
-      "questionId": "math.circles.008",
-      "version": 1,
-      "topic": "math.circles",
-      "skill": "equation-of-a-circle",
-      "difficulty": "easy",
-      "prompt": "Which equation represents a circle with center (-2, 4) and radius 5?",
-      "promptHtml": null,
-      "choices": [
-        "(x - 2)² + (y - 4)² = 25",
-        "(x + 2)² + (y - 4)² = 25",
-        "(x + 2)² + (y + 4)² = 25",
-        "(x - 2)² + (y + 4)² = 25"
-      ],
+      "choices": ["9π", "13π", "18π", "(13/2)π"],
       "answerIndex": 1,
       "solution": {
-        "finalAnswer": "(x + 2)² + (y - 4)² = 25",
-        "approach": "Use (x - h)² + (y - k)² = r².",
+        "finalAnswer": "13π",
+        "approach": "Arc length is proportional to its central angle. Use the given arc/angle pair to scale to the remaining central angle.",
+        "formulas": ["arc length ∝ central angle", "s1/s2 = θ1/θ2"],
         "steps": [
-          "h = −2 → (x - (−2))² = (x + 2)².",
-          "k = 4 → (y - 4)².",
-          "r² = 25.",
-          "So (x + 2)² + (y - 4)² = 25."
+          "Arc ADC is subtended by central angle x = 100°.",
+          "The rest of the circle (arc ABC) is subtended by 360° − 100° = 260°.",
+          "Let s be the length of arc ABC. Then s / (5π) = 260 / 100 = 13/5.",
+          "Multiply: s = (13/5)(5π) = 13π."
         ],
+        "whyItWorks": "For the same circle, circumference is fixed, so each arc is exactly the same fraction of the circumference as its central angle is of 360°.",
+        "choiceRationales": {
+          "A": "9π would correspond to a smaller fraction; 260° is more than half the circle, so arc length must be more than half the circumference.",
+          "B": "Correct: scaling 5π from 100° to 260° multiplies by 260/100 = 13/5.",
+          "C": "18π would imply an arc longer than a full circle’s circumference in many typical setups; it’s not consistent with the proportional scaling shown.",
+          "D": "This is half of 13π, as if using 130° instead of 260°."
+        },
         "commonMistakes": [
-          "Using (x - 2) instead of (x + 2).",
-          "Using r = 25 instead of r² = 25.",
-          "Flipping the sign on k."
+          "Using 260°/360° incorrectly without relating it to the known 100° arc length.",
+          "Forgetting to subtract from 360° to get the other arc’s angle.",
+          "Simplification errors with fractions."
         ],
         "checks": [
-          "Center shift left 2 → (x + 2). Up 4 → (y - 4)."
-        ]
+          "260° is 2.6 times 100°, so the arc should be 2.6 times 5π → 13π."
+        ],
+        "takeaway": "If one arc length is known, scale by the ratio of central angles."
       }
     },
     {
-      "questionId": "math.circles.009",
+      "questionId": "math.circles.76c73dbf",
       "version": 1,
       "topic": "math.circles",
-      "skill": "sector-area",
-      "difficulty": "medium",
-      "prompt": "A sector of a circle with radius 8 has area 16π. What is the central angle of the sector in radians?",
+      "skill": "radius-from-general-form",
+      "difficulty": "hard",
+      "responseType": "grid-in",
+      "prompt": "The graph of x^2 + x + y^2 + y = 199/2 in the xy-plane is a circle. What is the length of the circle’s radius?",
       "promptHtml": null,
-      "choices": ["π/4", "π/2", "π", "2π"],
+      "choices": [],
+      "answer": "10",
+      "solution": {
+        "finalAnswer": "10",
+        "approach": "Complete the square in x and y to put the equation into (x − h)^2 + (y − k)^2 = r^2.",
+        "formulas": ["x^2 + bx = (x + b/2)^2 − (b/2)^2", "(x − h)^2 + (y − k)^2 = r^2"],
+        "steps": [
+          "Group x-terms and y-terms: (x^2 + x) + (y^2 + y) = 199/2.",
+          "Complete the square for x: x^2 + x = (x + 1/2)^2 − 1/4.",
+          "Complete the square for y: y^2 + y = (y + 1/2)^2 − 1/4.",
+          "Substitute: (x + 1/2)^2 − 1/4 + (y + 1/2)^2 − 1/4 = 199/2.",
+          "Add 1/2 to both sides (since −1/4 − 1/4 = −1/2): (x + 1/2)^2 + (y + 1/2)^2 = 199/2 + 1/2 = 200/2 = 100.",
+          "So r^2 = 100 → r = 10."
+        ],
+        "whyItWorks": "Completing the square rewrites a quadratic expression as a perfect square plus/minus a constant, matching the standard circle form where the constant on the right is r^2.",
+        "commonMistakes": [
+          "Adding (b/2)^2 to one side but not the other.",
+          "Using b^2/2 instead of (b/2)^2.",
+          "Forgetting that the radius is √(r^2)."
+        ],
+        "checks": [
+          "Right side becomes 100, so radius must be 10 (positive length)."
+        ],
+        "takeaway": "For circles in expanded form: complete the square twice; the final RHS is r^2."
+      }
+    },
+    {
+      "questionId": "math.circles.e50afdd3",
+      "version": 1,
+      "topic": "math.circles",
+      "skill": "circle-equation-standard-form",
+      "difficulty": "hard",
+      "prompt": "The graph of (x + 4)^2 + (y − 19)^2 = 121 is a circle in the xy-plane. The point (a, b) lies on the circle. Which of the following is a possible value for a?",
+      "promptHtml": null,
+      "choices": ["−16", "−14", "11", "19"],
       "answerIndex": 1,
       "solution": {
-        "finalAnswer": "π/2",
-        "approach": "Use A = (1/2)r²θ and solve for θ.",
+        "finalAnswer": "−14",
+        "approach": "Read center and radius from standard form. Then use the x-range center_x ± r to see which a is possible.",
+        "formulas": ["(x − h)^2 + (y − k)^2 = r^2", "x-range: h − r ≤ x ≤ h + r"],
         "steps": [
-          "A = (1/2)r²θ = (1/2)(64)θ = 32θ.",
-          "32θ = 16π → θ = (16π)/32 = π/2."
+          "Compare to standard form: center is (h, k) = (−4, 19) and r^2 = 121 so r = 11.",
+          "Possible x-values satisfy −4 − 11 ≤ x ≤ −4 + 11.",
+          "So −15 ≤ x ≤ 7.",
+          "Check choices: only −14 lies in [−15, 7]."
         ],
+        "whyItWorks": "All points on the circle are within one radius horizontally from the center, so x cannot be less than h − r or greater than h + r.",
+        "choiceRationales": {
+          "A": "−16 is less than −15, so it’s too far left to be on the circle.",
+          "B": "Correct: −14 is between −15 and 7.",
+          "C": "11 is greater than 7, too far right.",
+          "D": "19 is far greater than 7, too far right."
+        },
         "commonMistakes": [
-          "Forgetting the 1/2 factor.",
-          "Using πr²θ (incorrect).",
-          "Cancelling π incorrectly."
+          "Misreading the center sign (thinking center x is +4 instead of −4).",
+          "Using r^2 = 121 as r = 121 instead of r = 11.",
+          "Forgetting that a is the x-coordinate."
         ],
         "checks": [
-          "θ = π/2 is 1/4 of a circle; 1/4 of 64π is 16π ✓"
-        ]
+          "Center x is −4; radius 11 means max x is 7 and min x is −15."
+        ],
+        "takeaway": "In (x − h)^2 + (y − k)^2 = r^2, the x-values always stay within h ± r."
       }
     },
     {
-      "questionId": "math.circles.010",
+      "questionId": "math.circles.2266984b",
       "version": 1,
       "topic": "math.circles",
-      "skill": "rate-circumference",
-      "difficulty": "medium",
-      "prompt": "A circular track has radius 40 meters. A runner completes one full lap in 20 seconds. What is the runner’s average speed, in meters per second, in terms of π?",
+      "skill": "center-from-general-form",
+      "difficulty": "hard",
+      "prompt": "The equation x^2 + 20x + y^2 + 16y = −20 defines a circle in the xy-plane. What are the coordinates of the center of the circle?",
       "promptHtml": null,
-      "choices": ["2π", "3π", "4π", "8π"],
-      "answerIndex": 2,
+      "choices": ["(−20, −16)", "(−10, −8)", "(10, 8)", "(20, 16)"],
+      "answerIndex": 1,
       "solution": {
-        "finalAnswer": "4π",
-        "approach": "Speed = distance ÷ time; one lap distance is circumference 2πr.",
+        "finalAnswer": "(−10, −8)",
+        "approach": "Complete the square for x and y; the center is (−b/2, −d/2) after rewriting to standard form.",
+        "formulas": ["x^2 + bx = (x + b/2)^2 − (b/2)^2", "(x − h)^2 + (y − k)^2 = r^2"],
         "steps": [
-          "Distance = 2πr = 2π(40) = 80π.",
-          "Speed = 80π / 20 = 4π."
+          "Group: (x^2 + 20x) + (y^2 + 16y) = −20.",
+          "Complete square in x: x^2 + 20x = (x + 10)^2 − 100.",
+          "Complete square in y: y^2 + 16y = (y + 8)^2 − 64.",
+          "Substitute: (x + 10)^2 − 100 + (y + 8)^2 − 64 = −20.",
+          "Add 164 to both sides: (x + 10)^2 + (y + 8)^2 = 144.",
+          "Center is (−10, −8)."
         ],
+        "whyItWorks": "The standard form directly reveals the center as the values that make each squared term zero.",
+        "choiceRationales": {
+          "A": "This incorrectly uses (−20, −16) as if center were (−b, −d) rather than (−b/2, −d/2).",
+          "B": "Correct: completing the square produces (x + 10)^2 + (y + 8)^2 = 144.",
+          "C": "This flips both signs.",
+          "D": "This uses the positive halves (+10, +8) but center uses negatives because the equation becomes (x + 10), (y + 8)."
+        },
         "commonMistakes": [
-          "Using area instead of circumference.",
-          "Dividing by 40 instead of 20.",
-          "Dropping π during simplification."
+          "Forgetting to add the same constants to both sides when completing squares.",
+          "Taking the center as (20,16) instead of halving and negating.",
+          "Sign errors on (x + 10) vs (x − 10)."
         ],
         "checks": [
-          "Half the time would double the speed — consistent."
-        ]
+          "If the standard form is (x + 10)^2 + (y + 8)^2 = 144, the center must be (−10, −8)."
+        ],
+        "takeaway": "From x^2 + bx + y^2 + dy = …, the center is (−b/2, −d/2)."
+      }
+    },
+    {
+      "questionId": "math.circles.69b0d79d",
+      "version": 1,
+      "topic": "math.circles",
+      "skill": "arc-length",
+      "difficulty": "hard",
+      "prompt": "Point O is the center of the circle above, and the measure of ∠OAB is 30°. If the length of OC is 18, what is the length of arc AB?",
+      "promptHtml": null,
+      "choices": ["9π", "12π", "15π", "18π"],
+      "answerIndex": 1,
+      "solution": {
+        "finalAnswer": "12π",
+        "approach": "Use isosceles triangle AOB to find central angle ∠AOB, convert to radians, then use s = rθ.",
+        "formulas": ["isosceles base angles equal", "triangle sum: 180°", "s = rθ (θ in radians)"],
+        "steps": [
+          "OA and OB are radii, so triangle AOB is isosceles with base angles ∠OAB and ∠OBA equal.",
+          "Given ∠OAB = 30°, so ∠OBA = 30°.",
+          "Then ∠AOB = 180° − 30° − 30° = 120°.",
+          "Convert 120° to radians: 120° = (120/180)π = 2π/3.",
+          "Radius r = OC = 18.",
+          "Arc length AB: s = rθ = 18 · (2π/3) = 12π."
+        ],
+        "whyItWorks": "Arc length is directly tied to the central angle that subtends the arc; the isosceles triangle gives that central angle from the given base angle.",
+        "choiceRationales": {
+          "A": "Would correspond to θ = π/2 with r = 18, but the central angle here is 120°.",
+          "B": "Correct: θ = 2π/3 and r = 18 gives 12π.",
+          "C": "Would be larger than correct; would require a larger central angle or radius.",
+          "D": "Would correspond to θ = π with r = 18 (a semicircle), but 120° is less than 180°."
+        },
+        "commonMistakes": [
+          "Treating ∠OAB as a central angle (it’s not).",
+          "Forgetting to convert degrees to radians before using s = rθ.",
+          "Computing ∠AOB as 60° instead of 120°."
+        ],
+        "checks": [
+          "120° is 1/3 of a full circle, so arc length should be 1/3 of circumference 2π(18)=36π → 12π."
+        ],
+        "takeaway": "Find the central angle first. Then either use s = rθ (radians) or fraction-of-circumference."
+      }
+    },
+    {
+      "questionId": "math.circles.ebbf23ae",
+      "version": 1,
+      "topic": "math.circles",
+      "skill": "circle-equation-standard-form",
+      "difficulty": "hard",
+      "responseType": "grid-in",
+      "prompt": "A circle in the xy-plane has a diameter with endpoints (2, 4) and (2, 14). An equation of this circle is (x − 2)^2 + (y − 9)^2 = r^2, where r is a positive constant. What is the value of r?",
+      "promptHtml": null,
+      "choices": [],
+      "answer": "5",
+      "solution": {
+        "finalAnswer": "5",
+        "approach": "Find the center as the midpoint of the diameter endpoints, then compute the distance from the center to an endpoint (the radius).",
+        "formulas": ["midpoint = ((x1+x2)/2, (y1+y2)/2)", "distance = √((x2−x1)^2 + (y2−y1)^2)"],
+        "steps": [
+          "Diameter endpoints are (2, 4) and (2, 14).",
+          "Midpoint (center) is ((2+2)/2, (4+14)/2) = (2, 9), matching the equation’s center.",
+          "Radius is distance from (2, 9) to (2, 4): √((2−2)^2 + (4−9)^2) = √(0 + 25) = 5.",
+          "So r = 5."
+        ],
+        "whyItWorks": "A diameter passes through the center; the center is halfway between endpoints, and the radius is half the diameter length.",
+        "commonMistakes": [
+          "Using the full diameter length as the radius.",
+          "Computing midpoint incorrectly (averaging only y-values or mixing coordinates).",
+          "Forgetting to take the square root when using distance."
+        ],
+        "checks": [
+          "Diameter length is 10 (from y=4 to y=14), so radius should be 5."
+        ],
+        "takeaway": "Diameter endpoints → midpoint is center → distance to endpoint is radius."
+      }
+    },
+    {
+      "questionId": "math.circles.b8a225ff",
+      "version": 1,
+      "topic": "math.circles",
+      "skill": "circle-equation-standard-form",
+      "difficulty": "hard",
+      "responseType": "grid-in",
+      "prompt": "Circle A in the xy-plane has the equation (x + 5)^2 + (y − 5)^2 = 4. Circle B has the same center as circle A. The radius of circle B is two times the radius of circle A. The equation defining circle B in the xy-plane is (x + 5)^2 + (y − 5)^2 = k, where k is a constant. What is the value of k?",
+      "promptHtml": null,
+      "choices": [],
+      "answer": "16",
+      "solution": {
+        "finalAnswer": "16",
+        "approach": "In standard form, the right-hand side is r^2. Doubling radius multiplies r^2 by 4.",
+        "formulas": ["(x − h)^2 + (y − k)^2 = r^2"],
+        "steps": [
+          "For circle A, r_A^2 = 4, so r_A = 2.",
+          "Circle B has radius r_B = 2r_A = 4.",
+          "Then r_B^2 = 16, so k = 16."
+        ],
+        "whyItWorks": "Radius scales linearly, but the equation stores radius squared; doubling r quadruples r^2.",
+        "commonMistakes": [
+          "Doubling r^2 directly (thinking k becomes 8 instead of 16).",
+          "Using k as the radius rather than the radius squared."
+        ],
+        "checks": [
+          "If r_A = 2, doubling gives 4; 4^2 = 16."
+        ],
+        "takeaway": "Circle equations store r^2, not r."
+      }
+    },
+    {
+      "questionId": "math.circles.b0a72bdc",
+      "version": 1,
+      "topic": "math.circles",
+      "skill": "diameter-from-equation",
+      "difficulty": "hard",
+      "prompt": "What is the diameter of the circle in the xy-plane with equation (x − 5)^2 + (y − 3)^2 = 16?",
+      "promptHtml": null,
+      "choices": ["4", "8", "16", "32"],
+      "answerIndex": 1,
+      "solution": {
+        "finalAnswer": "8",
+        "approach": "In standard form, r^2 is the constant on the right. Find r, then diameter = 2r.",
+        "formulas": ["(x − h)^2 + (y − k)^2 = r^2", "diameter = 2r"],
+        "steps": [
+          "From (x − 5)^2 + (y − 3)^2 = 16, we have r^2 = 16.",
+          "So r = 4 (radius is positive).",
+          "Diameter = 2r = 8."
+        ],
+        "whyItWorks": "Standard form encodes radius squared directly; diameter is defined as twice the radius.",
+        "choiceRationales": {
+          "A": "4 is the radius, not the diameter.",
+          "B": "Correct: r = 4 so diameter is 8.",
+          "C": "16 is r^2, not r or diameter.",
+          "D": "32 would be 2·(r^2), which is not a circle measure used here."
+        },
+        "commonMistakes": [
+          "Using 16 as the radius instead of r^2.",
+          "Forgetting to multiply by 2 to get diameter."
+        ],
+        "checks": [
+          "If r = 4, diameter must be 8."
+        ],
+        "takeaway": "Read r^2 from the equation, then take √ and double."
+      }
+    },
+    {
+      "questionId": "math.circles.249d3f80",
+      "version": 1,
+      "topic": "math.circles",
+      "skill": "central-angle-arc",
+      "difficulty": "hard",
+      "responseType": "grid-in",
+      "prompt": "Point O is the center of a circle. The measure of arc RS on this circle is 100°. What is the measure, in degrees, of its associated angle ROS?",
+      "promptHtml": null,
+      "choices": [],
+      "answer": "100",
+      "solution": {
+        "finalAnswer": "100",
+        "approach": "A central angle has the same measure (in degrees) as its intercepted arc.",
+        "formulas": ["central angle measure = intercepted arc measure (degrees)"],
+        "steps": [
+          "Angle ROS is a central angle because its vertex is at the center O and its sides are radii OR and OS.",
+          "A central angle’s degree measure equals the degree measure of the arc it intercepts.",
+          "So ∠ROS = 100°."
+        ],
+        "whyItWorks": "Degree measure of an arc is defined via the central angle that subtends it.",
+        "commonMistakes": [
+          "Using half the arc measure (that rule applies to an inscribed angle, not a central angle).",
+          "Mixing radians and degrees."
+        ],
+        "checks": [
+          "Central angles and arcs match one-to-one in degrees."
+        ],
+        "takeaway": "Central angle ↔ intercepted arc: same degree measure."
       }
     }
   ]
