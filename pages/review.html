@@ -5,8 +5,22 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Review</title>
 
-  <!-- Global site styling (controls dark theme + header/nav/buttons) -->
+  <!-- Global site styling (dark theme + header/nav/buttons) -->
   <link rel="stylesheet" href="/assets/css/site.css" />
+
+  <!-- MathJax (TeX) -->
+  <script>
+    window.MathJax = {
+      tex: {
+        inlineMath: [['\\(', '\\)'], ['$', '$']],
+        displayMath: [['\\[', '\\]'], ['$$', '$$']]
+      },
+      options: {
+        skipHtmlTags: ['script','noscript','style','textarea','pre','code']
+      }
+    };
+  </script>
+  <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
 
   <style>
     /* Review-only styling.
@@ -385,15 +399,32 @@
       border-radius:6px;
       font-size:13px;
     }
+
+    /* -----------------------------
+       MathJax: sizing + overflow safety
+       (critical because reviewpage.js injects TeX after load)
+    ------------------------------ */
+    mjx-container{
+      font-size: 1.02em;
+      max-width: 100%;
+      overflow-x: auto;
+      overflow-y: hidden;
+      padding-bottom: 2px;
+    }
+    .review-prompt,
+    .review-choice-text,
+    .review-exp{
+      overflow-wrap: anywhere;
+      word-break: break-word;
+    }
   </style>
 </head>
 
 <body>
   <!-- Shell injects header/footer + wires auth UI -->
   <div id="site-header"></div>
-  <div id="site-footer"></div>
 
-  <div class="review-wrap">
+  <main class="review-wrap" id="reviewRoot">
     <div class="review-card" id="headerCard">
       <div class="review-top">
         <div>
@@ -438,12 +469,52 @@
         Run a quiz first so it can redirect you here automatically.
       </p>
     </div>
-  </div>
+  </main>
+
+  <div id="site-footer"></div>
 
   <!-- Global shell (injects header/footer + auth + active nav) -->
   <script type="module" src="/assets/js/shell.js"></script>
 
-  <!-- Review logic -->
+  <!-- Review logic (builds DOM) -->
   <script type="module" src="/assets/js/pages/reviewpage.js"></script>
+
+  <!-- Auto-typeset injected math:
+       reviewpage.js renders after load, so we observe mutations and re-typeset. -->
+  <script type="module">
+    // Debounced MathJax typeset for dynamically injected content
+    function typesetNow() {
+      const MJ = window.MathJax;
+      if (!MJ || !MJ.typesetPromise) return;
+      // typeset only inside the review root to avoid touching header/footer
+      const root = document.getElementById("reviewRoot");
+      if (!root) return;
+      MJ.typesetClear?.([root]);
+      MJ.typesetPromise([root]).catch(() => {});
+    }
+
+    let t = null;
+    function typesetSoon() {
+      clearTimeout(t);
+      t = setTimeout(typesetNow, 50);
+    }
+
+    // Run once after MathJax is likely ready
+    window.addEventListener("load", () => typesetSoon());
+
+    // Watch for DOM changes caused by reviewpage.js
+    const root = document.getElementById("reviewRoot");
+    if (root && "MutationObserver" in window) {
+      const obs = new MutationObserver(() => typesetSoon());
+      obs.observe(root, { childList: true, subtree: true, characterData: true });
+    }
+
+    // If you ever manually toggle details/open content, ensure math typesets
+    document.addEventListener("toggle", (e) => {
+      if (e.target && e.target.matches && e.target.matches("details.review-deep")) {
+        typesetSoon();
+      }
+    }, true);
+  </script>
 </body>
 </html>
