@@ -1,12 +1,16 @@
 /* /assets/css/quiz.css
-   Bluebook-style quiz UI shell
-   - Uses CSS variables for theme
-   - Styles all elements referenced by quiz.html + quiz-engine.js
+   Bluebook-style quiz UI shell (revised)
+   Goals:
+   - Smaller, cleaner typography for readability
+   - Friendlier numerals (tabular, lining)
+   - MathJax support (mjx-container sizing + overflow handling)
+   - Keeps all existing class/id hooks used by quiz.html + quiz-engine.js
 */
 
 :root{
-  --bb-bg:#eef2fb;            /* page bg */
-  --bb-rail:#e7edf9;          /* bottom rail */
+  /* Theme */
+  --bb-bg:#eef2fb;
+  --bb-rail:#e7edf9;
   --bb-surface:#fff;
   --bb-ink:#111827;
   --bb-muted:#4b5563;
@@ -17,6 +21,17 @@
   --flag:#d11;
   --flag-soft:#fff0f0;
   --shadow:0 1px 2px rgba(16,24,40,.06), 0 6px 14px rgba(16,24,40,.08);
+
+  /* Typography tuning */
+  --quiz-font:15px;          /* base font smaller than before (was 16px) */
+  --quiz-line:1.55;
+  --quiz-title:18px;         /* question prompt size (was 20px) */
+  --quiz-choice:15px;        /* choice text size */
+  --quiz-hint:13px;
+  --quiz-radius:12px;
+
+  /* Layout */
+  --quiz-card-w:980px;
 }
 
 *{box-sizing:border-box}
@@ -26,13 +41,34 @@ body{
   margin:0;
   background:var(--bb-bg);
   color:var(--bb-ink);
-  font:16px/1.5 Inter, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+  font:var(--quiz-font)/var(--quiz-line) Inter, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+  text-rendering:optimizeLegibility;
 }
 
 button{font:inherit}
 button:focus{outline:none}
-button:focus-visible{outline:3px solid rgba(31,77,216,.35); outline-offset:2px}
+button:focus-visible{
+  outline:3px solid rgba(31,77,216,.35);
+  outline-offset:2px;
+}
 
+/* Friendlier numerals across UI */
+#timeLeft,
+.qbadge,
+.letter,
+#pillText,
+.timer b{
+  font-variant-numeric: tabular-nums lining-nums;
+}
+
+/* MathJax sizing + safety */
+mjx-container{
+  font-size:0.92em;                 /* slightly smaller math for readability */
+  overflow-x:auto;                  /* prevents long equations from blowing layout */
+  overflow-y:hidden;
+}
+
+/* App frame */
 .app{
   max-width:1280px;
   margin:0 auto;
@@ -55,7 +91,11 @@ button:focus-visible{outline:3px solid rgba(31,77,216,.35); outline-offset:2px}
   z-index:5;
 }
 
-.title{font-weight:700;font-size:18px}
+.title{
+  font-weight:750;
+  font-size:17px;
+  letter-spacing:.1px;
+}
 
 .directions{
   display:inline-flex;
@@ -64,8 +104,9 @@ button:focus-visible{outline:3px solid rgba(31,77,216,.35); outline-offset:2px}
   color:#111;
   background:transparent;
   border:0;
-  font-weight:600;
+  font-weight:650;
   cursor:pointer;
+  padding:2px 0;
 }
 
 .timer{
@@ -77,9 +118,8 @@ button:focus-visible{outline:3px solid rgba(31,77,216,.35); outline-offset:2px}
 }
 
 .timer b{
-  font-size:26px;
+  font-size:24px; /* was 26px */
   letter-spacing:.5px;
-  font-variant-numeric:tabular-nums;
 }
 
 .btn{
@@ -87,7 +127,7 @@ button:focus-visible{outline:3px solid rgba(31,77,216,.35); outline-offset:2px}
   border:1px solid var(--bb-line);
   background:#fff;
   padding:6px 12px;
-  font-weight:600;
+  font-weight:650;
   cursor:pointer;
   transition:background .12s ease, border-color .12s ease, transform .06s ease;
 }
@@ -119,7 +159,7 @@ button:focus-visible{outline:3px solid rgba(31,77,216,.35); outline-offset:2px}
   align-items:center;
   justify-content:center;
   font-size:12px;
-  font-weight:800;
+  font-weight:850;
   letter-spacing:.6px;
   box-shadow:var(--shadow);
 }
@@ -135,7 +175,7 @@ button:focus-visible{outline:3px solid rgba(31,77,216,.35); outline-offset:2px}
   height:5px;
   border-radius:2px;
   background:#000;
-  opacity:.95;
+  opacity:.92;
 }
 
 /* ----- ONE-COLUMN QUESTION CARD ----- */
@@ -146,10 +186,10 @@ button:focus-visible{outline:3px solid rgba(31,77,216,.35); outline-offset:2px}
 }
 
 .qcard{
-  width:min(980px, 96vw);
+  width:min(var(--quiz-card-w), 96vw);
   background:#fff;
   border:1px solid var(--bb-line);
-  border-radius:12px;
+  border-radius:var(--quiz-radius);
   box-shadow:var(--shadow);
   padding:16px;
 }
@@ -170,7 +210,7 @@ button:focus-visible{outline:3px solid rgba(31,77,216,.35); outline-offset:2px}
   display:grid;
   place-items:center;
   border-radius:6px;
-  font-weight:800;
+  font-weight:850;
 }
 
 .qdash{
@@ -188,7 +228,7 @@ button:focus-visible{outline:3px solid rgba(31,77,216,.35); outline-offset:2px}
   background:#fff;
   color:#111;
   padding:6px 10px;
-  font-weight:700;
+  font-weight:750;
   cursor:pointer;
 }
 
@@ -213,12 +253,12 @@ button:focus-visible{outline:3px solid rgba(31,77,216,.35); outline-offset:2px}
   display:inline-flex;
   align-items:center;
   gap:8px;
-  border-radius:8px;
+  border-radius:10px;
   border:1px solid var(--bb-line);
   background:#fff;
   color:#111;
   padding:6px 10px;
-  font-weight:700;
+  font-weight:750;
   cursor:pointer;
 }
 
@@ -250,13 +290,21 @@ button:focus-visible{outline:3px solid rgba(31,77,216,.35); outline-offset:2px}
 /* Question body */
 .qtitle{
   margin:14px 0 10px;
-  font-size:20px;
-  font-weight:800;
+  font-size:var(--quiz-title);
+  font-weight:850;
+  line-height:1.35;
+  overflow-wrap:anywhere;
+  word-break:normal;
+}
+
+/* Math inside question/title should not explode spacing */
+.qtitle mjx-container{
+  margin:0;
 }
 
 .choices{
   display:grid;
-  gap:12px;
+  gap:10px; /* slightly tighter than 12px */
   margin-top:8px;
 }
 
@@ -267,35 +315,46 @@ button:focus-visible{outline:3px solid rgba(31,77,216,.35); outline-offset:2px}
   border:1px solid var(--bb-line);
   border-radius:10px;
   background:#f7f8fd;
-  padding:12px 14px;
+  padding:11px 12px; /* slightly tighter */
   position:relative;
   transition:opacity .12s ease, background .12s ease, border-color .12s ease;
+  font-size:var(--quiz-choice);
+  line-height:1.5;
 }
 
-/* If you wrap choice text in <span class="text"> ... </span>, this will apply */
-.choice .text{display:block}
+/* If you wrap choice text in <span class="text"> ... </span> */
+.choice .text{
+  display:block;
+  overflow-wrap:anywhere;
+  word-break:normal;
+}
+
+/* Make MathJax in choices inherit sizing */
+.choice mjx-container{
+  font-size:0.92em;
+}
 
 .choice:hover{
   border-color:#b7c1dd;
   background:#f3f6ff;
 }
 
-.choice input{transform:scale(1.1)}
+.choice input{transform:scale(1.08)}
 
 .letter{
   margin-left:auto;
-  width:32px;
-  height:32px;
+  width:30px;
+  height:30px;
   border-radius:50%;
   border:2px solid #b7c1dd;
   display:grid;
   place-items:center;
   color:#1f2a44;
-  font-weight:700;
+  font-weight:800;
 }
 
 /* Eliminated styling */
-.choice.eliminated{opacity:.4}
+.choice.eliminated{opacity:.42}
 .choice.eliminated .text{ text-decoration:line-through 2px }
 .choice.eliminated .letter{ position:relative }
 .choice.eliminated .letter::after{
@@ -303,7 +362,7 @@ button:focus-visible{outline:3px solid rgba(31,77,216,.35); outline-offset:2px}
   position:absolute;
   left:4px;
   right:4px;
-  top:15px;
+  top:14px;
   height:2px;
   background:#1f2a44;
   transform:rotate(-20deg);
@@ -311,8 +370,8 @@ button:focus-visible{outline:3px solid rgba(31,77,216,.35); outline-offset:2px}
 
 .hint{
   color:var(--bb-muted);
-  font-size:14px;
-  margin-top:4px;
+  font-size:var(--quiz-hint);
+  margin-top:6px;
 }
 
 /* BOTTOM RAIL */
@@ -357,7 +416,7 @@ button:focus-visible{outline:3px solid rgba(31,77,216,.35); outline-offset:2px}
   color:#fff;
   border-radius:999px;
   padding:8px 12px;
-  font-weight:800;
+  font-weight:850;
   box-shadow:0 4px 12px rgba(0,0,0,.25);
   display:flex;
   align-items:center;
@@ -412,21 +471,22 @@ button:focus-visible{outline:3px solid rgba(31,77,216,.35); outline-offset:2px}
 }
 
 .popover .title{
-  font-weight:800;
-  font-size:18px;
+  font-weight:850;
+  font-size:17px;
   margin:2px 0 8px;
 }
 
 .popover .legend{
   display:flex;
   flex-wrap:wrap;
-  gap:18px;
+  gap:14px;
   align-items:center;
   margin:10px 0;
   border-top:1px solid var(--bb-line);
   border-bottom:1px solid var(--bb-line);
   padding:8px 0;
   color:var(--bb-muted);
+  font-size:13px;
 }
 
 .legend .box{
@@ -461,10 +521,10 @@ button:focus-visible{outline:3px solid rgba(31,77,216,.35); outline-offset:2px}
   place-items:center;
   height:36px;
   border:2px dashed #2b3350;
-  border-radius:6px;
+  border-radius:8px;
   background:#fff;
   color:#1f4dd8;
-  font-weight:800;
+  font-weight:850;
   cursor:pointer;
   position:relative;
 }
@@ -500,7 +560,7 @@ button:focus-visible{outline:3px solid rgba(31,77,216,.35); outline-offset:2px}
   top:10px;
   width:34px;
   height:34px;
-  border-radius:8px;
+  border-radius:10px;
   border:1px solid var(--bb-line);
   background:#fff;
   cursor:pointer;
@@ -514,7 +574,7 @@ button:focus-visible{outline:3px solid rgba(31,77,216,.35); outline-offset:2px}
   border-radius:10px;
   border:1px solid var(--bb-line);
   padding:10px 12px;
-  font-weight:800;
+  font-weight:850;
   cursor:pointer;
   background:#fff;
 }
@@ -528,8 +588,8 @@ button:focus-visible{outline:3px solid rgba(31,77,216,.35); outline-offset:2px}
 }
 
 .check-head{
-  font-size:28px;
-  font-weight:800;
+  font-size:26px; /* slightly smaller */
+  font-weight:900;
   text-align:center;
   margin:8px 0 6px;
 }
@@ -555,16 +615,17 @@ button:focus-visible{outline:3px solid rgba(31,77,216,.35); outline-offset:2px}
   justify-content:space-between;
   align-items:center;
   color:#111;
-  font-weight:700;
+  font-weight:800;
   margin-bottom:6px;
 }
 
 .check-leg{
   display:flex;
   flex-wrap:wrap;
-  gap:18px;
+  gap:14px;
   align-items:center;
   color:var(--bb-muted);
+  font-size:13px;
 }
 
 .grid-nums{
@@ -578,29 +639,44 @@ button:focus-visible{outline:3px solid rgba(31,77,216,.35); outline-offset:2px}
 
 /* Loader error banner (used by boot loader) */
 .load-error{
-  max-width: 980px;
-  margin: 12px auto 0;
-  padding: 12px 14px;
+  max-width:980px;
+  margin:12px auto 0;
+  padding:12px 14px;
   background:#fff;
   border:1px solid #c00;
   border-radius:10px;
-  box-shadow: var(--shadow);
+  box-shadow:var(--shadow);
   color:#111;
 }
 
-.load-error h2{margin:0 0 6px;font-size:18px}
-.load-error p{margin:0}
+.load-error h2{margin:0 0 6px;font-size:16px}
+.load-error p{margin:0;color:#111}
 .load-error code{background:#f6f7fb;padding:2px 6px;border-radius:6px}
+
+/* Small utilities: keep injected warning consistent if present */
+.quiz-warning{
+  max-width:1280px;
+  margin:0 auto;
+  padding:10px 16px 0;
+  color:#0f172a;
+}
+.quiz-warning strong{font-weight:900}
 
 /* Responsive tweaks */
 @media (max-width: 720px){
+  :root{
+    --quiz-font:14px;
+    --quiz-title:17px;
+    --quiz-choice:14px;
+  }
   .header{gap:10px}
-  .timer b{font-size:22px}
-  .qtitle{font-size:18px}
+  .timer b{font-size:20px}
   .popover .grid{grid-template-columns:repeat(5,1fr)}
   .grid-nums{grid-template-columns:repeat(5,1fr)}
+  .letter{width:28px;height:28px}
 }
 
+/* Reduce motion */
 @media (prefers-reduced-motion: reduce){
   .btn, .choice{transition:none}
 }
