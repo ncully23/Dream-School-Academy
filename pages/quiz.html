@@ -13,7 +13,7 @@
   <script type="module" src="/assets/js/shell.js"></script>
   <script type="module" src="/assets/js/quiz-data.js"></script>
 
-  <!-- Keep your Bluebook-like page CSS (works fine alongside quiz.css) -->
+  <!-- Bluebook-like page CSS (works fine alongside quiz.css) -->
   <style>
     :root{
       --bb-bg:#eef2fb;
@@ -161,7 +161,7 @@
     }
     .go-review:hover{background:#f6f8ff}
 
-    /* Loader error banner (from your circles boot pattern) */
+    /* Loader error banner */
     .load-error{
       max-width: 980px;
       margin: 12px auto 0;
@@ -175,7 +175,10 @@
     .load-error p{margin:0;color:var(--bb-muted)}
   </style>
 
-  <!-- Boot loader (from circles quiz.html) -->
+  <!-- Boot loader: supports BOTH
+       1) new: /pages/quiz.html?quizId=math.circles
+       2) old: /practice/circles/quiz.html (topic inferred from path)
+  -->
   <script type="module">
     const QUIZZES_CONFIG_URL = "/assets/configs/quizzes.json";
     const PAGE_CONTROLLER_URL = "/assets/js/pages/quizpage.js";
@@ -195,9 +198,12 @@
     function setHeader(title, timeText) {
       const titleEl = document.getElementById("sectionTitle");
       if (titleEl) titleEl.textContent = title;
+
       const timeEl = document.getElementById("timeLeft");
       if (timeEl) timeEl.textContent = timeText;
+
       document.title = title;
+
       const popTitle = document.getElementById("popTitle");
       if (popTitle) popTitle.textContent = title;
     }
@@ -221,9 +227,23 @@
       }
     }
 
-    function canonicalizeQuizId(rawId) {
-      if (!rawId) return null;
-      return rawId.includes(".") ? rawId : `math.${rawId}`;
+    function getTopicFromPathFallback() {
+      // supports old pattern: /practice/circles/quiz.html
+      try {
+        const parts = location.pathname.split("/").filter(Boolean);
+        const practiceIdx = parts.indexOf("practice");
+        if (practiceIdx >= 0 && parts.length > practiceIdx + 1) {
+          return parts[practiceIdx + 1]; // "circles"
+        }
+        return null;
+      } catch {
+        return null;
+      }
+    }
+
+    function canonicalizeQuizId(raw) {
+      if (!raw) return null;
+      return raw.includes(".") ? raw : `math.${raw}`;
     }
 
     async function loadQuizzesConfig() {
@@ -235,7 +255,10 @@
     async function boot() {
       setHeader("Loading…", "--:--");
 
-      const quizId = canonicalizeQuizId(getQuizIdFromUrl());
+      const quizId = canonicalizeQuizId(
+        getQuizIdFromUrl() || getTopicFromPathFallback()
+      );
+
       if (!quizId) {
         showError(
           "Missing quiz id. Use <code>?quizId=...</code> (example: <code>?quizId=math.circles</code>)."
@@ -257,7 +280,6 @@
         return;
       }
 
-      // Payload for the controller
       window.DSA_BOOT = { quizId, cfg, bankUrl: cfg.bank };
 
       try {
@@ -274,7 +296,6 @@
 <body>
   <div id="site-header"></div>
 
-  <!-- Practice warning (from circles quiz.html) -->
   <div class="quiz-warning">
     <strong>Heads up:</strong>
     Your progress is <b>not saved</b> until you click <b>End &amp; Score</b>.
@@ -378,37 +399,5 @@
   </div>
 
   <div id="site-footer"></div>
-
-  function getQuizIdFromUrl() {
-  try {
-    return new URLSearchParams(location.search).get("quizId");
-  } catch {
-    return null;
-  }
-}
-
-function getTopicFromPathFallback() {
-  // supports old pattern: /practice/circles/quiz.html or /practice/circles/index.html
-  try {
-    const parts = location.pathname.split("/").filter(Boolean);
-    const practiceIdx = parts.indexOf("practice");
-    if (practiceIdx >= 0 && parts.length > practiceIdx + 1) {
-      return parts[practiceIdx + 1]; // "circles"
-    }
-    return null;
-  } catch {
-    return null;
-  }
-}
-
-function canonicalizeQuizId(raw) {
-  if (!raw) return null;
-
-  // already a full id like "math.circles"
-  if (raw.includes(".")) return raw;
-
-  // allow "circles" -> "math.circles"
-  return `math.${raw}`;
-}
 </body>
 </html>
