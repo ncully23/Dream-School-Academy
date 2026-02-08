@@ -2,7 +2,8 @@
 // Canonical review renderer for Dream School Academy
 // - supports ?attemptId=...
 // - falls back to most recent dsa:attempt:*
-// - renders rich solutions (steps, mistakes, checks, takeaway)
+// - renders rich solutions (approach, formulas, steps, mistakes, checks, takeaway)
+// - adds correct/incorrect highlighting that matches pages/review.html CSS
 // - MathJax-safe if present
 
 /* -----------------------------
@@ -86,15 +87,168 @@ function normalizeSolution(it) {
   };
 }
 
+/* -----------------------------
+   Safe DOM helpers (avoid injection)
+------------------------------ */
+
+function el(tag, className, text) {
+  const node = document.createElement(tag);
+  if (className) node.className = className;
+  if (text != null) node.textContent = String(text);
+  return node;
+}
+
+function appendTextWithMath(container, text) {
+  // We keep textContent to remain safe; MathJax can still typeset inline TeX in text nodes.
+  container.textContent = String(text ?? "");
+}
+
 function showEmpty(message) {
   const header = $("headerCard");
   const empty = $("empty");
   if (header) header.style.display = "none";
   if (empty) {
     empty.style.display = "block";
-    const p = empty.querySelector("p.muted") || empty.querySelector("p");
+    const p = empty.querySelector("p.review-muted") || empty.querySelector("p");
     if (p && message) p.textContent = message;
   }
+}
+
+/* -----------------------------
+   Render helpers
+------------------------------ */
+
+function renderChoiceRow({ choiceText, index, correctIndex, chosenIndex, unanswered }) {
+  const isCorrectChoice = (correctIndex != null && index === correctIndex);
+  const isChosen = (chosenIndex != null && index === chosenIndex);
+  const chosenIsCorrect = (isChosen && isCorrectChoice);
+
+  // Class logic to match the CSS in pages/review.html
+  let cls = "review-choice";
+  if (isCorrectChoice) cls += " correct";
+  if (isChosen && !isCorrectChoice) cls += " your-wrong";
+  if (chosenIsCorrect) cls += " your-correct";
+  if (!isCorrectChoice && !isChosen) cls += " unselected";
+
+  const row = el("div", cls);
+
+  // Left side: letter + text
+  const left = el("div", "review-choice-left");
+  const letterBox = el("div", "review-letter", `${letter(index)}`);
+  const text = el("div", "review-choice-text");
+  appendTextWithMath(text, choiceText);
+
+  left.appendChild(letterBox);
+  left.appendChild(text);
+
+  // Right side pills
+  const pills = el("div", "review-tags");
+
+  // Always mark the correct option, even if student left blank
+  if (isCorrectChoice) {
+    const pill = el("span", "review-pill correct", "Correct ✓");
+    pills.appendChild(pill);
+  }
+
+  // Mark student's chosen option
+  if (isChosen && isCorrectChoice) {
+    const pill = el("span", "review-pill your-correct", "Your answer ✓");
+    pills.appendChild(pill);
+  } else if (isChosen && !isCorrectChoice) {
+    const pill = el("span", "review-pill your-wrong", "Your answer ✕");
+    pills.appendChild(pill);
+  }
+
+  // If unanswered, optionally show "No answer selected" near choices (kept minimal)
+  // We already show this in the Solution summary below; no extra pill needed.
+
+  row.appendChild(left);
+  row.appendChild(pills);
+
+  return row;
+}
+
+function renderDeepExplanation(sol) {
+  const hasAny =
+    sol.approach ||
+    sol.formulas.length ||
+    sol.steps.length ||
+    sol.commonMistakes.length ||
+    sol.checks.length ||
+    sol.takeaway;
+
+  if (!hasAny) return null;
+
+  const details = el("details", "review-deep");
+  const summary = document.createElement("summary");
+
+  const label = el("span", "", "Deep explanation");
+  const chev = el("span", "review-chev");
+
+  summary.appendChild(label);
+  summary.appendChild(chev);
+
+  details.appendChild(summary);
+
+  if (sol.approach) {
+    const p = document.createElement("p");
+    p.appendChild(el("b", "", "Approach: "));
+    p.appendChild(document.createTextNode(String(sol.approach)));
+    details.appendChild(p);
+  }
+
+  if (sol.formulas.length) {
+    details.appendChild(el("p", "", "Formulas:"));
+    const ul = document.createElement("ul");
+    sol.formulas.forEach((f) => {
+      const li = document.createElement("li");
+      appendTextWithMath(li, f);
+      ul.appendChild(li);
+    });
+    details.appendChild(ul);
+  }
+
+  if (sol.steps.length) {
+    details.appendChild(el("p", "", "Steps:"));
+    const ol = document.createElement("ol");
+    sol.steps.forEach((s) => {
+      const li = document.createElement("li");
+      appendTextWithMath(li, s);
+      ol.appendChild(li);
+    });
+    details.appendChild(ol);
+  }
+
+  if (sol.commonMistakes.length) {
+    details.appendChild(el("p", "", "Common mistakes:"));
+    const ul = document.createElement("ul");
+    sol.commonMistakes.forEach((m) => {
+      const li = document.createElement("li");
+      appendTextWithMath(li, m);
+      ul.appendChild(li);
+    });
+    details.appendChild(ul);
+  }
+
+  if (sol.checks.length) {
+    details.appendChild(el("p", "", "How to check:"));
+    const ul = document.createElement("ul");
+    sol.checks.forEach((c) => {
+      const li = document.createElement("li");
+      appendTextWithMath(li, c);
+      ul.appendChild(li);
+    });
+    details.appendChild(ul);
+  }
+
+  if (sol.takeaway) {
+    const p = document.createElement("p");
+    p.appendChild(el("b", "", "Takeaway: "));
+    p.appendChild(document.createTextNode(String(sol.takeaway)));
+    details.appendChild(p);
+  }
+
+  return details;
 }
 
 /* -----------------------------
@@ -127,6 +281,7 @@ function renderAttempt(summary, attemptIdFromUrl) {
   /* ----- totals ----- */
 
   const total = summary.totals?.total ?? items.length;
+
   const answered =
     summary.totals?.answered ??
     items.filter(i => i.chosenIndex != null).length;
@@ -134,12 +289,9 @@ function renderAttempt(summary, attemptIdFromUrl) {
   const correct =
     summary.totals?.correct ??
     items.reduce((n, it) => {
-      return n + (
-        it.chosenIndex != null &&
-        it.correctIndex != null &&
-        it.chosenIndex === it.correctIndex
-          ? 1 : 0
-      );
+      const ui = Number.isFinite(it.chosenIndex) ? it.chosenIndex : null;
+      const ci = Number.isFinite(it.correctIndex) ? it.correctIndex : null;
+      return n + (ui != null && ci != null && ui === ci ? 1 : 0);
     }, 0);
 
   const scorePct =
@@ -163,12 +315,16 @@ function renderAttempt(summary, attemptIdFromUrl) {
 
   if (chipsEl) {
     chipsEl.innerHTML = "";
-    if (summary.quizId)
-      chipsEl.insertAdjacentHTML("beforeend",
-        `<span class="chip">quizId: ${summary.quizId}</span>`);
-    if (attemptIdFromUrl)
-      chipsEl.insertAdjacentHTML("beforeend",
-        `<span class="chip">attemptId: ${attemptIdFromUrl}</span>`);
+    if (summary.quizId) {
+      const chip = el("span", "review-chip");
+      chip.textContent = `quizId: ${summary.quizId}`;
+      chipsEl.appendChild(chip);
+    }
+    if (attemptIdFromUrl) {
+      const chip = el("span", "review-chip");
+      chip.textContent = `attemptId: ${attemptIdFromUrl}`;
+      chipsEl.appendChild(chip);
+    }
   }
 
   if (actionsEl && backToQuiz && summary.quizId) {
@@ -190,95 +346,104 @@ function renderAttempt(summary, attemptIdFromUrl) {
     const unanswered = ui == null;
     const isCorrect = !unanswered && ci != null && ui === ci;
 
-    const sec = document.createElement("section");
-    sec.className = `q ${unanswered ? "na" : (isCorrect ? "ok" : "no")}`;
+    const card = el("section", `review-q ${unanswered ? "na" : (isCorrect ? "ok" : "no")}`);
 
-    /* ----- header ----- */
+    // Header row
+    const head = el("div", "review-qhead");
+    const badge = el("div", `review-badge ${unanswered ? "na" : (isCorrect ? "ok" : "no")}`, String(number));
 
-    const metaBits = [];
-    if (it.questionId) metaBits.push(`questionId: ${it.questionId}`);
-    if (Number.isFinite(it.timeSpentSec)) metaBits.push(`time: ${it.timeSpentSec}s`);
+    const headRight = document.createElement("div");
+    const prompt = el("div", "review-prompt");
+    appendTextWithMath(prompt, it.prompt || "");
 
-    /* ----- choices ----- */
+    headRight.appendChild(prompt);
 
-    const choiceHtml = choices.map((c, i) => {
-      const isAns = i === ci;
-      const isUser = i === ui;
+    // Submeta tags: questionId/time + skill/difficulty
+    const submeta = el("div", "review-submeta");
 
-      const tags = [];
-      if (isUser) tags.push(`<span class="tag you">Your choice</span>`);
-      if (isAns) tags.push(`<span class="tag correct">Correct</span>`);
-      if (isUser && !isAns) tags.push(`<span class="tag wrong">Wrong</span>`);
-      if (unanswered && isAns) tags.push(`<span class="tag unanswered">You left blank</span>`);
+    if (it.questionId) submeta.appendChild(el("span", "review-tag", `questionId: ${it.questionId}`));
 
-      return `
-        <div class="choice ${isAns ? "correct" : ""} ${isUser ? "your" : ""}">
-          <div><b>${letter(i)}.</b> ${c}</div>
-          <div class="tags">${tags.join("")}</div>
-        </div>
-      `;
-    }).join("");
-
-    /* ----- solution ----- */
-
-    const sol = normalizeSolution(it);
-
-    let solutionHtml = `
-      <ul>
-        ${ci != null ? `<li><b>Correct answer:</b> ${letter(ci)}. ${choices[ci] ?? ""}</li>` : ""}
-        ${unanswered
-          ? `<li><b>Your answer:</b> (no answer selected)</li>`
-          : `<li><b>Your answer:</b> ${letter(ui)}. ${choices[ui] ?? ""} ${isCorrect ? "(correct)" : "(incorrect)"}</li>`}
-        ${it.skill ? `<li><b>Skill:</b> ${it.skill}</li>` : ""}
-        ${it.difficulty ? `<li><b>Difficulty:</b> ${it.difficulty}</li>` : ""}
-      </ul>
-    `;
-
-    let deep = "";
-
-    if (
-      sol.approach ||
-      sol.formulas.length ||
-      sol.steps.length ||
-      sol.commonMistakes.length ||
-      sol.checks.length ||
-      sol.takeaway
-    ) {
-      deep = `
-        <details class="deep">
-          <summary>
-            <span>Deep explanation</span>
-            <span class="chev"></span>
-          </summary>
-          ${sol.approach ? `<p><b>Approach:</b> ${sol.approach}</p>` : ""}
-          ${sol.formulas.length ? `<p><b>Formulas:</b></p><ul>${sol.formulas.map(f => `<li>${f}</li>`).join("")}</ul>` : ""}
-          ${sol.steps.length ? `<p><b>Steps:</b></p><ol>${sol.steps.map(s => `<li>${s}</li>`).join("")}</ol>` : ""}
-          ${sol.commonMistakes.length ? `<p><b>Common mistakes:</b></p><ul>${sol.commonMistakes.map(m => `<li>${m}</li>`).join("")}</ul>` : ""}
-          ${sol.checks.length ? `<p><b>How to check:</b></p><ul>${sol.checks.map(c => `<li>${c}</li>`).join("")}</ul>` : ""}
-          ${sol.takeaway ? `<p><b>Takeaway:</b> ${sol.takeaway}</p>` : ""}
-        </details>
-      `;
+    if (Number.isFinite(it.timeSpentSec)) {
+      submeta.appendChild(el("span", "review-tag time", `time: ${Math.max(0, Math.floor(it.timeSpentSec))}s`));
     }
 
-    sec.innerHTML = `
-      <div class="qhead">
-        <div class="badge ${unanswered ? "na" : (isCorrect ? "ok" : "no")}">${number}</div>
-        <div>
-          <div class="prompt">${it.prompt || ""}</div>
-          ${metaBits.length ? `<div class="submeta">${metaBits.join(" • ")}</div>` : ""}
-        </div>
-      </div>
+    if (it.skill) submeta.appendChild(el("span", "review-tag skill", `skill: ${it.skill}`));
+    if (it.difficulty) submeta.appendChild(el("span", "review-tag diff", `difficulty: ${it.difficulty}`));
 
-      <div class="choices">${choiceHtml}</div>
+    if (submeta.childNodes.length) headRight.appendChild(submeta);
 
-      <div class="exp">
-        <b>Solution:</b>
-        ${solutionHtml}
-        ${deep}
-      </div>
-    `;
+    head.appendChild(badge);
+    head.appendChild(headRight);
 
-    qsEl.appendChild(sec);
+    // Choices
+    const choicesWrap = el("div", "review-choices");
+
+    choices.forEach((c, i) => {
+      choicesWrap.appendChild(
+        renderChoiceRow({
+          choiceText: c,
+          index: i,
+          correctIndex: ci,
+          chosenIndex: ui,
+          unanswered
+        })
+      );
+    });
+
+    // Solution summary box
+    const exp = el("div", "review-exp");
+    const expTitle = el("div", "", "");
+    expTitle.appendChild(el("b", "", "Solution:"));
+    exp.appendChild(expTitle);
+
+    const ul = document.createElement("ul");
+
+    if (ci != null) {
+      const li = document.createElement("li");
+      li.appendChild(el("b", "", "Correct answer: "));
+      li.appendChild(document.createTextNode(`${letter(ci)}. ${choices[ci] ?? ""}`));
+      ul.appendChild(li);
+    }
+
+    {
+      const li = document.createElement("li");
+      li.appendChild(el("b", "", "Your answer: "));
+      if (unanswered) {
+        li.appendChild(document.createTextNode("(no answer selected)"));
+      } else {
+        const label = `${letter(ui)}. ${choices[ui] ?? ""}`;
+        li.appendChild(document.createTextNode(label + (isCorrect ? " (correct)" : " (incorrect)")));
+      }
+      ul.appendChild(li);
+    }
+
+    if (it.skill) {
+      const li = document.createElement("li");
+      li.appendChild(el("b", "", "Skill: "));
+      li.appendChild(document.createTextNode(String(it.skill)));
+      ul.appendChild(li);
+    }
+
+    if (it.difficulty) {
+      const li = document.createElement("li");
+      li.appendChild(el("b", "", "Difficulty: "));
+      li.appendChild(document.createTextNode(String(it.difficulty)));
+      ul.appendChild(li);
+    }
+
+    exp.appendChild(ul);
+
+    // Deep explanation
+    const sol = normalizeSolution(it);
+    const deep = renderDeepExplanation(sol);
+    if (deep) exp.appendChild(deep);
+
+    // Assemble card
+    card.appendChild(head);
+    card.appendChild(choicesWrap);
+    card.appendChild(exp);
+
+    qsEl.appendChild(card);
   });
 
   /* ----- MathJax ----- */
