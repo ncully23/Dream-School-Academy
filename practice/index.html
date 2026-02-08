@@ -117,6 +117,54 @@
     .quiz-card a:hover {
       transform: translateY(-1px);
     }
+
+    <style>
+  /* ...your existing styles... */
+
+  .practice-actions {
+    display: flex;
+    gap: 0.8rem;
+    flex-wrap: wrap;
+    align-items: center;
+    margin-top: 0.8rem;
+  }
+
+  .practice-actions select {
+    padding: 0.55rem 0.8rem;
+    background: var(--surface-2);
+    border-radius: 999px;
+    border: 1px solid rgba(148, 163, 184, 0.35);
+    color: var(--text);
+    font-size: 0.9rem;
+    min-width: 180px;
+  }
+
+  .practice-actions .btn-start {
+    display: inline-block;
+    padding: 0.55rem 0.95rem;
+    border-radius: 999px;
+    font-size: 0.9rem;
+    font-weight: 800;
+    text-decoration: none;
+    background: var(--brand);
+    color: var(--brand-ink);
+    border: none;
+    cursor: pointer;
+    transition: transform 0.12s ease, filter 0.12s ease;
+  }
+
+  .practice-actions .btn-start:hover {
+    transform: translateY(-1px);
+    filter: brightness(1.03);
+  }
+
+  .practice-note {
+    font-size: 0.85rem;
+    color: var(--muted);
+    margin-top: 0.6rem;
+    line-height: 1.4;
+  }
+</style>
   </style>
 </head>
 
@@ -159,6 +207,37 @@
         </div>
       </section>
 
+<!-- RANDOMIZED PRACTICE (UNTIMED) -->
+<section class="practice-section" id="random-math">
+  <h2><span>🎲 Random math practice (untimed)</span></h2>
+  <p>Quick reps. No timer. Pulls a random set of math questions.</p>
+
+  <div class="practice-actions">
+    <select id="randCount" aria-label="Number of questions">
+      <option value="5">5 questions</option>
+      <option value="10" selected>10 questions</option>
+      <option value="15">15 questions</option>
+      <option value="20">20 questions</option>
+    </select>
+
+    <select id="randDiff" aria-label="Difficulty">
+      <option value="">Any difficulty</option>
+      <option value="easy">Easy</option>
+      <option value="medium">Medium</option>
+      <option value="hard">Hard</option>
+    </select>
+
+    <button class="btn-start" id="startRandomMath">Start random math</button>
+  </div>
+
+  <div class="practice-note">
+    This launches a special “random” quiz mode. If you haven’t implemented random selection yet,
+    you can still route to <span style="opacity:.95">quiz.html</span> and add support later by reading
+    the query parameters shown below.
+  </div>
+</section>
+
+      
       <!-- TOPIC QUIZZES -->
       <section class="practice-section">
         <h2><span>🎯 Practice by topic</span></h2>
