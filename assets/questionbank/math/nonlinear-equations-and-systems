@@ -1,0 +1,389 @@
+{
+  "bankId": "math.nonlinear-equations-and-systems",
+  "bankVersion": 1,
+  "title": "Math — Nonlinear Equations & Systems",
+  "description": "SAT/PSAT-style nonlinear equations and systems (quadratics, radicals, absolute value, rational equations). Includes rich step-by-step solutions, common mistakes, and quick checks.",
+  "updatedAt": "2026-02-08",
+  "questions": [
+    {
+      "questionId": "PSAT-874f12bd",
+      "topic": "math.nonlinear-equations-and-systems",
+      "skill": "rational-equations-solve-for-variable",
+      "difficulty": "hard",
+      "prompt": "The given equation relates the positive variables p, q, r, and s. Which of the following is equivalent to q?\n\n20/p = 20/q − 20/r − 20/s",
+      "choices": [
+        "p + r + s",
+        "20(p + r + s)",
+        "prs/(pr + ps + rs)",
+        "prs/(20p + 20r + 20s)"
+      ],
+      "answerIndex": 2,
+      "solution": {
+        "finalAnswer": "prs/(pr + ps + rs)",
+        "approach": "Clear the constant 20, combine the fractions on the right using a common denominator, then isolate 1/q and take the reciprocal.",
+        "formulas": [
+          "If A = 1/q, then q = 1/A (reciprocal)",
+          "Common denominator for 1/q, 1/r, 1/s is qrs"
+        ],
+        "steps": [
+          "Start with 20/p = 20/q − 20/r − 20/s.",
+          "Divide both sides by 20 to simplify: 1/p = 1/q − 1/r − 1/s.",
+          "Move the subtracted terms to the left so that 1/q is alone on the right: 1/p + 1/r + 1/s = 1/q.",
+          "Combine the left side using common denominator prs:\n  1/p = rs/(prs), 1/r = ps/(prs), 1/s = pr/(prs).",
+          "Add the numerators: 1/p + 1/r + 1/s = (rs + ps + pr)/(prs).",
+          "So 1/q = (pr + ps + rs)/(prs).",
+          "Take the reciprocal of both sides to solve for q (variables are positive, so no sign issues): q = prs/(pr + ps + rs)."
+        ],
+        "commonMistakes": [
+          "Forgetting to divide everything by 20 first (creates extra clutter).",
+          "Combining 1/p + 1/r + 1/s as 1/(p+r+s) (that is NOT valid).",
+          "Solving for 1/q but forgetting to take the reciprocal at the end."
+        ],
+        "checks": [
+          "Dimensional/structure check: q should be a rational expression involving p, r, s (not q). Choice C has that form.",
+          "Quick plug-in check (optional): let p=1, r=2, s=2. Then 1/p + 1/r + 1/s = 1 + 1/2 + 1/2 = 2, so q should be 1/2. Choice C gives prs/(pr+ps+rs) = (1·2·2)/(1·2+1·2+2·2)=4/8=1/2."
+        ],
+        "takeaway": "When variables appear in denominators, isolate the reciprocal (like 1/q) first, then take the reciprocal at the end."
+      }
+    },
+    {
+      "questionId": "PSAT-220f67ab",
+      "topic": "math.nonlinear-equations-and-systems",
+      "skill": "quadratic-formula-identify-correct-expression",
+      "difficulty": "hard",
+      "prompt": "6x^2 + 5x − 7 = 0\n\nWhat are the solutions to the given equation?",
+      "choices": [
+        "(-5 ± √(25 + 168))/12",
+        "(-6 ± √(25 + 168))/12",
+        "(-5 ± √(36 − 168))/12",
+        "(-6 ± √(36 − 168))/12"
+      ],
+      "answerIndex": 0,
+      "solution": {
+        "finalAnswer": "(-5 ± √(25 + 168))/12",
+        "approach": "Use the quadratic formula with a=6, b=5, c=-7, and simplify the discriminant b^2−4ac carefully.",
+        "formulas": [
+          "x = (-b ± √(b^2 − 4ac)) / (2a)"
+        ],
+        "steps": [
+          "Identify coefficients from 6x^2 + 5x − 7 = 0: a=6, b=5, c=-7.",
+          "Compute the discriminant: b^2 − 4ac = 5^2 − 4(6)(-7) = 25 + 168.",
+          "Substitute into the quadratic formula: x = (-5 ± √(25 + 168)) / (2·6) = (-5 ± √(25 + 168)) / 12.",
+          "That matches choice A."
+        ],
+        "commonMistakes": [
+          "Using +b instead of -b in the numerator.",
+          "Forgetting that c is negative, so -4ac becomes PLUS (adds 168).",
+          "Using 2b instead of 2a in the denominator."
+        ],
+        "checks": [
+          "Sign check: since a>0 and c<0, the parabola crosses the x-axis twice and the discriminant should be positive—25+168 is positive.",
+          "Denominator must be 2a = 12; any answer not over 12 is automatically wrong."
+        ],
+        "takeaway": "Most errors come from sign mistakes in the discriminant and forgetting the denominator is 2a."
+      }
+    },
+    {
+      "questionId": "PSAT-f2fb86c1",
+      "topic": "math.nonlinear-equations-and-systems",
+      "skill": "absolute-value-equations-two-solutions",
+      "difficulty": "hard",
+      "prompt": "|z − 9| + 45 = 63\n\nWhat is the sum of the solutions to the given equation?",
+      "choices": [
+        "18",
+        "-18",
+        "0",
+        "36"
+      ],
+      "answerIndex": 0,
+      "solution": {
+        "finalAnswer": "18",
+        "approach": "Isolate the absolute value, split into two cases, solve each, then add the solutions.",
+        "formulas": [
+          "If |A| = k (k≥0), then A = k or A = -k"
+        ],
+        "steps": [
+          "Start: |z − 9| + 45 = 63.",
+          "Subtract 45 from both sides: |z − 9| = 18.",
+          "Case 1: z − 9 = 18 → z = 27.",
+          "Case 2: z − 9 = -18 → z = -9.",
+          "Sum the solutions: 27 + (-9) = 18."
+        ],
+        "commonMistakes": [
+          "Only solving the +18 case and forgetting the -18 case.",
+          "Dropping the absolute value bars without creating two cases."
+        ],
+        "checks": [
+          "Plug in z=27: |27−9|+45 = 18+45 = 63 ✓",
+          "Plug in z=-9: |-9−9|+45 = 18+45 = 63 ✓"
+        ],
+        "takeaway": "Absolute value equations usually produce two symmetric cases; solve both unless k=0."
+      }
+    },
+    {
+      "questionId": "PSAT-5879c172",
+      "topic": "math.nonlinear-equations-and-systems",
+      "skill": "rational-equations-isolate-variable",
+      "difficulty": "hard",
+      "prompt": "The given equation relates the variables n, t, and w, where n > 0, t > 0, and w > t.\n\n12/n − 2/t = −2/w\n\nWhich expression is equivalent to n?",
+      "choices": [
+        "12tw",
+        "6(t − w)",
+        "(w − t)/(6tw)",
+        "6tw/(w − t)"
+      ],
+      "answerIndex": 3,
+      "solution": {
+        "finalAnswer": "6tw/(w − t)",
+        "approach": "Move terms to isolate 12/n, combine the right-hand side using a common denominator, then solve for n (take the reciprocal at the right moment).",
+        "formulas": [
+          "Common denominator for 1/t and 1/w is tw",
+          "If 12/n = A then n = 12/A"
+        ],
+        "steps": [
+          "Start: 12/n − 2/t = −2/w.",
+          "Add 2/t to both sides: 12/n = 2/t − 2/w.",
+          "Factor out 2: 12/n = 2(1/t − 1/w).",
+          "Combine inside parentheses with common denominator tw:\n  1/t − 1/w = (w − t)/(tw).",
+          "So 12/n = 2(w − t)/(tw).",
+          "Divide both sides by 2: 6/n = (w − t)/(tw).",
+          "Take reciprocals (valid since all quantities are positive and w>t makes w−t>0): n/6 = tw/(w − t).",
+          "Multiply by 6: n = 6tw/(w − t)."
+        ],
+        "commonMistakes": [
+          "Combining 1/t − 1/w incorrectly as (t − w)/(tw) but then losing the sign.",
+          "Taking the reciprocal too early without simplifying.",
+          "Forgetting that 12/n becomes 6/n after dividing by 2."
+        ],
+        "checks": [
+          "Sign check: w>t ⇒ w−t>0, so n should come out positive. 6tw/(w−t) is positive.",
+          "Quick plug-in: let t=1, w=2. Then 2/t−2/w = 2−1 =1, so 12/n=1 ⇒ n=12. Formula gives 6·1·2/(2−1)=12 ✓"
+        ],
+        "takeaway": "For expressions like 1/t − 1/w, immediately go to a common denominator tw; it prevents sign errors."
+      }
+    },
+    {
+      "questionId": "PSAT-5fd8dde8",
+      "topic": "math.nonlinear-equations-and-systems",
+      "skill": "systems-substitution-nonlinear",
+      "difficulty": "hard",
+      "prompt": "The solution to the given system of equations is (z, y). What is the value of y?\n\ny = z^2 + 14z + 48\nz + 8 = 11",
+      "choices": [
+        "81",
+        "99",
+        "121",
+        "63"
+      ],
+      "answerIndex": 1,
+      "solution": {
+        "finalAnswer": "99",
+        "approach": "Solve the linear equation for z, then substitute into the nonlinear expression for y.",
+        "formulas": [
+          "Substitution: if z is known, compute y directly from y = z^2 + 14z + 48"
+        ],
+        "steps": [
+          "From z + 8 = 11, subtract 8: z = 3.",
+          "Substitute z=3 into y = z^2 + 14z + 48:",
+          "Compute each part: z^2 = 9, 14z = 42.",
+          "Add: y = 9 + 42 + 48 = 99."
+        ],
+        "commonMistakes": [
+          "Solving z incorrectly (e.g., 11−8 = 2).",
+          "Forgetting to square z in z^2.",
+          "Arithmetic slip when adding 9+42+48."
+        ],
+        "checks": [
+          "Plug back: z=3 satisfies z+8=11 ✓",
+          "Compute y with z=3 gives 99; no other constraints remain, so y must be 99."
+        ],
+        "takeaway": "In systems with one linear equation, solve the linear one first—then substitute."
+      }
+    },
+    {
+      "questionId": "PSAT-0b3d4328",
+      "topic": "math.nonlinear-equations-and-systems",
+      "skill": "factor-quadratic-find-specified-root",
+      "difficulty": "hard",
+      "prompt": "5a^2 − 37a − 24 = 0\n\nWhat is the positive solution to the given equation?",
+      "choices": [
+        "8/5",
+        "3",
+        "8",
+        "37"
+      ],
+      "answerIndex": 2,
+      "solution": {
+        "finalAnswer": "8",
+        "approach": "Factor the quadratic, set each factor to zero, then pick the positive root.",
+        "formulas": [
+          "Zero product property: if (A)(B)=0 then A=0 or B=0"
+        ],
+        "steps": [
+          "Factor 5a^2 − 37a − 24. Look for two numbers that multiply to 5·(-24)=-120 and add to -37: -40 and 3.",
+          "Rewrite and factor by grouping:\n  5a^2 − 40a + 3a − 24 = 0\n  5a(a−8) + 3(a−8) = 0",
+          "Factor the common binomial:\n  (5a+3)(a−8)=0",
+          "Set factors to zero:\n  5a+3=0 → a = -3/5\n  a−8=0 → a = 8",
+          "Positive solution is 8."
+        ],
+        "commonMistakes": [
+          "Sign mistake when searching for factor pair (needs product -120, sum -37).",
+          "Stopping after finding one root and forgetting there are two.",
+          "Choosing the negative root when the question asks for the positive solution."
+        ],
+        "checks": [
+          "Plug a=8: 5(64)−37(8)−24 = 320−296−24 = 0 ✓"
+        ],
+        "takeaway": "When asked for a specific root (positive), still solve both—then select the one that matches the condition."
+      }
+    },
+    {
+      "questionId": "PSAT-e092622c",
+      "topic": "math.nonlinear-equations-and-systems",
+      "skill": "radical-equations-isolate-and-square",
+      "difficulty": "hard",
+      "prompt": "If 4√(2x) = 16, what is the value of 6x?",
+      "choices": [
+        "24",
+        "48",
+        "72",
+        "96"
+      ],
+      "answerIndex": 1,
+      "solution": {
+        "finalAnswer": "48",
+        "approach": "Isolate the radical, square both sides to remove the square root, solve for x, then compute 6x.",
+        "formulas": [
+          "If √A = b, then A = b^2 (with A≥0)"
+        ],
+        "steps": [
+          "Start: 4√(2x) = 16.",
+          "Divide both sides by 4: √(2x) = 4.",
+          "Square both sides: 2x = 16.",
+          "Divide by 2: x = 8.",
+          "Compute 6x: 6·8 = 48."
+        ],
+        "commonMistakes": [
+          "Squaring before isolating the square root (creates extra factors).",
+          "Forgetting to square the 4 (thinking √(2x)=4 implies 2x=4).",
+          "Solving for x correctly but forgetting the question asks for 6x."
+        ],
+        "checks": [
+          "Back-substitute x=8: 4√(16)=4·4=16 ✓"
+        ],
+        "takeaway": "Always isolate the radical first; then square; then answer exactly what’s asked (often a multiple of the variable)."
+      }
+    },
+    {
+      "questionId": "PSAT-aa3f6ab0",
+      "topic": "math.nonlinear-equations-and-systems",
+      "skill": "system-quadratic-and-line-number-of-solutions",
+      "difficulty": "hard",
+      "prompt": "How many solutions are there to the system of equations?\n\ny = x^2 + 3x − 7\n\ny − 5x + 8 = 0",
+      "choices": [
+        "There are exactly 4 solutions.",
+        "There are exactly 2 solutions.",
+        "There is exactly 1 solution.",
+        "There are no solutions."
+      ],
+      "answerIndex": 2,
+      "solution": {
+        "finalAnswer": "There is exactly 1 solution.",
+        "approach": "Rewrite the line as y=5x−8, substitute into the parabola equation, and count real solutions from the resulting quadratic.",
+        "formulas": [
+          "Substitution for systems: set expressions for y equal",
+          "A quadratic has 0, 1, or 2 real solutions depending on the discriminant"
+        ],
+        "steps": [
+          "Rewrite the linear equation: y − 5x + 8 = 0 → y = 5x − 8.",
+          "Set the two expressions for y equal:\n  x^2 + 3x − 7 = 5x − 8.",
+          "Bring everything to one side:\n  x^2 + 3x − 7 − 5x + 8 = 0\n  x^2 − 2x + 1 = 0.",
+          "Factor:\n  x^2 − 2x + 1 = (x − 1)^2 = 0.",
+          "So x = 1 is a repeated root (one intersection point).",
+          "Find y using y=5x−8: y = 5(1) − 8 = -3.",
+          "Because there is only one x value, the system has exactly one solution."
+        ],
+        "commonMistakes": [
+          "Assuming 'parabola + line' always means 2 solutions (it can be 0, 1, or 2).",
+          "Arithmetic sign slip when combining terms (-7 + 8 = +1)."
+        ],
+        "checks": [
+          "Repeated-root check: (x−1)^2 has exactly one real x value → exactly one intersection."
+        ],
+        "takeaway": "A line can be tangent to a parabola, producing exactly one solution (a double root)."
+      }
+    },
+    {
+      "questionId": "PSAT-5fc21cab",
+      "topic": "math.nonlinear-equations-and-systems",
+      "skill": "zero-product-property",
+      "difficulty": "hard",
+      "prompt": "3a(a − 4)(a + 5) = 0\n\nWhat is one of the solutions to the given equation?",
+      "choices": [
+        "-4",
+        "0",
+        "3",
+        "5"
+      ],
+      "answerIndex": 1,
+      "solution": {
+        "finalAnswer": "0",
+        "approach": "Apply the zero product property: a product is zero only if at least one factor is zero.",
+        "formulas": [
+          "If (A)(B)(C)=0 then A=0 or B=0 or C=0"
+        ],
+        "steps": [
+          "The equation is already factored: 3a(a−4)(a+5)=0.",
+          "The constant 3 cannot make the product 0.",
+          "Set each variable factor equal to 0:\n  a=0 or a−4=0 or a+5=0.",
+          "Solve:\n  a=0, a=4, a=-5.",
+          "One valid solution is a=0 (choice B)."
+        ],
+        "commonMistakes": [
+          "Trying to expand the expression (unnecessary).",
+          "Thinking the constant 3 contributes a solution (it doesn’t)."
+        ],
+        "checks": [
+          "Plug a=0: 3·0·(−4)·5 = 0 ✓"
+        ],
+        "takeaway": "When an equation is factored and set to zero, use the zero product property immediately."
+      }
+    },
+    {
+      "questionId": "PSAT-65f76f1e",
+      "topic": "math.nonlinear-equations-and-systems",
+      "skill": "quadratic-formula-match-radical-form",
+      "difficulty": "hard",
+      "prompt": "2x^2 − 8x − 7 = 0\n\nOne solution to the given equation can be written as (8 − √k)/4, where k is a constant. What is the value of k?",
+      "choices": [
+        "92",
+        "112",
+        "120",
+        "168"
+      ],
+      "answerIndex": 2,
+      "solution": {
+        "finalAnswer": "120",
+        "approach": "Use the quadratic formula, simplify into the exact provided form, and match the value under the square root to k.",
+        "formulas": [
+          "x = (-b ± √(b^2 − 4ac)) / (2a)"
+        ],
+        "steps": [
+          "Identify coefficients: a=2, b=-8, c=-7.",
+          "Apply quadratic formula:\n  x = ( -(-8) ± √((-8)^2 − 4(2)(-7)) ) / (2·2).",
+          "Simplify the numerator:\n  -(-8)=8,\n  (-8)^2=64,\n  −4ac = −4·2·(−7)=+56,\n  so discriminant = 64 + 56 = 120.",
+          "So solutions are:\n  x = (8 ± √120)/4.",
+          "The problem shows one solution as (8 − √k)/4, so k must equal 120."
+        ],
+        "commonMistakes": [
+          "Using b=8 instead of b=-8, which flips signs in the formula.",
+          "Computing b^2−4ac as 64−56 instead of 64+56 (because c is negative).",
+          "Not noticing the denominator is 2a = 4."
+        ],
+        "checks": [
+          "Form match: (8 − √120)/4 exactly matches (8 − √k)/4 → k=120."
+        ],
+        "takeaway": "When a solution is given in a specific radical form, your job is often just to compute the discriminant correctly."
+      }
+    }
+  ]
+}
