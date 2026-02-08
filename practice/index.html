@@ -431,5 +431,33 @@
 
   <!-- Footer injected by shell.js -->
   <div id="site-footer"></div>
+
+<script>
+  (function () {
+    const btn = document.getElementById("startRandomMath");
+    const countSel = document.getElementById("randCount");
+    const diffSel = document.getElementById("randDiff");
+
+    if (!btn || !countSel || !diffSel) return;
+
+    btn.addEventListener("click", () => {
+      const count = countSel.value || "10";
+      const diff = diffSel.value || "";
+
+      // Route to your existing quiz runner.
+      // Implement support in quizpage.js/engine by reading:
+      //   mode=random, section=math, count=..., diff=...
+      const url = new URL("/pages/quiz.html", location.origin);
+      url.searchParams.set("mode", "random");
+      url.searchParams.set("section", "math");
+      url.searchParams.set("count", String(count));
+      if (diff) url.searchParams.set("difficulty", diff);
+      url.searchParams.set("untimed", "1");
+
+      location.href = url.toString();
+    });
+  })();
+</script>
+  
 </body>
 </html>
