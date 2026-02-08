@@ -8,11 +8,9 @@
   <!-- Global site styling (controls dark theme + header/nav/buttons) -->
   <link rel="stylesheet" href="/assets/css/site.css" />
 
-  <!-- Review-only styling (dark-friendly, no site-wide class overrides) -->
   <style>
-    /* IMPORTANT:
-       Do NOT redefine :root tokens that site.css already uses.
-       We only style review-specific classes below. */
+    /* Review-only styling.
+       Do NOT redefine :root tokens from site.css. */
 
     .review-wrap{
       max-width:1100px;
@@ -20,31 +18,31 @@
       padding:20px 16px 80px;
     }
 
-    /* Dark-friendly surfaces */
     .review-card{
       background: rgba(255,255,255,0.04);
       border: 1px solid rgba(255,255,255,0.10);
-      border-radius:14px;
-      box-shadow: 0 10px 24px rgba(0,0,0,0.25);
+      border-radius:16px;
+      box-shadow: 0 14px 34px rgba(0,0,0,0.28);
       padding:16px;
       backdrop-filter: blur(6px);
     }
 
-    .review-muted{ opacity:.75; }
+    .review-muted{ opacity:.78; }
 
     .review-top{
       display:flex;
       justify-content:space-between;
       align-items:flex-start;
-      gap:12px;
-      margin-bottom:10px;
+      gap:14px;
+      margin-bottom:12px;
     }
 
     .review-title{
       margin:.25rem 0 .35rem;
-      font-size:28px;
-      font-weight:900;
+      font-size:30px;
+      font-weight:950;
       letter-spacing:.2px;
+      line-height:1.1;
     }
 
     .review-score{
@@ -53,7 +51,7 @@
       color:#fff;
       border-radius:999px;
       padding:10px 12px;
-      font-weight:900;
+      font-weight:950;
       display:inline-flex;
       gap:10px;
       align-items:center;
@@ -61,7 +59,7 @@
     }
     .review-score span.small{
       font-size:13px;
-      font-weight:700;
+      font-weight:800;
       opacity:.9;
     }
 
@@ -78,7 +76,7 @@
       border:1px solid rgba(105,229,255,0.35);
       background: rgba(105,229,255,0.10);
       color: rgba(233,238,247,0.95);
-      font-weight:800;
+      font-weight:900;
     }
 
     .review-btnrow{
@@ -88,7 +86,6 @@
       margin-top:12px;
     }
 
-    /* Review page buttons only (don’t touch .btn used by your header) */
     .review-btn{
       display:inline-flex;
       align-items:center;
@@ -98,10 +95,11 @@
       border:1px solid rgba(255,255,255,0.14);
       background: rgba(255,255,255,0.06);
       padding:10px 14px;
-      font-weight:900;
+      font-weight:950;
       cursor:pointer;
       text-decoration:none;
       color: inherit;
+      user-select:none;
     }
     .review-btn:hover{ filter:brightness(1.06); }
 
@@ -110,7 +108,38 @@
       background: rgba(105,229,255,0.18);
     }
 
-    /* Question grid */
+    /* Legend */
+    .review-legend{
+      margin-top:12px;
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      align-items:center;
+    }
+    .review-legend-item{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      border:1px solid rgba(255,255,255,0.12);
+      background: rgba(255,255,255,0.04);
+      padding:7px 10px;
+      border-radius:999px;
+      font-size:13px;
+      font-weight:900;
+      opacity:.95;
+    }
+    .review-dot{
+      width:10px;
+      height:10px;
+      border-radius:999px;
+      display:inline-block;
+      box-shadow: 0 0 0 3px rgba(255,255,255,0.05);
+    }
+    .review-dot.green{ background: rgba(16,185,129,0.95); }
+    .review-dot.red{ background: rgba(244,63,94,0.95); }
+    .review-dot.gray{ background: rgba(148,163,184,0.9); }
+
+    /* Question list */
     .review-qs{
       margin-top:14px;
       display:grid;
@@ -119,22 +148,22 @@
 
     .review-q{
       border:1px solid rgba(255,255,255,0.10);
-      border-radius:12px;
+      border-radius:14px;
       padding:14px;
       background: rgba(255,255,255,0.03);
     }
 
     .review-q.ok{
-      border-color: rgba(17,163,106,.45);
-      background: linear-gradient(to bottom, rgba(17,163,106,.14), rgba(255,255,255,0.02));
+      border-color: rgba(16,185,129,.45);
+      background: linear-gradient(to bottom, rgba(16,185,129,.13), rgba(255,255,255,0.02));
     }
     .review-q.no{
-      border-color: rgba(211,51,51,.45);
-      background: linear-gradient(to bottom, rgba(211,51,51,.14), rgba(255,255,255,0.02));
+      border-color: rgba(244,63,94,.45);
+      background: linear-gradient(to bottom, rgba(244,63,94,.13), rgba(255,255,255,0.02));
     }
     .review-q.na{
-      border-color: rgba(160,170,185,.35);
-      background: linear-gradient(to bottom, rgba(160,170,185,.10), rgba(255,255,255,0.02));
+      border-color: rgba(148,163,184,.35);
+      background: linear-gradient(to bottom, rgba(148,163,184,.09), rgba(255,255,255,0.02));
     }
 
     .review-qhead{
@@ -145,24 +174,28 @@
     }
 
     .review-badge{
-      width:32px;
-      height:32px;
-      border-radius:6px;
+      width:34px;
+      height:34px;
+      border-radius:10px;
       display:grid;
       place-items:center;
-      font-weight:900;
+      font-weight:950;
       color:#fff;
       flex:0 0 auto;
-      background: rgba(160,170,185,.55);
+      background: rgba(148,163,184,.55);
     }
-    .review-badge.ok{ background: rgba(17,163,106,.85); }
-    .review-badge.no{ background: rgba(211,51,51,.85); }
-    .review-badge.na{ background: rgba(71,85,105,.85); }
+    .review-badge.ok{ background: rgba(16,185,129,.90); }
+    .review-badge.no{ background: rgba(244,63,94,.90); }
+    .review-badge.na{ background: rgba(71,85,105,.90); }
 
-    .review-prompt{ font-weight:900; }
+    .review-prompt{
+      font-weight:950;
+      letter-spacing:.1px;
+      line-height:1.35;
+    }
 
     .review-submeta{
-      margin-top:4px;
+      margin-top:6px;
       display:flex;
       gap:6px;
       flex-wrap:wrap;
@@ -175,7 +208,7 @@
       border:1px solid rgba(255,255,255,0.14);
       background: rgba(255,255,255,0.06);
       white-space:nowrap;
-      font-weight:800;
+      font-weight:900;
     }
 
     .review-tag.skill{
@@ -186,31 +219,55 @@
       border-color: rgba(245,158,11,.45);
       background: rgba(245,158,11,.14);
     }
+    .review-tag.time{
+      border-color: rgba(148,163,184,.40);
+      background: rgba(148,163,184,.10);
+      opacity:.95;
+    }
 
+    /* Choices */
     .review-choices{
-      margin-top:6px;
+      margin-top:10px;
       display:grid;
-      gap:6px;
+      gap:8px;
     }
 
     .review-choice{
       border:1px solid rgba(255,255,255,0.10);
-      border-radius:10px;
-      padding:8px 10px;
+      border-radius:12px;
+      padding:10px 12px;
       background: rgba(255,255,255,0.04);
       display:flex;
       justify-content:space-between;
       align-items:flex-start;
-      gap:10px;
+      gap:12px;
+      line-height:1.35;
     }
 
-    .review-choice.correct{
-      border-color: rgba(167,243,208,0.45);
-      background: rgba(16,185,129,0.10);
+    .review-choice-left{
+      display:flex;
+      gap:10px;
+      align-items:flex-start;
+      min-width:0;
     }
-    .review-choice.your{
-      border-color: rgba(199,210,254,0.45);
-      background: rgba(99,102,241,0.12);
+
+    .review-letter{
+      width:26px;
+      height:26px;
+      border-radius:8px;
+      display:grid;
+      place-items:center;
+      font-weight:950;
+      flex:0 0 auto;
+      border:1px solid rgba(255,255,255,0.14);
+      background: rgba(0,0,0,0.25);
+      color: rgba(233,238,247,0.96);
+    }
+
+    .review-choice-text{
+      font-weight:850;
+      opacity:.96;
+      word-break:break-word;
     }
 
     .review-tags{
@@ -219,29 +276,71 @@
       align-items:center;
       flex-wrap:wrap;
       justify-content:flex-end;
+      flex:0 0 auto;
     }
 
-    .review-tag.you{
-      border-color: rgba(199,210,254,0.55);
-      background: rgba(99,102,241,0.16);
-    }
-    .review-tag.correct{
-      border-color: rgba(187,247,208,0.55);
-      background: rgba(16,185,129,0.16);
-    }
-    .review-tag.wrong{
-      border-color: rgba(254,205,211,0.55);
-      background: rgba(244,63,94,0.14);
-    }
-    .review-tag.unanswered{
-      border-color: rgba(255,255,255,0.16);
+    /* High-visibility status chips */
+    .review-pill{
+      font-size:12px;
+      border-radius:999px;
+      padding:3px 9px;
+      font-weight:950;
+      border:1px solid rgba(255,255,255,0.14);
       background: rgba(255,255,255,0.06);
-      opacity:.9;
+      white-space:nowrap;
     }
 
+    /* Correct choice: always green + explicit marker */
+    .review-choice.correct{
+      border-color: rgba(167,243,208,0.45);
+      background: rgba(16,185,129,0.12);
+    }
+    .review-choice.correct .review-letter{
+      border-color: rgba(167,243,208,0.55);
+      background: rgba(16,185,129,0.18);
+    }
+    .review-pill.correct{
+      border-color: rgba(187,247,208,0.55);
+      background: rgba(16,185,129,0.18);
+    }
+
+    /* Student selected wrong: red highlight */
+    .review-choice.your-wrong{
+      border-color: rgba(254,205,211,0.55);
+      background: rgba(244,63,94,0.12);
+    }
+    .review-choice.your-wrong .review-letter{
+      border-color: rgba(254,205,211,0.55);
+      background: rgba(244,63,94,0.18);
+    }
+    .review-pill.your-wrong{
+      border-color: rgba(254,205,211,0.55);
+      background: rgba(244,63,94,0.18);
+    }
+
+    /* Student selected correct: green, but label it as "Your answer ✓" */
+    .review-choice.your-correct{
+      border-color: rgba(167,243,208,0.55);
+      background: rgba(16,185,129,0.12);
+    }
+    .review-pill.your-correct{
+      border-color: rgba(187,247,208,0.55);
+      background: rgba(16,185,129,0.18);
+    }
+
+    /* Unselected options */
+    .review-choice.unselected{
+      opacity:.92;
+    }
+
+    /* Explanation blocks */
     .review-exp{
       margin-top:10px;
-      opacity:.9;
+      opacity:.92;
+      padding:10px 12px;
+      border-radius:12px;
+      border:1px solid rgba(255,255,255,0.10);
+      background: rgba(0,0,0,0.18);
     }
 
     details.review-deep{
@@ -258,7 +357,8 @@
       align-items:center;
       justify-content:space-between;
       gap:12px;
-      font-weight:900;
+      font-weight:950;
+      user-select:none;
     }
     details.review-deep > summary::-webkit-details-marker{display:none}
     .review-chev{
@@ -267,8 +367,10 @@
       border-bottom:2px solid rgba(233,238,247,0.75);
       transform:rotate(-45deg);
       transition:transform .15s ease;
+      margin-left:8px;
+      flex:0 0 auto;
     }
-    details.review-deep[open] .review-chev{transform:rotate(45deg)}
+    details.review-deep[open] .review-chev{ transform:rotate(45deg) }
 
     .review-empty{
       max-width:760px;
@@ -297,15 +399,31 @@
         <div>
           <h1 class="review-title" id="title">Review</h1>
           <div class="review-muted" id="meta"></div>
+
           <div class="review-chips" id="chips"></div>
+
+          <div class="review-legend" aria-label="Answer legend">
+            <div class="review-legend-item">
+              <span class="review-dot green"></span> Correct answer
+            </div>
+            <div class="review-legend-item">
+              <span class="review-dot red"></span> Your incorrect answer
+            </div>
+            <div class="review-legend-item">
+              <span class="review-dot gray"></span> Other choices
+            </div>
+          </div>
+
           <div class="review-btnrow" id="actions" style="display:none">
             <a class="review-btn" id="backToQuiz" href="/pages/quiz.html">Back to Quiz</a>
           </div>
         </div>
+
         <div class="review-score" id="scorePill"></div>
       </div>
     </div>
 
+    <!-- reviewpage.js should render question cards into this -->
     <div class="review-qs" id="qs"></div>
 
     <div class="review-card review-empty" id="empty" style="display:none">
