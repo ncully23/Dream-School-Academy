@@ -378,5 +378,37 @@
   </div>
 
   <div id="site-footer"></div>
+
+  function getQuizIdFromUrl() {
+  try {
+    return new URLSearchParams(location.search).get("quizId");
+  } catch {
+    return null;
+  }
+}
+
+function getTopicFromPathFallback() {
+  // supports old pattern: /practice/circles/quiz.html or /practice/circles/index.html
+  try {
+    const parts = location.pathname.split("/").filter(Boolean);
+    const practiceIdx = parts.indexOf("practice");
+    if (practiceIdx >= 0 && parts.length > practiceIdx + 1) {
+      return parts[practiceIdx + 1]; // "circles"
+    }
+    return null;
+  } catch {
+    return null;
+  }
+}
+
+function canonicalizeQuizId(raw) {
+  if (!raw) return null;
+
+  // already a full id like "math.circles"
+  if (raw.includes(".")) return raw;
+
+  // allow "circles" -> "math.circles"
+  return `math.${raw}`;
+}
 </body>
 </html>
