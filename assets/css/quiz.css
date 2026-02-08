@@ -4,11 +4,25 @@
    - Smaller, cleaner typography for readability
    - Friendlier numerals (tabular, lining)
    - MathJax support (mjx-container sizing + overflow handling)
+   - Multi-equation prompts: preserve newlines + add display-math spacing
    - Keeps all existing class/id hooks used by quiz.html + quiz-engine.js
 */
 
-:root{
-  /* Theme */
+/* -----------------------------
+   Theme + tokens (scoped to quiz)
+   IMPORTANT: We override site.css tokens here so the quiz stays LIGHT.
+------------------------------ */
+html[data-page="quiz"]{
+  /* override site.css tokens (anything using var(--bg), etc. becomes light here) */
+  --bg: #eef2fb;
+  --text: #111827;
+  --muted: #4b5563;
+  --brand: #1f4dd8;
+  --brand-ink: #0b1927;
+  --surface: #ffffff;
+  --surface-2: #f6f8ff;
+
+  /* quiz-specific palette */
   --bb-bg:#eef2fb;
   --bb-rail:#e7edf9;
   --bb-surface:#fff;
@@ -18,8 +32,10 @@
   --bb-blue:#1f4dd8;
   --bb-blue-dark:#1437a8;
   --bb-pill:#0b1227;
+
   --flag:#d11;
   --flag-soft:#fff0f0;
+
   --shadow:0 1px 2px rgba(16,24,40,.06), 0 6px 14px rgba(16,24,40,.08);
 
   /* Typography tuning */
@@ -32,50 +48,71 @@
   /* Layout */
   --quiz-card-w:980px;
   --quiz-radius:12px;
+
+  background: var(--bb-bg);
+  color: var(--bb-ink);
 }
 
-*{box-sizing:border-box}
-html,body{height:100%}
-
-body{
+html[data-page="quiz"] body{
   margin:0;
+  min-height:100%;
   background:var(--bb-bg);
   color:var(--bb-ink);
   font:var(--quiz-font)/var(--quiz-line) Inter, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
   text-rendering:optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
-button{font:inherit}
-button:focus{outline:none}
-button:focus-visible{
+html[data-page="quiz"] *{ box-sizing:border-box; }
+html[data-page="quiz"] button{ font:inherit; }
+html[data-page="quiz"] button:focus{ outline:none; }
+html[data-page="quiz"] button:focus-visible{
   outline:3px solid rgba(31,77,216,.35);
   outline-offset:2px;
 }
 
 /* Friendlier numerals across UI */
-#timeLeft,
-.qbadge,
-.letter,
-#pillText,
-.timer b{
+html[data-page="quiz"] #timeLeft,
+html[data-page="quiz"] .qbadge,
+html[data-page="quiz"] .letter,
+html[data-page="quiz"] #pillText,
+html[data-page="quiz"] .timer b{
   font-variant-numeric: tabular-nums lining-nums;
 }
 
-/* MathJax sizing + safety */
-mjx-container{
+/* -----------------------------
+   MathJax sizing + safety
+   - allow horizontal scroll for long equations
+   - add spacing for display math so systems don't "stick"
+------------------------------ */
+html[data-page="quiz"] mjx-container{
   font-size:0.92em;
+  max-width:100%;
   overflow-x:auto;
   overflow-y:hidden;
+  padding-bottom:2px;
 }
 
-.app{
+/* Display equations ( \[...\] or $$...$$ ) */
+html[data-page="quiz"] mjx-container[display="true"]{
+  display:block;
+  margin:10px 0;
+}
+
+/* -----------------------------
+   Layout wrapper
+------------------------------ */
+html[data-page="quiz"] .app{
   max-width:1280px;
   margin:0 auto;
   padding:12px 16px 120px;
 }
 
-/* Header */
-.header{
+/* -----------------------------
+   Header
+------------------------------ */
+html[data-page="quiz"] .header{
   display:grid;
   grid-template-columns:1fr auto 1fr;
   align-items:center;
@@ -90,13 +127,13 @@ mjx-container{
   z-index:5;
 }
 
-.title{
+html[data-page="quiz"] .title{
   font-weight:750;
   font-size:17px;
   letter-spacing:.1px;
 }
 
-.directions{
+html[data-page="quiz"] .directions{
   display:inline-flex;
   gap:6px;
   align-items:center;
@@ -108,7 +145,7 @@ mjx-container{
   padding:2px 0;
 }
 
-.timer{
+html[data-page="quiz"] .timer{
   display:flex;
   flex-direction:column;
   align-items:center;
@@ -116,12 +153,12 @@ mjx-container{
   justify-self:center;
 }
 
-.timer b{
+html[data-page="quiz"] .timer b{
   font-size:24px;
   letter-spacing:.5px;
 }
 
-.btn{
+html[data-page="quiz"] .btn{
   border-radius:999px;
   border:1px solid var(--bb-line);
   background:#fff;
@@ -130,24 +167,25 @@ mjx-container{
   cursor:pointer;
   transition:background .12s ease, border-color .12s ease, transform .06s ease;
 }
+html[data-page="quiz"] .btn:active{ transform:translateY(1px); }
 
-.btn:active{transform:translateY(1px)}
-
-.btn.primary{
+html[data-page="quiz"] .btn.primary{
   background:var(--bb-blue);
   border-color:var(--bb-blue);
   color:#fff;
 }
-.btn.primary:hover{
+html[data-page="quiz"] .btn.primary:hover{
   background:var(--bb-blue-dark);
   border-color:var(--bb-blue-dark);
 }
 
-.btn.ghost{background:#fff}
-.btn.nav{min-width:78px}
+html[data-page="quiz"] .btn.ghost{ background:#fff; }
+html[data-page="quiz"] .btn.nav{ min-width:78px; }
 
-/* Practice banner + ticks */
-.ticks{
+/* -----------------------------
+   Practice banner + ticks
+------------------------------ */
+html[data-page="quiz"] .ticks{
   margin:8px 2px 0;
   background:#0d1a5a;
   color:#fff;
@@ -162,28 +200,30 @@ mjx-container{
   box-shadow:var(--shadow);
 }
 
-.dashrow{
+html[data-page="quiz"] .dashrow{
   display:grid;
   grid-template-columns:repeat(54,1fr);
   gap:3px;
   margin:6px 4px;
 }
 
-.dash{
+html[data-page="quiz"] .dash{
   height:5px;
   border-radius:2px;
   background:#000;
   opacity:.92;
 }
 
-/* One-column question card */
-.qwrap{
+/* -----------------------------
+   One-column question card
+------------------------------ */
+html[data-page="quiz"] .qwrap{
   margin-top:10px;
   display:flex;
   justify-content:center;
 }
 
-.qcard{
+html[data-page="quiz"] .qcard{
   width:min(var(--quiz-card-w), 96vw);
   background:#fff;
   border:1px solid var(--bb-line);
@@ -192,14 +232,14 @@ mjx-container{
   padding:16px;
 }
 
-.qtop{
+html[data-page="quiz"] .qtop{
   display:grid;
   grid-template-columns:auto 1fr auto auto;
   align-items:center;
   gap:10px;
 }
 
-.qbadge{
+html[data-page="quiz"] .qbadge{
   width:34px;
   height:34px;
   background:#000;
@@ -210,13 +250,13 @@ mjx-container{
   font-weight:850;
 }
 
-.qdash{
+html[data-page="quiz"] .qdash{
   border-bottom:4px dashed #111;
   height:0;
   margin:0 6px;
 }
 
-.flagbtn{
+html[data-page="quiz"] .flagbtn{
   display:inline-flex;
   align-items:center;
   gap:8px;
@@ -229,7 +269,7 @@ mjx-container{
   cursor:pointer;
 }
 
-.flagbtn .flagicon{
+html[data-page="quiz"] .flagbtn .flagicon{
   width:0;
   height:0;
   border-left:8px solid var(--flag);
@@ -239,13 +279,13 @@ mjx-container{
   opacity:.25;
 }
 
-.flagbtn.on{
+html[data-page="quiz"] .flagbtn.on{
   border-color:var(--flag);
   background:var(--flag-soft);
 }
-.flagbtn.on .flagicon{opacity:1}
+html[data-page="quiz"] .flagbtn.on .flagicon{ opacity:1; }
 
-.elimbtn{
+html[data-page="quiz"] .elimbtn{
   margin-left:8px;
   display:inline-flex;
   align-items:center;
@@ -259,7 +299,7 @@ mjx-container{
   cursor:pointer;
 }
 
-.elimicon{
+html[data-page="quiz"] .elimicon{
   width:20px;
   height:20px;
   border:2px solid #1f2a44;
@@ -267,8 +307,7 @@ mjx-container{
   position:relative;
   display:inline-block;
 }
-
-.elimicon::after{
+html[data-page="quiz"] .elimicon::after{
   content:"";
   position:absolute;
   left:2px;
@@ -279,30 +318,42 @@ mjx-container{
   transform:rotate(-20deg);
 }
 
-.elimbtn.on{
+html[data-page="quiz"] .elimbtn.on{
   border-color:#1f2a44;
   background:#f1f4ff;
 }
 
-.qtitle{
+/* -----------------------------
+   Prompt (critical fix: preserve newlines)
+   This is what separates multiple equations when prompt contains \n\n.
+------------------------------ */
+html[data-page="quiz"] .qtitle{
   margin:14px 0 10px;
   font-size:var(--quiz-title);
   font-weight:850;
   line-height:1.35;
+
+  /* NEW: preserve \n as line breaks so systems are legible */
+  white-space: pre-line;
+
   overflow-wrap:anywhere;
 }
 
-.qtitle mjx-container{margin:0}
+/* Keep MathJax blocks tight to the prompt without collapsing spacing */
+html[data-page="quiz"] .qtitle mjx-container{ margin:0; }
 
-.choices{
+/* -----------------------------
+   Choices
+------------------------------ */
+html[data-page="quiz"] .choices{
   display:grid;
   gap:10px;
   margin-top:8px;
 }
 
-.choice{
+html[data-page="quiz"] .choice{
   display:flex;
-  align-items:center;
+  align-items:flex-start;
   gap:10px;
   border:1px solid var(--bb-line);
   border-radius:10px;
@@ -312,23 +363,27 @@ mjx-container{
   transition:opacity .12s ease, background .12s ease, border-color .12s ease;
   font-size:var(--quiz-choice);
   line-height:1.5;
+
+  /* If a choice includes line breaks, preserve them too */
+  white-space: pre-line;
 }
 
-.choice .text{
+html[data-page="quiz"] .choice .text{
   display:block;
   overflow-wrap:anywhere;
+  min-width:0;
 }
 
-.choice mjx-container{font-size:0.92em}
+html[data-page="quiz"] .choice mjx-container{ font-size:0.92em; }
 
-.choice:hover{
+html[data-page="quiz"] .choice:hover{
   border-color:#b7c1dd;
   background:#f3f6ff;
 }
 
-.choice input{transform:scale(1.08)}
+html[data-page="quiz"] .choice input{ transform:scale(1.08); }
 
-.letter{
+html[data-page="quiz"] .letter{
   margin-left:auto;
   width:30px;
   height:30px;
@@ -338,12 +393,14 @@ mjx-container{
   place-items:center;
   color:#1f2a44;
   font-weight:800;
+  flex:0 0 auto;
 }
 
-.choice.eliminated{opacity:.42}
-.choice.eliminated .text{ text-decoration:line-through 2px }
-.choice.eliminated .letter{ position:relative }
-.choice.eliminated .letter::after{
+/* Eliminated choices */
+html[data-page="quiz"] .choice.eliminated{ opacity:.42; }
+html[data-page="quiz"] .choice.eliminated .text{ text-decoration:line-through 2px; }
+html[data-page="quiz"] .choice.eliminated .letter{ position:relative; }
+html[data-page="quiz"] .choice.eliminated .letter::after{
   content:"";
   position:absolute;
   left:4px;
@@ -354,14 +411,16 @@ mjx-container{
   transform:rotate(-20deg);
 }
 
-.hint{
+html[data-page="quiz"] .hint{
   color:var(--bb-muted);
   font-size:var(--quiz-hint);
   margin-top:6px;
 }
 
-/* Bottom rail */
-.rail{
+/* -----------------------------
+   Bottom rail
+------------------------------ */
+html[data-page="quiz"] .rail{
   position:fixed;
   left:0;
   right:0;
@@ -372,27 +431,27 @@ mjx-container{
   z-index:6;
 }
 
-.rail-inner{
+html[data-page="quiz"] .rail-inner{
   max-width:1280px;
   margin:0 auto;
   position:relative;
 }
 
-.progress{
+html[data-page="quiz"] .progress{
   display:grid;
   grid-template-columns:repeat(var(--seg,24),1fr);
   gap:8px;
   padding:0 16px;
 }
 
-.seg{
+html[data-page="quiz"] .seg{
   height:6px;
   border-radius:3px;
   background:#0b0b0b;
 }
-.seg.active{background:#00a6e7}
+html[data-page="quiz"] .seg.active{ background:#00a6e7; }
 
-.center-pill{
+html[data-page="quiz"] .center-pill{
   position:absolute;
   left:50%;
   transform:translateX(-50%);
@@ -410,9 +469,9 @@ mjx-container{
   border:0;
 }
 
-.center-pill .caret{font-weight:900}
+html[data-page="quiz"] .center-pill .caret{ font-weight:900; }
 
-.rail-actions{
+html[data-page="quiz"] .rail-actions{
   position:absolute;
   right:16px;
   bottom:4px;
@@ -421,7 +480,7 @@ mjx-container{
   align-items:center;
 }
 
-.rail-left{
+html[data-page="quiz"] .rail-left{
   position:absolute;
   left:16px;
   bottom:4px;
@@ -430,8 +489,10 @@ mjx-container{
   align-items:center;
 }
 
-/* Popover */
-.popover{
+/* -----------------------------
+   Popover
+------------------------------ */
+html[data-page="quiz"] .popover{
   position:fixed;
   left:50%;
   bottom:84px;
@@ -446,20 +507,20 @@ mjx-container{
   z-index:7;
 }
 
-.popover .title{
+html[data-page="quiz"] .popover .title{
   font-weight:850;
   font-size:17px;
   margin:2px 0 8px;
 }
 
-.popover .grid{
+html[data-page="quiz"] .popover .grid{
   display:grid;
   grid-template-columns:repeat(10,1fr);
   gap:10px;
   margin-top:12px;
 }
 
-.nbtn{
+html[data-page="quiz"] .nbtn{
   display:inline-grid;
   place-items:center;
   height:36px;
@@ -472,21 +533,21 @@ mjx-container{
   position:relative;
 }
 
-.nbtn:hover{background:#f6f7fb}
-.nbtn.current{box-shadow:0 0 0 2px #111 inset}
+html[data-page="quiz"] .nbtn:hover{ background:#f6f7fb; }
+html[data-page="quiz"] .nbtn.current{ box-shadow:0 0 0 2px #111 inset; }
 
-.nbtn.answered{
+html[data-page="quiz"] .nbtn.answered{
   border-style:solid;
   border-color:#5b74d5;
 }
 
-.nbtn.review{
+html[data-page="quiz"] .nbtn.review{
   background:var(--flag-soft);
   border-color:var(--flag);
   border-style:solid;
 }
 
-.popover .close{
+html[data-page="quiz"] .popover .close{
   position:absolute;
   right:10px;
   top:10px;
@@ -500,7 +561,7 @@ mjx-container{
   line-height:34px;
 }
 
-.popover .go-review{
+html[data-page="quiz"] .popover .go-review{
   margin-top:12px;
   width:100%;
   border-radius:10px;
@@ -510,29 +571,30 @@ mjx-container{
   cursor:pointer;
   background:#fff;
 }
+html[data-page="quiz"] .popover .go-review:hover{ background:#f6f7fb; }
 
-.popover .go-review:hover{background:#f6f7fb}
-
-/* Review page */
-.check-wrap{
+/* -----------------------------
+   Review block on quiz page (if used)
+------------------------------ */
+html[data-page="quiz"] .check-wrap{
   display:none;
   margin-top:18px;
 }
 
-.check-head{
+html[data-page="quiz"] .check-head{
   font-size:26px;
   font-weight:900;
   text-align:center;
   margin:8px 0 6px;
 }
 
-.check-sub{
+html[data-page="quiz"] .check-sub{
   color:var(--bb-muted);
   text-align:center;
   margin-bottom:12px;
 }
 
-.check-card{
+html[data-page="quiz"] .check-card{
   max-width:860px;
   margin:0 auto;
   background:#fff;
@@ -542,7 +604,7 @@ mjx-container{
   padding:14px;
 }
 
-.check-row{
+html[data-page="quiz"] .check-row{
   display:flex;
   justify-content:space-between;
   align-items:center;
@@ -551,17 +613,18 @@ mjx-container{
   margin-bottom:6px;
 }
 
-.grid-nums{
+html[data-page="quiz"] .grid-nums{
   display:grid;
   grid-template-columns:repeat(10,1fr);
   gap:10px;
   margin-top:12px;
 }
+html[data-page="quiz"] .grid-nums .nbtn{ height:44px; }
 
-.grid-nums .nbtn{height:44px}
-
-/* Loader error banner */
-.load-error{
+/* -----------------------------
+   Loader error banner
+------------------------------ */
+html[data-page="quiz"] .load-error{
   max-width:980px;
   margin:12px auto 0;
   padding:12px 14px;
@@ -572,33 +635,38 @@ mjx-container{
   color:#111;
 }
 
-.load-error h2{margin:0 0 6px;font-size:16px}
-.load-error p{margin:0;color:#111}
-.load-error code{background:#f6f7fb;padding:2px 6px;border-radius:6px}
+html[data-page="quiz"] .load-error h2{ margin:0 0 6px; font-size:16px; }
+html[data-page="quiz"] .load-error p{ margin:0; color:#111; }
+html[data-page="quiz"] .load-error code{ background:#f6f7fb; padding:2px 6px; border-radius:6px; }
 
-/* Injected warning */
-.quiz-warning{
+/* -----------------------------
+   Injected warning
+------------------------------ */
+html[data-page="quiz"] .quiz-warning{
   max-width:1280px;
   margin:0 auto;
   padding:10px 16px 0;
   color:#0f172a;
 }
-.quiz-warning strong{font-weight:900}
+html[data-page="quiz"] .quiz-warning strong{ font-weight:900; }
 
-/* Responsive tweaks */
+/* -----------------------------
+   Responsive tweaks
+------------------------------ */
 @media (max-width: 720px){
-  :root{
+  html[data-page="quiz"]{
     --quiz-font:14px;
     --quiz-title:17px;
     --quiz-choice:14px;
   }
-  .header{gap:10px}
-  .timer b{font-size:20px}
-  .popover .grid{grid-template-columns:repeat(5,1fr)}
-  .grid-nums{grid-template-columns:repeat(5,1fr)}
-  .letter{width:28px;height:28px}
+  html[data-page="quiz"] .header{ gap:10px; }
+  html[data-page="quiz"] .timer b{ font-size:20px; }
+  html[data-page="quiz"] .popover .grid{ grid-template-columns:repeat(5,1fr); }
+  html[data-page="quiz"] .grid-nums{ grid-template-columns:repeat(5,1fr); }
+  html[data-page="quiz"] .letter{ width:28px; height:28px; }
 }
 
 @media (prefers-reduced-motion: reduce){
-  .btn, .choice{transition:none}
+  html[data-page="quiz"] .btn,
+  html[data-page="quiz"] .choice{ transition:none; }
 }
