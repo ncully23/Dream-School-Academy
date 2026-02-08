@@ -9,12 +9,6 @@
   <link rel="stylesheet" href="/assets/css/site.css" />
   <link rel="stylesheet" href="/assets/css/quiz.css" />
 
-  <!-- Shared shell (header/footer injection, auth UI, etc.) -->
-  <script type="module" src="/assets/js/shell.js"></script>
-
-  <!-- Optional: keep if your quiz engine relies on it -->
-  <script type="module" src="/assets/js/quiz-data.js"></script>
-
   <!-- MathJax (TeX) -->
   <script>
     window.MathJax = {
@@ -29,11 +23,13 @@
   </script>
   <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
 
-  <!-- Boot loader -->
+  <!-- Boot loader:
+       - Supports ?quizId=... (preferred)
+       - Also supports legacy /practice/<topic>/ paths (fallback)
+       - Loads quizzes.json, preflights the bank, sets window.DSA_BOOT, then imports controller -->
   <script type="module">
     const QUIZZES_CONFIG_URL = "/assets/configs/quizzes.json";
-    // IMPORTANT: this must match your actual file location
-    const PAGE_CONTROLLER_URL = "/assets/js/quizpage.js";
+    const PAGE_CONTROLLER_URL = "/assets/js/quizpage.js"; // must match your actual file
 
     const escapeHtml = (s) =>
       String(s)
@@ -95,13 +91,24 @@
 
     function canonicalizeQuizId(raw) {
       if (!raw) return null;
-      return raw.includes(".") ? raw : `math.${raw}`;
+
+      // If user passes full ID like math.circles.practice, keep it
+      if (raw.includes(".")) return raw;
+
+      // Legacy: "circles" -> "math.circles"
+      return `math.${raw}`;
     }
 
-    async function loadQuizzesConfig() {
-      const res = await fetch(QUIZZES_CONFIG_URL, { cache: "no-store" });
+    async function loadJson(url) {
+      const res = await fetch(url, { cache: "no-store" });
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       return res.json();
+    }
+
+    async function preflight(url) {
+      const res = await fetch(url, { cache: "no-store" });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      return true;
     }
 
     async function boot() {
@@ -117,7 +124,7 @@
 
       let quizzes;
       try {
-        quizzes = await loadQuizzesConfig();
+        quizzes = await loadJson(QUIZZES_CONFIG_URL);
       } catch (err) {
         showError(
           `Could not load <code>${escapeHtml(QUIZZES_CONFIG_URL)}</code>: <code>${escapeHtml(err.message)}</code>.`
@@ -131,10 +138,8 @@
         return;
       }
 
-      // Optional preflight so you get a direct error if the bank path is wrong
       try {
-        const bankRes = await fetch(cfg.bank, { cache: "no-store" });
-        if (!bankRes.ok) throw new Error(`HTTP ${bankRes.status}`);
+        await preflight(cfg.bank);
       } catch (err) {
         showError(
           `Could not load bank <code>${escapeHtml(cfg.bank)}</code>: <code>${escapeHtml(err.message)}</code>.`
@@ -157,9 +162,10 @@
 </head>
 
 <body>
+  <!-- Shell injects header/footer + wires auth UI -->
   <div id="site-header"></div>
 
-  <div class="quiz-warning">
+  <div class="quiz-warning" role="note" aria-label="Progress notice">
     <strong>Heads up:</strong>
     Your progress is <b>not saved</b> until you click <b>End &amp; Score</b>.
     Refreshing or leaving will restart the quiz.
@@ -169,19 +175,24 @@
     <div class="header" role="banner">
       <div>
         <div class="title" id="sectionTitle">Quiz</div>
-        <button class="directions" aria-label="Directions" type="button">Directions ▾</button>
+        <button class="directions" id="directionsBtn" aria-label="Directions" type="button">
+          Directions ▾
+        </button>
       </div>
 
       <div class="timer" aria-live="polite">
         <b id="timeLeft">--:--</b>
-        <button id="toggleTimer" class="btn ghost" aria-pressed="false" type="button">Hide</button>
+        <button id="toggleTimer" class="btn ghost" aria-pressed="false" type="button">
+          Hide
+        </button>
       </div>
 
+      <!-- Right column reserved (Bluebook icons later) -->
       <div aria-hidden="true"></div>
     </div>
 
     <div class="ticks" id="practiceBanner">THIS IS A PRACTICE SET</div>
-    <div class="dashrow" id="dashrow"></div>
+    <div class="dashrow" id="dashrow" aria-hidden="true"></div>
 
     <div class="qwrap">
       <article class="qcard" id="qcard">
@@ -190,15 +201,25 @@
           <div class="qdash" aria-hidden="true"></div>
 
           <button id="flagTop" class="flagbtn" aria-pressed="false" type="button">
-            <span class="flagicon"></span><span id="flagLabel">Mark for review</span>
+            <span class="flagicon" aria-hidden="true"></span>
+            <span id="flagLabel">Mark for review</span>
           </button>
 
-          <button id="elimToggle" class="elimbtn" aria-pressed="false" title="Eliminate answers" type="button">
+          <button
+            id="elimToggle"
+            class="elimbtn"
+            aria-pressed="false"
+            title="Eliminate answers"
+            type="button"
+          >
             <span class="elimicon" aria-hidden="true"></span> Eliminate
           </button>
         </header>
 
         <h2 class="qtitle" id="qtitle">Loading…</h2>
+
+        <!-- Engine should render choices here.
+             Ensure each option uses the .choice class used by quiz.css. -->
         <div class="choices" id="choices" role="radiogroup" aria-label="Choices"></div>
 
         <div class="hint" id="elimHint" style="display:none">
@@ -219,12 +240,19 @@
     </section>
   </div>
 
-  <div class="rail" role="contentinfo">
+  <div class="rail" role="contentinfo" aria-label="Quiz navigation">
     <div class="rail-inner">
-      <div class="progress" id="progress"></div>
+      <div class="progress" id="progress" aria-hidden="true"></div>
 
-      <button class="center-pill" id="centerPill" aria-haspopup="dialog" aria-expanded="false" type="button">
-        <span id="pillText">Question — of —</span><span class="caret">▾</span>
+      <button
+        class="center-pill"
+        id="centerPill"
+        aria-haspopup="dialog"
+        aria-expanded="false"
+        aria-controls="popover"
+        type="button"
+      >
+        <span id="pillText">Question — of —</span><span class="caret" aria-hidden="true">▾</span>
       </button>
 
       <div class="rail-left">
@@ -233,7 +261,9 @@
 
       <div class="rail-actions">
         <button id="btnNext" class="btn nav primary" type="button">Next</button>
-        <button id="btnFinish" class="btn nav primary" style="display:none" type="button">End &amp; Score</button>
+        <button id="btnFinish" class="btn nav primary" style="display:none" type="button">
+          End &amp; Score
+        </button>
       </div>
     </div>
   </div>
@@ -246,5 +276,39 @@
   </div>
 
   <div id="site-footer"></div>
+
+  <!-- Shell (header/footer injection, auth UI, active nav)
+       Keep at end so DOM exists when it runs. -->
+  <script type="module" src="/assets/js/shell.js"></script>
+
+  <!-- Auto-typeset MathJax after dynamic injections (quiz engine renders after load). -->
+  <script type="module">
+    function typesetNow() {
+      const MJ = window.MathJax;
+      if (!MJ || !MJ.typesetPromise) return;
+      const root = document.querySelector(".app");
+      if (!root) return;
+      MJ.typesetClear?.([root]);
+      MJ.typesetPromise([root]).catch(() => {});
+    }
+
+    let t = null;
+    function typesetSoon() {
+      clearTimeout(t);
+      t = setTimeout(typesetNow, 60);
+    }
+
+    window.addEventListener("load", () => typesetSoon());
+
+    const root = document.querySelector(".app");
+    if (root && "MutationObserver" in window) {
+      const obs = new MutationObserver(() => typesetSoon());
+      obs.observe(root, { childList: true, subtree: true, characterData: true });
+    }
+
+    // If your engine dispatches events after rendering, support them:
+    document.addEventListener("dsa:render", () => typesetSoon());
+    document.addEventListener("dsa:question", () => typesetSoon());
+  </script>
 </body>
 </html>
