@@ -26,10 +26,17 @@
     /* Review-only styling.
        Do NOT redefine :root tokens from site.css. */
 
+    /* Layout */
     .review-wrap{
       max-width:1100px;
       margin:0 auto;
-      padding:20px 16px 80px;
+      padding:18px 16px 90px;
+    }
+
+    .review-stack{
+      display:grid;
+      gap:14px;
+      margin-top:12px;
     }
 
     .review-card{
@@ -42,13 +49,15 @@
     }
 
     .review-muted{ opacity:.78; }
+    .review-small{ font-size:13px; opacity:.82; }
+    .review-nums{ font-variant-numeric: tabular-nums lining-nums; }
 
+    /* Top header card */
     .review-top{
       display:flex;
       justify-content:space-between;
       align-items:flex-start;
       gap:14px;
-      margin-bottom:12px;
     }
 
     .review-title{
@@ -57,6 +66,14 @@
       font-weight:950;
       letter-spacing:.2px;
       line-height:1.1;
+    }
+
+    .review-meta{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      align-items:center;
+      margin-top:6px;
     }
 
     .review-score{
@@ -71,7 +88,8 @@
       align-items:center;
       white-space:nowrap;
     }
-    .review-score span.small{
+
+    .review-score .small{
       font-size:13px;
       font-weight:800;
       opacity:.9;
@@ -83,6 +101,7 @@
       gap:8px;
       margin-top:10px;
     }
+
     .review-chip{
       font-size:13px;
       border-radius:999px;
@@ -114,8 +133,11 @@
       text-decoration:none;
       color: inherit;
       user-select:none;
+      transition: filter .12s ease, transform .06s ease;
     }
-    .review-btn:hover{ filter:brightness(1.06); }
+
+    .review-btn:hover{ filter:brightness(1.07); }
+    .review-btn:active{ transform: translateY(1px); }
 
     .review-btn.primary{
       border-color: rgba(105,229,255,0.55);
@@ -130,6 +152,7 @@
       flex-wrap:wrap;
       align-items:center;
     }
+
     .review-legend-item{
       display:inline-flex;
       align-items:center;
@@ -142,6 +165,7 @@
       font-weight:900;
       opacity:.95;
     }
+
     .review-dot{
       width:10px;
       height:10px;
@@ -149,13 +173,13 @@
       display:inline-block;
       box-shadow: 0 0 0 3px rgba(255,255,255,0.05);
     }
+
     .review-dot.green{ background: rgba(16,185,129,0.95); }
     .review-dot.red{ background: rgba(244,63,94,0.95); }
     .review-dot.gray{ background: rgba(148,163,184,0.9); }
 
     /* Question list */
     .review-qs{
-      margin-top:14px;
       display:grid;
       gap:12px;
     }
@@ -171,10 +195,12 @@
       border-color: rgba(16,185,129,.45);
       background: linear-gradient(to bottom, rgba(16,185,129,.13), rgba(255,255,255,0.02));
     }
+
     .review-q.no{
       border-color: rgba(244,63,94,.45);
       background: linear-gradient(to bottom, rgba(244,63,94,.13), rgba(255,255,255,0.02));
     }
+
     .review-q.na{
       border-color: rgba(148,163,184,.35);
       background: linear-gradient(to bottom, rgba(148,163,184,.09), rgba(255,255,255,0.02));
@@ -198,14 +224,23 @@
       flex:0 0 auto;
       background: rgba(148,163,184,.55);
     }
+
     .review-badge.ok{ background: rgba(16,185,129,.90); }
     .review-badge.no{ background: rgba(244,63,94,.90); }
     .review-badge.na{ background: rgba(71,85,105,.90); }
+
+    .review-qbody{
+      min-width:0;
+      flex:1 1 auto;
+    }
 
     .review-prompt{
       font-weight:950;
       letter-spacing:.1px;
       line-height:1.35;
+      overflow-wrap:anywhere;
+      word-break:break-word;
+      white-space:pre-line; /* important for prompts with \n\n */
     }
 
     .review-submeta{
@@ -229,10 +264,12 @@
       border-color: rgba(14,165,233,.45);
       background: rgba(14,165,233,.16);
     }
+
     .review-tag.diff{
       border-color: rgba(245,158,11,.45);
       background: rgba(245,158,11,.14);
     }
+
     .review-tag.time{
       border-color: rgba(148,163,184,.40);
       background: rgba(148,163,184,.10);
@@ -263,6 +300,7 @@
       gap:10px;
       align-items:flex-start;
       min-width:0;
+      flex:1 1 auto;
     }
 
     .review-letter{
@@ -282,6 +320,8 @@
       font-weight:850;
       opacity:.96;
       word-break:break-word;
+      overflow-wrap:anywhere;
+      white-space:pre-line; /* important if a choice contains \n */
     }
 
     .review-tags{
@@ -309,10 +349,12 @@
       border-color: rgba(167,243,208,0.45);
       background: rgba(16,185,129,0.12);
     }
+
     .review-choice.correct .review-letter{
       border-color: rgba(167,243,208,0.55);
       background: rgba(16,185,129,0.18);
     }
+
     .review-pill.correct{
       border-color: rgba(187,247,208,0.55);
       background: rgba(16,185,129,0.18);
@@ -323,10 +365,12 @@
       border-color: rgba(254,205,211,0.55);
       background: rgba(244,63,94,0.12);
     }
+
     .review-choice.your-wrong .review-letter{
       border-color: rgba(254,205,211,0.55);
       background: rgba(244,63,94,0.18);
     }
+
     .review-pill.your-wrong{
       border-color: rgba(254,205,211,0.55);
       background: rgba(244,63,94,0.18);
@@ -337,15 +381,14 @@
       border-color: rgba(167,243,208,0.55);
       background: rgba(16,185,129,0.12);
     }
+
     .review-pill.your-correct{
       border-color: rgba(187,247,208,0.55);
       background: rgba(16,185,129,0.18);
     }
 
     /* Unselected options */
-    .review-choice.unselected{
-      opacity:.92;
-    }
+    .review-choice.unselected{ opacity:.92; }
 
     /* Explanation blocks */
     .review-exp{
@@ -355,6 +398,9 @@
       border-radius:12px;
       border:1px solid rgba(255,255,255,0.10);
       background: rgba(0,0,0,0.18);
+      overflow-wrap:anywhere;
+      word-break:break-word;
+      white-space:pre-line; /* allow multi-line explanations */
     }
 
     details.review-deep{
@@ -364,6 +410,7 @@
       background: rgba(0,0,0,0.18);
       padding:10px 12px;
     }
+
     details.review-deep > summary{
       cursor:pointer;
       list-style:none;
@@ -374,7 +421,9 @@
       font-weight:950;
       user-select:none;
     }
+
     details.review-deep > summary::-webkit-details-marker{display:none}
+
     .review-chev{
       width:10px;height:10px;
       border-right:2px solid rgba(233,238,247,0.75);
@@ -384,8 +433,10 @@
       margin-left:8px;
       flex:0 0 auto;
     }
+
     details.review-deep[open] .review-chev{ transform:rotate(45deg) }
 
+    /* Empty state */
     .review-empty{
       max-width:760px;
       margin:40px auto;
@@ -411,11 +462,29 @@
       overflow-y: hidden;
       padding-bottom: 2px;
     }
-    .review-prompt,
-    .review-choice-text,
-    .review-exp{
-      overflow-wrap: anywhere;
-      word-break: break-word;
+
+    mjx-container[display="true"]{
+      display:block;
+      margin:10px 0;
+    }
+
+    /* Reduce overscroll glow + keep long math from forcing card width */
+    .review-card, .review-q, .review-choice, .review-exp{
+      min-width:0;
+    }
+
+    /* Responsive */
+    @media (max-width: 720px){
+      .review-wrap{ padding:16px 14px 90px; }
+      .review-title{ font-size:24px; }
+      .review-score{ padding:8px 10px; }
+      .review-q{ padding:12px; }
+      .review-choice{ padding:10px; }
+      .review-letter{ width:24px; height:24px; }
+    }
+
+    @media (prefers-reduced-motion: reduce){
+      .review-btn{ transition:none; }
     }
   </style>
 </head>
@@ -425,49 +494,51 @@
   <div id="site-header"></div>
 
   <main class="review-wrap" id="reviewRoot">
-    <div class="review-card" id="headerCard">
-      <div class="review-top">
-        <div>
-          <h1 class="review-title" id="title">Review</h1>
-          <div class="review-muted" id="meta"></div>
+    <div class="review-stack">
+      <div class="review-card" id="headerCard">
+        <div class="review-top">
+          <div>
+            <h1 class="review-title" id="title">Review</h1>
+            <div class="review-muted review-meta review-nums" id="meta"></div>
 
-          <div class="review-chips" id="chips"></div>
+            <div class="review-chips" id="chips"></div>
 
-          <div class="review-legend" aria-label="Answer legend">
-            <div class="review-legend-item">
-              <span class="review-dot green"></span> Correct answer
+            <div class="review-legend" aria-label="Answer legend">
+              <div class="review-legend-item">
+                <span class="review-dot green"></span> Correct answer
+              </div>
+              <div class="review-legend-item">
+                <span class="review-dot red"></span> Your incorrect answer
+              </div>
+              <div class="review-legend-item">
+                <span class="review-dot gray"></span> Other choices
+              </div>
             </div>
-            <div class="review-legend-item">
-              <span class="review-dot red"></span> Your incorrect answer
-            </div>
-            <div class="review-legend-item">
-              <span class="review-dot gray"></span> Other choices
+
+            <div class="review-btnrow" id="actions" style="display:none">
+              <a class="review-btn" id="backToQuiz" href="/pages/quiz.html">Back to Quiz</a>
             </div>
           </div>
 
-          <div class="review-btnrow" id="actions" style="display:none">
-            <a class="review-btn" id="backToQuiz" href="/pages/quiz.html">Back to Quiz</a>
-          </div>
+          <div class="review-score review-nums" id="scorePill"></div>
         </div>
-
-        <div class="review-score" id="scorePill"></div>
       </div>
-    </div>
 
-    <!-- reviewpage.js should render question cards into this -->
-    <div class="review-qs" id="qs"></div>
+      <!-- reviewpage.js should render question cards into this -->
+      <div class="review-qs" id="qs"></div>
 
-    <div class="review-card review-empty" id="empty" style="display:none">
-      <h2 style="margin:.25rem 0 .35rem">No attempt found</h2>
-      <p class="review-muted">
-        This page expects <span class="review-code">?attemptId=...</span> and a stored quiz attempt.
-      </p>
-      <div class="review-btnrow">
-        <a class="review-btn primary" href="/pages/quiz.html">Go to Quiz</a>
+      <div class="review-card review-empty" id="empty" style="display:none">
+        <h2 style="margin:.25rem 0 .35rem">No attempt found</h2>
+        <p class="review-muted">
+          This page expects <span class="review-code">?attemptId=...</span> and a stored quiz attempt.
+        </p>
+        <div class="review-btnrow">
+          <a class="review-btn primary" href="/pages/quiz.html">Go to Quiz</a>
+        </div>
+        <p class="review-muted" style="margin-top:12px">
+          Run a quiz first so it can redirect you here automatically.
+        </p>
       </div>
-      <p class="review-muted" style="margin-top:12px">
-        Run a quiz first so it can redirect you here automatically.
-      </p>
     </div>
   </main>
 
@@ -482,11 +553,9 @@
   <!-- Auto-typeset injected math:
        reviewpage.js renders after load, so we observe mutations and re-typeset. -->
   <script type="module">
-    // Debounced MathJax typeset for dynamically injected content
     function typesetNow() {
       const MJ = window.MathJax;
       if (!MJ || !MJ.typesetPromise) return;
-      // typeset only inside the review root to avoid touching header/footer
       const root = document.getElementById("reviewRoot");
       if (!root) return;
       MJ.typesetClear?.([root]);
@@ -496,25 +565,25 @@
     let t = null;
     function typesetSoon() {
       clearTimeout(t);
-      t = setTimeout(typesetNow, 50);
+      t = setTimeout(typesetNow, 60);
     }
 
-    // Run once after MathJax is likely ready
     window.addEventListener("load", () => typesetSoon());
 
-    // Watch for DOM changes caused by reviewpage.js
     const root = document.getElementById("reviewRoot");
     if (root && "MutationObserver" in window) {
       const obs = new MutationObserver(() => typesetSoon());
       obs.observe(root, { childList: true, subtree: true, characterData: true });
     }
 
-    // If you ever manually toggle details/open content, ensure math typesets
     document.addEventListener("toggle", (e) => {
       if (e.target && e.target.matches && e.target.matches("details.review-deep")) {
         typesetSoon();
       }
     }, true);
+
+    // If reviewpage.js dispatches a custom event after rendering, support it:
+    document.addEventListener("dsa:render", () => typesetSoon());
   </script>
 </body>
 </html>
