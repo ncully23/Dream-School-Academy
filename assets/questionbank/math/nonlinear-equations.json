@@ -10,12 +10,12 @@
       "topic": "math.nonlinear-equations-and-systems",
       "skill": "rational-equations-solve-for-variable",
       "difficulty": "hard",
-      "prompt": "The given equation relates the positive variables p, q, r, and s. Which of the following is equivalent to q?\n\n20/p = 20/q − 20/r − 20/s",
+      "prompt": "The given equation relates the positive variables \\(p\\), \\(q\\), \\(r\\), and \\(s\\). Which of the following is equivalent to \\(q\\)?\n\n\\(\\frac{20}{p}=\\frac{20}{q}-\\frac{20}{r}-\\frac{20}{s}\\)",
       "choices": [
-        "p + r + s",
-        "20(p + r + s)",
-        "prs/(pr + ps + rs)",
-        "prs/(20p + 20r + 20s)"
+        "\\(p+r+s\\)",
+        "\\(20(p+r+s)\\)",
+        "\\(\\frac{prs}{pr+ps+rs}\\)",
+        "\\(\\frac{prs}{20p+20r+20s}\\)"
       ],
       "answerIndex": 2,
       "solution": {
@@ -51,12 +51,12 @@
       "topic": "math.nonlinear-equations-and-systems",
       "skill": "quadratic-formula-identify-correct-expression",
       "difficulty": "hard",
-      "prompt": "6x^2 + 5x − 7 = 0\n\nWhat are the solutions to the given equation?",
+      "prompt": "What are the solutions to the given equation?\n\n\\(6x^2+5x-7=0\\)",
       "choices": [
-        "(-5 ± √(25 + 168))/12",
-        "(-6 ± √(25 + 168))/12",
-        "(-5 ± √(36 − 168))/12",
-        "(-6 ± √(36 − 168))/12"
+        "\\(\\frac{-5\\pm\\sqrt{25+168}}{12}\\)",
+        "\\(\\frac{-6\\pm\\sqrt{25+168}}{12}\\)",
+        "\\(\\frac{-5\\pm\\sqrt{36-168}}{12}\\)",
+        "\\(\\frac{-6\\pm\\sqrt{36-168}}{12}\\)"
       ],
       "answerIndex": 0,
       "solution": {
@@ -88,12 +88,12 @@
       "topic": "math.nonlinear-equations-and-systems",
       "skill": "absolute-value-equations-two-solutions",
       "difficulty": "hard",
-      "prompt": "|z − 9| + 45 = 63\n\nWhat is the sum of the solutions to the given equation?",
+      "prompt": "What is the sum of the solutions to the given equation?\n\n\\(|z-9|+45=63\\)",
       "choices": [
-        "18",
-        "-18",
-        "0",
-        "36"
+        "\\(18\\)",
+        "\\(-18\\)",
+        "\\(0\\)",
+        "\\(36\\)"
       ],
       "answerIndex": 0,
       "solution": {
@@ -125,12 +125,12 @@
       "topic": "math.nonlinear-equations-and-systems",
       "skill": "rational-equations-isolate-variable",
       "difficulty": "hard",
-      "prompt": "The given equation relates the variables n, t, and w, where n > 0, t > 0, and w > t.\n\n12/n − 2/t = −2/w\n\nWhich expression is equivalent to n?",
+      "prompt": "The given equation relates the variables \\(n\\), \\(t\\), and \\(w\\), where \\(n>0\\), \\(t>0\\), and \\(w>t\\). Which expression is equivalent to \\(n\\)?\n\n\\(\\frac{12}{n}-\\frac{2}{t}=-\\frac{2}{w}\\)",
       "choices": [
-        "12tw",
-        "6(t − w)",
-        "(w − t)/(6tw)",
-        "6tw/(w − t)"
+        "\\(12tw\\)",
+        "\\(6(t-w)\\)",
+        "\\(\\frac{w-t}{6tw}\\)",
+        "\\(\\frac{6tw}{w-t}\\)"
       ],
       "answerIndex": 3,
       "solution": {
@@ -167,12 +167,12 @@
       "topic": "math.nonlinear-equations-and-systems",
       "skill": "systems-substitution-nonlinear",
       "difficulty": "hard",
-      "prompt": "The solution to the given system of equations is (z, y). What is the value of y?\n\ny = z^2 + 14z + 48\nz + 8 = 11",
+      "prompt": "The solution to the given system of equations is \\((z,y)\\). What is the value of \\(y\\)?\n\n\\(y=z^2+14z+48\\)\n\n\\(z+8=11\\)",
       "choices": [
-        "81",
-        "99",
-        "121",
-        "63"
+        "\\(81\\)",
+        "\\(99\\)",
+        "\\(121\\)",
+        "\\(63\\)"
       ],
       "answerIndex": 1,
       "solution": {
@@ -204,12 +204,12 @@
       "topic": "math.nonlinear-equations-and-systems",
       "skill": "factor-quadratic-find-specified-root",
       "difficulty": "hard",
-      "prompt": "5a^2 − 37a − 24 = 0\n\nWhat is the positive solution to the given equation?",
+      "prompt": "What is the positive solution to the given equation?\n\n\\(5a^2-37a-24=0\\)",
       "choices": [
-        "8/5",
-        "3",
-        "8",
-        "37"
+        "\\(\\frac{8}{5}\\)",
+        "\\(3\\)",
+        "\\(8\\)",
+        "\\(37\\)"
       ],
       "answerIndex": 2,
       "solution": {
@@ -241,12 +241,12 @@
       "topic": "math.nonlinear-equations-and-systems",
       "skill": "radical-equations-isolate-and-square",
       "difficulty": "hard",
-      "prompt": "If 4√(2x) = 16, what is the value of 6x?",
+      "prompt": "If \\(4\\sqrt{2x}=16\\), what is the value of \\(6x\\)?",
       "choices": [
-        "24",
-        "48",
-        "72",
-        "96"
+        "\\(24\\)",
+        "\\(48\\)",
+        "\\(72\\)",
+        "\\(96\\)"
       ],
       "answerIndex": 1,
       "solution": {
@@ -278,11 +278,11 @@
       "topic": "math.nonlinear-equations-and-systems",
       "skill": "system-quadratic-and-line-number-of-solutions",
       "difficulty": "hard",
-      "prompt": "How many solutions are there to the system of equations?\n\ny = x^2 + 3x − 7\n\ny − 5x + 8 = 0",
+      "prompt": "How many solutions are there to the system of equations?\n\n\\(y=x^2+3x-7\\)\n\n\\(y-5x+8=0\\)",
       "choices": [
-        "There are exactly 4 solutions.",
-        "There are exactly 2 solutions.",
-        "There is exactly 1 solution.",
+        "There are exactly \\(4\\) solutions.",
+        "There are exactly \\(2\\) solutions.",
+        "There is exactly \\(1\\) solution.",
         "There are no solutions."
       ],
       "answerIndex": 2,
@@ -317,12 +317,12 @@
       "topic": "math.nonlinear-equations-and-systems",
       "skill": "zero-product-property",
       "difficulty": "hard",
-      "prompt": "3a(a − 4)(a + 5) = 0\n\nWhat is one of the solutions to the given equation?",
+      "prompt": "What is one of the solutions to the given equation?\n\n\\(3a(a-4)(a+5)=0\\)",
       "choices": [
-        "-4",
-        "0",
-        "3",
-        "5"
+        "\\(-4\\)",
+        "\\(0\\)",
+        "\\(3\\)",
+        "\\(5\\)"
       ],
       "answerIndex": 1,
       "solution": {
@@ -353,12 +353,12 @@
       "topic": "math.nonlinear-equations-and-systems",
       "skill": "quadratic-formula-match-radical-form",
       "difficulty": "hard",
-      "prompt": "2x^2 − 8x − 7 = 0\n\nOne solution to the given equation can be written as (8 − √k)/4, where k is a constant. What is the value of k?",
+      "prompt": "One solution to the given equation can be written as \\(\\frac{8-\\sqrt{k}}{4}\\), where \\(k\\) is a constant. What is the value of \\(k\\)?\n\n\\(2x^2-8x-7=0\\)",
       "choices": [
-        "92",
-        "112",
-        "120",
-        "168"
+        "\\(92\\)",
+        "\\(112\\)",
+        "\\(120\\)",
+        "\\(168\\)"
       ],
       "answerIndex": 2,
       "solution": {
