@@ -1,7 +1,169 @@
 {
+  "math.linear-equations-one-variable": {
+    "title": "Math — Linear Equations (One Variable)",
+    "description": "Solving linear equations in one variable using algebraic reasoning.",
+    "bank": "/assets/questionbank/math/linear-equations-one-variable.json",
+    "pickCount": 10,
+    "shuffle": false,
+    "timeLimitSec": 600
+  },
+
+  "math.linear-functions": {
+    "title": "Math — Linear Functions",
+    "description": "Interpreting and analyzing linear functions, slopes, and intercepts.",
+    "bank": "/assets/questionbank/math/linear-functions.json",
+    "pickCount": 10,
+    "shuffle": false,
+    "timeLimitSec": 600
+  },
+
+  "math.linear-equations-two-variables": {
+    "title": "Math — Linear Equations (Two Variables)",
+    "description": "Graphing and interpreting linear equations in two variables.",
+    "bank": "/assets/questionbank/math/linear-equations-two-variables.json",
+    "pickCount": 10,
+    "shuffle": false,
+    "timeLimitSec": 600
+  },
+
+  "math.systems-two-linear-equations-two-variables": {
+    "title": "Math — Systems of Linear Equations",
+    "description": "Solving systems of two linear equations using algebra and graphs.",
+    "bank": "/assets/questionbank/math/systems-two-linear-equations-two-variables.json",
+    "pickCount": 10,
+    "shuffle": false,
+    "timeLimitSec": 600
+  },
+
+  "math.linear-inequalities": {
+    "title": "Math — Linear Inequalities",
+    "description": "Solving and graphing linear inequalities in one or two variables.",
+    "bank": "/assets/questionbank/math/linear-inequalities.json",
+    "pickCount": 10,
+    "shuffle": false,
+    "timeLimitSec": 600
+  },
+
+  "math.nonlinear-functions": {
+    "title": "Math — Nonlinear Functions",
+    "description": "Analyzing quadratic and other nonlinear function behavior.",
+    "bank": "/assets/questionbank/math/nonlinear-functions.json",
+    "pickCount": 10,
+    "shuffle": false,
+    "timeLimitSec": 600
+  },
+
+  "math.nonlinear-equations": {
+    "title": "Math — Nonlinear Equations",
+    "description": "Solving nonlinear equations and systems involving quadratics and other curves.",
+    "bank": "/assets/questionbank/math/nonlinear-equations.json",
+    "pickCount": 10,
+    "shuffle": false,
+    "timeLimitSec": 600
+  },
+
+  "math.equivalent-expressions": {
+    "title": "Math — Equivalent Expressions",
+    "description": "Rewriting expressions while preserving equivalence.",
+    "bank": "/assets/questionbank/math/equivalent-expressions.json",
+    "pickCount": 10,
+    "shuffle": false,
+    "timeLimitSec": 600
+  },
+
+  "math.rates-ratios-and-units": {
+    "title": "Math — Ratios, Rates, & Units",
+    "description": "Solving problems involving ratios, rates, proportions, and unit conversions.",
+    "bank": "/assets/questionbank/math/rates-ratios-and-units.json",
+    "pickCount": 10,
+    "shuffle": false,
+    "timeLimitSec": 600
+  },
+
+  "math.percentages": {
+    "title": "Math — Percentages",
+    "description": "Percent increase/decrease and percent-based problem solving.",
+    "bank": "/assets/questionbank/math/percentages.json",
+    "pickCount": 10,
+    "shuffle": false,
+    "timeLimitSec": 600
+  },
+
+  "math.one-variable-data": {
+    "title": "Math — One-Variable Data",
+    "description": "Interpreting distributions, center, and spread for one-variable data.",
+    "bank": "/assets/questionbank/math/one-variable-data.json",
+    "pickCount": 10,
+    "shuffle": false,
+    "timeLimitSec": 600
+  },
+
+  "math.two-variable-data": {
+    "title": "Math — Two-Variable Data",
+    "description": "Analyzing scatterplots, trends, and associations.",
+    "bank": "/assets/questionbank/math/two-variable-data.json",
+    "pickCount": 10,
+    "shuffle": false,
+    "timeLimitSec": 600
+  },
+
+  "math.probability": {
+    "title": "Math — Probability",
+    "description": "Basic and conditional probability scenarios.",
+    "bank": "/assets/questionbank/math/probability.json",
+    "pickCount": 10,
+    "shuffle": false,
+    "timeLimitSec": 600
+  },
+
+  "math.inference-from-statistics": {
+    "title": "Math — Inference from Statistics",
+    "description": "Drawing conclusions from sample statistics.",
+    "bank": "/assets/questionbank/math/inference-from-statistics.json",
+    "pickCount": 10,
+    "shuffle": false,
+    "timeLimitSec": 600
+  },
+
+  "math.evaluating-statistical-claims": {
+    "title": "Math — Evaluating Statistical Claims",
+    "description": "Assessing the validity of statistical arguments.",
+    "bank": "/assets/questionbank/math/evaluating-statistical-claims.json",
+    "pickCount": 10,
+    "shuffle": false,
+    "timeLimitSec": 600
+  },
+
+  "math.area-and-volume": {
+    "title": "Math — Area & Volume",
+    "description": "Geometric area and volume calculations.",
+    "bank": "/assets/questionbank/math/area-and-volume.json",
+    "pickCount": 10,
+    "shuffle": false,
+    "timeLimitSec": 600
+  },
+
+  "math.lines-angles-and-triangles": {
+    "title": "Math — Lines, Angles, & Triangles",
+    "description": "Angle relationships and triangle properties.",
+    "bank": "/assets/questionbank/math/lines-angles-and-triangles.json",
+    "pickCount": 10,
+    "shuffle": false,
+    "timeLimitSec": 600
+  },
+
+  "math.right-triangles-and-trigonometry": {
+    "title": "Math — Right Triangles & Trigonometry",
+    "description": "Trigonometric ratios and right triangle problems.",
+    "bank": "/assets/questionbank/math/right-triangles-and-trigonometry.json",
+    "pickCount": 10,
+    "shuffle": false,
+    "timeLimitSec": 600
+  },
+
   "math.circles": {
     "title": "Math — Circles",
-    "description": "Circle geometry: radius/diameter, circumference, area, equations, arcs, and sectors.",
+    "description": "Circle geometry: radius, diameter, area, circumference, arcs, and equations.",
     "bank": "/assets/questionbank/math/circles.json",
     "pickCount": 10,
     "shuffle": false,
