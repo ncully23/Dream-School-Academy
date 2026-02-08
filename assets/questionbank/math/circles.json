@@ -10,20 +10,25 @@
       "topic": "math.circles",
       "skill": "tangent-line-slope",
       "difficulty": "hard",
-      "prompt": "A circle has center (−1, 1). A line is tangent to the circle at the point (5, −4). Which of the following points lies on the tangent line?",
-      "choices": ["(11, 1)", "(4, 7)", "(10, 2)", "(0, 6/5)"],
+      "prompt": "A circle has center \\((-1, 1)\\). A line is tangent to the circle at the point \\((5, -4)\\). Which of the following points lies on the tangent line?",
+      "choices": [
+        "\\((11, 1)\\)",
+        "\\((4, 7)\\)",
+        "\\((10, 2)\\)",
+        "\\(\\left(0, \\frac{6}{5}\\right)\\)"
+      ],
       "answerIndex": 2,
       "solution": {
-        "finalAnswer": "(10, 2)",
+        "finalAnswer": "\\((10, 2)\\)",
         "approach": "Use the perpendicular relationship between a radius and a tangent line, then test which point satisfies the tangent line’s slope.",
         "steps": [
-          "The radius connects the center of the circle to the point of tangency. Its endpoints are (−1, 1) and (5, −4).",
-          "Compute the slope of the radius: (−4 − 1) / (5 − (−1)) = −5 / 6.",
-          "A tangent line is always perpendicular to the radius at the point of tangency, so its slope is the negative reciprocal of −5/6, which is 6/5.",
-          "Now test each answer choice by computing the slope between (5, −4) and the candidate point.",
-          "For (10, 2): slope = (2 − (−4)) / (10 − 5) = 6 / 5, which matches the tangent slope."
+          "The radius connects the center to the point of tangency, so it runs from \\((-1, 1)\\) to \\((5, -4)\\).",
+          "Slope of the radius: \\(m_r = \\frac{-4-1}{5-(-1)} = \\frac{-5}{6}\\).",
+          "A tangent line is perpendicular to the radius at the tangency point, so its slope is the negative reciprocal: \\(m_t = \\frac{6}{5}\\).",
+          "Test each choice by computing the slope from \\((5, -4)\\) to the candidate point and checking whether it equals \\(\\frac{6}{5}\\).",
+          "For \\((10, 2)\\): slope \\(= \\frac{2-(-4)}{10-5} = \\frac{6}{5}\\), which matches \\(m_t\\)."
         ],
-        "takeaway": "At the point of tangency, the radius and tangent form a 90° angle, so their slopes are negative reciprocals."
+        "takeaway": "At the point of tangency, the radius and tangent form a \\(90^\\circ\\) angle, so their slopes are negative reciprocals."
       }
     },
     {
@@ -31,19 +36,24 @@
       "topic": "math.circles",
       "skill": "arc-length",
       "difficulty": "hard",
-      "prompt": "The length of arc ADC is 5π and its central angle is 100°. What is the length of the remaining arc of the circle?",
-      "choices": ["9π", "13π", "18π", "6.5π"],
+      "prompt": "The length of arc \\(\\overset{\\frown}{ADC}\\) is \\(5\\pi\\) and its central angle is \\(100^\\circ\\). What is the length of the remaining arc of the circle?",
+      "choices": [
+        "\\(9\\pi\\)",
+        "\\(13\\pi\\)",
+        "\\(18\\pi\\)",
+        "\\(6.5\\pi\\)"
+      ],
       "answerIndex": 1,
       "solution": {
-        "finalAnswer": "13π",
+        "finalAnswer": "\\(13\\pi\\)",
         "approach": "Use the proportional relationship between arc length and central angle.",
         "steps": [
-          "Arc length is directly proportional to the measure of its central angle.",
-          "The full circle measures 360°, so the remaining arc corresponds to 360° − 100° = 260°.",
-          "Set up a proportion: (remaining arc length) / (5π) = 260 / 100.",
-          "Solve: remaining arc = 5π × (260 / 100) = 13π."
+          "Arc length is proportional to its central angle: \\(\\frac{s_1}{s_2}=\\frac{\\theta_1}{\\theta_2}\\).",
+          "The full circle is \\(360^\\circ\\), so the remaining arc corresponds to \\(360^\\circ-100^\\circ=260^\\circ\\).",
+          "Set up the proportion: \\(\\frac{s_{\\text{rem}}}{5\\pi}=\\frac{260}{100}\\).",
+          "Solve: \\(s_{\\text{rem}}=5\\pi\\cdot\\frac{260}{100}=13\\pi\\)."
         ],
-        "takeaway": "When radius is unknown, compare arcs using angle ratios instead of formulas."
+        "takeaway": "When radius is unknown, compare arcs using angle ratios (proportions) instead of \\(s=r\\theta\\)."
       }
     },
     {
@@ -51,20 +61,25 @@
       "topic": "math.circles",
       "skill": "radius-from-general-form",
       "difficulty": "hard",
-      "prompt": "The equation x² + x + y² + y = 199/2 represents a circle. What is the radius of the circle?",
-      "choices": ["10", "20", "5", "100"],
+      "prompt": "The equation \\(x^2+x+y^2+y=\\frac{199}{2}\\) represents a circle. What is the radius of the circle?",
+      "choices": [
+        "\\(10\\)",
+        "\\(20\\)",
+        "\\(5\\)",
+        "\\(100\\)"
+      ],
       "answerIndex": 0,
       "solution": {
-        "finalAnswer": "10",
+        "finalAnswer": "\\(10\\)",
         "approach": "Rewrite the equation in standard form by completing the square.",
         "steps": [
-          "Group x-terms and y-terms: (x² + x) + (y² + y) = 199/2.",
-          "Complete the square for x: x² + x + 1/4 = (x + 1/2)².",
-          "Complete the square for y: y² + y + 1/4 = (y + 1/2)².",
-          "Since 1/4 was added twice, add 1/2 to the right side: 199/2 + 1/2 = 200/2 = 100.",
-          "The equation becomes (x + 1/2)² + (y + 1/2)² = 100, so r² = 100 and r = 10."
+          "Group terms: \\((x^2+x)+(y^2+y)=\\frac{199}{2}\\).",
+          "Complete the square in \\(x\\): \\(x^2+x+\\frac14=(x+\\frac12)^2\\).",
+          "Complete the square in \\(y\\): \\(y^2+y+\\frac14=(y+\\frac12)^2\\).",
+          "Add \\(\\frac14\\) twice, so add \\(\\frac12\\) to the right side: \\(\\frac{199}{2}+\\frac12=\\frac{200}{2}=100\\).",
+          "Now: \\((x+\\frac12)^2+(y+\\frac12)^2=100\\), so \\(r^2=100\\) and \\(r=10\\)."
         ],
-        "takeaway": "After completing the square, the constant on the right side equals r²."
+        "takeaway": "After completing the square, the constant on the right side equals \\(r^2\\)."
       }
     },
     {
@@ -72,18 +87,23 @@
       "topic": "math.circles",
       "skill": "center-and-radius",
       "difficulty": "hard",
-      "prompt": "The equation (x + 4)² + (y − 19)² = 121 represents a circle. Which value could be the x-coordinate of a point on the circle?",
-      "choices": ["−16", "−14", "11", "19"],
+      "prompt": "The equation \\((x+4)^2+(y-19)^2=121\\) represents a circle. Which value could be the \\(x\\)-coordinate of a point on the circle?",
+      "choices": [
+        "\\(-16\\)",
+        "\\(-14\\)",
+        "\\(11\\)",
+        "\\(19\\)"
+      ],
       "answerIndex": 1,
       "solution": {
-        "finalAnswer": "−14",
-        "approach": "Determine the horizontal range of the circle using center ± radius.",
+        "finalAnswer": "\\(-14\\)",
+        "approach": "Determine the horizontal range of the circle using center \\(\\pm\\) radius.",
         "steps": [
-          "From the equation, the center is (−4, 19) and the radius is √121 = 11.",
-          "The x-values on the circle range from −4 − 11 = −15 to −4 + 11 = 7.",
-          "Check answer choices: only −14 falls within this interval."
+          "Center is \\((-4, 19)\\) and radius is \\(\\sqrt{121}=11\\).",
+          "Possible \\(x\\)-values range from \\(-4-11=-15\\) to \\(-4+11=7\\).",
+          "Only \\(-14\\) lies in \\([-15,7]\\)."
         ],
-        "takeaway": "A coordinate on a circle must lie within one radius horizontally and vertically from the center."
+        "takeaway": "A coordinate on a circle must lie within one radius horizontally (and vertically) from the center."
       }
     },
     {
@@ -91,20 +111,25 @@
       "topic": "math.circles",
       "skill": "center-from-general-form",
       "difficulty": "hard",
-      "prompt": "What is the center of the circle defined by x² + 20x + y² + 16y = −20?",
-      "choices": ["(−20, −16)", "(−10, −8)", "(10, 8)", "(20, 16)"],
+      "prompt": "What is the center of the circle defined by \\(x^2+20x+y^2+16y=-20\\)?",
+      "choices": [
+        "\\((-20, -16)\\)",
+        "\\((-10, -8)\\)",
+        "\\((10, 8)\\)",
+        "\\((20, 16)\\)"
+      ],
       "answerIndex": 1,
       "solution": {
-        "finalAnswer": "(−10, −8)",
+        "finalAnswer": "\\((-10, -8)\\)",
         "approach": "Complete the square to identify the center directly.",
         "steps": [
-          "Group terms: (x² + 20x) + (y² + 16y) = −20.",
-          "Complete the square: x² + 20x + 100 = (x + 10)².",
-          "Complete the square: y² + 16y + 64 = (y + 8)².",
-          "Add 100 and 64 to both sides: −20 + 164 = 144.",
-          "The equation becomes (x + 10)² + (y + 8)² = 144, so the center is (−10, −8)."
+          "Group terms: \\((x^2+20x)+(y^2+16y)=-20\\).",
+          "Complete the square: \\(x^2+20x+100=(x+10)^2\\).",
+          "Complete the square: \\(y^2+16y+64=(y+8)^2\\).",
+          "Add \\(100\\) and \\(64\\) to both sides: \\(-20+164=144\\).",
+          "Standard form: \\((x+10)^2+(y+8)^2=144\\), so the center is \\((-10,-8)\\)."
         ],
-        "takeaway": "The signs inside squared expressions are opposite the center’s coordinates."
+        "takeaway": "The signs inside \\((x-h)^2+(y-k)^2\\) reveal the center \\((h,k)\\) with opposite signs."
       }
     },
     {
@@ -112,18 +137,23 @@
       "topic": "math.circles",
       "skill": "arc-length",
       "difficulty": "hard",
-      "prompt": "A circle has radius 18. If the central angle of an arc is 120°, what is the arc length?",
-      "choices": ["9π", "12π", "15π", "18π"],
+      "prompt": "A circle has radius \\(18\\). If the central angle of an arc is \\(120^\\circ\\), what is the arc length?",
+      "choices": [
+        "\\(9\\pi\\)",
+        "\\(12\\pi\\)",
+        "\\(15\\pi\\)",
+        "\\(18\\pi\\)"
+      ],
       "answerIndex": 1,
       "solution": {
-        "finalAnswer": "12π",
-        "approach": "Convert degrees to radians, then apply the arc length formula.",
+        "finalAnswer": "\\(12\\pi\\)",
+        "approach": "Convert degrees to radians, then apply \\(s=r\\theta\\).",
         "steps": [
-          "Arc length formula is s = rθ, where θ must be in radians.",
-          "Convert 120° to radians: 120° × (π / 180°) = 2π / 3.",
-          "Substitute: s = 18 × (2π / 3) = 12π."
+          "Arc length formula: \\(s=r\\theta\\) (with \\(\\theta\\) in radians).",
+          "Convert: \\(120^\\circ\\cdot\\frac{\\pi}{180^\\circ}=\\frac{2\\pi}{3}\\).",
+          "Compute: \\(s=18\\cdot\\frac{2\\pi}{3}=12\\pi\\)."
         ],
-        "takeaway": "The arc length formula only works with radians."
+        "takeaway": "The arc length formula \\(s=r\\theta\\) only works when \\(\\theta\\) is in radians."
       }
     },
     {
@@ -131,18 +161,22 @@
       "topic": "math.circles",
       "skill": "diameter-from-endpoints",
       "difficulty": "hard",
-      "prompt": "A circle has diameter endpoints (2,4) and (2,14). What is the radius of the circle?",
-      "choices": ["5", "10", "9", "4"],
+      "prompt": "A circle has diameter endpoints \\((2,4)\\) and \\((2,14)\\). What is the radius of the circle?",
+      "choices": [
+        "\\(5\\)",
+        "\\(10\\)",
+        "\\(9\\)",
+        "\\(4\\)"
+      ],
       "answerIndex": 0,
       "solution": {
-        "finalAnswer": "5",
-        "approach": "Find the diameter length, then divide by 2.",
+        "finalAnswer": "\\(5\\)",
+        "approach": "Find the diameter length, then divide by \\(2\\).",
         "steps": [
-          "Both points share the same x-coordinate, so the diameter is vertical.",
-          "Distance between endpoints is |14 − 4| = 10.",
-          "Radius is half the diameter: 10 ÷ 2 = 5."
+          "The diameter is vertical (same \\(x\\)-coordinate), so its length is \\(|14-4|=10\\).",
+          "Radius is half the diameter: \\(\\frac{10}{2}=5\\)."
         ],
-        "takeaway": "When points align vertically or horizontally, distance simplifies to subtraction."
+        "takeaway": "When points align vertically/horizontally, distance simplifies to subtraction."
       }
     },
     {
@@ -150,18 +184,23 @@
       "topic": "math.circles",
       "skill": "scaled-radius",
       "difficulty": "hard",
-      "prompt": "Circle A has equation (x + 5)² + (y − 5)² = 4. Circle B has the same center and twice the radius. What is the value of k in Circle B’s equation?",
-      "choices": ["16", "8", "4", "32"],
+      "prompt": "Circle A has equation \\((x+5)^2+(y-5)^2=4\\). Circle B has the same center and twice the radius. What is the value of \\(k\\) in Circle B’s equation?",
+      "choices": [
+        "\\(16\\)",
+        "\\(8\\)",
+        "\\(4\\)",
+        "\\(32\\)"
+      ],
       "answerIndex": 0,
       "solution": {
-        "finalAnswer": "16",
-        "approach": "Track how changing radius affects r² in the equation.",
+        "finalAnswer": "\\(16\\)",
+        "approach": "Track how changing radius affects \\(r^2\\) in the equation.",
         "steps": [
-          "From Circle A, r² = 4 so r = 2.",
-          "Doubling the radius gives r = 4.",
-          "Square the new radius: r² = 16."
+          "Circle A has \\(r^2=4\\), so \\(r=2\\).",
+          "Twice the radius gives \\(r=4\\).",
+          "Then \\(r^2=16\\), so \\(k=16\\)."
         ],
-        "takeaway": "Doubling a radius multiplies r² by four."
+        "takeaway": "Doubling a radius multiplies \\(r^2\\) by \\(4\\)."
       }
     },
     {
@@ -169,18 +208,23 @@
       "topic": "math.circles",
       "skill": "diameter-from-equation",
       "difficulty": "hard",
-      "prompt": "What is the diameter of the circle (x − 5)² + (y − 3)² = 16?",
-      "choices": ["4", "8", "16", "32"],
+      "prompt": "What is the diameter of the circle \\((x-5)^2+(y-3)^2=16\\)?",
+      "choices": [
+        "\\(4\\)",
+        "\\(8\\)",
+        "\\(16\\)",
+        "\\(32\\)"
+      ],
       "answerIndex": 1,
       "solution": {
-        "finalAnswer": "8",
+        "finalAnswer": "\\(8\\)",
         "approach": "Extract the radius from the equation, then double it.",
         "steps": [
-          "The equation shows r² = 16.",
-          "Take the square root: r = 4.",
-          "Diameter = 2r = 8."
+          "The equation shows \\(r^2=16\\).",
+          "So \\(r=4\\).",
+          "Diameter \\(=2r=8\\)."
         ],
-        "takeaway": "Circle equations always store the square of the radius."
+        "takeaway": "Circle equations store \\(r^2\\), not \\(r\\)."
       }
     },
     {
@@ -188,17 +232,22 @@
       "topic": "math.circles",
       "skill": "central-angle",
       "difficulty": "hard",
-      "prompt": "The measure of arc RS is 100°. What is the measure of its central angle?",
-      "choices": ["100", "50", "200", "80"],
+      "prompt": "The measure of arc \\(\\overset{\\frown}{RS}\\) is \\(100^\\circ\\). What is the measure of its central angle?",
+      "choices": [
+        "\\(100\\)",
+        "\\(50\\)",
+        "\\(200\\)",
+        "\\(80\\)"
+      ],
       "answerIndex": 0,
       "solution": {
-        "finalAnswer": "100",
+        "finalAnswer": "\\(100^\\circ\\)",
         "approach": "Apply the defining property of central angles.",
         "steps": [
-          "A central angle has its vertex at the center of the circle.",
-          "A central angle’s measure is always equal to the measure of its intercepted arc."
+          "A central angle intercepts an arc, and its measure equals the measure of that intercepted arc.",
+          "So the central angle is \\(100^\\circ\\)."
         ],
-        "takeaway": "Central angles match their arcs exactly."
+        "takeaway": "Central angles match their intercepted arcs exactly."
       }
     }
   ]
