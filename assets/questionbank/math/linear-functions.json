@@ -1,0 +1,139 @@
+{
+  "quizId": "math.linear.functions.set1",
+  "title": "Linear Functions — Set 1",
+  "section": "Math",
+  "domain": "Algebra",
+  "skill": "Linear functions",
+  "questions": [
+    {
+      "id": "6cdc66d9",
+      "prompt": "For the function f(x) = 2x + 3, the graph of y = f(x) in the xy-plane is parallel to line j. What is the slope of line j?",
+      "choices": {
+        "A": "1",
+        "B": "2",
+        "C": "3",
+        "D": "5"
+      },
+      "correct": "B",
+      "difficulty": "hard",
+      "rationale": "The function y = 2x + 3 is a line with slope 2. Parallel lines have equal slopes, so line j also has slope 2."
+    },
+    {
+      "id": "34924409",
+      "prompt": "One gallon of paint will cover 220 square feet of a surface. A room has a total wall area of w square feet. Which equation represents the total amount of paint P, in gallons, needed to paint the walls of the room twice?",
+      "choices": {
+        "A": "P = w/110",
+        "B": "P = 440w",
+        "C": "P = w/220",
+        "D": "P = 220w"
+      },
+      "correct": "A",
+      "difficulty": "hard",
+      "rationale": "Painting twice means covering 2w square feet. Since 1 gallon covers 220 ft^2, P = (2w)/220 = w/110."
+    },
+    {
+      "id": "540696ff",
+      "prompt": "The function f(x) is defined as 19 more than 4 times a number x. If y = f(x) is graphed in the xy-plane, what is the best interpretation of the x-intercept?",
+      "choices": {
+        "A": "When f(x) = 0, the number is −19/4.",
+        "B": "When the number is 0, f(x) = 19.",
+        "C": "The value of f(x) increases by 1 for each increase of 4 in the value of the number.",
+        "D": "For each increase of 1 in the value of the number, f(x) increases by 4."
+      },
+      "correct": "A",
+      "difficulty": "hard",
+      "rationale": "Here f(x) = 4x + 19. The x-intercept occurs when y = f(x) = 0, so 0 = 4x + 19 → x = −19/4. This matches choice A."
+    },
+    {
+      "id": "9e5fa89b",
+      "prompt": "The table shows the population of Greenleaf, Idaho, for the years 2000 and 2010: in 2000 the population was 862, and in 2010 the population was 846. If the relationship between population and year is linear, which function P models the population of Greenleaf t years after 2000?",
+      "choices": {
+        "A": "P(t) = 862 − 1.6t",
+        "B": "P(t) = 862 − 16t",
+        "C": "P(t) = 862 + 16(t − 2000)",
+        "D": "P(t) = 862 − 1.6(t − 2000)"
+      },
+      "correct": "A",
+      "difficulty": "hard",
+      "rationale": "Let t = 0 at year 2000, so P(0) = 862. Slope m = (846 − 862)/(10 − 0) = −16/10 = −1.6. Thus P(t) = 862 − 1.6t."
+    },
+    {
+      "id": "b09f861c",
+      "prompt": "Brian saves 2/5 of the $215 he earns each week from his job. If Brian continues to save at this rate, how much money, in dollars, will Brian save in 9 weeks?",
+      "choices": {
+        "A": "774",
+        "B": "860",
+        "C": "967.5",
+        "D": "1935"
+      },
+      "correct": "A",
+      "difficulty": "hard",
+      "rationale": "Weekly savings = (2/5)·215 = 86. Total in 9 weeks = 9·86 = 774."
+    },
+    {
+      "id": "f7df662b",
+      "prompt": "h(x) = x + b. For the linear function h, b is a constant and h(0) = 45. What is the value of b?",
+      "choices": {
+        "A": "0",
+        "B": "45",
+        "C": "−45",
+        "D": "1"
+      },
+      "correct": "B",
+      "difficulty": "hard",
+      "rationale": "Substitute x = 0: h(0) = 0 + b = 45, so b = 45."
+    },
+    {
+      "id": "a887f207",
+      "prompt": "For groups of 25 or more people, a museum charges $21 per person for the first 25 people and $14 for each additional person. Which function f gives the total charge, in dollars, for a tour group with n people, where n ≥ 25?",
+      "choices": {
+        "A": "f(n) = 14n + 175",
+        "B": "f(n) = 14n + 525",
+        "C": "f(n) = 35n − 350",
+        "D": "f(n) = 14n + 21"
+      },
+      "correct": "A",
+      "difficulty": "hard",
+      "rationale": "Total cost = 21·25 + 14(n − 25) = 525 + 14n − 350 = 14n + 175."
+    },
+    {
+      "id": "9b3255b4",
+      "prompt": "The boiling point of water at sea level is 212°F. For every 550 feet above sea level, the boiling point is lowered by about 1°F. Which equation can be used to find the boiling point B of water, in °F, x feet above sea level?",
+      "choices": {
+        "A": "B = 550 + x/212",
+        "B": "B = 550 − x/212",
+        "C": "B = 212 + x/550",
+        "D": "B = 212 − x/550"
+      },
+      "correct": "D",
+      "difficulty": "hard",
+      "rationale": "The boiling point decreases 1°F per 550 ft, so the rate is −1/550 °F per ft. Starting at 212 gives B = 212 − x/550."
+    },
+    {
+      "id": "8229364b",
+      "prompt": "w(t) = 300 − 4t models the volume of liquid, in milliliters, in a container t seconds after it begins draining. According to the model, what is the predicted volume, in milliliters, draining from the container each second?",
+      "choices": {
+        "A": "300",
+        "B": "296",
+        "C": "75",
+        "D": "4"
+      },
+      "correct": "D",
+      "difficulty": "hard",
+      "rationale": "The coefficient of t is −4, meaning the volume decreases by 4 milliliters each second, so 4 mL drains per second."
+    },
+    {
+      "id": "b683f596",
+      "prompt": "The equation y = 18 − 5x represents the speed y, in feet per second, of Sheila's bicycle x seconds after she applied the brakes. If the equation is graphed, which is the best interpretation of the x-coordinate of the line’s x-intercept in context?",
+      "choices": {
+        "A": "The speed of Sheila's bicycle, in feet per second, before Sheila applied the brakes",
+        "B": "The number of feet per second the speed of Sheila's bicycle decreased each second after Sheila applied the brakes",
+        "C": "The number of seconds it took from when Sheila began applying the brakes until the bicycle came to a complete stop",
+        "D": "The number of feet Sheila's bicycle traveled from when she began applying the brakes until the bicycle came to a complete stop"
+      },
+      "correct": "C",
+      "difficulty": "hard",
+      "rationale": "At the x-intercept, y = 0, meaning the bicycle’s speed is 0 (it has stopped). The corresponding x-value is the time in seconds until it comes to a complete stop."
+    }
+  ]
+}
