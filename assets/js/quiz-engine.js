@@ -1,5 +1,6 @@
 // /assets/js/quiz-engine.js
 import { routes } from "/assets/js/lib/routes.js";
+import { saveAttempt } from "/assets/js/lib/attempt-writer.js";
 
 (function () {
   "use strict";
@@ -12,9 +13,9 @@ import { routes } from "/assets/js/lib/routes.js";
   // - Fetches JSON bank
   // - Picks N questions randomly (optionally seeded)
   // - Runs Bluebook-style UI
-  // - Saves attempt to:
-  //      Firestore: users/{uid}/attempts/{attemptId}
-  //      localStorage: dsa:attempt:{attemptId} (diagnostic + offline)
+  // - Saves attempt (authoritative):
+  //      saveAttempt() -> Firestore users/{uid}/attempts/{attemptId}
+  //                   -> localStorage dsa:attempt:{attemptId} (fallback/diagnostic)
   // - Redirects to review: /pages/review.html?attemptId=...
   // =========================================================
 
@@ -155,7 +156,7 @@ import { routes } from "/assets/js/lib/routes.js";
   }
 
   // -----------------------
-  // 2) Storage keys
+  // 2) Storage keys (draft-only; attempts handled by attempt-writer)
   // -----------------------
   function createAttemptId() {
     return "t_" + Date.now() + "_" + Math.floor(Math.random() * 10000);
@@ -165,87 +166,10 @@ import { routes } from "/assets/js/lib/routes.js";
     return `dsa:draft:${quizId}`;
   }
 
-  function getAttemptKey(attemptId) {
-    return `dsa:attempt:${attemptId}`;
-  }
-
   function safeRemoveStorage(key) {
     try {
       localStorage.removeItem(key);
     } catch {}
-  }
-
-  function safeSetStorage(key, value) {
-    try {
-      localStorage.setItem(key, value);
-    } catch {}
-  }
-
-  // -----------------------
-  // 2.5) Firestore writer (authoritative)
-  // -----------------------
-  async function writeAttemptToFirestore(summary) {
-    // We intentionally do NOT rely on window.quizData.appendAttempt anymore,
-    // because your Progress page expects a stable path:
-    //   users/{uid}/attempts/{attemptId}
-    //
-    // We still keep localStorage as offline/diagnostic.
-
-    try {
-      // Must be same-origin module path as your init
-      const { auth, db, authReady } = await import("/assets/js/firebase-init.js");
-      await authReady;
-
-      const user = auth.currentUser;
-      if (!user) {
-        const e = new Error("Not signed in");
-        e.code = "auth/no-current-user";
-        throw e;
-      }
-
-      const fs = await import(
-        "https://www.gstatic.com/firebasejs/10.12.4/firebase-firestore.js"
-      );
-      const { doc, setDoc, serverTimestamp } = fs;
-
-      const attemptId = String(summary?.attemptId || "");
-      if (!attemptId) throw new Error("Missing attemptId");
-
-      const ref = doc(db, "users", user.uid, "attempts", attemptId);
-
-      // Store a normalized top-level record for easy querying + compatibility
-      const payload = {
-        // identity
-        attemptId,
-        uid: user.uid,
-
-        quizId: summary.quizId || summary.sectionId || null,
-        sectionId: summary.sectionId || summary.quizId || null,
-        title: summary.title || null,
-
-        // bank metadata
-        bank: summary.bank || null,
-
-        // timestamps
-        createdAt: serverTimestamp(),
-        generatedAt: summary.generatedAt || null,
-
-        // totals
-        totals: summary.totals || null,
-
-        // full attempt (review page can use this)
-        items: Array.isArray(summary.items) ? summary.items : [],
-
-        // carry-through state/telemetry
-        uiState: summary.uiState || null,
-        sessionMeta: summary.sessionMeta || null,
-      };
-
-      await setDoc(ref, payload, { merge: true });
-      return { ok: true };
-    } catch (err) {
-      return { ok: false, err };
-    }
   }
 
   // -----------------------
@@ -302,6 +226,45 @@ import { routes } from "/assets/js/lib/routes.js";
     if (el.sectionTitle) el.sectionTitle.textContent = "Quiz failed to load";
     if (el.timeLeft) el.timeLeft.textContent = "--:--";
     document.title = "Quiz failed to load";
+  }
+
+  function showSaveBanner(message, onRetry) {
+    console.error("[quiz-engine] save failed:", message);
+
+    // Non-fatal UI (keeps user on page)
+    const box = document.createElement("div");
+    box.style.cssText =
+      "max-width:980px;margin:14px auto;padding:12px 14px;background:#fff;border:1px solid #eab308;border-radius:10px;" +
+      "font:16px/1.45 system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;color:#111;" +
+      "display:flex;align-items:center;justify-content:space-between;gap:10px;";
+    box.innerHTML = `
+      <div>
+        <div style="font-weight:700;margin-bottom:2px">Couldn’t save your attempt to the cloud</div>
+        <div style="font-size:14px;opacity:.9">${escapeHtml(message)} (Your attempt is still saved locally.)</div>
+      </div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end">
+        <button id="dsaRetrySave" style="padding:10px 12px;border-radius:10px;border:1px solid #111;background:#111;color:#fff;cursor:pointer">Retry save</button>
+      </div>
+    `.trim();
+
+    const root = document.body || document.documentElement;
+    root.prepend(box);
+
+    const btn = box.querySelector("#dsaRetrySave");
+    if (btn) {
+      btn.addEventListener("click", async () => {
+        btn.disabled = true;
+        btn.textContent = "Retrying...";
+        try {
+          await onRetry();
+        } finally {
+          btn.disabled = false;
+          btn.textContent = "Retry save";
+        }
+      });
+    }
+
+    return box;
   }
 
   function clamp(n, min, max) {
@@ -405,6 +368,19 @@ import { routes } from "/assets/js/lib/routes.js";
       }
     }
     return null;
+  }
+
+  function resolveAttemptType(cfg, bank) {
+    const explicit = String(cfg?.attemptType || "").trim().toLowerCase();
+    if (explicit === "topic" || explicit === "random") return explicit;
+
+    // Heuristic: if you're subselecting/shuffling from a bank, treat as random
+    if (cfg && (cfg.random === true || cfg.seedMode || cfg.pickCount || cfg.count)) return "random";
+
+    // If bank explicitly marks itself as random, honor it (optional future)
+    if (bank && String(bank.attemptType || "").toLowerCase() === "random") return "random";
+
+    return "topic";
   }
 
   // -----------------------
@@ -560,11 +536,8 @@ import { routes } from "/assets/js/lib/routes.js";
 
     function renderPrompt(q) {
       if (!el.qtitle) return;
-      if (q.promptHtml) {
-        el.qtitle.innerHTML = q.promptHtml;
-      } else {
-        el.qtitle.textContent = q.promptText || "";
-      }
+      if (q.promptHtml) el.qtitle.innerHTML = q.promptHtml;
+      else el.qtitle.textContent = q.promptText || "";
     }
 
     function renderQuestion() {
@@ -572,7 +545,6 @@ import { routes } from "/assets/js/lib/routes.js";
       if (!q) return;
 
       if (el.qbadge) el.qbadge.textContent = String(state.index + 1);
-
       renderPrompt(q);
 
       const elimSet = state.elims[q.id] || new Set();
@@ -600,7 +572,6 @@ import { routes } from "/assets/js/lib/routes.js";
           choice.addEventListener("click", (ev) => {
             if (!state.eliminateMode) return;
             if (ev.target && ev.target.tagName && ev.target.tagName.toLowerCase() === "input") return;
-
             ev.preventDefault();
             toggleElimination(q.id, idx);
             choice.classList.toggle("eliminated");
@@ -883,9 +854,9 @@ import { routes } from "/assets/js/lib/routes.js";
     });
 
     // -----------------------
-    // Finish + redirect
+    // Finish + save + redirect
     // -----------------------
-    function finishExam() {
+    async function finishExam() {
       if (state.finished) return;
       state.finished = true;
 
@@ -895,7 +866,6 @@ import { routes } from "/assets/js/lib/routes.js";
 
       const items = exam.questions.map((q, i) => {
         const chosen = typeof state.answers[q.id] === "number" ? state.answers[q.id] : null;
-
         return {
           number: i + 1,
 
@@ -917,7 +887,6 @@ import { routes } from "/assets/js/lib/routes.js";
 
           explanation: q.explanation || "",
           steps: Array.isArray(q.steps) ? q.steps : undefined,
-
           solution: q.solution || undefined,
 
           timeSpentSec: state.questionTimes[q.id] || 0,
@@ -928,7 +897,6 @@ import { routes } from "/assets/js/lib/routes.js";
       const answeredCount = items.filter((it) => it.chosenIndex !== null).length;
       const correctCount = items.filter((it) => it.correct).length;
       const totalCount = items.length;
-
       const elapsedSec = Math.max(0, Math.round((Date.now() - state.startedAt) / 1000));
 
       const totals = {
@@ -940,13 +908,15 @@ import { routes } from "/assets/js/lib/routes.js";
       };
 
       const attemptId = state.attemptId || createAttemptId();
+      const attemptType = String(exam.attemptType || "topic").toLowerCase() === "random" ? "random" : "topic";
 
-      const summary = {
+      const attempt = {
         attemptId,
+        attemptType,
 
         quizId: exam.quizId,
         sectionId: exam.sectionId,
-        title: exam.sectionTitle || exam.title,
+        title: exam.sectionTitle || exam.title || null,
 
         bank: {
           bankId: exam.bankId || null,
@@ -955,6 +925,9 @@ import { routes } from "/assets/js/lib/routes.js";
           description: exam.bankDescription || null,
           skills: Array.isArray(exam.bankSkills) ? exam.bankSkills : null,
         },
+
+        // Random metadata (optional but important for diagnosing “random attempts not saving”)
+        pick: attemptType === "random" ? exam.pickMeta || null : null,
 
         generatedAt: new Date().toISOString(),
         totals,
@@ -976,37 +949,32 @@ import { routes } from "/assets/js/lib/routes.js";
 
       const reviewUrl = resolveReviewUrl(attemptId);
 
-      async function finalizeAndRedirect(writeResult) {
-        // Always store local attempt for diagnostics/offline
-        safeRemoveStorage(draftKey);
-        safeSetStorage(getAttemptKey(attemptId), JSON.stringify(summary));
-
-        if (window.quizData && typeof window.quizData.clearSessionProgress === "function") {
-          try {
-            window.quizData.clearSessionProgress(exam.sectionId).catch(() => {});
-          } catch {}
+      // Save through unified writer (Firestore + local fallback)
+      const doSave = async () => {
+        const res = await saveAttempt(attempt);
+        if (res && res.ok) {
+          safeRemoveStorage(draftKey);
+          if (window.quizData && typeof window.quizData.clearSessionProgress === "function") {
+            try {
+              window.quizData.clearSessionProgress(exam.sectionId).catch(() => {});
+            } catch {}
+          }
+          window.location.href = reviewUrl;
+          return true;
         }
+        return false;
+      };
 
-        // Optional: store last write result to help debug in console/progress page later
-        try {
-          safeSetStorage(
-            "dsa:lastWrite",
-            JSON.stringify({
-              attemptId,
-              ok: !!writeResult?.ok,
-              err: writeResult?.ok ? null : String(writeResult?.err?.message || writeResult?.err || ""),
-              at: new Date().toISOString(),
-            })
-          );
-        } catch {}
-
-        window.location.href = reviewUrl;
+      const ok = await doSave();
+      if (!ok) {
+        // Keep the user on the page; allow manual retry.
+        showSaveBanner("Check your sign-in / connection and retry.", async () => {
+          const ok2 = await doSave();
+          if (!ok2) {
+            // still failing; leave banner in place
+          }
+        });
       }
-
-      // Prefer authoritative Firestore write; if it fails, still redirect (local fallback remains)
-      writeAttemptToFirestore(summary)
-        .then(finalizeAndRedirect)
-        .catch((err) => finalizeAndRedirect({ ok: false, err }));
     }
 
     if (el.finish) el.finish.addEventListener("click", finishExam);
@@ -1025,7 +993,7 @@ import { routes } from "/assets/js/lib/routes.js";
   // 7) Boot: resolve quizId -> registry -> bank -> pick -> run
   // -----------------------
   async function boot() {
-    // If some page already set window.dsaQuizConfig, use it
+    // If some page already set window.dsaQuizConfig, use it (topic-style)
     if (window.dsaQuizConfig && Array.isArray(window.dsaQuizConfig.questions)) {
       const cfg = window.dsaQuizConfig;
       const norm = normalizeQuestions(cfg.questions);
@@ -1034,6 +1002,8 @@ import { routes } from "/assets/js/lib/routes.js";
 
       runEngine({
         attemptId: cfg.attemptId,
+        attemptType: (String(cfg.attemptType || "topic").toLowerCase() === "random" ? "random" : "topic"),
+
         quizId: cfg.quizId || cfg.sectionId,
         sectionId: cfg.sectionId || cfg.quizId,
 
@@ -1083,8 +1053,12 @@ import { routes } from "/assets/js/lib/routes.js";
 
     const bank = await loadJson(bankUrl);
 
+    // Determine attempt type
+    const attemptType = resolveAttemptType(cfg, bank);
+
+    // Build questions (random pick if configured; otherwise use full bank order)
     const attemptId = createAttemptId();
-    const pickedRaw = pickQuestionsFromBank(bank, cfg, attemptId);
+    const pickedRaw = attemptType === "random" ? pickQuestionsFromBank(bank, cfg, attemptId) : (bank.questions || []);
     const questions = normalizeQuestions(pickedRaw);
 
     const err = validateQuestions(questions);
@@ -1094,8 +1068,27 @@ import { routes } from "/assets/js/lib/routes.js";
     const sectionTitle = cfg.sectionTitle || title;
     const timeLimitSec = Number(cfg.timeLimitSec || cfg.timerSec || cfg.timeLimit || 0) || 0;
 
+    // Random pick metadata for persistence/debugging
+    const pickMeta =
+      attemptType === "random"
+        ? {
+            pickCount: Number(cfg.pickCount || cfg.count || 0) || questions.length,
+            seedMode: cfg.seedMode || null,
+            seedValue:
+              cfg.seedMode === "perAttempt"
+                ? String(attemptId)
+                : (cfg.seedMode === "perQuiz" ? String(quizId) : null),
+            picked: questions.map((q) => ({
+              questionId: q.questionId || q.id,
+              version: q.version || 1,
+            })),
+          }
+        : null;
+
     runEngine({
       attemptId,
+      attemptType,
+
       quizId: quizId,
       sectionId: quizId,
       title,
@@ -1109,6 +1102,8 @@ import { routes } from "/assets/js/lib/routes.js";
       bankTitle: bank.title || null,
       bankDescription: bank.description || null,
       bankSkills: Array.isArray(bank.skills) ? bank.skills : null,
+
+      pickMeta,
     });
   }
 
