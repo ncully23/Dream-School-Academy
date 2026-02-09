@@ -1,0 +1,139 @@
+{
+  "quizId": "math.linear.one-variable.set1",
+  "title": "One-Variable Linear Equations — Set 1",
+  "section": "Math",
+  "domain": "Algebra",
+  "skill": "Linear equations in one variable",
+  "questions": [
+    {
+      "id": "26fac581",
+      "prompt": "If 2(x − 5) + 3(x − 5) = 10, what is the value of x − 5?",
+      "choices": {
+        "A": "2",
+        "B": "5",
+        "C": "7",
+        "D": "12"
+      },
+      "correct": "A",
+      "difficulty": "hard",
+      "rationale": "Combine like terms: 5(x − 5) = 10. Divide both sides by 5 to get x − 5 = 2."
+    },
+    {
+      "id": "48bad848",
+      "prompt": "Megan earns p dollars per hour for the first 8 hours of work and 1.5p for each hour beyond 8. If she worked 10 hours and earned $137.50, what is her regular hourly wage?",
+      "choices": {
+        "A": "$11.75",
+        "B": "$12.50",
+        "C": "$13.25",
+        "D": "$13.75"
+      },
+      "correct": "B",
+      "difficulty": "hard",
+      "rationale": "Earnings equation: 8p + 2(1.5p) = 137.5 → 11p = 137.5 → p = 12.5."
+    },
+    {
+      "id": "f0581e16",
+      "prompt": "Alan drives 100 miles per week. His car averages 25 miles per gallon and gas costs $4 per gallon. Which equation can be used to find how many fewer miles m he must drive to reduce his weekly gas cost by $5?",
+      "choices": {
+        "A": "(25/4)m = 95",
+        "B": "(25/4)m = 5",
+        "C": "(4/25)m = 95",
+        "D": "(4/25)m = 5"
+      },
+      "correct": "D",
+      "difficulty": "hard",
+      "rationale": "Cost per mile is 4/25 dollars. Multiplying by m gives the cost reduction: (4/25)m = 5."
+    },
+    {
+      "id": "a0127d06",
+      "prompt": "If x is the solution to 3(2x − 6) − 11 = 4(x − 3) + 6, what is the value of x − 3?",
+      "choices": {
+        "A": "23/2",
+        "B": "17/2",
+        "C": "15/2",
+        "D": "13/2"
+      },
+      "correct": "B",
+      "difficulty": "hard",
+      "rationale": "Solving the equation gives x = 23/2, so x − 3 = 17/2."
+    },
+    {
+      "id": "6e706172",
+      "prompt": "A product sells for $100 and the salesperson earns a 20% commission. If the company makes $6,840 profit, which equation gives the number of units u sold?",
+      "choices": {
+        "A": "(100(1 − 0.2) − 65)u = 6840",
+        "B": "(100 − 65)(1 − 0.8)u = 6840",
+        "C": "0.8(100)u − 65u = 6840",
+        "D": "(0.2(100) + 65)u = 6840"
+      },
+      "correct": "A",
+      "difficulty": "hard",
+      "rationale": "Company revenue per unit is 80 − 65 = 15, so 15u = 6840."
+    },
+    {
+      "id": "3b6b5f30",
+      "prompt": "A bin initially contains 24,000 bushels of corn. After 5 hours, 19,350 bushels remain. If corn is removed at a constant rate, how many hours after starting will 12,840 bushels remain?",
+      "choices": {
+        "A": "3",
+        "B": "7",
+        "C": "8",
+        "D": "12"
+      },
+      "correct": "D",
+      "difficulty": "hard",
+      "rationale": "Removal rate is 930 bushels/hour. Solving 24,000 − 930t = 12,840 gives t = 12."
+    },
+    {
+      "id": "10298d3e",
+      "prompt": "If 2(3t − 10) + t = 40 + 4t, what is the value of 3t?",
+      "choices": {
+        "A": "40",
+        "B": "50",
+        "C": "60",
+        "D": "70"
+      },
+      "correct": "C",
+      "difficulty": "hard",
+      "rationale": "Simplifying yields 6t − 20 + t = 40 + 4t → 3t = 60."
+    },
+    {
+      "id": "509cb1a6",
+      "prompt": "In the equation 4a + 12 = a(8 + a) + 3, a is a constant. If the equation has infinitely many solutions, what is the value of a?",
+      "choices": {
+        "A": "0",
+        "B": "3",
+        "C": "8",
+        "D": "12"
+      },
+      "correct": "C",
+      "difficulty": "hard",
+      "rationale": "Both sides must be identical. Solving gives a = 8."
+    },
+    {
+      "id": "e0f54202",
+      "prompt": "How many solutions does the equation 12(z − 3) = −3(z + 12) have?",
+      "choices": {
+        "A": "Exactly one",
+        "B": "Exactly two",
+        "C": "Infinitely many",
+        "D": "Zero"
+      },
+      "correct": "A",
+      "difficulty": "hard",
+      "rationale": "Simplifying gives 15z = 0, so there is exactly one solution."
+    },
+    {
+      "id": "e83a38d3",
+      "prompt": "What value of p satisfies the equation 2(p + 1) + 8(p − 1) = 5p?",
+      "choices": {
+        "A": "1.2",
+        "B": "5/6",
+        "C": "6",
+        "D": "12"
+      },
+      "correct": "A",
+      "difficulty": "hard",
+      "rationale": "Simplifying gives 6 = 5p, so p = 6/5 = 1.2."
+    }
+  ]
+}
