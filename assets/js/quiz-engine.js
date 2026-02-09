@@ -9,9 +9,13 @@ import { routes } from "/assets/js/lib/routes.js";
   // - Resolves quizId from: ?quizId -> #hash -> /practice/<id>/quiz.html
   //   -> localStorage last -> first registry key
   // - Looks up config in window.QUIZ_REGISTRY (from quiz-registry.js)
-  // - Fetches JSON bank (e.g., /assets/questionbank/math/circles.json)
+  // - Fetches JSON bank
   // - Picks N questions randomly (optionally seeded)
-  // - Runs Bluebook-style UI + saves attempt + redirects to review
+  // - Runs Bluebook-style UI
+  // - Saves attempt to:
+  //      Firestore: users/{uid}/attempts/{attemptId}
+  //      localStorage: dsa:attempt:{attemptId} (diagnostic + offline)
+  // - Redirects to review: /pages/review.html?attemptId=...
   // =========================================================
 
   // -----------------------
@@ -35,7 +39,6 @@ import { routes } from "/assets/js/lib/routes.js";
   }
 
   function getQuizIdFromPathFallback() {
-    // /practice/circles/quiz.html -> "circles"
     try {
       const parts = location.pathname.split("/").filter(Boolean);
       const practiceIdx = parts.indexOf("practice");
@@ -50,11 +53,17 @@ import { routes } from "/assets/js/lib/routes.js";
   }
 
   function getLastQuizId() {
-    try { return localStorage.getItem("dsa:lastQuizId"); } catch { return null; }
+    try {
+      return localStorage.getItem("dsa:lastQuizId");
+    } catch {
+      return null;
+    }
   }
 
   function setLastQuizId(quizId) {
-    try { localStorage.setItem("dsa:lastQuizId", String(quizId)); } catch {}
+    try {
+      localStorage.setItem("dsa:lastQuizId", String(quizId));
+    } catch {}
   }
 
   function getDefaultQuizId(registry) {
@@ -81,13 +90,13 @@ import { routes } from "/assets/js/lib/routes.js";
     try {
       if (routes && typeof routes.review === "function") return routes.review(attemptId);
     } catch {}
-    return `/practice/review.html?attemptId=${encodeURIComponent(attemptId)}`;
+    return `/pages/review.html?attemptId=${encodeURIComponent(attemptId)}`;
   }
 
   async function loadJson(url) {
     const res = await fetch(url, {
       cache: "no-store",
-      headers: { Accept: "application/json" }
+      headers: { Accept: "application/json" },
     });
     if (!res.ok) throw new Error(`Failed to fetch ${url}: HTTP ${res.status}`);
     return res.json();
@@ -109,7 +118,7 @@ import { routes } from "/assets/js/lib/routes.js";
     let a = seed >>> 0;
     return function () {
       a |= 0;
-      a = (a + 0x6D2B79F5) | 0;
+      a = (a + 0x6d2b79f5) | 0;
       let t = Math.imul(a ^ (a >>> 15), 1 | a);
       t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
       return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
@@ -161,11 +170,82 @@ import { routes } from "/assets/js/lib/routes.js";
   }
 
   function safeRemoveStorage(key) {
-    try { localStorage.removeItem(key); } catch {}
+    try {
+      localStorage.removeItem(key);
+    } catch {}
   }
 
   function safeSetStorage(key, value) {
-    try { localStorage.setItem(key, value); } catch {}
+    try {
+      localStorage.setItem(key, value);
+    } catch {}
+  }
+
+  // -----------------------
+  // 2.5) Firestore writer (authoritative)
+  // -----------------------
+  async function writeAttemptToFirestore(summary) {
+    // We intentionally do NOT rely on window.quizData.appendAttempt anymore,
+    // because your Progress page expects a stable path:
+    //   users/{uid}/attempts/{attemptId}
+    //
+    // We still keep localStorage as offline/diagnostic.
+
+    try {
+      // Must be same-origin module path as your init
+      const { auth, db, authReady } = await import("/assets/js/firebase-init.js");
+      await authReady;
+
+      const user = auth.currentUser;
+      if (!user) {
+        const e = new Error("Not signed in");
+        e.code = "auth/no-current-user";
+        throw e;
+      }
+
+      const fs = await import(
+        "https://www.gstatic.com/firebasejs/10.12.4/firebase-firestore.js"
+      );
+      const { doc, setDoc, serverTimestamp } = fs;
+
+      const attemptId = String(summary?.attemptId || "");
+      if (!attemptId) throw new Error("Missing attemptId");
+
+      const ref = doc(db, "users", user.uid, "attempts", attemptId);
+
+      // Store a normalized top-level record for easy querying + compatibility
+      const payload = {
+        // identity
+        attemptId,
+        uid: user.uid,
+
+        quizId: summary.quizId || summary.sectionId || null,
+        sectionId: summary.sectionId || summary.quizId || null,
+        title: summary.title || null,
+
+        // bank metadata
+        bank: summary.bank || null,
+
+        // timestamps
+        createdAt: serverTimestamp(),
+        generatedAt: summary.generatedAt || null,
+
+        // totals
+        totals: summary.totals || null,
+
+        // full attempt (review page can use this)
+        items: Array.isArray(summary.items) ? summary.items : [],
+
+        // carry-through state/telemetry
+        uiState: summary.uiState || null,
+        sessionMeta: summary.sessionMeta || null,
+      };
+
+      await setDoc(ref, payload, { merge: true });
+      return { ok: true };
+    } catch (err) {
+      return { ok: false, err };
+    }
   }
 
   // -----------------------
@@ -205,7 +285,7 @@ import { routes } from "/assets/js/lib/routes.js";
     dashrow: document.getElementById("dashrow"),
 
     popTitle: document.getElementById("popTitle"),
-    checkTitle: document.getElementById("checkTitle")
+    checkTitle: document.getElementById("checkTitle"),
   };
 
   function showFatal(message) {
@@ -214,7 +294,9 @@ import { routes } from "/assets/js/lib/routes.js";
     box.style.cssText =
       "max-width:980px;margin:14px auto;padding:12px 14px;background:#fff;border:1px solid #c00;border-radius:10px;" +
       "font:16px/1.45 system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;color:#111;";
-    box.innerHTML = `<h2 style="margin:0 0 6px;font-size:18px">Quiz failed to load</h2><p style="margin:0">${String(message)}</p>`;
+    box.innerHTML = `<h2 style="margin:0 0 6px;font-size:18px">Quiz failed to load</h2><p style="margin:0">${String(
+      message
+    )}</p>`;
     (document.body || document.documentElement).prepend(box);
 
     if (el.sectionTitle) el.sectionTitle.textContent = "Quiz failed to load";
@@ -268,38 +350,22 @@ import { routes } from "/assets/js/lib/routes.js";
     if (typeof raw === "number" && Number.isFinite(raw)) return raw;
     const s = String(raw).trim().toLowerCase();
     if (!s) return null;
-    // keep your strings; review page can interpret later if desired
-    return s; // "easy" | "medium" | "hard" | etc.
+    return s;
   }
 
   function normalizeQuestion(raw, idx) {
     const questionId = raw.questionId || raw.id || `q_${idx + 1}`;
-    const version =
-      raw.version ??
-      raw.questionVersion ??
-      1;
+    const version = raw.version ?? raw.questionVersion ?? 1;
 
-    const promptText =
-      raw.prompt ??
-      raw.promptText ??
-      "";
-
+    const promptText = raw.prompt ?? raw.promptText ?? "";
     const promptHtml = raw.promptHtml ?? null;
 
     const choices = Array.isArray(raw.choices) ? raw.choices : [];
     const answerIndex = Number.isFinite(raw.answerIndex) ? raw.answerIndex : null;
 
     const sol = raw.solution || {};
-
-    const explanation =
-      raw.explanation ||
-      sol.approach ||
-      "";
-
-    const steps =
-      raw.steps ||
-      sol.steps ||
-      null;
+    const explanation = raw.explanation || sol.approach || "";
+    const steps = raw.steps || sol.steps || null;
 
     return {
       id: questionId,
@@ -318,7 +384,7 @@ import { routes } from "/assets/js/lib/routes.js";
 
       explanation,
       steps,
-      solution: sol
+      solution: sol,
     };
   }
 
@@ -356,7 +422,9 @@ import { routes } from "/assets/js/lib/routes.js";
     // Always start fresh (no resume)
     safeRemoveStorage(draftKey);
     if (window.quizData && typeof window.quizData.clearSessionProgress === "function") {
-      try { window.quizData.clearSessionProgress(exam.sectionId).catch(() => {}); } catch {}
+      try {
+        window.quizData.clearSessionProgress(exam.sectionId).catch(() => {});
+      } catch {}
     }
 
     const state = {
@@ -384,7 +452,7 @@ import { routes } from "/assets/js/lib/routes.js";
       tabSwitchCount: 0,
       lastBlurAt: null,
       lastFocusAt: document.hasFocus() ? Date.now() : null,
-      isFocused: document.hasFocus()
+      isFocused: document.hasFocus(),
     };
 
     // -----------------------
@@ -805,11 +873,12 @@ import { routes } from "/assets/js/lib/routes.js";
     window.addEventListener("blur", handleWindowBlur);
     window.addEventListener("focus", handleWindowFocus);
 
-    // Clear draft on leave-page
     window.addEventListener("beforeunload", () => {
       safeRemoveStorage(draftKey);
       if (window.quizData && typeof window.quizData.clearSessionProgress === "function") {
-        try { window.quizData.clearSessionProgress(exam.sectionId).catch(() => {}); } catch {}
+        try {
+          window.quizData.clearSessionProgress(exam.sectionId).catch(() => {});
+        } catch {}
       }
     });
 
@@ -849,11 +918,10 @@ import { routes } from "/assets/js/lib/routes.js";
           explanation: q.explanation || "",
           steps: Array.isArray(q.steps) ? q.steps : undefined,
 
-          // carry your solution object through (finalAnswer/commonMistakes/checks/etc.)
           solution: q.solution || undefined,
 
           timeSpentSec: state.questionTimes[q.id] || 0,
-          visits: state.visits[q.id] || 0
+          visits: state.visits[q.id] || 0,
         };
       });
 
@@ -868,7 +936,7 @@ import { routes } from "/assets/js/lib/routes.js";
         correct: correctCount,
         total: totalCount,
         timeSpentSec: elapsedSec,
-        scorePercent: totalCount > 0 ? Math.round((correctCount / totalCount) * 100) : 0
+        scorePercent: totalCount > 0 ? Math.round((correctCount / totalCount) * 100) : 0,
       };
 
       const attemptId = state.attemptId || createAttemptId();
@@ -876,18 +944,16 @@ import { routes } from "/assets/js/lib/routes.js";
       const summary = {
         attemptId,
 
-        // quiz identity
         quizId: exam.quizId,
         sectionId: exam.sectionId,
         title: exam.sectionTitle || exam.title,
 
-        // bank metadata (NEW: your preferred schema)
         bank: {
           bankId: exam.bankId || null,
           bankVersion: exam.bankVersion || null,
           title: exam.bankTitle || (exam.sectionTitle || exam.title) || null,
           description: exam.bankDescription || null,
-          skills: Array.isArray(exam.bankSkills) ? exam.bankSkills : null
+          skills: Array.isArray(exam.bankSkills) ? exam.bankSkills : null,
         },
 
         generatedAt: new Date().toISOString(),
@@ -897,38 +963,50 @@ import { routes } from "/assets/js/lib/routes.js";
         uiState: {
           timerHidden: state.timerHidden,
           reviewMode: state.reviewMode,
-          lastQuestionIndex: state.index
+          lastQuestionIndex: state.index,
         },
         sessionMeta: {
           blurCount: state.blurCount,
           focusCount: state.focusCount,
           tabSwitchCount: state.tabSwitchCount,
           questionTimes: state.questionTimes,
-          visits: state.visits
-        }
+          visits: state.visits,
+        },
       };
 
       const reviewUrl = resolveReviewUrl(attemptId);
 
-      function finalizeAndRedirect() {
+      async function finalizeAndRedirect(writeResult) {
+        // Always store local attempt for diagnostics/offline
         safeRemoveStorage(draftKey);
         safeSetStorage(getAttemptKey(attemptId), JSON.stringify(summary));
 
         if (window.quizData && typeof window.quizData.clearSessionProgress === "function") {
-          try { window.quizData.clearSessionProgress(exam.sectionId).catch(() => {}); } catch {}
+          try {
+            window.quizData.clearSessionProgress(exam.sectionId).catch(() => {});
+          } catch {}
         }
+
+        // Optional: store last write result to help debug in console/progress page later
+        try {
+          safeSetStorage(
+            "dsa:lastWrite",
+            JSON.stringify({
+              attemptId,
+              ok: !!writeResult?.ok,
+              err: writeResult?.ok ? null : String(writeResult?.err?.message || writeResult?.err || ""),
+              at: new Date().toISOString(),
+            })
+          );
+        } catch {}
 
         window.location.href = reviewUrl;
       }
 
-      if (window.quizData && typeof window.quizData.appendAttempt === "function") {
-        window.quizData
-          .appendAttempt(summary)
-          .catch((err) => console.error("quiz-engine: failed to save attempt to Firestore", err))
-          .finally(() => finalizeAndRedirect());
-      } else {
-        finalizeAndRedirect();
-      }
+      // Prefer authoritative Firestore write; if it fails, still redirect (local fallback remains)
+      writeAttemptToFirestore(summary)
+        .then(finalizeAndRedirect)
+        .catch((err) => finalizeAndRedirect({ ok: false, err }));
     }
 
     if (el.finish) el.finish.addEventListener("click", finishExam);
@@ -962,7 +1040,6 @@ import { routes } from "/assets/js/lib/routes.js";
         title: cfg.title || cfg.sectionTitle,
         sectionTitle: cfg.sectionTitle || cfg.title,
 
-        // bank metadata pass-through if present
         bankId: cfg.bankId || null,
         bankVersion: cfg.bankVersion || null,
         bankTitle: cfg.bankTitle || null,
@@ -971,7 +1048,7 @@ import { routes } from "/assets/js/lib/routes.js";
 
         timeLimitSec: cfg.timeLimitSec || 0,
         pauseOnBlur: !!cfg.pauseOnBlur,
-        questions: norm
+        questions: norm,
       });
       return;
     }
@@ -1027,12 +1104,11 @@ import { routes } from "/assets/js/lib/routes.js";
       pauseOnBlur: !!cfg.pauseOnBlur,
       questions,
 
-      // bank metadata (NEW)
       bankId: bank.bankId || null,
       bankVersion: bank.bankVersion ?? null,
       bankTitle: bank.title || null,
       bankDescription: bank.description || null,
-      bankSkills: Array.isArray(bank.skills) ? bank.skills : null
+      bankSkills: Array.isArray(bank.skills) ? bank.skills : null,
     });
   }
 
