@@ -1,10 +1,22 @@
 // /assets/js/pages/reviewpage.js
 // Canonical review renderer for Dream School Academy
+//
+// Goals:
 // - supports ?attemptId=...
-// - falls back to most recent dsa:attempt:*
+// - loads attempt from Firestore first (users/{uid}/attempts/{attemptId})
+// - falls back to localStorage dsa:attempt:{attemptId}
+// - if no attemptId, falls back to most recent localStorage dsa:attempt:*
 // - renders rich solutions (approach, formulas, steps, mistakes, checks, takeaway)
-// - adds correct/incorrect highlighting that matches pages/review.html CSS
+// - correct/incorrect highlighting matches pages/review.html CSS
 // - MathJax-safe if present
+
+"use strict";
+
+import { auth, db, authReady } from "/assets/js/firebase-init.js";
+import {
+  doc,
+  getDoc,
+} from "https://www.gstatic.com/firebasejs/10.12.4/firebase-firestore.js";
 
 /* -----------------------------
    URL + storage helpers
@@ -36,7 +48,10 @@ function findLatestAttemptId() {
     if (!k || !k.startsWith("dsa:attempt:")) continue;
 
     const parsed = safeJsonParse(localStorage.getItem(k));
-    const t = Date.parse(parsed?.generatedAt || "") || 0;
+    const t =
+      Date.parse(parsed?.generatedAt || "") ||
+      Date.parse(parsed?.createdAt || "") ||
+      0;
 
     if (t > bestTime) {
       bestTime = t;
@@ -47,9 +62,127 @@ function findLatestAttemptId() {
   return bestId;
 }
 
-function loadAttempt(attemptId) {
+function loadAttemptFromLocal(attemptId) {
   if (!attemptId) return null;
   return safeJsonParse(localStorage.getItem(getAttemptKey(attemptId)));
+}
+
+async function loadAttemptFromFirestore(attemptId) {
+  if (!attemptId) return null;
+
+  // Ensure auth state is settled
+  await authReady;
+
+  const user = auth.currentUser;
+  if (!user) return null;
+
+  const ref = doc(db, "users", user.uid, "attempts", attemptId);
+  const snap = await getDoc(ref);
+  if (!snap.exists()) return null;
+
+  const data = snap.data() || {};
+  return normalizeAttemptShapeFromFirestore(data);
+}
+
+/* -----------------------------
+   Shape normalization
+------------------------------ */
+
+function asArray(x) {
+  return Array.isArray(x) ? x : (x ? [x] : []);
+}
+
+function normalizeAttemptShapeFromFirestore(data) {
+  // Firestore attempt schema can vary; normalize to the renderer's expected "summary" shape.
+  // Expected by renderer:
+  // {
+  //   quizId, title, sectionTitle, generatedAt,
+  //   totals: { total, answered, correct, scorePercent, timeSpentSec },
+  //   items: [{ number, prompt, choices, chosenIndex, correctIndex, skill, difficulty, solution: {...} }]
+  // }
+
+  const itemsRaw = asArray(data.items || data.questions || data.responses);
+
+  const items = itemsRaw.map((it, idx) => {
+    const correctIndex =
+      Number.isFinite(it.correctIndex) ? it.correctIndex :
+      Number.isFinite(it.answerIndex) ? it.answerIndex :
+      Number.isFinite(it.correct) ? it.correct :
+      null;
+
+    const chosenIndex =
+      Number.isFinite(it.chosenIndex) ? it.chosenIndex :
+      Number.isFinite(it.selectedIndex) ? it.selectedIndex :
+      Number.isFinite(it.userIndex) ? it.userIndex :
+      null;
+
+    return {
+      number: it.number ?? (idx + 1),
+      questionId: it.questionId || it.id || null,
+      topic: it.topic || null,
+      skill: it.skill || null,
+      difficulty: it.difficulty || null,
+      prompt: it.prompt || it.stem || "",
+      choices: asArray(it.choices || it.options),
+      chosenIndex,
+      correctIndex,
+      timeSpentSec: Number.isFinite(it.timeSpentSec) ? it.timeSpentSec : null,
+      solution: typeof it.solution === "object" ? it.solution : (typeof it.explanation === "object" ? it.explanation : {}),
+    };
+  });
+
+  const total = Number.isFinite(data.total) ? data.total : items.length;
+  const correct =
+    Number.isFinite(data.correct) ? data.correct :
+    items.reduce((n, it) => {
+      const ui = Number.isFinite(it.chosenIndex) ? it.chosenIndex : null;
+      const ci = Number.isFinite(it.correctIndex) ? it.correctIndex : null;
+      return n + (ui != null && ci != null && ui === ci ? 1 : 0);
+    }, 0);
+
+  const answered =
+    Number.isFinite(data.answered) ? data.answered :
+    items.filter(i => i.chosenIndex != null).length;
+
+  const timeSpentSec =
+    Number.isFinite(data.timeSpentSec) ? data.timeSpentSec :
+    (Number.isFinite(data.durationSec) ? data.durationSec :
+      (Number.isFinite(data.durationMs) ? Math.round(data.durationMs / 1000) : 0));
+
+  const scorePercent =
+    Number.isFinite(data.scorePercent) ? data.scorePercent :
+    (Number.isFinite(data.pct) ? Math.round(Number(data.pct) * 100) :
+      (total ? Math.round((correct / total) * 100) : 0));
+
+  // createdAt may be Firestore Timestamp; handle both
+  const createdAtISO =
+    typeof data.createdAt?.toDate === "function"
+      ? data.createdAt.toDate().toISOString()
+      : (typeof data.createdAt === "string" ? data.createdAt : null);
+
+  const generatedAt =
+    data.generatedAt ||
+    createdAtISO ||
+    (typeof data.updatedAt?.toDate === "function" ? data.updatedAt.toDate().toISOString() : null) ||
+    new Date().toISOString();
+
+  return {
+    attemptId: data.attemptId || data.id || null,
+    quizId: data.quizId || data.sectionId || "unknown",
+    title: data.title || "Review",
+    sectionTitle: data.sectionTitle || data.title || "Review",
+    generatedAt,
+    bankId: data.bankId || null,
+    bankVersion: data.bankVersion ?? null,
+    totals: {
+      total,
+      answered,
+      correct,
+      scorePercent,
+      timeSpentSec,
+    },
+    items,
+  };
 }
 
 /* -----------------------------
@@ -57,7 +190,6 @@ function loadAttempt(attemptId) {
 ------------------------------ */
 
 const $ = (id) => document.getElementById(id);
-
 const letter = (i) => String.fromCharCode(65 + i);
 
 function formatDuration(sec) {
@@ -70,10 +202,6 @@ function formatDuration(sec) {
   return `${s}s`;
 }
 
-function asArray(x) {
-  return Array.isArray(x) ? x : (x ? [x] : []);
-}
-
 function normalizeSolution(it) {
   const sol = typeof it?.solution === "object" ? it.solution : {};
   return {
@@ -83,7 +211,7 @@ function normalizeSolution(it) {
     steps: asArray(sol.steps),
     commonMistakes: asArray(sol.commonMistakes),
     checks: asArray(sol.checks),
-    takeaway: sol.takeaway ?? null
+    takeaway: sol.takeaway ?? null,
   };
 }
 
@@ -99,7 +227,7 @@ function el(tag, className, text) {
 }
 
 function appendTextWithMath(container, text) {
-  // We keep textContent to remain safe; MathJax can still typeset inline TeX in text nodes.
+  // Keep it safe; MathJax can still typeset TeX in text nodes.
   container.textContent = String(text ?? "");
 }
 
@@ -118,12 +246,12 @@ function showEmpty(message) {
    Render helpers
 ------------------------------ */
 
-function renderChoiceRow({ choiceText, index, correctIndex, chosenIndex, unanswered }) {
+function renderChoiceRow({ choiceText, index, correctIndex, chosenIndex }) {
   const isCorrectChoice = (correctIndex != null && index === correctIndex);
   const isChosen = (chosenIndex != null && index === chosenIndex);
   const chosenIsCorrect = (isChosen && isCorrectChoice);
 
-  // Class logic to match the CSS in pages/review.html
+  // Class logic to match CSS in pages/review.html
   let cls = "review-choice";
   if (isCorrectChoice) cls += " correct";
   if (isChosen && !isCorrectChoice) cls += " your-wrong";
@@ -132,7 +260,6 @@ function renderChoiceRow({ choiceText, index, correctIndex, chosenIndex, unanswe
 
   const row = el("div", cls);
 
-  // Left side: letter + text
   const left = el("div", "review-choice-left");
   const letterBox = el("div", "review-letter", `${letter(index)}`);
   const text = el("div", "review-choice-text");
@@ -141,30 +268,18 @@ function renderChoiceRow({ choiceText, index, correctIndex, chosenIndex, unanswe
   left.appendChild(letterBox);
   left.appendChild(text);
 
-  // Right side pills
   const pills = el("div", "review-tags");
 
-  // Always mark the correct option, even if student left blank
-  if (isCorrectChoice) {
-    const pill = el("span", "review-pill correct", "Correct ✓");
-    pills.appendChild(pill);
-  }
+  if (isCorrectChoice) pills.appendChild(el("span", "review-pill correct", "Correct ✓"));
 
-  // Mark student's chosen option
   if (isChosen && isCorrectChoice) {
-    const pill = el("span", "review-pill your-correct", "Your answer ✓");
-    pills.appendChild(pill);
+    pills.appendChild(el("span", "review-pill your-correct", "Your answer ✓"));
   } else if (isChosen && !isCorrectChoice) {
-    const pill = el("span", "review-pill your-wrong", "Your answer ✕");
-    pills.appendChild(pill);
+    pills.appendChild(el("span", "review-pill your-wrong", "Your answer ✕"));
   }
-
-  // If unanswered, optionally show "No answer selected" near choices (kept minimal)
-  // We already show this in the Solution summary below; no extra pill needed.
 
   row.appendChild(left);
   row.appendChild(pills);
-
   return row;
 }
 
@@ -181,13 +296,8 @@ function renderDeepExplanation(sol) {
 
   const details = el("details", "review-deep");
   const summary = document.createElement("summary");
-
-  const label = el("span", "", "Deep explanation");
-  const chev = el("span", "review-chev");
-
-  summary.appendChild(label);
-  summary.appendChild(chev);
-
+  summary.appendChild(el("span", "", "Deep explanation"));
+  summary.appendChild(el("span", "review-chev"));
   details.appendChild(summary);
 
   if (sol.approach) {
@@ -278,8 +388,6 @@ function renderAttempt(summary, attemptIdFromUrl) {
 
   header.style.display = "block";
 
-  /* ----- totals ----- */
-
   const total = summary.totals?.total ?? items.length;
 
   const answered =
@@ -301,8 +409,6 @@ function renderAttempt(summary, attemptIdFromUrl) {
   const finishedAt = summary.generatedAt || new Date().toISOString();
   const timeLabel = formatDuration(summary.totals?.timeSpentSec || 0);
 
-  /* ----- header ----- */
-
   const titleText = summary.title || summary.sectionTitle || "Review";
   document.title = titleText;
   titleEl.textContent = titleText;
@@ -315,24 +421,21 @@ function renderAttempt(summary, attemptIdFromUrl) {
 
   if (chipsEl) {
     chipsEl.innerHTML = "";
-    if (summary.quizId) {
-      const chip = el("span", "review-chip");
-      chip.textContent = `quizId: ${summary.quizId}`;
-      chipsEl.appendChild(chip);
-    }
-    if (attemptIdFromUrl) {
-      const chip = el("span", "review-chip");
-      chip.textContent = `attemptId: ${attemptIdFromUrl}`;
-      chipsEl.appendChild(chip);
-    }
+    if (summary.quizId) chipsEl.appendChild(el("span", "review-chip", `quizId: ${summary.quizId}`));
+    if (attemptIdFromUrl) chipsEl.appendChild(el("span", "review-chip", `attemptId: ${attemptIdFromUrl}`));
+    if (summary.bankId) chipsEl.appendChild(el("span", "review-chip", `bankId: ${summary.bankId}`));
+    if (summary.bankVersion != null) chipsEl.appendChild(el("span", "review-chip", `bankVersion: ${summary.bankVersion}`));
   }
 
   if (actionsEl && backToQuiz && summary.quizId) {
     actionsEl.style.display = "flex";
-    backToQuiz.href = `/pages/quiz.html?quizId=${encodeURIComponent(summary.quizId)}`;
+    // If random, send user back to random mode (best-effort)
+    if (String(summary.quizId).startsWith("random.")) {
+      backToQuiz.href = `/pages/quiz.html?mode=random&section=math`;
+    } else {
+      backToQuiz.href = `/pages/quiz.html?quizId=${encodeURIComponent(summary.quizId)}`;
+    }
   }
-
-  /* ----- questions ----- */
 
   qsEl.innerHTML = "";
 
@@ -348,49 +451,34 @@ function renderAttempt(summary, attemptIdFromUrl) {
 
     const card = el("section", `review-q ${unanswered ? "na" : (isCorrect ? "ok" : "no")}`);
 
-    // Header row
     const head = el("div", "review-qhead");
     const badge = el("div", `review-badge ${unanswered ? "na" : (isCorrect ? "ok" : "no")}`, String(number));
 
     const headRight = document.createElement("div");
     const prompt = el("div", "review-prompt");
     appendTextWithMath(prompt, it.prompt || "");
-
     headRight.appendChild(prompt);
 
-    // Submeta tags: questionId/time + skill/difficulty
     const submeta = el("div", "review-submeta");
-
     if (it.questionId) submeta.appendChild(el("span", "review-tag", `questionId: ${it.questionId}`));
-
-    if (Number.isFinite(it.timeSpentSec)) {
-      submeta.appendChild(el("span", "review-tag time", `time: ${Math.max(0, Math.floor(it.timeSpentSec))}s`));
-    }
-
+    if (Number.isFinite(it.timeSpentSec)) submeta.appendChild(el("span", "review-tag time", `time: ${Math.max(0, Math.floor(it.timeSpentSec))}s`));
     if (it.skill) submeta.appendChild(el("span", "review-tag skill", `skill: ${it.skill}`));
     if (it.difficulty) submeta.appendChild(el("span", "review-tag diff", `difficulty: ${it.difficulty}`));
-
     if (submeta.childNodes.length) headRight.appendChild(submeta);
 
     head.appendChild(badge);
     head.appendChild(headRight);
 
-    // Choices
     const choicesWrap = el("div", "review-choices");
-
     choices.forEach((c, i) => {
-      choicesWrap.appendChild(
-        renderChoiceRow({
-          choiceText: c,
-          index: i,
-          correctIndex: ci,
-          chosenIndex: ui,
-          unanswered
-        })
-      );
+      choicesWrap.appendChild(renderChoiceRow({
+        choiceText: c,
+        index: i,
+        correctIndex: ci,
+        chosenIndex: ui,
+      }));
     });
 
-    // Solution summary box
     const exp = el("div", "review-exp");
     const expTitle = el("div", "", "");
     expTitle.appendChild(el("b", "", "Solution:"));
@@ -433,20 +521,16 @@ function renderAttempt(summary, attemptIdFromUrl) {
 
     exp.appendChild(ul);
 
-    // Deep explanation
     const sol = normalizeSolution(it);
     const deep = renderDeepExplanation(sol);
     if (deep) exp.appendChild(deep);
 
-    // Assemble card
     card.appendChild(head);
     card.appendChild(choicesWrap);
     card.appendChild(exp);
-
     qsEl.appendChild(card);
   });
 
-  /* ----- MathJax ----- */
   if (window.MathJax?.typesetPromise) {
     window.MathJax.typesetPromise([qsEl]).catch(() => {});
   }
@@ -456,9 +540,10 @@ function renderAttempt(summary, attemptIdFromUrl) {
    Init
 ------------------------------ */
 
-(function init() {
+(async function init() {
   let attemptId = getParam("attemptId");
 
+  // If missing, try localStorage latest (cannot infer Firestore latest without a query)
   if (!attemptId) {
     attemptId = findLatestAttemptId();
     if (attemptId) {
@@ -468,7 +553,23 @@ function renderAttempt(summary, attemptIdFromUrl) {
     }
   }
 
-  const summary = loadAttempt(attemptId);
+  if (!attemptId) {
+    showEmpty("No attempt found. Finish a quiz first.");
+    return;
+  }
+
+  // 1) Firestore first (so Progress/review align)
+  let summary = null;
+  try {
+    summary = await loadAttemptFromFirestore(attemptId);
+  } catch (e) {
+    console.warn("reviewpage: Firestore load failed; falling back to local.", e);
+  }
+
+  // 2) Fallback to local attempt
+  if (!summary) {
+    summary = loadAttemptFromLocal(attemptId);
+  }
 
   if (!summary) {
     showEmpty("No attempt found. Finish a quiz first.");
@@ -476,4 +577,7 @@ function renderAttempt(summary, attemptIdFromUrl) {
   }
 
   renderAttempt(summary, attemptId);
-})();
+})().catch((e) => {
+  console.error("reviewpage init error:", e);
+  showEmpty("Review failed to load. Open DevTools → Console for details.");
+});
