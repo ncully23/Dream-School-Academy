@@ -1,11 +1,24 @@
 // /assets/js/shell.js
 // Injects shared header/footer, highlights active nav, and wires up auth UI (incl. Admin button gate).
 // Loaded as: <script type="module" src="/assets/js/shell.js"></script>
+//
+// Key fixes in this revision:
+// - Ensures header/footer injection completes before querying header DOM nodes (auth UI binding was racing).
+// - Uses authReady from firebase-init so auth state is settled before UI decisions.
+// - More robust nav highlighting (handles /pages/*.html routes cleanly).
+// - Safe re-bind prevention + graceful missing-footer/header handling.
 
-import { auth, db } from "./firebase-init.js";
+import { auth, db, authReady } from "./firebase-init.js";
 
-import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-auth.js";
-import { doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-firestore.js";
+import {
+  onAuthStateChanged,
+  signOut,
+} from "https://www.gstatic.com/firebasejs/10.12.4/firebase-auth.js";
+
+import {
+  doc,
+  getDoc,
+} from "https://www.gstatic.com/firebasejs/10.12.4/firebase-firestore.js";
 
 // -----------------------------
 // Config
@@ -49,7 +62,10 @@ function initShell() {
     ensureMount("site-header", "start");
     ensureMount("site-footer", "end");
 
+    // Inject chrome first so header DOM exists
     await injectChrome();
+
+    // Now that header exists, wire everything that depends on it
     highlightNav();
     wireAuthUi();
   });
@@ -80,8 +96,8 @@ async function injectChrome() {
     const headerMount = $("#site-header");
     const footerMount = $("#site-footer");
 
-    if (headerMount) headerMount.innerHTML = headerHtml || "";
-    if (footerMount) footerMount.innerHTML = footerHtml || "";
+    if (headerMount && headerHtml) headerMount.innerHTML = headerHtml;
+    if (footerMount && footerHtml) footerMount.innerHTML = footerHtml;
   } catch (e) {
     console.error("[shell] header/footer inject failed:", e);
   }
@@ -89,11 +105,13 @@ async function injectChrome() {
 
 function highlightNav() {
   try {
-    const pageAttr = document.documentElement.getAttribute("data-page"); // e.g. "practice"
+    const pageAttr = (document.documentElement.getAttribute("data-page") || "").trim(); // e.g. "practice"
     const path = (location.pathname || "/").toLowerCase();
 
+    // Normalize common routes (including /pages/*.html)
     const map = {
       "/": "home",
+      "/index.html": "home",
       "/home.html": "home",
 
       "/study": "study",
@@ -113,16 +131,20 @@ function highlightNav() {
       "/admin/allstudents.html": "admin",
       "/admin/student.html": "admin",
 
-      "/pages/profile/login.html": "login",
       "/profile/login.html": "login",
+      "/pages/profile/login.html": "login",
+
+      "/pages/quiz.html": "practice",
+      "/pages/review.html": "practice",
     };
 
-    let key = pageAttr;
+    let key = pageAttr || null;
 
     if (!key) {
+      // Find best match route (longest prefix match)
       let bestMatch = null;
       for (const route of Object.keys(map)) {
-        if (path === route || path.startsWith(route)) {
+        if (path === route || (route.endsWith("/") ? path.startsWith(route) : path.startsWith(route))) {
           if (!bestMatch || route.length > bestMatch.length) bestMatch = route;
         }
       }
@@ -153,6 +175,7 @@ function wireAuthUi() {
     return;
   }
 
+  // Bind sign-out once
   if (!logoutBtn.dataset.bound) {
     logoutBtn.dataset.bound = "1";
     logoutBtn.addEventListener("click", async () => {
@@ -168,6 +191,7 @@ function wireAuthUi() {
   async function getFirstName(user) {
     if (!user) return null;
 
+    // Try Firestore profile first
     try {
       const ref = doc(db, "users", user.uid);
       const snap = await getDoc(ref);
@@ -187,33 +211,55 @@ function wireAuthUi() {
 
   function setAdminLinkVisible(user) {
     if (!adminLink) return;
-
     const show = !!(user && ADMIN_UIDS.has(user.uid));
     adminLink.style.display = show ? "inline-flex" : "none";
-
-    // Debug (leave in while you’re testing; remove later)
-    // console.log("[shell] admin gate:", { uid: user?.uid, show });
   }
 
-  onAuthStateChanged(auth, async (user) => {
+  function renderSignedOut() {
+    setAdminLinkVisible(null);
+
+    greetingEl.textContent = "";
+    greetingEl.style.display = "none";
+    greetingEl.classList.remove("is-logged-in");
+
+    loginLink.style.display = "inline-flex";
+    logoutBtn.style.display = "none";
+  }
+
+  async function renderSignedIn(user) {
     setAdminLinkVisible(user);
 
-    if (user) {
-      const first = await getFirstName(user);
+    const first = await getFirstName(user);
 
-      greetingEl.textContent = `Hi, ${first}`;
-      greetingEl.style.display = "inline-flex";
-      greetingEl.classList.add("is-logged-in");
+    greetingEl.textContent = `Hi, ${first}`;
+    greetingEl.style.display = "inline-flex";
+    greetingEl.classList.add("is-logged-in");
 
-      loginLink.style.display = "none";
-      logoutBtn.style.display = "inline-flex";
-    } else {
-      greetingEl.textContent = "";
-      greetingEl.style.display = "none";
-      greetingEl.classList.remove("is-logged-in");
+    loginLink.style.display = "none";
+    logoutBtn.style.display = "inline-flex";
+  }
 
-      loginLink.style.display = "inline-flex";
-      logoutBtn.style.display = "none";
-    }
-  });
+  // Wait for persistence + initial auth state
+  authReady
+    .then(() => {
+      // Use onAuthStateChanged for live updates
+      onAuthStateChanged(auth, async (user) => {
+        try {
+          if (user) await renderSignedIn(user);
+          else renderSignedOut();
+        } catch (e) {
+          console.warn("[shell] auth UI render failed:", e);
+          renderSignedOut();
+        }
+      });
+
+      // Also render once immediately (covers edge cases where callback is delayed)
+      const u = auth.currentUser;
+      if (u) renderSignedIn(u).catch(() => {});
+      else renderSignedOut();
+    })
+    .catch((e) => {
+      console.warn("[shell] authReady failed:", e);
+      renderSignedOut();
+    });
 }
