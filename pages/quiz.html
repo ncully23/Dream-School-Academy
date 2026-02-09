@@ -24,15 +24,18 @@
   <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
 
   <!-- Boot loader:
-       - Supports ?quizId=... (preferred)
-       - Also supports legacy /practice/<topic>/ paths (fallback)
-       - Loads quizzes.json, preflights the bank, sets window.DSA_BOOT, then imports controller -->
+       - Supports NORMAL mode: ?quizId=...
+       - Supports RANDOM mode: ?mode=random&section=math&count=...&difficulty=...&untimed=1
+       - Also supports legacy /practice/<topic>/ paths (fallback for NORMAL mode)
+       - For NORMAL mode: loads quizzes.json, preflights the bank, sets window.DSA_BOOT
+       - For RANDOM mode: skips quizzes.json and lets quizpage.js do the work
+       - Then imports controller -->
   <script type="module">
     const QUIZZES_CONFIG_URL = "/assets/configs/quizzes.json";
     const PAGE_CONTROLLER_URL = "/assets/js/quizpage.js"; // must match your actual file
 
     const escapeHtml = (s) =>
-      String(s)
+      String(s ?? "")
         .replaceAll("&", "&amp;")
         .replaceAll("<", "&lt;")
         .replaceAll(">", "&gt;")
@@ -67,12 +70,20 @@
       setHeader("Quiz failed to load", "--:--");
     }
 
-    function getQuizIdFromUrl() {
+    function getParams() {
       try {
-        return new URLSearchParams(location.search).get("quizId");
+        return new URLSearchParams(location.search);
       } catch {
-        return null;
+        return new URLSearchParams();
       }
+    }
+
+    function isRandomMode(params) {
+      return (params.get("mode") || "").toLowerCase() === "random";
+    }
+
+    function getQuizIdFromUrl(params) {
+      return params.get("quizId");
     }
 
     function getTopicFromPathFallback() {
@@ -92,7 +103,7 @@
     function canonicalizeQuizId(raw) {
       if (!raw) return null;
 
-      // If user passes full ID like math.circles.practice, keep it
+      // If user passes full ID like math.circles, keep it
       if (raw.includes(".")) return raw;
 
       // Legacy: "circles" -> "math.circles"
@@ -114,7 +125,23 @@
     async function boot() {
       setHeader("Loading…", "--:--");
 
-      const quizId = canonicalizeQuizId(getQuizIdFromUrl() || getTopicFromPathFallback());
+      const params = getParams();
+
+      // ✅ RANDOM MODE: allow starting without quizId
+      if (isRandomMode(params)) {
+        // Minimal boot marker (optional). quizpage.js reads URL params anyway.
+        window.DSA_BOOT = { mode: "random" };
+
+        try {
+          await import(PAGE_CONTROLLER_URL);
+        } catch (err) {
+          showError(`Controller error: <code>${escapeHtml(err?.message || err)}</code>`);
+        }
+        return;
+      }
+
+      // NORMAL MODE: require quizId (or legacy topic fallback)
+      const quizId = canonicalizeQuizId(getQuizIdFromUrl(params) || getTopicFromPathFallback());
       if (!quizId) {
         showError(
           'Missing quiz id. Use <code>?quizId=...</code> (example: <code>?quizId=math.circles</code>).'
@@ -127,7 +154,7 @@
         quizzes = await loadJson(QUIZZES_CONFIG_URL);
       } catch (err) {
         showError(
-          `Could not load <code>${escapeHtml(QUIZZES_CONFIG_URL)}</code>: <code>${escapeHtml(err.message)}</code>.`
+          `Could not load <code>${escapeHtml(QUIZZES_CONFIG_URL)}</code>: <code>${escapeHtml(err?.message || err)}</code>.`
         );
         return;
       }
@@ -142,7 +169,7 @@
         await preflight(cfg.bank);
       } catch (err) {
         showError(
-          `Could not load bank <code>${escapeHtml(cfg.bank)}</code>: <code>${escapeHtml(err.message)}</code>.`
+          `Could not load bank <code>${escapeHtml(cfg.bank)}</code>: <code>${escapeHtml(err?.message || err)}</code>.`
         );
         return;
       }
@@ -153,7 +180,7 @@
       try {
         await import(PAGE_CONTROLLER_URL);
       } catch (err) {
-        showError(`Controller error: <code>${escapeHtml(err.message)}</code>`);
+        showError(`Controller error: <code>${escapeHtml(err?.message || err)}</code>`);
       }
     }
 
@@ -277,8 +304,7 @@
 
   <div id="site-footer"></div>
 
-  <!-- Shell (header/footer injection, auth UI, active nav)
-       Keep at end so DOM exists when it runs. -->
+  <!-- Shell (header/footer injection, auth UI, active nav) -->
   <script type="module" src="/assets/js/shell.js"></script>
 
   <!-- Auto-typeset MathJax after dynamic injections (quiz engine renders after load). -->
