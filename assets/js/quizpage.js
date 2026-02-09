@@ -1,4 +1,4 @@
-// /assets/js/pages/quizpage.js
+// /assets/js/quizpage.js
 // Dream School Academy — quiz loader (normal quizId + random mode)
 //
 // Supports:
@@ -6,6 +6,8 @@
 // 2) Random mode: /pages/quiz.html?mode=random&section=math&count=10&difficulty=hard&untimed=1
 //
 // Random mode loads /assets/questionbank/math/banks.math.json and samples from all listed banks.
+//
+// IMPORTANT: Random mode is resilient to missing banks (404). Missing banks are skipped.
 
 "use strict";
 
@@ -37,10 +39,42 @@ function isRandomMode(params) {
 
 function getRandomSettings(params) {
   const section = (params.get("section") || "math").toLowerCase();
-  const count = Math.max(1, Math.min(50, Number(params.get("count") || 10)));
+  const countRaw = Number(params.get("count") || 10);
+  const count = Number.isFinite(countRaw) ? Math.max(1, Math.min(50, countRaw)) : 10;
+
   const difficulty = (params.get("difficulty") || "").toLowerCase().trim();
   const untimed = params.get("untimed") === "1";
   return { section, count, difficulty, untimed };
+}
+
+/* -----------------------------
+   Minimal UI error (so you don't get "silent Loading...")
+------------------------------ */
+
+function renderFatal(message) {
+  console.error(message);
+
+  const titleEl = document.getElementById("sectionTitle");
+  if (titleEl) titleEl.textContent = "Quiz failed to load";
+
+  const timeEl = document.getElementById("timeLeft");
+  if (timeEl) timeEl.textContent = "--:--";
+
+  const qTitle = document.getElementById("qtitle");
+  if (qTitle) qTitle.textContent = "Quiz failed to load";
+
+  const choices = document.getElementById("choices");
+  if (choices) {
+    choices.innerHTML = `
+      <div class="load-error" style="padding:12px 14px;border:1px solid rgba(220,38,38,.35);border-radius:12px;">
+        <div style="font-weight:800;margin-bottom:6px;">Couldn’t start this quiz.</div>
+        <div style="opacity:.9;line-height:1.35">${String(message)}</div>
+        <div style="opacity:.7;margin-top:10px;font-size:.9rem">
+          Open DevTools → Console for details.
+        </div>
+      </div>
+    `;
+  }
 }
 
 /* -----------------------------
@@ -52,18 +86,13 @@ function asArray(x) {
 }
 
 function normalizeQuestion(q) {
-  // Your banks currently use answerIndex.
-  // Your attempt/review pipeline uses correctIndex.
-  // Normalize here so the engine sees correctIndex consistently.
+  // Banks currently use answerIndex; engine expects correctIndex.
   const correctIndex =
     Number.isFinite(q?.correctIndex) ? q.correctIndex :
     Number.isFinite(q?.answerIndex) ? q.answerIndex :
     null;
 
-  return {
-    ...q,
-    correctIndex,
-  };
+  return { ...q, correctIndex };
 }
 
 function shuffleInPlace(arr) {
@@ -89,39 +118,62 @@ function sampleUnique(pool, n) {
 function pickQuestionsFromBank(bank, cfg) {
   if (!bank || !Array.isArray(bank.questions)) return [];
   const n = Number(cfg.pickCount || cfg.pick || cfg.count || bank.questions.length);
-  return bank.questions.slice(0, n).map(normalizeQuestion);
+
+  // Respect shuffle if you later set it true in quizzes.json
+  const qs = bank.questions.slice().map(normalizeQuestion);
+  if (cfg.shuffle) shuffleInPlace(qs);
+
+  return qs.slice(0, n);
 }
 
 /* -----------------------------
-   Random mode: load registry + all banks
+   Random mode: load registry + banks (tolerant of 404)
 ------------------------------ */
 
 async function loadRegistryBanks(registryUrl) {
   const reg = await loadJson(registryUrl);
-  const banks = asArray(reg?.banks);
+  const urls = asArray(reg?.banks);
 
-  if (!banks.length) {
+  if (!urls.length) {
     throw new Error(`Bank registry had no banks: ${registryUrl}`);
   }
 
-  const bankPayloads = await Promise.all(
-    banks.map(async (url) => {
+  const results = await Promise.allSettled(
+    urls.map(async (url) => {
       const payload = await loadJson(url);
       payload.__bankUrl = url;
       return payload;
     })
   );
 
-  return bankPayloads;
+  const ok = [];
+  const failed = [];
+
+  for (const r of results) {
+    if (r.status === "fulfilled") ok.push(r.value);
+    else failed.push(r.reason);
+  }
+
+  if (failed.length) {
+    console.warn("[Random mode] Some banks failed to load and were skipped:");
+    for (const err of failed) console.warn(err);
+  }
+
+  if (!ok.length) {
+    throw new Error(
+      `All banks in ${registryUrl} failed to load. ` +
+      `Fix the URLs in banks.math.json or create the missing files.`
+    );
+  }
+
+  return ok;
 }
 
 function flattenQuestions(bankPayloads) {
   const all = [];
   for (const b of bankPayloads) {
     const qs = asArray(b?.questions);
-    for (const q of qs) {
-      all.push(normalizeQuestion(q));
-    }
+    for (const q of qs) all.push(normalizeQuestion(q));
   }
   return all;
 }
@@ -134,12 +186,11 @@ function filterQuestionsForRandom(pool, settings) {
     out = out.filter(q => String(q?.topic || "").startsWith("math."));
   }
 
-  // Difficulty filter (optional)
   if (settings.difficulty) {
     out = out.filter(q => String(q?.difficulty || "").toLowerCase() === settings.difficulty);
   }
 
-  // Must have prompt + choices + correctIndex to be runnable
+  // Must be runnable
   out = out.filter(q =>
     typeof q?.prompt === "string" &&
     Array.isArray(q?.choices) &&
@@ -154,20 +205,15 @@ function filterQuestionsForRandom(pool, settings) {
    Build engine config
 ------------------------------ */
 
-function setEngineConfig({
-  quizId,
-  title,
-  sectionTitle,
-  timeLimitSec,
-  questions,
-}) {
+function setEngineConfig({ quizId, title, sectionTitle, timeLimitSec, questions }) {
   window.dsaQuizConfig = {
     quizId,
     sectionId: quizId,
     title: title || "Quiz",
     sectionTitle: sectionTitle || title || "Quiz",
 
-    // IMPORTANT: Your engine uses this to start timer; we set 0/null for untimed.
+    // Untimed should be 0 or null depending on how your engine checks it.
+    // If engine does: if (timeLimitSec) startTimer(); then 0 disables timer.
     timeLimitSec: Number.isFinite(timeLimitSec) ? timeLimitSec : null,
 
     storageKey: `dsa:draft:${quizId}`,
@@ -187,8 +233,6 @@ function setEngineConfig({
 
 (async function initQuiz() {
   const params = getParams();
-
-  // 1) Prefer the boot payload from quiz.html (normal mode)
   const boot = window.DSA_BOOT || null;
 
   // RANDOM MODE overrides boot/quizId
@@ -196,75 +240,76 @@ function setEngineConfig({
     const settings = getRandomSettings(params);
 
     if (settings.section !== "math") {
-      throw new Error(`Random mode currently supports section=math only (got: ${settings.section})`);
+      renderFatal(`Random mode currently supports section=math only (got: ${settings.section}).`);
+      return;
     }
 
-    // Load all math banks via registry
     const registryUrl = "/assets/questionbank/math/banks.math.json";
-    const bankPayloads = await loadRegistryBanks(registryUrl);
 
-    // Flatten + filter
+    let bankPayloads;
+    try {
+      bankPayloads = await loadRegistryBanks(registryUrl);
+    } catch (err) {
+      renderFatal(err?.message || err);
+      return;
+    }
+
     const poolAll = flattenQuestions(bankPayloads);
     const pool = filterQuestionsForRandom(poolAll, settings);
 
     if (pool.length < settings.count) {
-      throw new Error(
+      renderFatal(
         `Not enough questions available for random practice. ` +
         `Need ${settings.count}, found ${pool.length}. ` +
-        (settings.difficulty ? `difficulty=${settings.difficulty}` : "difficulty=any")
+        (settings.difficulty ? `difficulty=${settings.difficulty}. ` : `difficulty=any. `) +
+        `Add more bank files and/or update ${registryUrl}.`
       );
+      return;
     }
 
     const sampled = sampleUnique(pool, settings.count);
 
-    // Build a synthetic quiz config
     const quizId = "random.math";
     const title = "Random Math Practice";
-    const sectionTitle = settings.untimed
-      ? "Untimed · Random Math"
-      : "Random Math";
+    const sectionTitle = settings.untimed ? "Untimed · Random Math" : "Random Math";
 
-    // Untimed: set to 0 (or null) so timer won’t start if your engine checks >0.
+    // Untimed: 0 disables timer in most implementations
     const timeLimitSec = settings.untimed ? 0 : null;
 
-    setEngineConfig({
-      quizId,
-      title,
-      sectionTitle,
-      timeLimitSec,
-      questions: sampled,
-    });
+    setEngineConfig({ quizId, title, sectionTitle, timeLimitSec, questions: sampled });
 
-    // Load engine
     await import("/assets/js/quiz-engine.js");
     return;
   }
 
-  // NORMAL MODE (existing behavior)
+  // NORMAL MODE
   const quizId = boot?.quizId || getQuizIdFromUrl();
   if (!quizId) {
-    console.error("Missing quizId (expected window.DSA_BOOT or ?quizId=...)");
+    renderFatal("Missing quizId. Use /pages/quiz.html?quizId=math.circles");
     return;
   }
 
   const cfg = boot?.cfg || null;
   const bankUrl = boot?.bankUrl || cfg?.bank;
   if (!cfg || !bankUrl) {
-    console.error("Missing cfg/bankUrl (expected window.DSA_BOOT = { quizId, cfg, bankUrl })");
+    renderFatal("Missing cfg/bankUrl (expected window.DSA_BOOT = { quizId, cfg, bankUrl }).");
     return;
   }
 
-  // Load the bank
-  const bank = await loadJson(bankUrl);
+  let bank;
+  try {
+    bank = await loadJson(bankUrl);
+  } catch (err) {
+    renderFatal(err?.message || err);
+    return;
+  }
 
-  // Choose questions
   const questions = pickQuestionsFromBank(bank, cfg);
   if (!questions.length) {
-    console.error("Bank loaded but contained no questions:", bankUrl);
+    renderFatal(`Bank loaded but contained no questions: ${bankUrl}`);
     return;
   }
 
-  // Provide runtime config expected by your quiz engine
   setEngineConfig({
     quizId,
     title: cfg.title || bank.title || "Quiz",
@@ -274,4 +319,4 @@ function setEngineConfig({
   });
 
   await import("/assets/js/quiz-engine.js");
-})().catch((err) => console.error("Quiz init failed:", err));
+})().catch((err) => renderFatal(err?.message || err));
