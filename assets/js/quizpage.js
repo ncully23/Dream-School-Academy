@@ -1,4 +1,4 @@
-// /assets/js/quizpage.js
+// /assets/js/pages/quizpage.js
 // Dream School Academy — quiz loader (normal quizId + random mode)
 //
 // Supports:
@@ -6,8 +6,13 @@
 // 2) Random mode: /pages/quiz.html?mode=random&section=math&count=10&difficulty=hard&untimed=1
 //
 // Random mode loads /assets/questionbank/math/banks.math.json and samples from all listed banks.
-//
 // IMPORTANT: Random mode is resilient to missing banks (404). Missing banks are skipped.
+//
+// NEW (critical for Progress logging):
+// - Ensures every run has a unique runId + storageKey, so attempts don't collide.
+// - Signals quiz-engine with config fields commonly used to save attempts:
+//   attemptId, attemptKey, attemptScope, bankId/bankVersion (when available), mode.
+// - Keeps normal quizzes stable but fixes random quiz overwriting issues that prevent logging.
 
 "use strict";
 
@@ -78,6 +83,27 @@ function renderFatal(message) {
 }
 
 /* -----------------------------
+   IDs + timestamps
+------------------------------ */
+
+function nowISODate() {
+  // YYYY-MM-DD (local)
+  const d = new Date();
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, "0");
+  const day = String(d.getDate()).padStart(2, "0");
+  return `${y}-${m}-${day}`;
+}
+
+function makeAttemptId() {
+  // Prefer crypto UUID; fall back safely
+  try {
+    if (crypto?.randomUUID) return crypto.randomUUID();
+  } catch (_) {}
+  return `att_${Date.now()}_${Math.random().toString(16).slice(2)}`;
+}
+
+/* -----------------------------
    Question utilities
 ------------------------------ */
 
@@ -92,7 +118,10 @@ function normalizeQuestion(q) {
     Number.isFinite(q?.answerIndex) ? q.answerIndex :
     null;
 
-  return { ...q, correctIndex };
+  // Ensure stable IDs if absent (helps review/progress)
+  const questionId = q?.questionId || q?.id || null;
+
+  return { ...q, correctIndex, questionId };
 }
 
 function shuffleInPlace(arr) {
@@ -173,7 +202,15 @@ function flattenQuestions(bankPayloads) {
   const all = [];
   for (const b of bankPayloads) {
     const qs = asArray(b?.questions);
-    for (const q of qs) all.push(normalizeQuestion(q));
+    for (const q of qs) {
+      // Carry bank metadata so attempts can store it (useful for review/progress)
+      const nq = normalizeQuestion(q);
+      nq.__sourceBankId = b?.bankId || b?.topic || null;
+      nq.__sourceBankVersion = b?.bankVersion ?? b?.version ?? null;
+      nq.__sourceBankTitle = b?.title || null;
+      nq.__sourceBankUrl = b?.__bankUrl || null;
+      all.push(nq);
+    }
   }
   return all;
 }
@@ -205,22 +242,51 @@ function filterQuestionsForRandom(pool, settings) {
    Build engine config
 ------------------------------ */
 
-function setEngineConfig({ quizId, title, sectionTitle, timeLimitSec, questions }) {
+function setEngineConfig({
+  quizId,
+  title,
+  sectionTitle,
+  timeLimitSec,
+  questions,
+
+  // New: attempt identity + better metadata for saving
+  mode,
+  attemptId,
+  bankId,
+  bankVersion,
+  description,
+}) {
+  // Unique per run => prevents overwriting drafts/attempts (especially for random)
+  const runQuizKey = attemptId ? `${quizId}:${attemptId}` : quizId;
+  const storageKey = `dsa:draft:${runQuizKey}`;
+
   window.dsaQuizConfig = {
     quizId,
     sectionId: quizId,
     title: title || "Quiz",
+    description: description || "",
     sectionTitle: sectionTitle || title || "Quiz",
 
     // Untimed should be 0 or null depending on how your engine checks it.
     // If engine does: if (timeLimitSec) startTimer(); then 0 disables timer.
     timeLimitSec: Number.isFinite(timeLimitSec) ? timeLimitSec : null,
 
-    storageKey: `dsa:draft:${quizId}`,
+    // Draft key (unique per run for random; stable for normal if engine ignores attemptId)
+    storageKey,
+
+    // Provide attempt identity for quiz-engine/review/progress pipelines
+    attemptId: attemptId || null,
+    attemptKey: attemptId ? `dsa:attempt:${attemptId}` : null,
+    mode: mode || "normal",
+
+    // Bank metadata (helps review loader and progress rendering)
+    bankId: bankId || null,
+    bankVersion: Number.isFinite(bankVersion) ? bankVersion : null,
 
     pauseOnBlur: false,
     allowDraftSave: false,
 
+    // Normalize questions already
     questions,
   };
 
@@ -269,6 +335,9 @@ function setEngineConfig({ quizId, title, sectionTitle, timeLimitSec, questions 
 
     const sampled = sampleUnique(pool, settings.count);
 
+    // Unique attempt per random run (prevents collisions + enables progress logging)
+    const attemptId = makeAttemptId();
+
     const quizId = "random.math";
     const title = "Random Math Practice";
     const sectionTitle = settings.untimed ? "Untimed · Random Math" : "Random Math";
@@ -276,7 +345,29 @@ function setEngineConfig({ quizId, title, sectionTitle, timeLimitSec, questions 
     // Untimed: 0 disables timer in most implementations
     const timeLimitSec = settings.untimed ? 0 : null;
 
-    setEngineConfig({ quizId, title, sectionTitle, timeLimitSec, questions: sampled });
+    // For random: bankId/bankVersion are "mixed" — store registry scope
+    const bankId = "math.random";
+    const bankVersion = 1;
+
+    const description =
+      `Randomized practice across all Math banks. ` +
+      `count=${settings.count}` +
+      (settings.difficulty ? `, difficulty=${settings.difficulty}` : ``) +
+      (settings.untimed ? `, untimed` : ``) +
+      `. updatedAt=${nowISODate()}.`;
+
+    setEngineConfig({
+      quizId,
+      title,
+      sectionTitle,
+      timeLimitSec,
+      questions: sampled,
+      mode: "random",
+      attemptId,
+      bankId,
+      bankVersion,
+      description,
+    });
 
     await import("/assets/js/quiz-engine.js");
     return;
@@ -310,12 +401,23 @@ function setEngineConfig({ quizId, title, sectionTitle, timeLimitSec, questions 
     return;
   }
 
+  // For normal quizzes, still generate attemptId so each run can log uniquely.
+  // If your engine already generates its own attemptId, it can ignore this.
+  const attemptId = makeAttemptId();
+
   setEngineConfig({
     quizId,
     title: cfg.title || bank.title || "Quiz",
     sectionTitle: cfg.sectionTitle || cfg.title || bank.title || "Quiz",
     timeLimitSec: cfg.timeLimitSec ?? null,
     questions,
+
+    mode: "normal",
+    attemptId,
+
+    bankId: bank?.bankId || bank?.topic || quizId,
+    bankVersion: bank?.bankVersion ?? bank?.version ?? null,
+    description: bank?.description || "",
   });
 
   await import("/assets/js/quiz-engine.js");
