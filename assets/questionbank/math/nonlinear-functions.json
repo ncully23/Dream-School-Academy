@@ -1,0 +1,126 @@
+{
+  "quizId": "math.nonlinear.functions.set1",
+  "title": "Nonlinear Functions — Set 1",
+  "section": "Math",
+  "domain": "Advanced Math",
+  "skill": "Nonlinear functions",
+  "questions": [
+    {
+      "id": "301faf80",
+      "prompt": "The product of two positive integers is 462. If the first integer is 5 greater than twice the second integer, what is the smaller of the two integers?",
+      "choices": {
+        "A": "14",
+        "B": "21",
+        "C": "33",
+        "D": "66"
+      },
+      "correct": "A",
+      "difficulty": "hard",
+      "rationale": "Let the second integer be y. Then the first is 2y + 5 and y(2y + 5) = 462 → 2y^2 + 5y − 462 = 0 → (2y + 33)(y − 14) = 0. Positive solution: y = 14."
+    },
+    {
+      "id": "128c75e2",
+      "prompt": "The function g is defined by g(x) = |x|/a − 14, where a < 0. What is the product of g(15a) and g(7a)?",
+      "choices": {
+        "A": "350",
+        "B": "525",
+        "C": "609",
+        "D": "735"
+      },
+      "correct": "C",
+      "difficulty": "hard",
+      "rationale": "Since a < 0, |15a|/a = −15 and |7a|/a = −7. So g(15a) = −15 − 14 = −29 and g(7a) = −7 − 14 = −21. Product: (−29)(−21) = 609."
+    },
+    {
+      "id": "02060533",
+      "prompt": "The table shows three values of x and their corresponding values of g(x), where g(x) = f(x)/(x + 3) and f is a linear function. What is the y-intercept of the graph of y = f(x) in the xy-plane?\n\nTable:\n- x = −27, g(x) = 3\n- x = −9,  g(x) = 0\n- x = 21,  g(x) = 5",
+      "choices": {
+        "A": "(0, 36)",
+        "B": "(0, 12)",
+        "C": "(0, 4)",
+        "D": "(0, −9)"
+      },
+      "correct": "A",
+      "difficulty": "hard",
+      "rationale": "From g(x)=f(x)/(x+3): f(−27)=3(−24)=−72 and f(−9)=0(−6)=0. Slope of f is (0−(−72))/((−9)−(−27))=72/18=4, so f(x)=4x+b. Using f(−9)=0 gives 0=−36+b → b=36. Thus y-intercept is (0,36)."
+    },
+    {
+      "id": "91e7ea5e",
+      "prompt": "The quadratic function h is defined as h(x) = 2(x − 4)^2 − 32. In the xy-plane, the graph of y = h(x) intersects the x-axis at the points (0, 0) and (t, 0), where t is a constant. What is the value of t?",
+      "choices": {
+        "A": "1",
+        "B": "2",
+        "C": "4",
+        "D": "8"
+      },
+      "correct": "D",
+      "difficulty": "hard",
+      "rationale": "x-intercepts satisfy h(x)=0: 0 = 2(x−4)^2 − 32 → 2(x−4)^2 = 32 → (x−4)^2 = 16 → x = 0 or x = 8. So t = 8."
+    },
+    {
+      "id": "358f18bc",
+      "prompt": "If f(x) = x^2 − 48x + 2,304, what is the minimum value of the function?",
+      "choices": {
+        "A": "0",
+        "B": "1,152",
+        "C": "1,728",
+        "D": "2,304"
+      },
+      "correct": "C",
+      "difficulty": "hard",
+      "rationale": "Complete the square: x^2 − 48x + 2304 = (x−24)^2 + 1728. Minimum occurs when (x−24)^2 = 0, so minimum value is 1728."
+    },
+    {
+      "id": "8490cc45",
+      "prompt": "The function f is defined by f(x) = (−8)·2^x + 22. What is the y-intercept of the graph of y = f(x) in the xy-plane?",
+      "choices": {
+        "A": "(0, 14)",
+        "B": "(0, 2)",
+        "C": "(0, 22)",
+        "D": "(0, −8)"
+      },
+      "correct": "A",
+      "difficulty": "hard",
+      "rationale": "The y-intercept occurs at x = 0: f(0) = (−8)·2^0 + 22 = −8 + 22 = 14, so (0,14)."
+    },
+    {
+      "id": "ebed7dc6",
+      "prompt": "An auditorium has seats for 1,800 people. Tickets currently cost $4.00. For each $1.00 increase to the ticket price, 100 fewer tickets will be sold. This situation can be modeled by y = −100x^2 + 1,400x + 7,200, where x represents the increase in the ticket price (in dollars) and y represents the revenue (in dollars) from ticket sales. If this equation is graphed in the xy-plane, at what value of x is the maximum of the graph?",
+      "choices": {
+        "A": "4",
+        "B": "7",
+        "C": "14",
+        "D": "18"
+      },
+      "correct": "B",
+      "difficulty": "hard",
+      "rationale": "For y = ax^2 + bx + c with a < 0, maximum occurs at vertex x = −b/(2a) = −1400/(2·−100) = 7."
+    },
+    {
+      "id": "a9084ca4",
+      "prompt": "The function f(x) = 9,000(0.66)^x models the number of advertisements a company sent to its clients each year, where x represents the number of years since 1997 and 0 ≤ x ≤ 5. If y = f(x) is graphed in the xy-plane, which of the following is the best interpretation of the y-intercept of the graph in this context?",
+      "choices": {
+        "A": "The minimum estimated number of advertisements the company sent to its clients during the 5 years was 1,708.",
+        "B": "The minimum estimated number of advertisements the company sent to its clients during the 5 years was 9,000.",
+        "C": "The estimated number of advertisements the company sent to its clients in 1997 was 1,708.",
+        "D": "The estimated number of advertisements the company sent to its clients in 1997 was 9,000."
+      },
+      "correct": "D",
+      "difficulty": "hard",
+      "rationale": "The y-intercept is at x = 0, which corresponds to year 1997. f(0) = 9000(0.66)^0 = 9000, so it represents 9,000 ads in 1997."
+    },
+    {
+      "id": "2c6f214f",
+      "prompt": "The first term of a sequence is 9. Each term after the first is 4 times the preceding term. If w represents the nth term of the sequence, which equation gives w in terms of n?",
+      "choices": {
+        "A": "w = 4(9^n)",
+        "B": "w = 4(9^(n−1))",
+        "C": "w = 9(4^n)",
+        "D": "w = 9(4^(n−1))"
+      },
+      "correct": "D",
+      "difficulty": "hard",
+      "rationale": "This is a geometric sequence with first term 9 and ratio 4, so w_n = 9·4^(n−1)."
+    }
+  ]
+}
