@@ -1,0 +1,244 @@
+{
+  "bankId": "math.statistics",
+  "bankVersion": 2,
+  "title": "Math — Statistics (Inferences & Claims)",
+  "description": "SAT statistics questions on inference from samples (incl. margin of error) and evaluating statistical claims (sampling, generalizability, bias, and what must be true).",
+  "updatedAt": "2026-02-09",
+  "source": [
+    { "type": "pdf", "name": "stat inferences set 1.pdf" },
+    { "type": "pdf", "name": "Stat claims set 1.pdf" }
+  ],
+  "questions": [
+    {
+      "questionId": "SAT-c7e73ece",
+      "topic": "math.statistics",
+      "skill": "estimate-population-difference-from-sample",
+      "difficulty": "hard",
+      "answerType": "numeric",
+      "prompt": "A researcher interviewed 411 randomly selected US residents and asked about their views on the use of nuclear energy. The table below summarizes the responses of the interviewees.\n\nViews on Nuclear Energy Use\nResponse | Frequency\nStrongly favor | 56\nSomewhat favor | 214\nSomewhat oppose | 104\nStrongly oppose | 37\n\nIf the population of the United States was 300 million when the survey was given, based on the sample data for the 411 US residents, what is the best estimate, in millions, of the difference between the number of US residents who somewhat favor or strongly favor the use of nuclear energy and the number of those who somewhat oppose or strongly oppose it? (Round your answer to the nearest whole number.)",
+      "answer": 94,
+      "acceptedAnswers": ["94"],
+      "explanation": "Favor: 56+214=270. Oppose: 104+37=141. Difference in sample: 270−141=129. Scale to population: (129/411)×300 ≈ 94.16 → 94 (million)."
+    },
+    {
+      "questionId": "SAT-9bedc4a0",
+      "topic": "math.statistics",
+      "skill": "margin-of-error-interpretation",
+      "difficulty": "medium",
+      "answerType": "mcq",
+      "prompt": "A company that produces socks wants to estimate the percent of the socks produced in a typical week that are defective. A random sample of 310 socks produced in a certain week were inspected. Based on the sample, it is estimated that 12% of all socks produced by the company in this week are defective, with an associated margin of error of 3.62%. Based on the estimate and associated margin of error, which of the following is the most appropriate conclusion about all socks produced by the company during this week?",
+      "choices": [
+        "3.62% of the socks are defective.",
+        "It is plausible that between 8.38% and 15.62% of the socks are defective.",
+        "12% of the socks are defective.",
+        "It is plausible that more than 15.62% of the socks are defective."
+      ],
+      "answerIndex": 1,
+      "explanation": "Margin-of-error interval: 12% ± 3.62% → [8.38%, 15.62%].",
+      "choiceExplanations": [
+        "Mistakes the margin of error for the estimate.",
+        "Correct: the plausible interval is 12% ± 3.62%.",
+        "Treats the estimate as exact.",
+        "Not supported by the given margin-of-error interval."
+      ]
+    },
+    {
+      "questionId": "SAT-fc46af57",
+      "topic": "math.statistics",
+      "skill": "margin-of-error-to-count-interval",
+      "difficulty": "medium",
+      "answerType": "mcq",
+      "prompt": "A bag containing 10,000 beads of assorted colors is purchased from a craft store. To estimate the percent of red beads in the bag, a sample of beads is selected at random. The percent of red beads in the bag was estimated to be 15%, with an associated margin of error of 2%. If r is the actual number of red beads in the bag, which of the following is most plausible?",
+      "choices": [
+        "r > 1,700",
+        "1,300 < r < 1,700",
+        "200 < r < 1,500",
+        "r < 1,300"
+      ],
+      "answerIndex": 1,
+      "explanation": "Estimated red count: 0.15×10,000=1,500. Margin-of-error in count: 0.02×10,000=200. Plausible range: 1,500±200 → 1,300 < r < 1,700.",
+      "choiceExplanations": [
+        "Above the plausible upper bound.",
+        "Correct: within 1,500±200.",
+        "Misreads 200 as a lower bound rather than the ± amount.",
+        "Below the plausible lower bound."
+      ]
+    },
+    {
+      "questionId": "SAT-308084c5",
+      "topic": "math.statistics",
+      "skill": "margin-of-error-sample-size",
+      "difficulty": "hard",
+      "answerType": "mcq",
+      "prompt": "The results of two random samples of votes for a proposition are shown above.\n\nSample A: Percent in favor 52%, Margin of error 4.2%\nSample B: Percent in favor 48%, Margin of error 1.6%\n\nThe samples were selected from the same population, and the margins of error were calculated using the same method. Which of the following is the most appropriate reason that the margin of error for sample A is greater than the margin of error for sample B?",
+      "choices": [
+        "Sample A had a smaller number of votes that could not be recorded.",
+        "Sample A had a higher percent of favorable responses.",
+        "Sample A had a larger sample size.",
+        "Sample A had a smaller sample size."
+      ],
+      "answerIndex": 3,
+      "explanation": "With the same method and population, a larger margin of error most directly indicates a smaller sample size (less information → more sampling variability).",
+      "choiceExplanations": [
+        "Not what drives margin of error here.",
+        "The percent itself doesn’t explain the different margins of error.",
+        "Larger sample size would generally reduce margin of error.",
+        "Correct: smaller sample size generally increases margin of error."
+      ]
+    },
+    {
+      "questionId": "SAT-9ba3e283",
+      "topic": "math.statistics",
+      "skill": "scale-up-from-sample-proportion",
+      "difficulty": "hard",
+      "answerType": "mcq",
+      "prompt": "In State X, Mr. Camp’s eighth-grade class consisting of 26 students was surveyed and 34.6 percent of the students reported that they had at least two siblings. The average eighth-grade class size in the state is 26. If the students in Mr. Camp’s class are representative of students in the state’s eighth-grade classes and there are 1,800 eighth-grade classes in the state, which of the following best estimates the number of eighth-grade students in the state who have fewer than two siblings?",
+      "choices": [
+        "16,200",
+        "23,400",
+        "30,600",
+        "46,800"
+      ],
+      "answerIndex": 2,
+      "explanation": "34.6% of 26 is 0.346×26=8.996 ≈ 9 students with at least two siblings. So about 26−9=17 have fewer than two siblings per class. Across 1,800 classes: 17×1,800=30,600.",
+      "choiceExplanations": [
+        "Counts about 9 per class (at least two siblings) instead of fewer than two.",
+        "Arithmetic/interpretation error.",
+        "Correct: 17×1,800=30,600.",
+        "This equals 26×1,800 (total students), not the target group."
+      ]
+    },
+    {
+      "questionId": "SAT-1ea09200",
+      "topic": "math.statistics",
+      "skill": "generalizability-from-random-sample",
+      "difficulty": "hard",
+      "answerType": "mcq",
+      "prompt": "A sample of 40 fourth-grade students was selected at random from a certain school. The 40 students completed a survey about the morning announcements, and 32 thought the announcements were helpful. Which of the following is the largest population to which the results of the survey can be applied?",
+      "choices": [
+        "The 40 students who were surveyed",
+        "All fourth-grade students at the school",
+        "All students at the school",
+        "All fourth-grade students in the county in which the school is located"
+      ],
+      "answerIndex": 1,
+      "explanation": "A random sample from the school’s fourth graders supports generalizing to all fourth-grade students at that school (but not beyond).",
+      "choiceExplanations": [
+        "Too narrow; random sampling allows inference to the sampled population.",
+        "Correct: this matches the population sampled.",
+        "Too broad; other grades weren’t sampled.",
+        "Too broad; other schools in the county weren’t sampled."
+      ]
+    },
+    {
+      "questionId": "SAT-37930b2a",
+      "topic": "math.statistics",
+      "skill": "what-must-be-true-sample-vs-population",
+      "difficulty": "medium",
+      "answerType": "mcq",
+      "prompt": "Residents of a town were surveyed to determine whether they are satisfied with the concession stand at the local park. A random sample of 200 residents was selected. All 200 responded, and 87% said they are satisfied. Based on this information, which of the following statements must be true?\n\nI. Of all the town residents, 87% would say they are satisfied with the concession stand at the local park.\nII. If another random sample of 200 residents were surveyed, 87% would say they are satisfied.",
+      "choices": [
+        "Neither",
+        "I only",
+        "II only",
+        "I and II"
+      ],
+      "answerIndex": 0,
+      "explanation": "A sample result estimates but does not guarantee the exact population percent or the exact percent from a different random sample.",
+      "choiceExplanations": [
+        "Correct: neither must be true.",
+        "Population need not be exactly 87%.",
+        "A different random sample can yield a different percentage.",
+        "Neither is guaranteed."
+      ]
+    },
+    {
+      "questionId": "SAT-642519d7",
+      "topic": "math.statistics",
+      "skill": "what-must-be-true-sampling-variation",
+      "difficulty": "medium",
+      "answerType": "mcq",
+      "prompt": "A polling agency recently surveyed 1,000 adults who were selected at random from a large city and asked each of the adults, “Are you satisfied with the quality of air in the city?” Of those surveyed, 78 percent responded that they were satisfied with the quality of air in the city. Based on the results of the survey, which of the following statements must be true?\n\nI. Of all adults in the city, 78 percent are satisfied with the quality of air in the city.\nII. If another 1,000 adults selected at random from the city were surveyed, 78 percent of them would report they are satisfied with the quality of air in the city.\nIII. If 1,000 adults selected at random from a different city were surveyed, 78 percent of them would report they are satisfied with the quality of air in the city.",
+      "choices": [
+        "None",
+        "II only",
+        "I and II only",
+        "I and III only"
+      ],
+      "answerIndex": 0,
+      "explanation": "A random sample provides an estimate; it doesn’t force exact equality for the population, exact repeat-sample results, or transferability to a different city.",
+      "choiceExplanations": [
+        "Correct: none must be true.",
+        "Not guaranteed; new sample can differ.",
+        "Neither I nor II must be true.",
+        "I and III are not guaranteed."
+      ]
+    },
+    {
+      "questionId": "SAT-82dfb646",
+      "topic": "math.statistics",
+      "skill": "generalizability-restricted-population",
+      "difficulty": "easy",
+      "answerType": "mcq",
+      "prompt": "A market researcher selected 200 people at random from a group of people who indicated that they liked a certain book. The 200 people were shown a movie based on the book and then asked whether they liked or disliked the movie. Of those surveyed, 95% said they disliked the movie. Which of the following inferences can appropriately be drawn from this survey result?",
+      "choices": [
+        "At least 95% of people who go see movies will dislike this movie.",
+        "At least 95% of people who read books will dislike this movie.",
+        "Most people who dislike this book will like this movie.",
+        "Most people who like this book will dislike this movie."
+      ],
+      "answerIndex": 3,
+      "explanation": "The sample was drawn only from people who like the book, so conclusions apply only to that group.",
+      "choiceExplanations": [
+        "Too broad; moviegoers weren’t the sampling population.",
+        "Too broad; all book readers weren’t sampled.",
+        "Out of scope; the sample excludes people who dislike the book.",
+        "Correct: matches the sampled population."
+      ]
+    },
+    {
+      "questionId": "SAT-aa43b41f",
+      "topic": "math.statistics",
+      "skill": "bias-voluntary-response",
+      "difficulty": "hard",
+      "answerType": "mcq",
+      "prompt": "Near the end of a US cable news show, the host invited viewers to respond to a poll on the show’s website that asked, “Do you support the new federal policy discussed during the show?” At the end of the show, the host reported that 28% responded “Yes” and 70% responded “No.” Which of the following best explains why the results are unlikely to represent the sentiments of the population of the United States?",
+      "choices": [
+        "The percentages do not add up to 100%, so any possible conclusions from the poll are invalid.",
+        "Those who responded to the poll were not a random sample of the population of the United States.",
+        "There were not 50% “Yes” responses and 50% “No” responses.",
+        "The show did not allow viewers enough time to respond to the poll."
+      ],
+      "answerIndex": 1,
+      "explanation": "This is a voluntary-response (self-selected) sample, not a random sample of the US population, so it’s likely biased and not representative.",
+      "choiceExplanations": [
+        "Percentages not summing to 100% isn’t the core representativeness issue.",
+        "Correct: not a random, representative sample.",
+        "An uneven split doesn’t imply invalidity.",
+        "Time isn’t the key statistical flaw described."
+      ]
+    },
+    {
+      "questionId": "SAT-4a422e3e",
+      "topic": "math.statistics",
+      "skill": "bias-convenience-sample",
+      "difficulty": "hard",
+      "answerType": "mcq",
+      "prompt": "To determine the mean number of children per household in a community, Tabitha surveyed 20 families at a playground. For the 20 families surveyed, the mean number of children per household was 2.4. Which of the following statements must be true?",
+      "choices": [
+        "The mean number of children per household in the community is 2.4.",
+        "A determination about the mean number of children per household in the community should not be made because the sample size is too small.",
+        "The sampling method is flawed and may produce a biased estimate of the mean number of children per household in the community.",
+        "The sampling method is not flawed and is likely to produce an unbiased estimate of the mean number of children per household in the community."
+      ],
+      "answerIndex": 2,
+      "explanation": "Surveying families at a playground is a convenience sample and can over-represent households with children, so the method is flawed and may bias the estimate.",
+      "choiceExplanations": [
+        "A sample mean does not force the population mean to match.",
+        "Sample size alone doesn’t make the conclusion impossible; representativeness does.",
+        "Correct: convenience sample → may be biased.",
+        "The method is not likely unbiased."
+      ]
+    }
+  ]
+}
