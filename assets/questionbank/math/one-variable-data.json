@@ -1,0 +1,113 @@
+{
+  "quizId": "math.onevariabledata.set1",
+  "title": "One-Variable Data — Set 1",
+  "section": "Math",
+  "domain": "Problem-Solving and Data Analysis",
+  "skill": "One-variable data: distributions and measures of center and spread",
+  "questions": [
+    {
+      "id": "af96ffde",
+      "prompt": "The mean score of 8 players in a basketball game was 14.5 points. If the highest individual score is removed, the mean score of the remaining 7 players becomes 12 points. What was the highest score?",
+      "choices": {
+        "A": "20",
+        "B": "24",
+        "C": "32",
+        "D": "36"
+      },
+      "correct": "C",
+      "difficulty": "hard",
+      "rationale": "Total of 8 scores is 14.5 × 8 = 116. Total of remaining 7 scores is 12 × 7 = 84. The removed highest score is 116 − 84 = 32."
+    },
+    {
+      "id": "dd9233d6",
+      "prompt": "Two different teams consisting of 10 members each ran in a race. Each member’s completion time was recorded. The mean completion time for team A was 3.41 minutes, and for team B was 3.79 minutes. Which of the following MUST be true?\n\nI. Every member of team A completed the race in less time than any member of team B.\nII. The median completion time for team B is greater than the median completion time for team A.\nIII. There is at least one member of team B who took more time to complete the race than some member of team A.",
+      "choices": {
+        "A": "III only",
+        "B": "I and III only",
+        "C": "II and III only",
+        "D": "I, II, and III"
+      },
+      "correct": "A",
+      "difficulty": "hard",
+      "rationale": "Team B’s total time is greater than team A’s total time, so at least one member of team B must have taken longer than some member of team A. Statements I and II are not guaranteed by the means alone."
+    },
+    {
+      "id": "09287872",
+      "prompt": "A dot plot shows 15 values in data set A. Data set B is created by adding 56 to each value in data set A. Which of the following correctly compares the medians and ranges of data sets A and B?",
+      "choices": {
+        "A": "The median and range of data set B are equal to those of data set A.",
+        "B": "The median of data set B is equal to that of data set A, and the range of data set B is greater.",
+        "C": "The median of data set B is greater than that of data set A, and the range is equal.",
+        "D": "The median and range of data set B are both greater."
+      },
+      "correct": "C",
+      "difficulty": "hard",
+      "rationale": "Adding 56 to every value increases the median by 56 but does not change the range, since both the minimum and maximum increase by the same amount."
+    },
+    {
+      "id": "ffccd820",
+      "prompt": "The table summarizes the number of employees at each of the 17 restaurants in a town. Which of the following could be the median number of employees?",
+      "choices": {
+        "A": "2",
+        "B": "9",
+        "C": "15",
+        "D": "21"
+      },
+      "correct": "D",
+      "difficulty": "hard",
+      "rationale": "With 17 restaurants, the median is the 9th value. Based on the cumulative counts, the 9th restaurant falls in the 20–25 range. Of the choices, only 21 fits that range."
+    },
+    {
+      "id": "37c09cea",
+      "prompt": "Two box plots show the distributions of the number of books read over the summer by students in two English classes. What is the positive difference between the ranges of the two classes?",
+      "choices": {
+        "A": "2",
+        "B": "3",
+        "C": "4",
+        "D": "5"
+      },
+      "correct": "C",
+      "difficulty": "hard",
+      "rationale": "Class A has a range of 5 − 0 = 5. Class B has a range of 10 − 1 = 9. The positive difference is 9 − 5 = 4."
+    },
+    {
+      "id": "6894c8ee",
+      "prompt": "Melissa recorded the price of one gallon of regular gas from five different local gas stations on the same day. What is the median of the gas prices?",
+      "choices": {
+        "A": "$3.679",
+        "B": "$3.689",
+        "C": "$3.699",
+        "D": "$3.729"
+      },
+      "correct": "C",
+      "difficulty": "hard",
+      "rationale": "When the prices are ordered, the middle value is $3.699, which is the median of the five values."
+    },
+    {
+      "id": "3f305822",
+      "prompt": "For which of the following data sets is the mean greater than the median?",
+      "choices": {
+        "A": "5, 5, 5, 5, 5, 5, 5, 5, 5",
+        "B": "0, 10, 20, 30, 40, 50, 60, 70, 80",
+        "C": "2, 4, 8, 16, 32, 64, 128, 256, 512",
+        "D": "7, 107, 107, 207, 207, 207, 307, 307, 307"
+      },
+      "correct": "C",
+      "difficulty": "hard",
+      "rationale": "In choice C, the distribution is right-skewed. The large values pull the mean above the median."
+    },
+    {
+      "id": "4987069f",
+      "prompt": "Data set A consists of 10 positive integers less than 60. Nine of the integers are shown: 43, 45, 44, 43, 38, 39, 40, 46, 40. The mean of these 9 integers is 42. If the mean of all 10 integers is an integer greater than 42, what is the value of the largest integer in data set A?",
+      "choices": {
+        "A": "48",
+        "B": "50",
+        "C": "52",
+        "D": "54"
+      },
+      "correct": "C",
+      "difficulty": "hard",
+      "rationale": "The sum of the 9 values is 378. To make the total divisible by 10 and greater than 420, the missing value must be 52. This is also the largest value in the set."
+    }
+  ]
+}
