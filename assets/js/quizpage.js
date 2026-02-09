@@ -1,18 +1,17 @@
 // /assets/js/pages/quizpage.js
-// Dream School Academy — quiz loader (normal quizId + random mode)
+// Dream School Academy — quiz loader (topic quizId + random mode)
 //
 // Supports:
-// 1) Normal mode: /pages/quiz.html?quizId=...  (or window.DSA_BOOT)
+// 1) Topic mode:  /pages/quiz.html?quizId=...  (or window.DSA_BOOT)
 // 2) Random mode: /pages/quiz.html?mode=random&section=math&count=10&difficulty=hard&untimed=1
 //
-// Random mode loads /assets/questionbank/math/banks.math.json and samples from all listed banks.
-// IMPORTANT: Random mode is resilient to missing banks (404). Missing banks are skipped.
+// Random mode loads /assets/questionbank/math/banks.math.json and samples across all listed banks.
+// Missing banks (404) are skipped.
 //
-// NEW (critical for Progress logging):
-// - Ensures every run has a unique runId + storageKey, so attempts don't collide.
-// - Signals quiz-engine with config fields commonly used to save attempts:
-//   attemptId, attemptKey, attemptScope, bankId/bankVersion (when available), mode.
-// - Keeps normal quizzes stable but fixes random quiz overwriting issues that prevent logging.
+// IMPORTANT (progress/attempt saving):
+// - Always generates a unique attemptId per run.
+// - Provides enough metadata for quiz-engine.js + attempt-writer.js to save a complete attempt payload.
+// - Random mode provides deterministic picking info via cfg.seedMode/seedValue + pick.picked list.
 
 "use strict";
 
@@ -39,7 +38,7 @@ function getQuizIdFromUrl() {
 }
 
 function isRandomMode(params) {
-  return params.get("mode") === "random";
+  return (params.get("mode") || "").toLowerCase() === "random";
 }
 
 function getRandomSettings(params) {
@@ -49,11 +48,12 @@ function getRandomSettings(params) {
 
   const difficulty = (params.get("difficulty") || "").toLowerCase().trim();
   const untimed = params.get("untimed") === "1";
+
   return { section, count, difficulty, untimed };
 }
 
 /* -----------------------------
-   Minimal UI error (so you don't get "silent Loading...")
+   Minimal UI error (avoid "silent Loading...")
 ------------------------------ */
 
 function renderFatal(message) {
@@ -87,7 +87,6 @@ function renderFatal(message) {
 ------------------------------ */
 
 function nowISODate() {
-  // YYYY-MM-DD (local)
   const d = new Date();
   const y = d.getFullYear();
   const m = String(d.getMonth() + 1).padStart(2, "0");
@@ -96,37 +95,53 @@ function nowISODate() {
 }
 
 function makeAttemptId() {
-  // Prefer crypto UUID; fall back safely
   try {
-    if (crypto?.randomUUID) return crypto.randomUUID();
+    if (globalThis.crypto?.randomUUID) return crypto.randomUUID();
   } catch (_) {}
   return `att_${Date.now()}_${Math.random().toString(16).slice(2)}`;
 }
 
 /* -----------------------------
-   Question utilities
+   Small utilities
 ------------------------------ */
 
 function asArray(x) {
-  return Array.isArray(x) ? x : (x ? [x] : []);
+  return Array.isArray(x) ? x : x ? [x] : [];
 }
 
-function normalizeQuestion(q) {
-  // Banks currently use answerIndex; engine expects correctIndex.
-  const correctIndex =
-    Number.isFinite(q?.correctIndex) ? q.correctIndex :
-    Number.isFinite(q?.answerIndex) ? q.answerIndex :
-    null;
-
-  // Ensure stable IDs if absent (helps review/progress)
-  const questionId = q?.questionId || q?.id || null;
-
-  return { ...q, correctIndex, questionId };
+function safeStr(x) {
+  return typeof x === "string" ? x : "";
 }
 
-function shuffleInPlace(arr) {
+/* -----------------------------
+   Deterministic RNG for random picking
+   (so pick list is reproducible given seedValue)
+------------------------------ */
+
+function hash32(str) {
+  // FNV-1a 32-bit
+  let h = 0x811c9dc5;
+  for (let i = 0; i < str.length; i++) {
+    h ^= str.charCodeAt(i);
+    h = Math.imul(h, 0x01000193);
+  }
+  return h >>> 0;
+}
+
+function mulberry32(seed) {
+  let a = seed >>> 0;
+  return function () {
+    a |= 0;
+    a = (a + 0x6d2b79f5) | 0;
+    let t = Math.imul(a ^ (a >>> 15), 1 | a);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+
+function shuffleInPlace(arr, rand) {
   for (let i = arr.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
+    const j = Math.floor(rand() * (i + 1));
     const tmp = arr[i];
     arr[i] = arr[j];
     arr[j] = tmp;
@@ -134,25 +149,91 @@ function shuffleInPlace(arr) {
   return arr;
 }
 
-function sampleUnique(pool, n) {
-  const copy = pool.slice();
-  shuffleInPlace(copy);
-  return copy.slice(0, n);
+/* -----------------------------
+   Question normalization
+------------------------------ */
+
+function fallbackQuestionId(q) {
+  // Prefer stable fields; avoid randomness (so review links remain consistent)
+  const base =
+    safeStr(q?.questionId) ||
+    safeStr(q?.id) ||
+    `${safeStr(q?.topic)}|${safeStr(q?.skill)}|${safeStr(q?.prompt).slice(0, 80)}`;
+  return `Q_${hash32(base).toString(16)}`;
+}
+
+function normalizeQuestion(q, bankMeta) {
+  // Banks may use answerIndex; engine expects correctIndex.
+  const correctIndex =
+    Number.isFinite(q?.correctIndex) ? q.correctIndex :
+    Number.isFinite(q?.answerIndex) ? q.answerIndex :
+    null;
+
+  const questionId = safeStr(q?.questionId) || safeStr(q?.id) || fallbackQuestionId(q);
+
+  // Version is REQUIRED in attempt schema (questionId + version)
+  const version =
+    Number.isFinite(q?.version) ? q.version :
+    Number.isFinite(bankMeta?.bankVersion) ? bankMeta.bankVersion :
+    1;
+
+  const out = {
+    ...q,
+    questionId,
+    version,
+    correctIndex,
+  };
+
+  // Carry source bank meta (useful for random mixed banks + review tooling)
+  if (bankMeta) {
+    out.__sourceBankId = bankMeta.bankId || null;
+    out.__sourceBankVersion = Number.isFinite(bankMeta.bankVersion) ? bankMeta.bankVersion : null;
+    out.__sourceBankTitle = bankMeta.title || null;
+    out.__sourceBankUrl = bankMeta.__bankUrl || null;
+  }
+
+  return out;
+}
+
+function isRunnableQuestion(q) {
+  return (
+    typeof q?.prompt === "string" &&
+    Array.isArray(q?.choices) &&
+    q.choices.length >= 2 &&
+    Number.isFinite(q?.correctIndex) &&
+    typeof q?.questionId === "string" &&
+    q.questionId.length > 0 &&
+    Number.isFinite(q?.version)
+  );
 }
 
 /* -----------------------------
-   Normal mode: pick questions from a single bank
+   Topic mode: pick questions from a single bank
 ------------------------------ */
 
 function pickQuestionsFromBank(bank, cfg) {
   if (!bank || !Array.isArray(bank.questions)) return [];
-  const n = Number(cfg.pickCount || cfg.pick || cfg.count || bank.questions.length);
 
-  // Respect shuffle if you later set it true in quizzes.json
-  const qs = bank.questions.slice().map(normalizeQuestion);
-  if (cfg.shuffle) shuffleInPlace(qs);
+  const bankMeta = {
+    bankId: bank?.bankId || bank?.topic || null,
+    bankVersion: bank?.bankVersion ?? bank?.version ?? null,
+    title: bank?.title || null,
+  };
 
-  return qs.slice(0, n);
+  const desired =
+    Number(cfg?.pickCount ?? cfg?.pick ?? cfg?.count ?? bank.questions.length);
+  const pickCount = Number.isFinite(desired) ? Math.max(1, Math.min(60, desired)) : bank.questions.length;
+
+  const qs = bank.questions.slice().map((q) => normalizeQuestion(q, bankMeta));
+
+  // Respect shuffle if you later set it true in boot cfg
+  if (cfg?.shuffle) {
+    const rand = mulberry32(hash32("topic-shuffle"));
+    shuffleInPlace(qs, rand);
+  }
+
+  const sliced = qs.slice(0, pickCount).filter(isRunnableQuestion);
+  return sliced;
 }
 
 /* -----------------------------
@@ -201,16 +282,15 @@ async function loadRegistryBanks(registryUrl) {
 function flattenQuestions(bankPayloads) {
   const all = [];
   for (const b of bankPayloads) {
+    const bankMeta = {
+      bankId: b?.bankId || b?.topic || null,
+      bankVersion: b?.bankVersion ?? b?.version ?? null,
+      title: b?.title || null,
+      __bankUrl: b?.__bankUrl || null,
+    };
+
     const qs = asArray(b?.questions);
-    for (const q of qs) {
-      // Carry bank metadata so attempts can store it (useful for review/progress)
-      const nq = normalizeQuestion(q);
-      nq.__sourceBankId = b?.bankId || b?.topic || null;
-      nq.__sourceBankVersion = b?.bankVersion ?? b?.version ?? null;
-      nq.__sourceBankTitle = b?.title || null;
-      nq.__sourceBankUrl = b?.__bankUrl || null;
-      all.push(nq);
-    }
+    for (const q of qs) all.push(normalizeQuestion(q, bankMeta));
   }
   return all;
 }
@@ -220,22 +300,24 @@ function filterQuestionsForRandom(pool, settings) {
 
   // Section gate (expects topics like "math.circles")
   if (settings.section === "math") {
-    out = out.filter(q => String(q?.topic || "").startsWith("math."));
+    out = out.filter((q) => safeStr(q?.topic).startsWith("math."));
   }
 
   if (settings.difficulty) {
-    out = out.filter(q => String(q?.difficulty || "").toLowerCase() === settings.difficulty);
+    out = out.filter((q) => safeStr(q?.difficulty).toLowerCase() === settings.difficulty);
   }
 
   // Must be runnable
-  out = out.filter(q =>
-    typeof q?.prompt === "string" &&
-    Array.isArray(q?.choices) &&
-    q.choices.length >= 2 &&
-    Number.isFinite(q?.correctIndex)
-  );
+  out = out.filter(isRunnableQuestion);
 
   return out;
+}
+
+function sampleUniqueDeterministic(pool, n, seedValue) {
+  const copy = pool.slice();
+  const rand = mulberry32(hash32(String(seedValue)));
+  shuffleInPlace(copy, rand);
+  return copy.slice(0, n);
 }
 
 /* -----------------------------
@@ -244,49 +326,51 @@ function filterQuestionsForRandom(pool, settings) {
 
 function setEngineConfig({
   quizId,
+  attemptId,
+  attemptType, // "topic" | "random"
+
   title,
   sectionTitle,
-  timeLimitSec,
-  questions,
-
-  // New: attempt identity + better metadata for saving
-  mode,
-  attemptId,
-  bankId,
-  bankVersion,
   description,
+  timeLimitSec,
+
+  bank,        // { bankId, bankVersion, title }
+  pick,        // random-only: { pickCount, seedMode, seedValue, picked: [...] }
+
+  questions,
 }) {
-  // Unique per run => prevents overwriting drafts/attempts (especially for random)
-  const runQuizKey = attemptId ? `${quizId}:${attemptId}` : quizId;
-  const storageKey = `dsa:draft:${runQuizKey}`;
+  // Draft key: keep unique per attempt to prevent collisions for random (and for repeated topic runs).
+  // Attempts are always stored as dsa:attempt:{attemptId}.
+  const storageKey = `dsa:draft:${quizId}:${attemptId}`;
 
   window.dsaQuizConfig = {
+    // core identity
     quizId,
     sectionId: quizId,
-    title: title || "Quiz",
-    description: description || "",
-    sectionTitle: sectionTitle || title || "Quiz",
+    mode: attemptType === "random" ? "random" : "topic",
+    attemptType,
+    attemptId,
+    attemptKey: attemptId ? `dsa:attempt:${attemptId}` : null,
 
-    // Untimed should be 0 or null depending on how your engine checks it.
-    // If engine does: if (timeLimitSec) startTimer(); then 0 disables timer.
+    // titles
+    title: title || "Quiz",
+    sectionTitle: sectionTitle || title || "Quiz",
+    description: description || "",
+
+    // timing (0 disables timer in most implementations)
     timeLimitSec: Number.isFinite(timeLimitSec) ? timeLimitSec : null,
 
-    // Draft key (unique per run for random; stable for normal if engine ignores attemptId)
+    // storage
     storageKey,
 
-    // Provide attempt identity for quiz-engine/review/progress pipelines
-    attemptId: attemptId || null,
-    attemptKey: attemptId ? `dsa:attempt:${attemptId}` : null,
-    mode: mode || "normal",
-
-    // Bank metadata (helps review loader and progress rendering)
-    bankId: bankId || null,
-    bankVersion: Number.isFinite(bankVersion) ? bankVersion : null,
+    // attempt payload helpers (quiz-engine uses these when building attempt object)
+    bank: bank || { bankId: null, bankVersion: null, title: null },
+    pick: pick || null,
 
     pauseOnBlur: false,
     allowDraftSave: false,
 
-    // Normalize questions already
+    // normalized questions
     questions,
   };
 
@@ -301,7 +385,9 @@ function setEngineConfig({
   const params = getParams();
   const boot = window.DSA_BOOT || null;
 
-  // RANDOM MODE overrides boot/quizId
+  // -----------------------------
+  // RANDOM MODE
+  // -----------------------------
   if (isRandomMode(params)) {
     const settings = getRandomSettings(params);
 
@@ -333,21 +419,26 @@ function setEngineConfig({
       return;
     }
 
-    const sampled = sampleUnique(pool, settings.count);
-
-    // Unique attempt per random run (prevents collisions + enables progress logging)
+    // Unique attempt per run
     const attemptId = makeAttemptId();
+
+    // Deterministic seed per attempt (so pick list is reconstructable)
+    const seedMode = "perAttempt";
+    const seedValue = attemptId;
+
+    const sampled = sampleUniqueDeterministic(pool, settings.count, seedValue);
 
     const quizId = "random.math";
     const title = "Random Math Practice";
     const sectionTitle = settings.untimed ? "Untimed · Random Math" : "Random Math";
-
-    // Untimed: 0 disables timer in most implementations
     const timeLimitSec = settings.untimed ? 0 : null;
 
-    // For random: bankId/bankVersion are "mixed" — store registry scope
-    const bankId = "math.random";
-    const bankVersion = 1;
+    // “Mixed” bank metadata for attempt schema
+    const bank = {
+      bankId: "math.random",
+      bankVersion: 1,
+      title: "Math — Mixed Banks",
+    };
 
     const description =
       `Randomized practice across all Math banks. ` +
@@ -356,24 +447,34 @@ function setEngineConfig({
       (settings.untimed ? `, untimed` : ``) +
       `. updatedAt=${nowISODate()}.`;
 
+    // pick block required by your attempt schema for randomized attempts
+    const pick = {
+      pickCount: settings.count,
+      seedMode,
+      seedValue,
+      picked: sampled.map((q) => ({ questionId: q.questionId, version: q.version })),
+    };
+
     setEngineConfig({
       quizId,
+      attemptId,
+      attemptType: "random",
       title,
       sectionTitle,
-      timeLimitSec,
-      questions: sampled,
-      mode: "random",
-      attemptId,
-      bankId,
-      bankVersion,
       description,
+      timeLimitSec,
+      bank,
+      pick,
+      questions: sampled,
     });
 
     await import("/assets/js/quiz-engine.js");
     return;
   }
 
-  // NORMAL MODE
+  // -----------------------------
+  // TOPIC MODE (normal quizId flow)
+  // -----------------------------
   const quizId = boot?.quizId || getQuizIdFromUrl();
   if (!quizId) {
     renderFatal("Missing quizId. Use /pages/quiz.html?quizId=math.circles");
@@ -387,37 +488,40 @@ function setEngineConfig({
     return;
   }
 
-  let bank;
+  let bankPayload;
   try {
-    bank = await loadJson(bankUrl);
+    bankPayload = await loadJson(bankUrl);
   } catch (err) {
     renderFatal(err?.message || err);
     return;
   }
 
-  const questions = pickQuestionsFromBank(bank, cfg);
+  const questions = pickQuestionsFromBank(bankPayload, cfg);
   if (!questions.length) {
-    renderFatal(`Bank loaded but contained no questions: ${bankUrl}`);
+    renderFatal(`Bank loaded but contained no runnable questions: ${bankUrl}`);
     return;
   }
 
-  // For normal quizzes, still generate attemptId so each run can log uniquely.
-  // If your engine already generates its own attemptId, it can ignore this.
+  // Unique attempt per run (so topic attempts don’t collide)
   const attemptId = makeAttemptId();
+
+  const bank = {
+    bankId: bankPayload?.bankId || bankPayload?.topic || quizId,
+    bankVersion: bankPayload?.bankVersion ?? bankPayload?.version ?? null,
+    title: bankPayload?.title || cfg?.title || "Quiz",
+  };
 
   setEngineConfig({
     quizId,
-    title: cfg.title || bank.title || "Quiz",
-    sectionTitle: cfg.sectionTitle || cfg.title || bank.title || "Quiz",
-    timeLimitSec: cfg.timeLimitSec ?? null,
-    questions,
-
-    mode: "normal",
     attemptId,
-
-    bankId: bank?.bankId || bank?.topic || quizId,
-    bankVersion: bank?.bankVersion ?? bank?.version ?? null,
-    description: bank?.description || "",
+    attemptType: "topic",
+    title: cfg.title || bankPayload.title || "Quiz",
+    sectionTitle: cfg.sectionTitle || cfg.title || bankPayload.title || "Quiz",
+    description: bankPayload?.description || cfg?.description || "",
+    timeLimitSec: cfg.timeLimitSec ?? null,
+    bank,
+    pick: null, // topic attempts do not require pick[]
+    questions,
   });
 
   await import("/assets/js/quiz-engine.js");
