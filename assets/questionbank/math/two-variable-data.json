@@ -1,0 +1,216 @@
+{
+  "bankId": "math.two-variable-data",
+  "bankVersion": 1,
+  "title": "Math — Two-Variable Data",
+  "description": "SAT-style two-variable data questions: lines of best fit, slope, residuals, and interpreting linear models from scatterplots.",
+  "updatedAt": "2026-02-08",
+  "questions": [
+    {
+      "questionId": "SAT-536cfa26",
+      "topic": "math.two-variable-data",
+      "skill": "slope-from-line-of-best-fit",
+      "difficulty": "hard",
+      "image": "assets/two-variable-data/536cfa26.png",
+      "prompt": "The scatterplot shows the relationship between two variables, \\(x\\) and \\(y\\). A line of best fit is also shown.\n\nWhich of the following is closest to the slope of the line of best fit shown?",
+      "choices": [
+        "-2.4",
+        "-0.8",
+        "0.8",
+        "2.4"
+      ],
+      "answerIndex": 1,
+      "solution": {
+        "finalAnswer": "-0.8",
+        "approach": "Estimate two points that lie on the line of best fit and compute slope \\(m=\\frac{\\Delta y}{\\Delta x}\\).",
+        "steps": [
+          "The line of best fit slopes downward as \\(x\\) increases, so the slope must be negative (eliminate positive choices).",
+          "Pick two clear points the line passes near, for example \\((1,12)\\) and \\((11,4)\\).",
+          "Compute the slope: \\(m=\\frac{4-12}{11-1}=\\frac{-8}{10}=-0.8\\).",
+          "So the closest choice is \\(-0.8\\)."
+        ],
+        "takeaway": "For best-fit slope questions, (1) decide the sign from the trend, then (2) estimate slope using two easy points on the line."
+      }
+    },
+    {
+      "questionId": "SAT-ce577b1a",
+      "topic": "math.two-variable-data",
+      "skill": "slope-from-line-of-best-fit",
+      "difficulty": "hard",
+      "image": "assets/two-variable-data/ce577b1a.png",
+      "prompt": "The scatterplot shows the relationship between two variables, \\(x\\) and \\(y\\). A line of best fit is also shown.\n\nWhich of the following is closest to the slope of this line of best fit?",
+      "choices": [
+        "-3.3",
+        "-1.1",
+        "1.1",
+        "3.3"
+      ],
+      "answerIndex": 1,
+      "solution": {
+        "finalAnswer": "-1.1",
+        "approach": "Use two approximate points on the best-fit line and compute \\(m=\\frac{\\Delta y}{\\Delta x}\\).",
+        "steps": [
+          "The line decreases as \\(x\\) increases, so the slope is negative (eliminate the positive choices).",
+          "Use two clear points on the line, about \\((0,14)\\) and \\((13,0)\\).",
+          "Compute slope: \\(m=\\frac{0-14}{13-0}=\\frac{-14}{13}\\approx -1.08\\).",
+          "The closest choice is \\(-1.1\\)."
+        ],
+        "takeaway": "When the fraction isn’t clean, estimate the decimal and choose the closest option."
+      }
+    },
+    {
+      "questionId": "SAT-bc9caf4f",
+      "topic": "math.two-variable-data",
+      "skill": "average-rate-of-change-from-scatterplot",
+      "difficulty": "hard",
+      "image": "assets/two-variable-data/bc9caf4f.png",
+      "prompt": "During a study, the temperature, in degrees Celsius (\\(^\\circ\\text{C}\\)), of the air in a chamber was recorded at certain times.\n\nWhat was the average rate of change, in \\(^\\circ\\text{C}\\) per minute, of the recorded temperature from \\(x=5\\) to \\(x=7\\)?",
+      "choices": [
+        "2",
+        "5",
+        "10",
+        "24"
+      ],
+      "answerIndex": 1,
+      "solution": {
+        "finalAnswer": "5",
+        "approach": "Average rate of change is slope between the two points: \\(\\frac{y_2-y_1}{x_2-x_1}\\).",
+        "steps": [
+          "Read the y-value at \\(x=5\\): the plot shows \\(y=14\\).",
+          "Read the y-value at \\(x=7\\): the plot shows \\(y=24\\).",
+          "Compute average rate of change: \\(\\frac{24-14}{7-5}=\\frac{10}{2}=5\\)."
+        ],
+        "takeaway": "Average rate of change between two times is the slope between those two plotted points."
+      }
+    },
+    {
+      "questionId": "SAT-0e06b79e",
+      "topic": "math.two-variable-data",
+      "skill": "interpret-slope-in-context",
+      "difficulty": "hard",
+      "image": "assets/two-variable-data/0e06b79e.png",
+      "prompt": "The scatterplot shows the federal-mandated minimum wage every 10 years between 1940 and 2010. A line of best fit is shown, and its equation is\n\n\\[y=0.096x-0.488\\]\n\nWhat does the line of best fit predict about the increase in the minimum wage over the 70-year period?",
+      "choices": [
+        "Each year between 1940 and 2010, the average increase in minimum wage was 0.096 dollars.",
+        "Each year between 1940 and 2010, the average increase in minimum wage was 0.49 dollars.",
+        "Every 10 years between 1940 and 2010, the average increase in minimum wage was 0.096 dollars.",
+        "Every 10 years between 1940 and 2010, the average increase in minimum wage was 0.488 dollars."
+      ],
+      "answerIndex": 0,
+      "solution": {
+        "finalAnswer": "Each year between 1940 and 2010, the average increase in minimum wage was 0.096 dollars.",
+        "approach": "In \\(y=mx+b\\), the slope \\(m\\) is the change in \\(y\\) for a 1-unit increase in \\(x\\).",
+        "steps": [
+          "The equation is in slope-intercept form \\(y=mx+b\\). Here, \\(m=0.096\\).",
+          "The x-axis is labeled as years since 1940, so 1 unit of \\(x\\) = 1 year.",
+          "Therefore, the model predicts the minimum wage increases by \\(0.096\\) dollars per year on average.",
+          "That matches choice A."
+        ],
+        "takeaway": "Always match the slope’s “per 1 x-unit” meaning to the axis units (years, decades, minutes, etc.)."
+      }
+    },
+    {
+      "questionId": "SAT-f9fde6aa",
+      "topic": "math.two-variable-data",
+      "skill": "equation-of-line-of-best-fit",
+      "difficulty": "hard",
+      "image": "assets/two-variable-data/f9fde6aa.png",
+      "prompt": "Which of the following could be the equation for a line of best fit for the data shown in the scatterplot?",
+      "choices": [
+        "y=3x+0.8",
+        "y=0.8x+3",
+        "y=-0.8x+3",
+        "y=-3x+0.8"
+      ],
+      "answerIndex": 0,
+      "solution": {
+        "finalAnswer": "y=3x+0.8",
+        "approach": "Decide the sign of the slope from the trend, then estimate the slope magnitude and intercept from representative points.",
+        "steps": [
+          "The data increase as \\(x\\) increases, so the slope must be positive (eliminate choices with negative slope).",
+          "Estimate two points near the overall trend, e.g., about \\((1,4)\\) and \\((8,26)\\).",
+          "Estimated slope: \\(m\\approx\\frac{26-4}{8-1}=\\frac{22}{7}\\approx3.14\\), which is closest to 3 (not 0.8).",
+          "Extrapolating back toward \\(x=0\\), the line would cross near \\(y\\approx1\\), consistent with \\(+0.8\\).",
+          "So \\(y=3x+0.8\\) is a reasonable best-fit equation."
+        ],
+        "takeaway": "A best-fit line needs the right slope direction (sign) and the right steepness (magnitude) more than “perfectly hitting” points."
+      }
+    },
+    {
+      "questionId": "SAT-22c86db5",
+      "topic": "math.two-variable-data",
+      "skill": "residuals-count-above-line",
+      "difficulty": "hard",
+      "image": "assets/two-variable-data/22c86db5.png",
+      "prompt": "The scatterplot shows the relationship between two variables, \\(x\\) and \\(y\\). A line of best fit is also shown.\n\nFor how many of the 10 data points is the actual \\(y\\)-value greater than the \\(y\\)-value predicted by the line of best fit?",
+      "choices": [
+        "3",
+        "4",
+        "6",
+        "7"
+      ],
+      "answerIndex": 2,
+      "solution": {
+        "finalAnswer": "6",
+        "approach": "Points above the line have actual \\(y\\) greater than predicted \\(y\\). Count those points.",
+        "steps": [
+          "A point above the best-fit line means actual \\(y\\) is greater than predicted \\(y\\).",
+          "Scan the graph and count how many dots lie above the line of best fit.",
+          "There are 6 points above the line.",
+          "Therefore, the answer is 6."
+        ],
+        "takeaway": "Residual sign: above line = positive residual (actual > predicted); below line = negative residual (actual < predicted)."
+      }
+    },
+    {
+      "questionId": "SAT-6be5bec6",
+      "topic": "math.two-variable-data",
+      "skill": "choose-linear-model-from-scatterplot",
+      "difficulty": "hard",
+      "image": "assets/two-variable-data/6be5bec6.png",
+      "prompt": "The scatterplot shows the relationship between two variables, \\(x\\) and \\(y\\).\n\nWhich of the following equations is the most appropriate linear model for the data shown?",
+      "choices": [
+        "y=0.9+9.4x",
+        "y=0.9-9.4x",
+        "y=9.4+0.9x",
+        "y=9.4-0.9x"
+      ],
+      "answerIndex": 3,
+      "solution": {
+        "finalAnswer": "y=9.4-0.9x",
+        "approach": "Choose the model whose slope sign matches the trend and whose intercept matches the y-value near \\(x=0\\).",
+        "steps": [
+          "As \\(x\\) increases, the points generally go down, so the slope must be negative (eliminate choices with positive slope).",
+          "Near \\(x=0\\), the y-values are around 9–10, so the y-intercept should be around 9–10 (not near 1).",
+          "Among the negative-slope options, \\(y=9.4-0.9x\\) has y-intercept 9.4 and slope -0.9, matching both requirements.",
+          "Therefore, choice D is best."
+        ],
+        "takeaway": "Model selection = match the direction (slope sign) and the starting level (y-intercept) to the scatterplot."
+      }
+    },
+    {
+      "questionId": "SAT-a87deb8b",
+      "topic": "math.two-variable-data",
+      "skill": "slope-from-line-of-best-fit",
+      "difficulty": "hard",
+      "image": "assets/two-variable-data/a87deb8b.png",
+      "prompt": "In the given scatterplot, a line of best fit for the data is shown.\n\nWhich of the following is closest to the slope of the line of best fit shown?",
+      "choices": [
+        "0.2",
+        "0.7",
+        "1.8",
+        "2.6"
+      ],
+      "answerIndex": 2,
+      "solution": {
+        "finalAnswer": "1.8",
+        "approach": "Estimate two points on the line of best fit and compute \\(m=\\frac{\\Delta y}{\\Delta x}\\).",
+        "steps": [
+          "Pick two easy points the best-fit line passes near, such as \\((0,0.2)\\) and \\((5,9.3)\\).",
+          "Compute slope: \\(m=\\frac{9.3-0.2}{5-0}=\\frac{9.1}{5}=1.82\\).",
+          "The closest choice to 1.82 is 1.8."
+        ],
+        "takeaway": "When answer choices are decimals, compute a decimal slope and then select the closest option."
+      }
+    }
+  ]
+}
