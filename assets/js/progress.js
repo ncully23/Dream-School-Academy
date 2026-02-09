@@ -1,10 +1,13 @@
 // /assets/js/progress.js
 // "My Progress" page:
-// - Shows ONLY Firestore attempts for the logged-in user.
+// - Shows ONLY Firestore attempts for the logged-in user (users/{uid}/attempts)
 // - Hyperlink on quiz title -> /pages/review.html?attemptId=...
 // - Renders 6 columns: Date, Category, Score, Total, % Correct, Duration
 // - Uses localStorage (dsa:attempt:*) ONLY as a diagnostic to detect unsynced attempts.
 // - Friendly error states: signed out vs permission denied vs generic.
+//
+// This revision removes the dependency on window.quizData and directly queries Firestore.
+// That makes Progress work as soon as quiz-engine writes attempts to users/{uid}/attempts/{attemptId}.
 
 (function () {
   "use strict";
@@ -77,7 +80,7 @@
           "<": "&lt;",
           ">": "&gt;",
           '"': "&quot;",
-          "'": "&#39;"
+          "'": "&#39;",
         }[m];
       });
     }
@@ -102,11 +105,6 @@
         }
       }
       return null;
-    }
-
-    function fmtDate(tsLike) {
-      const d = toDateMaybe(tsLike);
-      return d ? d.toLocaleString() : "—";
     }
 
     // -----------------------------
@@ -135,7 +133,7 @@
     }
 
     // -----------------------------
-    // Local diagnostic (from progresspage.js): count local attempts
+    // Local diagnostic: count local attempts
     // -----------------------------
     function countLocalAttemptKeys() {
       try {
@@ -151,30 +149,34 @@
     }
 
     // -----------------------------
-    // Auth gating (prevents permission errors)
+    // Firebase imports (module-safe)
     // -----------------------------
-    async function requireSignedInUserOrThrow() {
-      // Preferred: modular auth via quizData
-      if (window.quizData && typeof window.quizData.waitForAuthReady === "function") {
-        const user = await window.quizData.waitForAuthReady();
-        if (user) return user;
-        throw new Error("Not signed in");
-      }
+    async function getFirebaseApis() {
+      // Import your shared instances
+      const mod = await import("/assets/js/firebase-init.js");
+      const { auth, db, authReady } = mod;
 
-      // Optional compat fallback (only if compat is present)
-      if (window.firebase && typeof window.firebase.auth === "function") {
-        const user = window.firebase.auth().currentUser;
-        if (user) return user;
-        throw new Error("Not signed in");
-      }
+      // Import Firestore query APIs
+      const fs = await import("https://www.gstatic.com/firebasejs/10.12.4/firebase-firestore.js");
+      const { collection, getDocs, orderBy, limit, query } = fs;
 
-      throw new Error(
-        "Progress: auth API not available. Ensure /assets/js/quiz-data.js is loaded (modular)."
-      );
+      return { auth, db, authReady, collection, getDocs, orderBy, limit, query };
     }
 
     // -----------------------------
-    // Normalize attempt shapes (expanded from progresspage.js)
+    // Auth gating
+    // -----------------------------
+    async function requireSignedInUserOrThrow(firebase) {
+      await firebase.authReady;
+      const user = firebase.auth.currentUser;
+      if (user) return user;
+      const e = new Error("Not signed in");
+      e.code = "auth/no-current-user";
+      throw e;
+    }
+
+    // -----------------------------
+    // Normalize attempt shapes (Firestore doc -> row model)
     // -----------------------------
     function normalizeAttempt(raw) {
       const a = raw || {};
@@ -199,18 +201,15 @@
         ? totals.scorePercent
         : (Number.isFinite(a.scorePercent) ? a.scorePercent : computePercent(score, total));
 
-      // attemptId should be the engine's attemptId (t_...), not Firestore doc id.
-      const attemptId = String(a.attemptId || a.attemptID || a.id || "");
+      // attemptId should be the engine attempt id and also the Firestore doc id in your pipeline
+      const attemptId = String(a.attemptId || a.id || "");
 
       // Title/category
       const sectionId = String(a.sectionId || a.quizId || a.examType || "");
       const title = String(a.title || a.sectionTitle || sectionId || "Practice");
 
-      // Prefer a stable display timestamp:
-      // - createdAt (Timestamp) if present
-      // - generatedAt (ISO)
-      // - timestamp (ISO)
-      const createdLike = a.createdAt || a.generatedAt || a.timestamp || a.completedAt || null;
+      // createdAt preferred; then generatedAt; then completedAt; then timestamp
+      const createdLike = a.createdAt || a.generatedAt || a.completedAt || a.timestamp || null;
       const dateObj = toDateMaybe(createdLike);
 
       return {
@@ -221,27 +220,35 @@
         percent,
         durationSeconds,
         title,
-        sectionId
+        sectionId,
       };
     }
 
     // -----------------------------
     // Data loading: Firestore only
     // -----------------------------
-    async function fetchAllResults() {
-      if (!window.quizData || typeof window.quizData.loadAllResultsForUser !== "function") {
-        throw new Error(
-          "Progress: quizData API not available. Make sure /assets/js/quiz-data.js is loaded."
-        );
-      }
+    async function fetchAllResults(firebase) {
+      const user = await requireSignedInUserOrThrow(firebase);
 
-      await requireSignedInUserOrThrow();
+      // users/{uid}/attempts ordered by createdAt desc
+      const attemptsCol = firebase.collection(firebase.db, "users", user.uid, "attempts");
 
-      const rawFs = (await window.quizData.loadAllResultsForUser()) || [];
-      return rawFs
-        .map(normalizeAttempt)
-        .filter((a) => a && a.attemptId) // require attemptId for review links
-        .sort((x, y) => (y.timestamp || 0) - (x.timestamp || 0));
+      // If createdAt isn't present on some docs, Firestore orderBy can fail.
+      // Your quiz save should set createdAt. If not, fix quiz-engine.
+      const q = firebase.query(attemptsCol, firebase.orderBy("createdAt", "desc"), firebase.limit(200));
+
+      const snap = await firebase.getDocs(q);
+      const rows = [];
+      snap.forEach((docSnap) => {
+        const data = docSnap.data() || {};
+        // Ensure attemptId exists even if writer forgot it
+        if (!data.attemptId) data.attemptId = docSnap.id;
+        rows.push(normalizeAttempt(data));
+      });
+
+      return rows
+        .filter((a) => a && a.attemptId)
+        .sort((x, y) => (y.timestamp?.getTime?.() || 0) - (x.timestamp?.getTime?.() || 0));
     }
 
     // -----------------------------
@@ -386,7 +393,7 @@
           <h2>Progress unavailable</h2>
           <p>Your account is signed in, but Firestore rules are blocking access to your progress.</p>
           <p class="muted">
-            Fix: allow the signed-in user to read <code>users/{uid}/examAttempts</code>.
+            Fix: allow the signed-in user to read <code>users/{uid}/attempts</code>.
           </p>
         </div>
       `;
@@ -398,15 +405,18 @@
     // -----------------------------
     async function refresh() {
       const localCount = countLocalAttemptKeys();
+      let firebase = null;
 
       try {
         setLoading(true);
         showBanner(null, "");
 
-        // Auth gate first: if signed out, do NOT touch Firestore
-        await requireSignedInUserOrThrow();
+        firebase = await getFirebaseApis();
 
-        const list = await fetchAllResults();
+        // Auth gate first: if signed out, do NOT touch Firestore
+        await requireSignedInUserOrThrow(firebase);
+
+        const list = await fetchAllResults(firebase);
         state.attempts = list;
 
         renderSummary(list);
@@ -432,7 +442,6 @@
           return;
         }
 
-        // Generic failure
         const msg =
           localCount > 0
             ? `Could not load your progress from Firestore. (${localCount} local attempt${localCount === 1 ? "" : "s"} exist on this device.)`
@@ -448,8 +457,6 @@
     // -----------------------------
     // Init
     // -----------------------------
-    refresh().catch((err) =>
-      console.error("progress.js: initial refresh failed", err)
-    );
+    refresh().catch((err) => console.error("progress.js: initial refresh failed", err));
   });
 })();
