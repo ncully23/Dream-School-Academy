@@ -1,0 +1,139 @@
+{
+  "quizId": "math.percentages.set1",
+  "title": "Percentages — Set 1",
+  "section": "Math",
+  "domain": "Problem-Solving and Data Analysis",
+  "skill": "Percentages",
+  "questions": [
+    {
+      "id": "d7afaadf",
+      "prompt": "37% of the items in a box are green. Of those, 37% are also rectangular. Of the green rectangular items, 42% are also metal. Which of the following is closest to the percentage of the items in the box that are not rectangular green metal items?",
+      "choices": {
+        "A": "1.16%",
+        "B": "57.50%",
+        "C": "94.25%",
+        "D": "98.84%"
+      },
+      "correct": "C",
+      "difficulty": "hard",
+      "rationale": "Rectangular green metal fraction = 0.37 × 0.37 × 0.42 = 0.057498 = 5.7498%. Not rectangular green metal = 100% − 5.7498% = 94.2502% ≈ 94.25%."
+    },
+    {
+      "id": "8864b827",
+      "prompt": "Which expression represents the result of increasing a positive quantity w by 43%?",
+      "choices": {
+        "A": "1.43w",
+        "B": "0.57w",
+        "C": "43w",
+        "D": "0.43w"
+      },
+      "correct": "A",
+      "difficulty": "hard",
+      "rationale": "Increasing by 43% means multiply by 1 + 0.43 = 1.43, so the result is 1.43w."
+    },
+    {
+      "id": "81eb7297",
+      "prompt": "140 is p% greater than 10. What is the value of p?",
+      "choices": {
+        "A": "1,400",
+        "B": "1,300",
+        "C": "140",
+        "D": "130"
+      },
+      "correct": "B",
+      "difficulty": "hard",
+      "rationale": "140 = 10(1 + p/100). Divide by 10: 14 = 1 + p/100 → p/100 = 13 → p = 1300."
+    },
+    {
+      "id": "51505b17",
+      "prompt": "The positive number a is 2,241% of the sum of the positive numbers b and c, and b is 83% of c. What percent of b is a?",
+      "choices": {
+        "A": "23.24%",
+        "B": "49.41%",
+        "C": "2,324%",
+        "D": "4,941%"
+      },
+      "correct": "D",
+      "difficulty": "hard",
+      "rationale": "a = 22.41(b + c). Also b = 0.83c → c = b/0.83. Substitute: a = 22.41(b + b/0.83) = 22.41b(1 + 1/0.83) ≈ 49.41b, so a is 4,941% of b."
+    },
+    {
+      "id": "dadfc2d7",
+      "prompt": "The number a is 70% less than the positive number b. The number c is 60% greater than a. The number c is how many times b?",
+      "choices": {
+        "A": "0.48",
+        "B": "0.30",
+        "C": "1.60",
+        "D": "0.70"
+      },
+      "correct": "A",
+      "difficulty": "hard",
+      "rationale": "a = (1 − 0.70)b = 0.30b. Then c = (1 + 0.60)a = 1.60(0.30b) = 0.48b, so c is 0.48 times b."
+    },
+    {
+      "id": "0dda2ee3",
+      "prompt": "The regular price of a shirt at a store is $11.70. The sale price of the shirt is 80% less than the regular price, and the sale price is 30% greater than the store's cost for the shirt. What was the store's cost, in dollars, for the shirt? (Disregard the $ sign when entering your answer.)",
+      "choices": {
+        "A": "1.80",
+        "B": "2.34",
+        "C": "3.04",
+        "D": "9.00"
+      },
+      "correct": "A",
+      "difficulty": "hard",
+      "rationale": "Sale price = 0.20(11.70) = 2.34. If sale price is 30% greater than cost, then 2.34 = 1.30(cost) → cost = 2.34/1.30 = 1.80."
+    },
+    {
+      "id": "0e6e5c91",
+      "prompt": "Thomas installed a new stove in his restaurant. At the time of installation, the stove had a value of $800. Thomas estimates that each year the value of the stove will depreciate by 20% of the previous year’s estimated value. What is the estimated value of the stove exactly 2 years after Thomas installed it?",
+      "choices": {
+        "A": "$480",
+        "B": "$512",
+        "C": "$556",
+        "D": "$640"
+      },
+      "correct": "B",
+      "difficulty": "hard",
+      "rationale": "Each year it keeps 80% of its value: 800(0.8)(0.8) = 800(0.64) = 512."
+    },
+    {
+      "id": "81e9f06d",
+      "prompt": "The number a is 190% greater than the number b. The number b is 80% less than 24. What is the value of a?",
+      "choices": {
+        "A": "9.12",
+        "B": "13.92",
+        "C": "26.40",
+        "D": "36.48"
+      },
+      "correct": "B",
+      "difficulty": "hard",
+      "rationale": "b = 24(1 − 0.80) = 4.8. “190% greater than b” means a = b(1 + 1.90) = 2.9b = 2.9(4.8) = 13.92."
+    },
+    {
+      "id": "e7bd68a0",
+      "prompt": "The result of increasing the quantity x by 400% is 60. What is the value of x?",
+      "choices": {
+        "A": "12",
+        "B": "15",
+        "C": "240",
+        "D": "340"
+      },
+      "correct": "A",
+      "difficulty": "hard",
+      "rationale": "Increasing by 400% means new value = x + 4x = 5x. So 5x = 60 → x = 12."
+    },
+    {
+      "id": "e8e2c25e",
+      "prompt": "The number w is 110% greater than the number z. The number z is 55% less than 50. What is the value of w?",
+      "choices": {
+        "A": "47.25",
+        "B": "22.50",
+        "C": "105.00",
+        "D": "27.50"
+      },
+      "correct": "A",
+      "difficulty": "hard",
+      "rationale": "z = 50(1 − 0.55) = 22.5. w is 110% greater than z, so w = (1 + 1.10)z = 2.1(22.5) = 47.25."
+    }
+  ]
+}
