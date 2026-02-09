@@ -9,14 +9,18 @@
 // - renders rich solutions (approach, formulas, steps, mistakes, checks, takeaway)
 // - correct/incorrect highlighting matches pages/review.html CSS
 // - MathJax-safe if present
+//
+// Matches attempt-writer schema:
+// attemptId, quizId, attemptType, title, createdAt/generatedAt,
+// totals {answered, correct, total, timeSpentSec, scorePercent},
+// items[] {questionId, version, choices, correctIndex, chosenIndex, correct, explanation},
+// bank {bankId, bankVersion, title},
+// pick {pickCount, seedMode, seedValue, picked:[{questionId, version}]}
 
 "use strict";
 
 import { auth, db, authReady } from "/assets/js/firebase-init.js";
-import {
-  doc,
-  getDoc,
-} from "https://www.gstatic.com/firebasejs/10.12.4/firebase-firestore.js";
+import { doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-firestore.js";
 
 /* -----------------------------
    URL + storage helpers
@@ -43,20 +47,24 @@ function findLatestAttemptId() {
   let bestId = null;
   let bestTime = -1;
 
-  for (let i = 0; i < localStorage.length; i++) {
-    const k = localStorage.key(i);
-    if (!k || !k.startsWith("dsa:attempt:")) continue;
+  try {
+    for (let i = 0; i < localStorage.length; i++) {
+      const k = localStorage.key(i);
+      if (!k || !k.startsWith("dsa:attempt:")) continue;
 
-    const parsed = safeJsonParse(localStorage.getItem(k));
-    const t =
-      Date.parse(parsed?.generatedAt || "") ||
-      Date.parse(parsed?.createdAt || "") ||
-      0;
+      const parsed = safeJsonParse(localStorage.getItem(k));
+      const t =
+        Date.parse(parsed?.generatedAt || "") ||
+        Date.parse(parsed?.createdAt || "") ||
+        0;
 
-    if (t > bestTime) {
-      bestTime = t;
-      bestId = k.replace("dsa:attempt:", "");
+      if (t > bestTime) {
+        bestTime = t;
+        bestId = k.replace("dsa:attempt:", "");
+      }
     }
+  } catch {
+    // ignore storage access issues
   }
 
   return bestId;
@@ -70,9 +78,7 @@ function loadAttemptFromLocal(attemptId) {
 async function loadAttemptFromFirestore(attemptId) {
   if (!attemptId) return null;
 
-  // Ensure auth state is settled
   await authReady;
-
   const user = auth.currentUser;
   if (!user) return null;
 
@@ -81,7 +87,10 @@ async function loadAttemptFromFirestore(attemptId) {
   if (!snap.exists()) return null;
 
   const data = snap.data() || {};
-  return normalizeAttemptShapeFromFirestore(data);
+  // Ensure attemptId is present even if doc id is the id
+  if (!data.attemptId) data.attemptId = attemptId;
+
+  return normalizeAttemptShape(data);
 }
 
 /* -----------------------------
@@ -89,98 +98,176 @@ async function loadAttemptFromFirestore(attemptId) {
 ------------------------------ */
 
 function asArray(x) {
-  return Array.isArray(x) ? x : (x ? [x] : []);
+  return Array.isArray(x) ? x : x ? [x] : [];
 }
 
-function normalizeAttemptShapeFromFirestore(data) {
-  // Firestore attempt schema can vary; normalize to the renderer's expected "summary" shape.
-  // Expected by renderer:
-  // {
-  //   quizId, title, sectionTitle, generatedAt,
-  //   totals: { total, answered, correct, scorePercent, timeSpentSec },
-  //   items: [{ number, prompt, choices, chosenIndex, correctIndex, skill, difficulty, solution: {...} }]
-  // }
+function toISO(ts) {
+  if (!ts) return null;
 
-  const itemsRaw = asArray(data.items || data.questions || data.responses);
+  if (typeof ts === "string") {
+    const d = new Date(ts);
+    return Number.isNaN(d.getTime()) ? null : d.toISOString();
+  }
 
-  const items = itemsRaw.map((it, idx) => {
-    const correctIndex =
-      Number.isFinite(it.correctIndex) ? it.correctIndex :
-      Number.isFinite(it.answerIndex) ? it.answerIndex :
-      Number.isFinite(it.correct) ? it.correct :
-      null;
+  if (ts instanceof Date) return ts.toISOString();
 
-    const chosenIndex =
-      Number.isFinite(it.chosenIndex) ? it.chosenIndex :
-      Number.isFinite(it.selectedIndex) ? it.selectedIndex :
-      Number.isFinite(it.userIndex) ? it.userIndex :
-      null;
+  if (typeof ts?.toDate === "function") {
+    try {
+      const d = ts.toDate();
+      return d instanceof Date ? d.toISOString() : null;
+    } catch {
+      return null;
+    }
+  }
 
-    return {
-      number: it.number ?? (idx + 1),
-      questionId: it.questionId || it.id || null,
-      topic: it.topic || null,
-      skill: it.skill || null,
-      difficulty: it.difficulty || null,
-      prompt: it.prompt || it.stem || "",
-      choices: asArray(it.choices || it.options),
-      chosenIndex,
-      correctIndex,
-      timeSpentSec: Number.isFinite(it.timeSpentSec) ? it.timeSpentSec : null,
-      solution: typeof it.solution === "object" ? it.solution : (typeof it.explanation === "object" ? it.explanation : {}),
-    };
-  });
+  if (typeof ts === "number") {
+    const d = new Date(ts);
+    return Number.isNaN(d.getTime()) ? null : d.toISOString();
+  }
 
-  const total = Number.isFinite(data.total) ? data.total : items.length;
+  return null;
+}
+
+function computeFromItems(items) {
+  const total = items.length;
+  const answered = items.filter((it) => Number.isFinite(it.chosenIndex)).length;
+  const correct = items.filter((it) => it.correct === true).length;
+  return { total, answered, correct };
+}
+
+function normalizeItem(it, idx) {
+  const choices = asArray(it?.choices || it?.options);
+
+  const correctIndex =
+    Number.isFinite(it?.correctIndex) ? it.correctIndex :
+    Number.isFinite(it?.answerIndex) ? it.answerIndex :
+    null;
+
+  const chosenIndex =
+    Number.isFinite(it?.chosenIndex) ? it.chosenIndex :
+    Number.isFinite(it?.selectedIndex) ? it.selectedIndex :
+    Number.isFinite(it?.userIndex) ? it.userIndex :
+    null;
+
   const correct =
-    Number.isFinite(data.correct) ? data.correct :
-    items.reduce((n, it) => {
-      const ui = Number.isFinite(it.chosenIndex) ? it.chosenIndex : null;
-      const ci = Number.isFinite(it.correctIndex) ? it.correctIndex : null;
-      return n + (ui != null && ci != null && ui === ci ? 1 : 0);
-    }, 0);
+    typeof it?.correct === "boolean"
+      ? it.correct
+      : (Number.isFinite(correctIndex) && Number.isFinite(chosenIndex) ? chosenIndex === correctIndex : false);
 
-  const answered =
-    Number.isFinite(data.answered) ? data.answered :
-    items.filter(i => i.chosenIndex != null).length;
+  // Explanation field in attempt-writer schema is typically a string
+  // But we also tolerate {solution:{...}} objects from older banks
+  let explanation = it?.explanation ?? it?.rationale ?? null;
+  if (explanation && typeof explanation === "object") {
+    explanation = explanation.text || explanation.body || null;
+  }
 
-  const timeSpentSec =
-    Number.isFinite(data.timeSpentSec) ? data.timeSpentSec :
-    (Number.isFinite(data.durationSec) ? data.durationSec :
-      (Number.isFinite(data.durationMs) ? Math.round(data.durationMs / 1000) : 0));
-
-  const scorePercent =
-    Number.isFinite(data.scorePercent) ? data.scorePercent :
-    (Number.isFinite(data.pct) ? Math.round(Number(data.pct) * 100) :
-      (total ? Math.round((correct / total) * 100) : 0));
-
-  // createdAt may be Firestore Timestamp; handle both
-  const createdAtISO =
-    typeof data.createdAt?.toDate === "function"
-      ? data.createdAt.toDate().toISOString()
-      : (typeof data.createdAt === "string" ? data.createdAt : null);
-
-  const generatedAt =
-    data.generatedAt ||
-    createdAtISO ||
-    (typeof data.updatedAt?.toDate === "function" ? data.updatedAt.toDate().toISOString() : null) ||
-    new Date().toISOString();
+  const solutionObj =
+    typeof it?.solution === "object" && it.solution
+      ? it.solution
+      : (typeof it?.explanation === "object" && it.explanation ? it.explanation : null);
 
   return {
-    attemptId: data.attemptId || data.id || null,
-    quizId: data.quizId || data.sectionId || "unknown",
-    title: data.title || "Review",
-    sectionTitle: data.sectionTitle || data.title || "Review",
-    generatedAt,
-    bankId: data.bankId || null,
-    bankVersion: data.bankVersion ?? null,
-    totals: {
-      total,
-      answered,
-      correct,
-      scorePercent,
-      timeSpentSec,
+    number: it?.number ?? (idx + 1),
+    questionId: it?.questionId || it?.id || null,
+    version: Number.isFinite(it?.version) ? it.version : 1,
+    topic: it?.topic || null,
+    skill: it?.skill || null,
+    difficulty: it?.difficulty || null,
+
+    // Prefer the prompt if present; if not, render gracefully without it
+    prompt: it?.prompt || it?.stem || "",
+
+    choices,
+    chosenIndex,
+    correctIndex,
+    correct,
+
+    timeSpentSec: Number.isFinite(it?.timeSpentSec) ? it.timeSpentSec : null,
+
+    // Keep both forms; renderer can use either
+    explanation: typeof explanation === "string" ? explanation : null,
+    solution: solutionObj || null,
+  };
+}
+
+function normalizeAttemptShape(data) {
+  const d = data || {};
+
+  const rawItems = asArray(d.items || d.questions || d.responses);
+  const items = rawItems.map(normalizeItem);
+
+  const totalsIn = d.totals || {};
+  const derived = computeFromItems(items);
+
+  const total = Number.isFinite(totalsIn.total) ? totalsIn.total : (Number(d.total) || derived.total);
+  const answered = Number.isFinite(totalsIn.answered) ? totalsIn.answered : (Number(d.answered) || derived.answered);
+  const correct = Number.isFinite(totalsIn.correct) ? totalsIn.correct : (Number(d.correct) || derived.correct);
+
+  const timeSpentSec =
+    Number.isFinite(totalsIn.timeSpentSec) ? totalsIn.timeSpentSec :
+    Number.isFinite(d.timeSpentSec) ? d.timeSpentSec :
+    Number.isFinite(d.durationSec) ? d.durationSec :
+    Number.isFinite(d.durationSeconds) ? d.durationSeconds :
+    (Number.isFinite(d.durationMs) ? Math.round(d.durationMs / 1000) : 0);
+
+  const scorePercent =
+    Number.isFinite(totalsIn.scorePercent) ? totalsIn.scorePercent :
+    Number.isFinite(d.scorePercent) ? d.scorePercent :
+    (total > 0 ? Math.round((correct / total) * 1000) / 10 : 0);
+
+  const generatedAt =
+    d.generatedAt ||
+    d.createdAt ||
+    d.completedAt ||
+    d.timestamp ||
+    null;
+
+  const generatedAtISO = toISO(generatedAt) || new Date().toISOString();
+
+  const bankObj = d.bank || null;
+
+  const bankId =
+    bankObj?.bankId ||
+    d.bankId ||
+    d.topic ||
+    d.quizId ||
+    null;
+
+  const bankVersion =
+    (bankObj && Number.isFinite(bankObj.bankVersion)) ? bankObj.bankVersion :
+    (Number.isFinite(d.bankVersion) ? d.bankVersion :
+      (Number.isFinite(d.version) ? d.version : null));
+
+  const bankTitle =
+    bankObj?.title ||
+    d.bankTitle ||
+    d.title ||
+    null;
+
+  const attemptType =
+    d.attemptType ||
+    (d.mode === "random" ? "random" : null) ||
+    (String(d.quizId || "").startsWith("random.") ? "random" : "topic");
+
+  return {
+    attemptId: d.attemptId || d.id || null,
+    quizId: d.quizId || d.sectionId || "unknown",
+    attemptType,
+    title: d.title || d.sectionTitle || "Review",
+    sectionTitle: d.sectionTitle || d.title || "Review",
+    generatedAt: generatedAtISO,
+    createdAt: toISO(d.createdAt) || null,
+
+    totals: { total, answered, correct, scorePercent, timeSpentSec },
+
+    bank: {
+      bankId: bankId || null,
+      bankVersion: Number.isFinite(bankVersion) ? bankVersion : null,
+      title: bankTitle || null,
     },
+
+    pick: typeof d.pick === "object" && d.pick ? d.pick : null,
+
     items,
   };
 }
@@ -203,10 +290,13 @@ function formatDuration(sec) {
 }
 
 function normalizeSolution(it) {
-  const sol = typeof it?.solution === "object" ? it.solution : {};
+  // Prefer structured solution object, otherwise use string explanation
+  const sol = (typeof it?.solution === "object" && it.solution) ? it.solution : {};
+  const explanation = (typeof it?.explanation === "string" && it.explanation) ? it.explanation : null;
+
   return {
     finalAnswer: sol.finalAnswer ?? null,
-    approach: sol.approach ?? null,
+    approach: sol.approach ?? (explanation ? explanation : null),
     formulas: asArray(sol.formulas),
     steps: asArray(sol.steps),
     commonMistakes: asArray(sol.commonMistakes),
@@ -239,6 +329,16 @@ function showEmpty(message) {
     empty.style.display = "block";
     const p = empty.querySelector("p.review-muted") || empty.querySelector("p");
     if (p && message) p.textContent = message;
+  }
+}
+
+function safeLocaleString(iso) {
+  try {
+    const d = new Date(iso);
+    if (Number.isNaN(d.getTime())) return "—";
+    return d.toLocaleString();
+  } catch {
+    return "—";
   }
 }
 
@@ -388,49 +488,62 @@ function renderAttempt(summary, attemptIdFromUrl) {
 
   header.style.display = "block";
 
-  const total = summary.totals?.total ?? items.length;
+  const totals = summary.totals || {};
+  const total = Number.isFinite(totals.total) ? totals.total : items.length;
+  const answered = Number.isFinite(totals.answered)
+    ? totals.answered
+    : items.filter((i) => Number.isFinite(i.chosenIndex)).length;
+  const correct = Number.isFinite(totals.correct)
+    ? totals.correct
+    : items.filter((i) => i.correct === true).length;
 
-  const answered =
-    summary.totals?.answered ??
-    items.filter(i => i.chosenIndex != null).length;
+  const scorePct = Number.isFinite(totals.scorePercent)
+    ? totals.scorePercent
+    : (total ? Math.round((correct / total) * 1000) / 10 : 0);
 
-  const correct =
-    summary.totals?.correct ??
-    items.reduce((n, it) => {
-      const ui = Number.isFinite(it.chosenIndex) ? it.chosenIndex : null;
-      const ci = Number.isFinite(it.correctIndex) ? it.correctIndex : null;
-      return n + (ui != null && ci != null && ui === ci ? 1 : 0);
-    }, 0);
-
-  const scorePct =
-    summary.totals?.scorePercent ??
-    (total ? Math.round((correct / total) * 100) : 0);
-
-  const finishedAt = summary.generatedAt || new Date().toISOString();
-  const timeLabel = formatDuration(summary.totals?.timeSpentSec || 0);
+  const finishedAt = summary.generatedAt || summary.createdAt || new Date().toISOString();
+  const timeLabel = formatDuration(Number(totals.timeSpentSec || 0));
 
   const titleText = summary.title || summary.sectionTitle || "Review";
   document.title = titleText;
   titleEl.textContent = titleText;
 
-  metaEl.textContent =
-    `Answered ${answered}/${total} • Correct ${correct} • ` +
-    `Time ${timeLabel} • Completed ${new Date(finishedAt).toLocaleString()}`;
+  const attemptTypeLabel =
+    String(summary.attemptType || "").toLowerCase() === "random" ? "Random" : "Topic";
 
-  pillEl.innerHTML = `<span>${scorePct}%</span><span class="small">Score</span>`;
+  metaEl.textContent =
+    `Type ${attemptTypeLabel} • Answered ${answered}/${total} • Correct ${correct} • ` +
+    `Time ${timeLabel} • Completed ${safeLocaleString(finishedAt)}`;
+
+  pillEl.innerHTML = `<span>${Number(scorePct).toFixed(1)}%</span><span class="small">Score</span>`;
 
   if (chipsEl) {
     chipsEl.innerHTML = "";
+
     if (summary.quizId) chipsEl.appendChild(el("span", "review-chip", `quizId: ${summary.quizId}`));
     if (attemptIdFromUrl) chipsEl.appendChild(el("span", "review-chip", `attemptId: ${attemptIdFromUrl}`));
-    if (summary.bankId) chipsEl.appendChild(el("span", "review-chip", `bankId: ${summary.bankId}`));
-    if (summary.bankVersion != null) chipsEl.appendChild(el("span", "review-chip", `bankVersion: ${summary.bankVersion}`));
+
+    const bank = summary.bank || {};
+    if (bank.bankId) chipsEl.appendChild(el("span", "review-chip", `bankId: ${bank.bankId}`));
+    if (bank.bankVersion != null) chipsEl.appendChild(el("span", "review-chip", `bankVersion: ${bank.bankVersion}`));
+    if (bank.title) chipsEl.appendChild(el("span", "review-chip", `bank: ${bank.title}`));
+
+    // Random pick diagnostics (optional)
+    if (summary.pick && typeof summary.pick === "object") {
+      const pc = summary.pick.pickCount;
+      const sm = summary.pick.seedMode;
+      const sv = summary.pick.seedValue;
+      if (pc != null) chipsEl.appendChild(el("span", "review-chip", `pickCount: ${pc}`));
+      if (sm) chipsEl.appendChild(el("span", "review-chip", `seedMode: ${sm}`));
+      if (sv) chipsEl.appendChild(el("span", "review-chip", `seed: ${String(sv).slice(0, 12)}…`));
+    }
   }
 
   if (actionsEl && backToQuiz && summary.quizId) {
     actionsEl.style.display = "flex";
-    // If random, send user back to random mode (best-effort)
-    if (String(summary.quizId).startsWith("random.")) {
+
+    // Random attempts: return to random entrypoint
+    if (String(summary.attemptType).toLowerCase() === "random" || String(summary.quizId).startsWith("random.")) {
       backToQuiz.href = `/pages/quiz.html?mode=random&section=math`;
     } else {
       backToQuiz.href = `/pages/quiz.html?quizId=${encodeURIComponent(summary.quizId)}`;
@@ -455,12 +568,14 @@ function renderAttempt(summary, attemptIdFromUrl) {
     const badge = el("div", `review-badge ${unanswered ? "na" : (isCorrect ? "ok" : "no")}`, String(number));
 
     const headRight = document.createElement("div");
+
     const prompt = el("div", "review-prompt");
     appendTextWithMath(prompt, it.prompt || "");
     headRight.appendChild(prompt);
 
     const submeta = el("div", "review-submeta");
     if (it.questionId) submeta.appendChild(el("span", "review-tag", `questionId: ${it.questionId}`));
+    if (Number.isFinite(it.version)) submeta.appendChild(el("span", "review-tag", `v: ${it.version}`));
     if (Number.isFinite(it.timeSpentSec)) submeta.appendChild(el("span", "review-tag time", `time: ${Math.max(0, Math.floor(it.timeSpentSec))}s`));
     if (it.skill) submeta.appendChild(el("span", "review-tag skill", `skill: ${it.skill}`));
     if (it.difficulty) submeta.appendChild(el("span", "review-tag diff", `difficulty: ${it.difficulty}`));
@@ -471,12 +586,14 @@ function renderAttempt(summary, attemptIdFromUrl) {
 
     const choicesWrap = el("div", "review-choices");
     choices.forEach((c, i) => {
-      choicesWrap.appendChild(renderChoiceRow({
-        choiceText: c,
-        index: i,
-        correctIndex: ci,
-        chosenIndex: ui,
-      }));
+      choicesWrap.appendChild(
+        renderChoiceRow({
+          choiceText: c,
+          index: i,
+          correctIndex: ci,
+          chosenIndex: ui,
+        })
+      );
     });
 
     const exp = el("div", "review-exp");
@@ -489,7 +606,9 @@ function renderAttempt(summary, attemptIdFromUrl) {
     if (ci != null) {
       const li = document.createElement("li");
       li.appendChild(el("b", "", "Correct answer: "));
-      li.appendChild(document.createTextNode(`${letter(ci)}. ${choices[ci] ?? ""}`));
+      // Use MathJax-safe text nodes
+      const txt = `${letter(ci)}. ${choices[ci] ?? ""}`;
+      li.appendChild(document.createTextNode(txt));
       ul.appendChild(li);
     }
 
@@ -569,6 +688,7 @@ function renderAttempt(summary, attemptIdFromUrl) {
   // 2) Fallback to local attempt
   if (!summary) {
     summary = loadAttemptFromLocal(attemptId);
+    if (summary) summary = normalizeAttemptShape(summary);
   }
 
   if (!summary) {
