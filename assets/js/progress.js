@@ -1,42 +1,37 @@
 // /assets/js/progress.js
 // "My Progress" page:
-// - Shows ONLY Firestore attempts for the logged-in user (users/{uid}/attempts)
+// - Shows Firestore attempts for the logged-in user.
 // - Hyperlink on quiz title -> /pages/review.html?attemptId=...
 // - Renders 6 columns: Date, Category, Score, Total, % Correct, Duration
 // - Uses localStorage (dsa:attempt:*) ONLY as a diagnostic to detect unsynced attempts.
 // - Friendly error states: signed out vs permission denied vs generic.
 //
-// This revision removes the dependency on window.quizData and directly queries Firestore.
-// That makes Progress work as soon as quiz-engine writes attempts to users/{uid}/attempts/{attemptId}.
+// This revision tries multiple likely Firestore subcollections to match your writer:
+//   users/{uid}/attempts
+//   users/{uid}/examAttempts
+//   users/{uid}/results   (optional fallback)
+// And uses a robust ordering fallback if createdAt isn't present.
 
 (function () {
   "use strict";
 
-  // Prevent double initialization if script is loaded twice
   if (window.__dsa_progress_initialized) return;
   window.__dsa_progress_initialized = true;
 
   document.addEventListener("DOMContentLoaded", function () {
-    // -----------------------------
-    // DOM cache
-    // -----------------------------
     const summaryEl = document.getElementById("summary");
     const historyTable = document.getElementById("historyTable");
     const historyBody =
       document.getElementById("historyBody") ||
       (historyTable ? historyTable.querySelector("tbody") : null);
 
-    // Optional elements
     const loadingEl = document.getElementById("progressLoading");
-    const bannerEl = document.getElementById("unsyncedBanner"); // repurposed as info/error banner
+    const bannerEl = document.getElementById("unsyncedBanner");
 
     if (!summaryEl || !historyBody) return;
 
     const state = { attempts: [] };
 
-    // -----------------------------
-    // UI helpers
-    // -----------------------------
     function showBanner(kind, text) {
       if (!bannerEl) return;
       bannerEl.classList.remove("warning", "success", "info", "error");
@@ -50,9 +45,6 @@
       loadingEl.style.display = isLoading ? "block" : "none";
     }
 
-    // -----------------------------
-    // Formatting helpers
-    // -----------------------------
     function secToHMS(sec) {
       const n = Number(sec);
       if (!Number.isFinite(n) || n <= 0) return "—";
@@ -69,7 +61,7 @@
       const t = Number(total);
       if (!Number.isFinite(t) || t <= 0) return 0;
       if (!Number.isFinite(s) || s < 0) return 0;
-      return Math.round((s / t) * 1000) / 10; // 1 decimal
+      return Math.round((s / t) * 1000) / 10;
     }
 
     function escapeHtml(str) {
@@ -107,9 +99,6 @@
       return null;
     }
 
-    // -----------------------------
-    // Error classification
-    // -----------------------------
     function isPermissionDenied(err) {
       const msg = String((err && err.message) || "").toLowerCase();
       const code = String((err && err.code) || "").toLowerCase();
@@ -132,9 +121,6 @@
       );
     }
 
-    // -----------------------------
-    // Local diagnostic: count local attempts
-    // -----------------------------
     function countLocalAttemptKeys() {
       try {
         let n = 0;
@@ -148,24 +134,24 @@
       }
     }
 
-    // -----------------------------
-    // Firebase imports (module-safe)
-    // -----------------------------
     async function getFirebaseApis() {
-      // Import your shared instances
       const mod = await import("/assets/js/firebase-init.js");
       const { auth, db, authReady } = mod;
 
-      // Import Firestore query APIs
-      const fs = await import("https://www.gstatic.com/firebasejs/10.12.4/firebase-firestore.js");
-      const { collection, getDocs, orderBy, limit, query } = fs;
+      const fs = await import(
+        "https://www.gstatic.com/firebasejs/10.12.4/firebase-firestore.js"
+      );
+      const {
+        collection,
+        getDocs,
+        orderBy,
+        limit,
+        query,
+      } = fs;
 
       return { auth, db, authReady, collection, getDocs, orderBy, limit, query };
     }
 
-    // -----------------------------
-    // Auth gating
-    // -----------------------------
     async function requireSignedInUserOrThrow(firebase) {
       await firebase.authReady;
       const user = firebase.auth.currentUser;
@@ -175,13 +161,9 @@
       throw e;
     }
 
-    // -----------------------------
-    // Normalize attempt shapes (Firestore doc -> row model)
-    // -----------------------------
-    function normalizeAttempt(raw) {
+    function normalizeAttempt(raw, fallbackDocId) {
       const a = raw || {};
       const totals = a.totals || {};
-
       const items = Array.isArray(a.items) ? a.items : [];
       const itemsLen = items.length;
 
@@ -201,14 +183,11 @@
         ? totals.scorePercent
         : (Number.isFinite(a.scorePercent) ? a.scorePercent : computePercent(score, total));
 
-      // attemptId should be the engine attempt id and also the Firestore doc id in your pipeline
-      const attemptId = String(a.attemptId || a.id || "");
+      const attemptId = String(a.attemptId || a.id || fallbackDocId || "");
 
-      // Title/category
       const sectionId = String(a.sectionId || a.quizId || a.examType || "");
       const title = String(a.title || a.sectionTitle || sectionId || "Practice");
 
-      // createdAt preferred; then generatedAt; then completedAt; then timestamp
       const createdLike = a.createdAt || a.generatedAt || a.completedAt || a.timestamp || null;
       const dateObj = toDateMaybe(createdLike);
 
@@ -224,36 +203,50 @@
       };
     }
 
-    // -----------------------------
-    // Data loading: Firestore only
-    // -----------------------------
+    // Try to query a subcollection. If createdAt orderBy fails (missing index/field),
+    // fall back to an unordered fetch and client-side sort.
+    async function fetchFromSubcollection(firebase, uid, subcolName) {
+      const colRef = firebase.collection(firebase.db, "users", uid, subcolName);
+
+      // Primary plan: orderBy createdAt desc limit 200
+      try {
+        const q = firebase.query(colRef, firebase.orderBy("createdAt", "desc"), firebase.limit(200));
+        const snap = await firebase.getDocs(q);
+        const rows = [];
+        snap.forEach((docSnap) => rows.push(normalizeAttempt(docSnap.data(), docSnap.id)));
+        return rows;
+      } catch (e) {
+        // Fallback: no orderBy (works even if createdAt missing)
+        const snap = await firebase.getDocs(colRef);
+        const rows = [];
+        snap.forEach((docSnap) => rows.push(normalizeAttempt(docSnap.data(), docSnap.id)));
+        return rows;
+      }
+    }
+
     async function fetchAllResults(firebase) {
       const user = await requireSignedInUserOrThrow(firebase);
 
-      // users/{uid}/attempts ordered by createdAt desc
-      const attemptsCol = firebase.collection(firebase.db, "users", user.uid, "attempts");
+      // Try common writer paths in priority order
+      const candidates = ["attempts", "examAttempts", "results"];
+      let foundIn = null;
+      let rows = [];
 
-      // If createdAt isn't present on some docs, Firestore orderBy can fail.
-      // Your quiz save should set createdAt. If not, fix quiz-engine.
-      const q = firebase.query(attemptsCol, firebase.orderBy("createdAt", "desc"), firebase.limit(200));
+      for (const name of candidates) {
+        const r = await fetchFromSubcollection(firebase, user.uid, name);
+        if (r && r.length) {
+          rows = r;
+          foundIn = name;
+          break;
+        }
+      }
 
-      const snap = await firebase.getDocs(q);
-      const rows = [];
-      snap.forEach((docSnap) => {
-        const data = docSnap.data() || {};
-        // Ensure attemptId exists even if writer forgot it
-        if (!data.attemptId) data.attemptId = docSnap.id;
-        rows.push(normalizeAttempt(data));
-      });
+      // Client-side sort by timestamp
+      rows.sort((x, y) => (y.timestamp?.getTime?.() || 0) - (x.timestamp?.getTime?.() || 0));
 
-      return rows
-        .filter((a) => a && a.attemptId)
-        .sort((x, y) => (y.timestamp?.getTime?.() || 0) - (x.timestamp?.getTime?.() || 0));
+      return { rows, foundIn };
     }
 
-    // -----------------------------
-    // Rendering
-    // -----------------------------
     function renderEmptyState(message) {
       summaryEl.innerHTML = `
         <div class="empty-state">
@@ -393,37 +386,31 @@
           <h2>Progress unavailable</h2>
           <p>Your account is signed in, but Firestore rules are blocking access to your progress.</p>
           <p class="muted">
-            Fix: allow the signed-in user to read <code>users/{uid}/attempts</code>.
+            Fix: allow the signed-in user to read <code>users/{uid}/attempts</code> (or your chosen attempts collection).
           </p>
         </div>
       `;
       historyBody.innerHTML = '<tr><td colspan="6">No data to display.</td></tr>';
     }
 
-    // -----------------------------
-    // Main refresh
-    // -----------------------------
     async function refresh() {
       const localCount = countLocalAttemptKeys();
-      let firebase = null;
-
       try {
         setLoading(true);
         showBanner(null, "");
 
-        firebase = await getFirebaseApis();
-
-        // Auth gate first: if signed out, do NOT touch Firestore
+        const firebase = await getFirebaseApis();
         await requireSignedInUserOrThrow(firebase);
 
-        const list = await fetchAllResults(firebase);
-        state.attempts = list;
+        const { rows, foundIn } = await fetchAllResults(firebase);
+        state.attempts = rows;
 
-        renderSummary(list);
-        renderHistory(list);
+        renderSummary(rows);
+        renderHistory(rows);
 
-        // Diagnostic: local attempts exist but Firestore is empty
-        if (localCount > 0 && list.length === 0) {
+        if (rows.length) {
+          showBanner("success", `Loaded ${rows.length} attempt${rows.length === 1 ? "" : "s"} from Firestore (${foundIn}).`);
+        } else if (localCount > 0) {
           showBanner(
             "info",
             `No Firestore attempts found, but ${localCount} local attempt${localCount === 1 ? "" : "s"} exist on this device. This usually means the quiz couldn't write to Firestore (rules) or you weren't signed in when finishing.`
@@ -431,6 +418,8 @@
         }
       } catch (err) {
         console.error("progress.js: refresh failed", err);
+
+        const localCount = countLocalAttemptKeys();
 
         if (isNotSignedIn(err)) {
           renderSignedOut(localCount);
@@ -454,9 +443,6 @@
       }
     }
 
-    // -----------------------------
-    // Init
-    // -----------------------------
     refresh().catch((err) => console.error("progress.js: initial refresh failed", err));
   });
 })();
