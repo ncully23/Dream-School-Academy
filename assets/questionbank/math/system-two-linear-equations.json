@@ -1,0 +1,87 @@
+{
+  "quizId": "math.systems.linear2.set1",
+  "title": "Systems of Two Linear Equations — Set 1",
+  "section": "Math",
+  "domain": "Algebra",
+  "skill": "Systems of Linear Equations",
+  "questions": [
+    {
+      "id": "sys2l_01",
+      "prompt": "If the system of equations below has infinitely many solutions, what is the value of k?\n\nkx + 6y = 12\n2x + 3y = 6",
+      "choices": {
+        "A": "1",
+        "B": "2",
+        "C": "3",
+        "D": "6"
+      },
+      "correct": "B",
+      "difficulty": "medium",
+      "rationale": "For infinitely many solutions, the equations must be scalar multiples. Since 2x + 3y = 6 multiplied by 2 gives 4x + 6y = 12, k must equal 2."
+    },
+    {
+      "id": "sys2l_02",
+      "prompt": "What is the solution to the system of equations?\n\ny = 2x − 5\n3x − y = 11",
+      "choices": {
+        "A": "(2, −1)",
+        "B": "(3, 1)",
+        "C": "(4, 3)",
+        "D": "(5, 5)"
+      },
+      "correct": "C",
+      "difficulty": "easy",
+      "rationale": "Substitute y = 2x − 5 into the second equation: 3x − (2x − 5) = 11 → x + 5 = 11 → x = 6. Then y = 2(6) − 5 = 7."
+    },
+    {
+      "id": "sys2l_03",
+      "prompt": "Which ordered pair satisfies the system of equations?\n\n2x + y = 7\nx − y = 1",
+      "choices": {
+        "A": "(2, 3)",
+        "B": "(3, 1)",
+        "C": "(4, −1)",
+        "D": "(5, −3)"
+      },
+      "correct": "B",
+      "difficulty": "easy",
+      "rationale": "Add the equations: (2x + y) + (x − y) = 7 + 1 → 3x = 8 → x = 8/3, which eliminates other options except (3,1), which satisfies both equations."
+    },
+    {
+      "id": "sys2l_04",
+      "prompt": "If the system below has no solution, which statement must be true?\n\ny = 4x − 2\ny = 4x + 5",
+      "choices": {
+        "A": "The slopes are different",
+        "B": "The y-intercepts are the same",
+        "C": "The lines are parallel",
+        "D": "The lines intersect at one point"
+      },
+      "correct": "C",
+      "difficulty": "medium",
+      "rationale": "Both equations have slope 4 but different y-intercepts, meaning the lines are parallel and never intersect."
+    },
+    {
+      "id": "sys2l_05",
+      "prompt": "For what value of a does the system have exactly one solution?\n\nax + 2y = 4\n4x + 8y = 10",
+      "choices": {
+        "A": "1",
+        "B": "2",
+        "C": "4",
+        "D": "Any value except 4"
+      },
+      "correct": "D",
+      "difficulty": "hard",
+      "rationale": "If a = 4, the equations would have proportional x and y coefficients but different constants, giving no solution. For all other values of a, the slopes differ and there is exactly one solution."
+    },
+    {
+      "id": "sys2l_06",
+      "prompt": "Which system has infinitely many solutions?",
+      "choices": {
+        "A": "x + y = 5 and x − y = 1",
+        "B": "2x + 3y = 6 and 4x + 6y = 12",
+        "C": "y = 3x + 2 and y = −3x + 2",
+        "D": "x = 4 and y = 4"
+      },
+      "correct": "B",
+      "difficulty": "medium",
+      "rationale": "The second equation is exactly twice the first, so both equations represent the same line."
+    }
+  ]
+}
