@@ -1,0 +1,139 @@
+{
+  "quizId": "math.linear.inequalities.set1",
+  "title": "Linear Inequalities — Set 1",
+  "section": "Math",
+  "domain": "Algebra",
+  "skill": "Linear inequalities in one or two variables",
+  "questions": [
+    {
+      "id": "1550b402",
+      "prompt": "The length of a rectangle is 50 inches and the width is z inches. The perimeter is at most 210 inches. Which inequality represents this situation?",
+      "choices": {
+        "A": "2z + 100 ≤ 210",
+        "B": "2z + 100 ≥ 210",
+        "C": "2z + 50 ≤ 210",
+        "D": "2z + 50 ≥ 210"
+      },
+      "correct": "A",
+      "difficulty": "hard",
+      "rationale": "Perimeter = 2(50) + 2z = 100 + 2z. “At most 210” means ≤ 210, so 2z + 100 ≤ 210."
+    },
+    {
+      "id": "0f91ff37",
+      "prompt": "A model estimates that whales from the genus Eschrichtius travel 72 to 77 miles in the ocean each day during their migration. Based on this model, which inequality represents the estimated total number of miles, s, a whale from the genus Eschrichtius could travel in 16 days of its migration?",
+      "choices": {
+        "A": "72 + 16 ≤ s ≤ 77 + 16",
+        "B": "72(16) ≤ s ≤ 77(16)",
+        "C": "72 ≤ 16 + s ≤ 77",
+        "D": "72 ≤ 16s ≤ 77"
+      },
+      "correct": "B",
+      "difficulty": "hard",
+      "rationale": "Daily distance is between 72 and 77. Over 16 days, multiply the entire inequality by 16: 72(16) ≤ s ≤ 77(16)."
+    },
+    {
+      "id": "d66a5765",
+      "prompt": "The inequalities are y > 2x − 1 and 2x > 5. Which of the following consists of the y-coordinates of all the points that satisfy the system?",
+      "choices": {
+        "A": "y > 6",
+        "B": "y > 4",
+        "C": "y > 5/2",
+        "D": "y > 3/2"
+      },
+      "correct": "B",
+      "difficulty": "hard",
+      "rationale": "From 2x > 5, divide by 2 to get x > 5/2. Substitute into y > 2x − 1: y > 2(5/2) − 1 = 4. Thus all solutions must satisfy y > 4."
+    },
+    {
+      "id": "2587f783",
+      "prompt": "A triangle has side lengths of 6 and 12. Which inequality represents the possible lengths, z, of the third side of the triangle?",
+      "choices": {
+        "A": "z < 18",
+        "B": "z > 18",
+        "C": "6 < z < 18",
+        "D": "z < 6 or z > 18"
+      },
+      "correct": "C",
+      "difficulty": "hard",
+      "rationale": "Triangle inequality gives |12 − 6| < z < 12 + 6 → 6 < z < 18."
+    },
+    {
+      "id": "8a04fc32",
+      "prompt": "A moving truck can tow a trailer if the combined weight of the trailer and the boxes it contains is no more than 4,600 pounds. If the trailer weighs 500 pounds and each box weighs 120 pounds, what is the maximum number of boxes the truck can tow in the trailer?",
+      "choices": {
+        "A": "34",
+        "B": "35",
+        "C": "38",
+        "D": "39"
+      },
+      "correct": "A",
+      "difficulty": "hard",
+      "rationale": "Model: 500 + 120b ≤ 4600 → 120b ≤ 4100 → b ≤ 34.166…. Maximum whole number is 34."
+    },
+    {
+      "id": "17ed8a2c",
+      "prompt": "A certain elephant weighs 200 pounds at birth and gains more than 2 but less than 3 pounds per day during its first year. Which inequality represents all possible weights w, in pounds, for the elephant 365 days after birth?",
+      "choices": {
+        "A": "400 < w < 600",
+        "B": "565 < w < 930",
+        "C": "730 < w < 1,095",
+        "D": "930 < w < 1,295"
+      },
+      "correct": "D",
+      "difficulty": "hard",
+      "rationale": "Weight after 365 days: 200 + 2(365) < w < 200 + 3(365) → 930 < w < 1295."
+    },
+    {
+      "id": "d538b4f8",
+      "prompt": "y > 14 and 4x + y < 18. The point (x, 53) is a solution to the system of inequalities in the xy-plane. Which of the following could be the value of x?",
+      "choices": {
+        "A": "−9",
+        "B": "−6",
+        "C": "5",
+        "D": "9"
+      },
+      "correct": "A",
+      "difficulty": "hard",
+      "rationale": "Plug in y = 53. First inequality: 53 > 14 is true. Second: 4x + 53 < 18 → 4x < −35 → x < −8.75. Only −9 works."
+    },
+    {
+      "id": "3572bfcb",
+      "prompt": "Marisa needs to hire at least 10 staff members. She will pay $640 per week to each junior director and $880 per week to each senior director. Her budget for paying staff is no more than $9,700 per week. She must hire at least 3 junior directors and at least 1 senior director. Which system of inequalities represents the conditions described, if x is the number of junior directors and y is the number of senior directors?",
+      "choices": {
+        "A": "640x + 880y ≥ 9700; x + y ≥ 10; x ≥ 3; y ≥ 1",
+        "B": "640x + 880y ≤ 9700; x + y ≥ 10; x ≥ 3; y ≥ 1",
+        "C": "640x + 880y ≥ 9700; x + y ≤ 10; x ≤ 3; y ≤ 1",
+        "D": "640x + 880y ≤ 9700; x + y ≤ 10; x ≤ 3; y ≤ 1"
+      },
+      "correct": "B",
+      "difficulty": "hard",
+      "rationale": "Budget “no more than” gives 640x + 880y ≤ 9700. At least 10 staff: x + y ≥ 10. At least 3 junior: x ≥ 3. At least 1 senior: y ≥ 1."
+    },
+    {
+      "id": "30d999a9",
+      "prompt": "The average annual energy cost for a certain home is $4,334. The homeowner plans to spend $25,000 to install a geothermal heating system. The homeowner estimates the new average annual energy cost will then be $2,712. Which inequality can be solved to find t, the number of years after installation at which the total amount of energy cost savings will exceed the installation cost?",
+      "choices": {
+        "A": "25,000 > (4,334 − 2,712)t",
+        "B": "25,000 < (4,334 − 2,712)t",
+        "C": "25,000 − 4,334 > 2,712t",
+        "D": "25,000 < (4,332/2,712)t"
+      },
+      "correct": "B",
+      "difficulty": "hard",
+      "rationale": "Annual savings = 4,334 − 2,712. Total savings after t years is (4,334 − 2,712)t. “Exceed the installation cost” means (4,334 − 2,712)t > 25,000, equivalent to 25,000 < (4,334 − 2,712)t."
+    },
+    {
+      "id": "f302230c",
+      "prompt": "y < −4x + 4. Which point (x, y) is a solution to the given inequality in the xy-plane?",
+      "choices": {
+        "A": "(−4, 0)",
+        "B": "(0, 5)",
+        "C": "(2, 1)",
+        "D": "(2, −1)"
+      },
+      "correct": "A",
+      "difficulty": "hard",
+      "rationale": "Test (−4, 0): right side is −4(−4) + 4 = 20, and 0 < 20 is true. The other options do not satisfy y < −4x + 4."
+    }
+  ]
+}
