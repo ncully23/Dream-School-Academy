@@ -17,6 +17,12 @@ import { saveAttempt } from "/assets/js/lib/attempt-writer.js";
   //      saveAttempt() -> Firestore users/{uid}/attempts/{attemptId}
   //                   -> localStorage dsa:attempt:{attemptId} (fallback/diagnostic)
   // - Redirects to review: /pages/review.html?attemptId=...
+  //
+  // This revision:
+  // - Surfaces the REAL save failure (code/message/path) instead of generic "sign-in"
+  // - Emits a one-line auth diagnostic when save fails
+  // - Prevents duplicate save banners on repeated failures
+  // - Sanitizes items fields that often create Firestore invalid-argument (undefined)
   // =========================================================
 
   // -----------------------
@@ -212,14 +218,23 @@ import { saveAttempt } from "/assets/js/lib/attempt-writer.js";
     checkTitle: document.getElementById("checkTitle"),
   };
 
+  function escapeHtml(s) {
+    return String(s)
+      .replaceAll("&", "&amp;")
+      .replaceAll("<", "&lt;")
+      .replaceAll(">", "&gt;")
+      .replaceAll('"', "&quot;")
+      .replaceAll("'", "&#039;");
+  }
+
   function showFatal(message) {
     console.error("[quiz-engine] " + message);
     const box = document.createElement("div");
     box.style.cssText =
       "max-width:980px;margin:14px auto;padding:12px 14px;background:#fff;border:1px solid #c00;border-radius:10px;" +
       "font:16px/1.45 system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;color:#111;";
-    box.innerHTML = `<h2 style="margin:0 0 6px;font-size:18px">Quiz failed to load</h2><p style="margin:0">${String(
-      message
+    box.innerHTML = `<h2 style="margin:0 0 6px;font-size:18px">Quiz failed to load</h2><p style="margin:0">${escapeHtml(
+      String(message)
     )}</p>`;
     (document.body || document.documentElement).prepend(box);
 
@@ -228,19 +243,38 @@ import { saveAttempt } from "/assets/js/lib/attempt-writer.js";
     document.title = "Quiz failed to load";
   }
 
-  function showSaveBanner(message, onRetry) {
-    console.error("[quiz-engine] save failed:", message);
+  let __saveBannerEl = null;
 
-    // Non-fatal UI (keeps user on page)
+  function removeSaveBanner() {
+    try {
+      if (__saveBannerEl && __saveBannerEl.parentNode) __saveBannerEl.parentNode.removeChild(__saveBannerEl);
+    } catch {}
+    __saveBannerEl = null;
+  }
+
+  function showSaveBanner({ title, message, details, onRetry }) {
+    removeSaveBanner();
+
+    console.error("[quiz-engine] save failed:", { title, message, details });
+
     const box = document.createElement("div");
     box.style.cssText =
       "max-width:980px;margin:14px auto;padding:12px 14px;background:#fff;border:1px solid #eab308;border-radius:10px;" +
       "font:16px/1.45 system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;color:#111;" +
-      "display:flex;align-items:center;justify-content:space-between;gap:10px;";
+      "display:flex;align-items:flex-start;justify-content:space-between;gap:10px;";
+
+    const detailsHtml = details
+      ? `<div style="margin-top:8px;font-size:12px;opacity:.85;white-space:pre-wrap">${escapeHtml(details)}</div>`
+      : "";
+
     box.innerHTML = `
-      <div>
-        <div style="font-weight:700;margin-bottom:2px">Couldn’t save your attempt to the cloud</div>
-        <div style="font-size:14px;opacity:.9">${escapeHtml(message)} (Your attempt is still saved locally.)</div>
+      <div style="min-width:0">
+        <div style="font-weight:700;margin-bottom:2px">${escapeHtml(title || "Couldn’t save your attempt")}</div>
+        <div style="font-size:14px;opacity:.95">${escapeHtml(
+          message || "Your attempt is saved locally, but the cloud save failed."
+        )}</div>
+        ${detailsHtml}
+        <div style="margin-top:8px;font-size:12px;opacity:.8">Tip: open DevTools → Console to see the exact error payload.</div>
       </div>
       <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end">
         <button id="dsaRetrySave" style="padding:10px 12px;border-radius:10px;border:1px solid #111;background:#111;color:#fff;cursor:pointer">Retry save</button>
@@ -249,6 +283,7 @@ import { saveAttempt } from "/assets/js/lib/attempt-writer.js";
 
     const root = document.body || document.documentElement;
     root.prepend(box);
+    __saveBannerEl = box;
 
     const btn = box.querySelector("#dsaRetrySave");
     if (btn) {
@@ -256,7 +291,7 @@ import { saveAttempt } from "/assets/js/lib/attempt-writer.js";
         btn.disabled = true;
         btn.textContent = "Retrying...";
         try {
-          await onRetry();
+          await onRetry?.();
         } finally {
           btn.disabled = false;
           btn.textContent = "Retry save";
@@ -269,15 +304,6 @@ import { saveAttempt } from "/assets/js/lib/attempt-writer.js";
 
   function clamp(n, min, max) {
     return Math.max(min, Math.min(max, n));
-  }
-
-  function escapeHtml(s) {
-    return String(s)
-      .replaceAll("&", "&amp;")
-      .replaceAll("<", "&lt;")
-      .replaceAll(">", "&gt;")
-      .replaceAll('"', "&quot;")
-      .replaceAll("'", "&#039;");
   }
 
   // -----------------------
@@ -856,6 +882,27 @@ import { saveAttempt } from "/assets/js/lib/attempt-writer.js";
     // -----------------------
     // Finish + save + redirect
     // -----------------------
+    async function getAuthUidBestEffort() {
+      try {
+        const mod = await import("/assets/js/firebase-init.js");
+        await mod.authReady;
+        return mod.auth?.currentUser?.uid || null;
+      } catch {
+        return null;
+      }
+    }
+
+    function coalesceDefined(v, fallback) {
+      return v === undefined ? fallback : v;
+    }
+
+    function normalizeArrayOrNull(v) {
+      if (v === undefined) return undefined;
+      if (v === null) return null;
+      if (Array.isArray(v)) return v;
+      return [v];
+    }
+
     async function finishExam() {
       if (state.finished) return;
       state.finished = true;
@@ -866,31 +913,37 @@ import { saveAttempt } from "/assets/js/lib/attempt-writer.js";
 
       const items = exam.questions.map((q, i) => {
         const chosen = typeof state.answers[q.id] === "number" ? state.answers[q.id] : null;
+
+        // Avoid passing undefined arrays/objects into writer (common Firestore invalid-argument trigger
+        // when something later serializes poorly). attempt-writer sanitizes too, but we keep engine tidy.
+        const steps = normalizeArrayOrNull(q.steps);
+        const solution = q.solution && typeof q.solution === "object" ? q.solution : undefined;
+
         return {
           number: i + 1,
 
           questionId: q.questionId || q.id,
+          id: q.id,
           version: q.version || 1,
 
           topic: q.topic || null,
           skill: q.skill || null,
-          difficulty: q.difficulty || null,
+          difficulty: coalesceDefined(q.difficulty, null),
 
-          id: q.id,
           prompt: q.promptHtml ? q.promptHtml : q.promptText,
           promptIsHtml: !!q.promptHtml,
 
-          choices: q.choices,
+          choices: Array.isArray(q.choices) ? q.choices : [],
           correctIndex: q.answerIndex,
           chosenIndex: chosen,
-          correct: chosen === q.answerIndex,
+          correct: chosen !== null && chosen === q.answerIndex,
 
-          explanation: q.explanation || "",
-          steps: Array.isArray(q.steps) ? q.steps : undefined,
-          solution: q.solution || undefined,
+          explanation: String(q.explanation || ""),
+          steps, // can be undefined, array, or null
+          solution,
 
-          timeSpentSec: state.questionTimes[q.id] || 0,
-          visits: state.visits[q.id] || 0,
+          timeSpentSec: Number(state.questionTimes[q.id] || 0),
+          visits: Number(state.visits[q.id] || 0),
         };
       });
 
@@ -920,14 +973,14 @@ import { saveAttempt } from "/assets/js/lib/attempt-writer.js";
 
         bank: {
           bankId: exam.bankId || null,
-          bankVersion: exam.bankVersion || null,
+          bankVersion: exam.bankVersion ?? null,
           title: exam.bankTitle || (exam.sectionTitle || exam.title) || null,
           description: exam.bankDescription || null,
           skills: Array.isArray(exam.bankSkills) ? exam.bankSkills : null,
         },
 
         // Random metadata (optional but important for diagnosing “random attempts not saving”)
-        pick: attemptType === "random" ? exam.pickMeta || null : null,
+        pick: attemptType === "random" ? (exam.pickMeta || null) : null,
 
         generatedAt: new Date().toISOString(),
         totals,
@@ -949,32 +1002,74 @@ import { saveAttempt } from "/assets/js/lib/attempt-writer.js";
 
       const reviewUrl = resolveReviewUrl(attemptId);
 
-      // Save through unified writer (Firestore + local fallback)
       const doSave = async () => {
         const res = await saveAttempt(attempt);
+        console.log("[quiz-engine] saveAttempt result:", res);
+
         if (res && res.ok) {
+          removeSaveBanner();
+
           safeRemoveStorage(draftKey);
           if (window.quizData && typeof window.quizData.clearSessionProgress === "function") {
             try {
               window.quizData.clearSessionProgress(exam.sectionId).catch(() => {});
             } catch {}
           }
+
           window.location.href = reviewUrl;
-          return true;
+          return { ok: true, res };
         }
-        return false;
+        return { ok: false, res };
       };
 
-      const ok = await doSave();
-      if (!ok) {
-        // Keep the user on the page; allow manual retry.
-        showSaveBanner("Check your sign-in / connection and retry.", async () => {
-          const ok2 = await doSave();
-          if (!ok2) {
-            // still failing; leave banner in place
+      const first = await doSave();
+      if (first.ok) return;
+
+      // Build a high-signal error message for the banner
+      const uid = await getAuthUidBestEffort();
+      const r = first.res || {};
+      const code = r.code || "unknown";
+      const msg = r.message || "Cloud save failed.";
+      const path = r.path ? `path=${r.path}` : "";
+      const localSaved = r.localSaved === true ? "localSaved=true" : (r.localSaved === false ? "localSaved=false" : "");
+      const authLine = uid ? `auth.uid=${uid}` : "auth.uid=null";
+
+      const details = [authLine, `attemptId=${attemptId}`, `code=${code}`, path, localSaved].filter(Boolean).join("\n");
+
+      showSaveBanner({
+        title: "Couldn’t save your attempt to the cloud",
+        message: `${msg} (Your attempt is still saved locally.)`,
+        details,
+        onRetry: async () => {
+          const again = await doSave();
+          if (!again.ok) {
+            const uid2 = await getAuthUidBestEffort();
+            const r2 = again.res || {};
+            const details2 = [
+              uid2 ? `auth.uid=${uid2}` : "auth.uid=null",
+              `attemptId=${attemptId}`,
+              `code=${r2.code || "unknown"}`,
+              r2.path ? `path=${r2.path}` : "",
+              r2.localSaved === true ? "localSaved=true" : (r2.localSaved === false ? "localSaved=false" : ""),
+            ]
+              .filter(Boolean)
+              .join("\n");
+
+            showSaveBanner({
+              title: "Save retry failed",
+              message: `${r2.message || "Cloud save retry failed."} (Your attempt is still saved locally.)`,
+              details: details2,
+              onRetry: async () => {
+                // allow repeated retries without stacking banners
+                const third = await doSave();
+                if (!third.ok) {
+                  // keep banner; console already has payload
+                }
+              },
+            });
           }
-        });
-      }
+        },
+      });
     }
 
     if (el.finish) el.finish.addEventListener("click", finishExam);
@@ -1002,7 +1097,7 @@ import { saveAttempt } from "/assets/js/lib/attempt-writer.js";
 
       runEngine({
         attemptId: cfg.attemptId,
-        attemptType: (String(cfg.attemptType || "topic").toLowerCase() === "random" ? "random" : "topic"),
+        attemptType: String(cfg.attemptType || "topic").toLowerCase() === "random" ? "random" : "topic",
 
         quizId: cfg.quizId || cfg.sectionId,
         sectionId: cfg.sectionId || cfg.quizId,
@@ -1058,7 +1153,7 @@ import { saveAttempt } from "/assets/js/lib/attempt-writer.js";
 
     // Build questions (random pick if configured; otherwise use full bank order)
     const attemptId = createAttemptId();
-    const pickedRaw = attemptType === "random" ? pickQuestionsFromBank(bank, cfg, attemptId) : (bank.questions || []);
+    const pickedRaw = attemptType === "random" ? pickQuestionsFromBank(bank, cfg, attemptId) : bank.questions || [];
     const questions = normalizeQuestions(pickedRaw);
 
     const err = validateQuestions(questions);
@@ -1077,7 +1172,9 @@ import { saveAttempt } from "/assets/js/lib/attempt-writer.js";
             seedValue:
               cfg.seedMode === "perAttempt"
                 ? String(attemptId)
-                : (cfg.seedMode === "perQuiz" ? String(quizId) : null),
+                : cfg.seedMode === "perQuiz"
+                  ? String(quizId)
+                  : null,
             picked: questions.map((q) => ({
               questionId: q.questionId || q.id,
               version: q.version || 1,
