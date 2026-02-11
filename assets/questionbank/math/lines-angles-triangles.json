@@ -1,119 +1,114 @@
 {
-  "quizId": "math.geometry.lines-angles-triangles.set1",
-  "title": "Lines, Angles, and Triangles — Set 1",
-  "section": "Math",
-  "domain": "Geometry and Trigonometry",
-  "skill": "Lines, angles, and triangles",
+  "bankId": "math.lines_angles_triangles",
+  "bankVersion": 1,
+  "title": "Math — Lines, Angles, and Triangles",
+  "description": "SAT-style geometry problems on parallel lines, angle relationships, similarity, and triangle properties (including coordinate geometry).",
+  "updatedAt": "2026-02-11",
   "questions": [
     {
-      "id": "81998666",
-      "type": "gridin",
-      "prompt": "A line intersects two parallel lines, forming four acute angles and four obtuse angles. The measure of one of the acute angles is (9x − 560)°. The sum of the measures of one of the acute angles and three of the obtuse angles is (−18x + w)°. What is the value of w?",
+      "questionId": "SAT-lat01",
+      "topic": "math.lines_angles_triangles",
+      "skill": "parallel-lines-transversal-angle-sum",
+      "difficulty": "hard",
+      "answerType": "gridin",
+      "prompt": "A line intersects two parallel lines, forming four acute angles and four obtuse angles. The measure of one of the acute angles is \\((9x - 560)^\\circ\\). The sum of the measures of one of the acute angles and three of the obtuse angles is \\((-18x + w)^\\circ\\). What is the value of \\(w\\)?",
       "answer": "1660",
-      "difficulty": "hard",
-      "rationale": "All acute angles are equal; all obtuse angles are equal. If an acute angle is (9x − 560)°, then an obtuse angle is 180 − (9x − 560) = −9x + 740. The given sum is (9x − 560) + 3(−9x + 740) = −18x + 1660, which matches −18x + w, so w = 1660."
+      "explanation": "All acute angles are equal; all obtuse angles are equal and are supplementary to an acute angle.\n\nAcute: \\(9x-560\\). So obtuse \\(= 180-(9x-560)= -9x+740\\).\n\nGiven sum: \\((9x-560)+3(-9x+740)= (9x-27x)+(-560+2220)= -18x+1660\\). Hence \\(w=1660\\)."
     },
     {
-      "id": "5dfa0339",
-      "type": "mcq",
-      "prompt": "Triangle ABC is similar to triangle XYZ, where A, B, and C correspond to X, Y, and Z, respectively. In triangle ABC, the length of AB is 170 and the length of BC is 850. In triangle XYZ, the length of YZ is 60. What is the length of XY?",
-      "choices": {
-        "A": "204",
-        "B": "182",
-        "C": "60",
-        "D": "12"
-      },
-      "correct": "D",
+      "questionId": "SAT-lat02",
+      "topic": "math.lines_angles_triangles",
+      "skill": "triangle-similarity-scale-factor",
       "difficulty": "hard",
-      "rationale": "By similarity, AB ↔ XY and BC ↔ YZ, so XY/AB = YZ/BC = 60/850. Thus XY = 170·(60/850) = 12."
+      "answerType": "mcq",
+      "prompt": "Triangle \\(ABC\\) is similar to triangle \\(XYZ\\), where \\(A,B,C\\) correspond to \\(X,Y,Z\\), respectively. In triangle \\(ABC\\), \\(AB=170\\) and \\(BC=850\\). In triangle \\(XYZ\\), \\(YZ=60\\). What is the length of \\(XY\\)?",
+      "choices": ["204", "182", "60", "12"],
+      "answerIndex": 3,
+      "explanation": "Similarity gives \\(\\dfrac{XY}{AB}=\\dfrac{YZ}{BC}\\). So \\(XY=170\\cdot \\dfrac{60}{850}=170\\cdot\\dfrac{6}{85}=2\\cdot 6=12\\)."
     },
     {
-      "id": "87edc26a",
-      "type": "mcq",
-      "prompt": "In triangle ABC, the measure of angle A is 54°, the measure of angle B is 90°, and the measure of angle C is (k/2)°. What is the value of k?",
-      "choices": {
-        "A": "36",
-        "B": "45",
-        "C": "72",
-        "D": "108"
-      },
-      "correct": "C",
+      "questionId": "SAT-lat03",
+      "topic": "math.lines_angles_triangles",
+      "skill": "triangle-angle-sum",
       "difficulty": "hard",
-      "rationale": "Triangle angles sum to 180°: 54 + 90 + k/2 = 180 → 144 + k/2 = 180 → k/2 = 36 → k = 72."
+      "answerType": "mcq",
+      "prompt": "In triangle \\(ABC\\), \\(\\angle A=54^\\circ\\), \\(\\angle B=90^\\circ\\), and \\(\\angle C=\\left(\\dfrac{k}{2}\\right)^\\circ\\). What is the value of \\(k\\)?",
+      "choices": ["36", "45", "72", "108"],
+      "answerIndex": 2,
+      "explanation": "Triangle angles sum to \\(180^\\circ\\): \\(54+90+\\frac{k}{2}=180\\). So \\(144+\\frac{k}{2}=180\\Rightarrow \\frac{k}{2}=36\\Rightarrow k=72\\)."
     },
     {
-      "id": "45be5825",
-      "type": "mcq",
-      "prompt": "In triangle ABC, the measure of angle A is 50°. If triangle ABC is isosceles, which of the following is NOT a possible measure of angle B?",
-      "choices": {
-        "A": "50°",
-        "B": "65°",
-        "C": "80°",
-        "D": "100°"
-      },
-      "correct": "D",
+      "questionId": "SAT-lat04",
+      "topic": "math.lines_angles_triangles",
+      "skill": "isosceles-triangle-angle-cases",
       "difficulty": "hard",
-      "rationale": "If B = 100°, then C = 180 − (50 + 100) = 30°, giving angles 50°, 100°, 30° with no two equal, so it can’t be isosceles. The other choices can produce two equal angles."
+      "answerType": "mcq",
+      "prompt": "In triangle \\(ABC\\), \\(\\angle A=50^\\circ\\). If triangle \\(ABC\\) is isosceles, which of the following is NOT a possible measure of \\(\\angle B\\)?",
+      "choices": ["50°", "65°", "80°", "100°"],
+      "answerIndex": 3,
+      "explanation": "Isosceles means at least two angles are equal.\n- If \\(B=50\\), then \\(C=80\\): angles \\(50,50,80\\) (isosceles).\n- If \\(B=65\\), then \\(C=65\\): angles \\(50,65,65\\) (isosceles).\n- If \\(B=80\\), then \\(C=50\\): angles \\(50,80,50\\) (isosceles).\n- If \\(B=100\\), then \\(C=30\\): angles \\(50,100,30\\) (no two equal). Not possible."
     },
     {
-      "id": "951da108",
-      "type": "mcq",
-      "prompt": "Each side of equilateral triangle S is multiplied by a scale factor of k to create equilateral triangle T. The length of each side of triangle T is greater than the length of each side of triangle S. Which of the following could be the value of k?",
-      "choices": {
-        "A": "29/28",
-        "B": "1",
-        "C": "28/29",
-        "D": "0"
-      },
-      "correct": "A",
+      "questionId": "SAT-lat05",
+      "topic": "math.lines_angles_triangles",
+      "skill": "dilation-scale-factor",
       "difficulty": "hard",
-      "rationale": "To make triangle T larger, the scale factor must be greater than 1. Only 29/28 is greater than 1."
+      "answerType": "mcq",
+      "prompt": "Each side of equilateral triangle \\(S\\) is multiplied by a scale factor of \\(k\\) to create equilateral triangle \\(T\\). The length of each side of triangle \\(T\\) is greater than the length of each side of triangle \\(S\\). Which of the following could be the value of \\(k\\)?",
+      "choices": ["29/28", "1", "28/29", "0"],
+      "answerIndex": 0,
+      "explanation": "To make the image triangle larger, the scale factor must satisfy \\(k>1\\). Among the choices, only \\(\\tfrac{29}{28}>1\\)."
     },
     {
-      "id": "afa24e4f",
-      "type": "gridin",
-      "prompt": "In convex pentagon ABCDE, segment AB is parallel to segment DE. The measure of angle B is 139° and the measure of angle D is 174°. What is the measure, in degrees, of angle C?",
+      "questionId": "SAT-lat06",
+      "topic": "math.lines_angles_triangles",
+      "skill": "parallel-lines-pentagon-angle-chase",
+      "difficulty": "hard",
+      "answerType": "gridin",
+      "prompt": "In convex pentagon \\(ABCDE\\), segment \\(AB\\) is parallel to segment \\(DE\\). The measure of \\(\\angle B\\) is \\(139^\\circ\\) and the measure of \\(\\angle D\\) is \\(174^\\circ\\). What is the measure, in degrees, of \\(\\angle C\\)?",
       "answer": "47",
-      "difficulty": "hard",
-      "rationale": "Extend AB at B to form an exterior angle of 180 − 139 = 41°. Using AB ∥ DE, that 41° transfers as an alternate interior angle with a transversal through C. Angle D = 174° gives an adjacent exterior angle of 180 − 174 = 6°. Angle C is the sum of those two angles: 41 + 6 = 47."
+      "explanation": "At \\(B\\), the exterior angle formed by extending \\(AB\\) is \\(180-139=41^\\circ\\).\n\nAt \\(D\\), the exterior angle adjacent to \\(\\angle D\\) is \\(180-174=6^\\circ\\).\n\nBecause \\(AB\\parallel DE\\), these exterior turns add through the interior at \\(C\\), giving \\(\\angle C=41+6=47^\\circ\\)."
     },
     {
-      "id": "f16a958f",
-      "type": "mcq",
-      "prompt": "Triangles PQR and LMN are graphed in the xy-plane. Triangle PQR has vertices P, Q, and R at (4, 5), (4, 7), and (6, 5), respectively. Triangle LMN has vertices L, M, and N at (4, 5), (4, 7 + k), and (6 + k, 5), respectively, where k is a positive constant. If the measure of ∠Q is t°, what is the measure of ∠N?",
-      "choices": {
-        "A": "(90 − (t − k))°",
-        "B": "(90 − (t + k))°",
-        "C": "(90 − t)°",
-        "D": "(90 + k)°"
-      },
-      "correct": "C",
+      "questionId": "SAT-lat07",
+      "topic": "math.lines_angles_triangles",
+      "skill": "coordinate-geometry-angle-invariance",
       "difficulty": "hard",
-      "rationale": "Triangle PQR is a right isosceles triangle, so ∠Q = 45°. The construction of LMN preserves a right isosceles shape, so ∠N = 45° as well. Since t = 45°, the expression equal to 45° is 90 − t."
+      "answerType": "mcq",
+      "prompt": "Triangles \\(PQR\\) and \\(LMN\\) are graphed in the xy-plane. Triangle \\(PQR\\) has vertices \\(P(4,5),\\ Q(4,7),\\ R(6,5)\\). Triangle \\(LMN\\) has vertices \\(L(4,5),\\ M(4,7+k),\\ N(6+k,5)\\), where \\(k\\) is a positive constant. If the measure of \\(\\angle Q\\) is \\(t^\\circ\\), what is the measure of \\(\\angle N\\)?",
+      "choices": ["(90 − (t − k))°", "(90 − (t + k))°", "(90 − t)°", "(90 + k)°"],
+      "answerIndex": 2,
+      "explanation": "In \\(\\triangle PQR\\), \\(PQ\\) is vertical and \\(PR\\) is horizontal, so \\(\\angle P=90^\\circ\\). Also \\(PQ=2\\) and \\(PR=2\\), so the triangle is right isosceles and the two acute angles are each \\(45^\\circ\\). Thus \\(t=45\\).\n\nThe construction for \\(LMN\\) preserves a right isosceles shape (legs remain perpendicular and equal), so \\(\\angle N=45^\\circ\\). Since \\(90-t = 90-45=45\\), the correct expression is \\((90-t)^\\circ\\)."
     },
     {
-      "id": "873d3aa1",
-      "type": "gridin",
-      "prompt": "In triangle JKL, the measures of ∠K and ∠L are each 48°. What is the measure of ∠J, in degrees? (Disregard the degree symbol when entering your answer.)",
+      "questionId": "SAT-lat08",
+      "topic": "math.lines_angles_triangles",
+      "skill": "isosceles-triangle-angle-sum",
+      "difficulty": "hard",
+      "answerType": "gridin",
+      "prompt": "In triangle \\(JKL\\), the measures of \\(\\angle K\\) and \\(\\angle L\\) are each \\(48^\\circ\\). What is the measure of \\(\\angle J\\), in degrees?",
       "answer": "84",
-      "difficulty": "hard",
-      "rationale": "Triangle angles sum to 180°. So ∠J = 180 − 48 − 48 = 84."
+      "explanation": "Triangle angles sum to \\(180^\\circ\\). So \\(\\angle J = 180-48-48 = 84\\)."
     },
     {
-      "id": "52f83401",
-      "type": "gridin",
-      "prompt": "In right triangle ABC, angle C is the right angle and BC = 162. Point D on side AB is connected to point E on side AC such that DE is parallel to BC and CE = 2AE. What is the length of DE?",
+      "questionId": "SAT-lat09",
+      "topic": "math.lines_angles_triangles",
+      "skill": "triangle-similarity-parallel-segment",
+      "difficulty": "hard",
+      "answerType": "gridin",
+      "prompt": "In right triangle \\(ABC\\), \\(\\angle C\\) is the right angle and \\(BC=162\\). Point \\(D\\) on side \\(AB\\) is connected to point \\(E\\) on side \\(AC\\) such that \\(DE\\) is parallel to \\(BC\\) and \\(CE = 2AE\\). What is the length of \\(DE\\)?",
       "answer": "54",
-      "difficulty": "hard",
-      "rationale": "Since DE ∥ BC, triangles ADE and ABC are similar. On AC, AE + CE = AC and CE = 2AE, so AC = 3AE, hence AE/AC = 1/3. Therefore DE/BC = 1/3, so DE = (1/3)·162 = 54."
+      "explanation": "Since \\(DE\\parallel BC\\), triangles \\(ADE\\) and \\(ABC\\) are similar.\n\nGiven \\(CE=2AE\\), then \\(AC = AE+CE = AE+2AE = 3AE\\), so \\(\\dfrac{AE}{AC}=\\dfrac{1}{3}\\).\n\nBy similarity, \\(\\dfrac{DE}{BC}=\\dfrac{AE}{AC}=\\dfrac{1}{3}\\), so \\(DE=\\frac{1}{3}\\cdot 162=54\\)."
     },
     {
-      "id": "0ed5f446",
-      "type": "gridin",
-      "prompt": "In triangle XYZ, angle Y is a right angle. Point P lies on XZ, and point Q lies on YZ such that PQ is parallel to XY. If the measure of angle XZY is 63°, what is the measure, in degrees, of angle XPQ?",
-      "answer": "153",
+      "questionId": "SAT-lat10",
+      "topic": "math.lines_angles_triangles",
+      "skill": "parallel-lines-angle-chase-in-triangle",
       "difficulty": "hard",
-      "rationale": "With PQ ∥ XY and ∠Y = 90°, angle ZPQ equals 90° − ∠XZY = 90 − 63 = 27° (complementary). Angle XPQ is supplementary to angle ZPQ along line XP, so ∠XPQ = 180 − 27 = 153."
+      "answerType": "gridin",
+      "prompt": "In triangle \\(XYZ\\), angle \\(Y\\) is a right angle. Point \\(P\\) lies on \\(XZ\\), and point \\(Q\\) lies on \\(YZ\\) such that \\(PQ\\) is parallel to \\(XY\\). If the measure of angle \\(XZY\\) is \\(63^\\circ\\), what is the measure, in degrees, of angle \\(XPQ\\)?",
+      "answer": "153",
+      "explanation": "Since \\(PQ\\parallel XY\\), angle \\(ZPQ\\) equals angle \\(\\angle Y\\) in the small similar triangle, but more directly: \\(XY\\perp YZ\\) because \\(\\angle Y=90^\\circ\\), so \\(PQ\\perp YZ\\) as well.\n\nAt vertex \\(Z\\), \\(\\angle XZY=63^\\circ\\) is the angle between \\(ZX\\) and \\(ZY\\). Because \\(PQ\\perp ZY\\), the angle between \\(PQ\\) and \\(ZX\\) is \\(90-63=27^\\circ\\). That acute angle is \\(\\angle ZPX\\)'s corresponding angle at \\(P\\), namely \\(\\angle ZPQ=27^\\circ\\).\n\nPoints \\(X\\), \\(P\\), \\(Z\\) are collinear, so \\(\\angle XPQ\\) is supplementary to \\(\\angle ZPQ\\): \\(\\angle XPQ = 180-27=153^\\circ\\)."
     }
   ]
 }
