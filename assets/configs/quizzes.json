@@ -152,10 +152,10 @@
     "timeLimitSec": 600
   },
 
-  "math.right-triangles-and-trigonometry": {
+  "math.right-triangles-trigonometry": {
     "title": "Math — Right Triangles & Trigonometry",
     "description": "Trigonometric ratios and right triangle problems.",
-    "bank": "/assets/questionbank/math/right-triangles-and-trigonometry.json",
+    "bank": "/assets/questionbank/math/right-triangles-trigonometry.json",
     "pickCount": 10,
     "shuffle": false,
     "timeLimitSec": 600
