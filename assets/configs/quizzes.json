@@ -71,7 +71,7 @@
     "timeLimitSec": 600
   },
 
-  "math.rates-ratios-and-units": {
+  "math.rates-ratios-units": {
     "title": "Math — Ratios, Rates, & Units",
     "description": "Solving problems involving ratios, rates, proportions, and unit conversions.",
     "bank": "/assets/questionbank/math/rates-ratios-units.json",
