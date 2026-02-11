@@ -5,7 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Quiz Preview</title>
 
-  <!-- Keep your site shell if you want header/footer injected -->
+  <!-- Global site styles (keeps your nav + theme consistent) -->
+  <link rel="stylesheet" href="/assets/css/site.css" />
+
+  <!-- Site shell: inject header/footer, auth UI, active nav -->
   <script type="module" src="/assets/js/shell.js"></script>
 
   <style>
@@ -20,11 +23,20 @@
       --blue2:#04e4ff;
       --shadow:0 10px 24px rgba(0,0,0,.35);
     }
+
     body{
-      margin:0;background:var(--bg);color:var(--ink);
+      margin:0;
+      background:var(--bg);
+      color:var(--ink);
       font:16px/1.55 Inter, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
     }
-    .wrap{max-width:860px;margin:0 auto;padding:28px 16px 80px;}
+
+    .wrap{
+      max-width:860px;
+      margin:0 auto;
+      padding:28px 16px 80px;
+    }
+
     .card{
       background:linear-gradient(180deg,var(--card),var(--surface));
       border:1px solid var(--line);
@@ -32,10 +44,30 @@
       box-shadow:var(--shadow);
       padding:22px;
     }
-    .top{display:flex;justify-content:space-between;gap:14px;flex-wrap:wrap;align-items:flex-start;}
+
+    .top{
+      display:flex;
+      justify-content:space-between;
+      gap:14px;
+      flex-wrap:wrap;
+      align-items:flex-start;
+    }
+
     h1{margin:0;font-size:28px;letter-spacing:.2px}
-    .sub{color:var(--muted);margin:8px 0 0;max-width:60ch}
-    .pillrow{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
+
+    .sub{
+      color:var(--muted);
+      margin:8px 0 0;
+      max-width:60ch;
+    }
+
+    .pillrow{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      margin-top:14px;
+    }
+
     .pill{
       border:1px solid var(--line);
       border-radius:999px;
@@ -46,20 +78,56 @@
       font-size:13px;
       white-space:nowrap;
     }
-    .grid{display:grid;grid-template-columns:1fr;gap:10px;margin-top:18px}
+
+    .grid{
+      display:grid;
+      grid-template-columns:1fr;
+      gap:10px;
+      margin-top:18px;
+    }
+
     .meta{
       border:1px solid var(--line);
       border-radius:14px;
       padding:14px;
       background:rgba(0,0,0,.15);
     }
-    .meta .row{display:flex;gap:10px;flex-wrap:wrap;margin:6px 0;color:var(--muted)}
+
+    .meta .row{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      margin:6px 0;
+      color:var(--muted);
+    }
+
     .meta b{color:var(--ink)}
-    .skills{margin-top:8px;color:var(--muted)}
-    .skills ul{margin:8px 0 0;padding-left:18px}
-    .btnrow{display:flex;gap:12px;flex-wrap:wrap;margin-top:18px}
+
+    .skills{
+      margin-top:8px;
+      color:var(--muted);
+    }
+
+    .skills ul{
+      margin:8px 0 0;
+      padding-left:18px;
+    }
+
+    .muted{
+      color:var(--muted);
+      font-size:13px;
+    }
+
+    .btnrow{
+      display:flex;
+      gap:12px;
+      flex-wrap:wrap;
+      margin-top:18px;
+    }
+
     .btn{
-      border:0;border-radius:10px;
+      border:0;
+      border-radius:10px;
       padding:12px 16px;
       font-weight:900;
       cursor:pointer;
@@ -67,14 +135,29 @@
       display:inline-flex;
       align-items:center;
       gap:10px;
+      line-height:1;
+      user-select:none;
     }
+
     .btn.primary{background:var(--blue);color:#001018}
     .btn.primary:hover{background:var(--blue2)}
-    .btn.secondary{background:rgba(255,255,255,.08);color:var(--ink);border:1px solid var(--line)}
+
+    .btn.secondary{
+      background:rgba(255,255,255,.08);
+      color:var(--ink);
+      border:1px solid var(--line);
+    }
     .btn.secondary:hover{background:rgba(255,255,255,.12)}
-    .btn.danger{background:rgba(255,80,80,.12);color:#ffd1d1;border:1px solid rgba(255,80,80,.28)}
+
+    .btn.danger{
+      background:rgba(255,80,80,.12);
+      color:#ffd1d1;
+      border:1px solid rgba(255,80,80,.28);
+    }
     .btn.danger:hover{background:rgba(255,80,80,.18)}
+
     .note{margin-top:12px;color:var(--muted);font-size:13px}
+
     .error{
       margin-top:14px;
       border:1px solid rgba(255,80,80,.35);
@@ -83,25 +166,26 @@
       border-radius:12px;
       padding:12px;
       display:none;
+      white-space:pre-wrap;
     }
   </style>
 </head>
 
 <body>
+  <!-- Header injected by shell.js -->
   <div id="site-header"></div>
 
-  <div class="wrap">
+  <main class="wrap" role="main">
     <div class="card">
       <div class="top">
         <div>
           <h1 id="title">Quiz Preview</h1>
           <p class="sub" id="desc">Loading…</p>
-
           <div class="pillrow" id="pills"></div>
         </div>
       </div>
 
-      <div class="grid">
+      <div class="grid" aria-live="polite">
         <div class="meta">
           <div class="row"><b>Questions:</b> <span id="qCount">—</span></div>
           <div class="row"><b>Time limit:</b> <span id="timeLimit">—</span></div>
@@ -112,7 +196,7 @@
       </div>
 
       <div class="btnrow">
-        <a class="btn primary" id="startBtn" href="#">Start quiz</a>
+        <a class="btn primary" id="startBtn" href="/pages/quiz.html">Start quiz</a>
         <a class="btn secondary" id="studyBtn" href="#" style="display:none">Study topic</a>
         <a class="btn secondary" id="backBtn" href="/practice.html">Back to practice</a>
         <button class="btn secondary" id="resumeBtn" type="button" style="display:none">Resume</button>
@@ -122,10 +206,12 @@
       <div class="note" id="note"></div>
       <div class="error" id="errorBox"></div>
     </div>
-  </div>
+  </main>
 
+  <!-- Footer injected by shell.js -->
   <div id="site-footer"></div>
 
+  <!-- Preview logic -->
   <script type="module" src="/assets/js/pages/previewpage.js"></script>
 </body>
 </html>
