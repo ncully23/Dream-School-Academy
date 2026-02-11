@@ -2,7 +2,7 @@
 <html lang="en" data-page="practice">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Practice – Dream School Academy</title>
 
   <!-- Font + global site styles -->
@@ -13,9 +13,7 @@
 
   <!-- Page-specific layout styling -->
   <style>
-    main#practice {
-      padding: 4rem 0 5rem;
-    }
+    main#practice { padding: 4rem 0 5rem; }
 
     .practice-wrap {
       width: min(1100px, 92vw);
@@ -37,15 +35,11 @@
       margin: 0 0 0.4rem;
     }
 
-    .practice-section p {
-      margin: 0 0 1.2rem;
-    }
+    .practice-section p { margin: 0 0 1.2rem; }
 
-    .practice-section h2 span {
-      color: var(--brand);
-    }
+    .practice-section h2 span { color: var(--brand); }
 
-    /* Search + filter row */
+    /* Search + filter row (reserved for future use) */
     .search-row {
       margin: 1rem 0 1.6rem;
       display: flex;
@@ -64,9 +58,7 @@
       min-width: 180px;
     }
 
-    .search-row input::placeholder {
-      color: var(--muted);
-    }
+    .search-row input::placeholder { color: var(--muted); }
 
     /* Grid of quiz cards */
     .quiz-grid {
@@ -81,8 +73,7 @@
       border-radius: 14px;
       padding: 1rem 1rem 1.1rem;
       border: 1px solid rgba(148, 163, 184, 0.25);
-      transition: border-color 0.16s ease, transform 0.16s ease,
-                  box-shadow 0.16s ease;
+      transition: border-color 0.16s ease, transform 0.16s ease, box-shadow 0.16s ease;
     }
 
     .quiz-card:hover {
@@ -114,57 +105,52 @@
       color: var(--brand-ink);
     }
 
-    .quiz-card a:hover {
-      transform: translateY(-1px);
+    .quiz-card a:hover { transform: translateY(-1px); }
+
+    /* Random practice actions */
+    .practice-actions {
+      display: flex;
+      gap: 0.8rem;
+      flex-wrap: wrap;
+      align-items: center;
+      margin-top: 0.8rem;
     }
 
-    <style>
-  /* ...your existing styles... */
+    .practice-actions select {
+      padding: 0.55rem 0.8rem;
+      background: var(--surface-2);
+      border-radius: 999px;
+      border: 1px solid rgba(148, 163, 184, 0.35);
+      color: var(--text);
+      font-size: 0.9rem;
+      min-width: 180px;
+    }
 
-  .practice-actions {
-    display: flex;
-    gap: 0.8rem;
-    flex-wrap: wrap;
-    align-items: center;
-    margin-top: 0.8rem;
-  }
+    .practice-actions .btn-start {
+      display: inline-block;
+      padding: 0.55rem 0.95rem;
+      border-radius: 999px;
+      font-size: 0.9rem;
+      font-weight: 800;
+      text-decoration: none;
+      background: var(--brand);
+      color: var(--brand-ink);
+      border: none;
+      cursor: pointer;
+      transition: transform 0.12s ease, filter 0.12s ease;
+    }
 
-  .practice-actions select {
-    padding: 0.55rem 0.8rem;
-    background: var(--surface-2);
-    border-radius: 999px;
-    border: 1px solid rgba(148, 163, 184, 0.35);
-    color: var(--text);
-    font-size: 0.9rem;
-    min-width: 180px;
-  }
+    .practice-actions .btn-start:hover {
+      transform: translateY(-1px);
+      filter: brightness(1.03);
+    }
 
-  .practice-actions .btn-start {
-    display: inline-block;
-    padding: 0.55rem 0.95rem;
-    border-radius: 999px;
-    font-size: 0.9rem;
-    font-weight: 800;
-    text-decoration: none;
-    background: var(--brand);
-    color: var(--brand-ink);
-    border: none;
-    cursor: pointer;
-    transition: transform 0.12s ease, filter 0.12s ease;
-  }
-
-  .practice-actions .btn-start:hover {
-    transform: translateY(-1px);
-    filter: brightness(1.03);
-  }
-
-  .practice-note {
-    font-size: 0.85rem;
-    color: var(--muted);
-    margin-top: 0.6rem;
-    line-height: 1.4;
-  }
-</style>
+    .practice-note {
+      font-size: 0.85rem;
+      color: var(--muted);
+      margin-top: 0.6rem;
+      line-height: 1.4;
+    }
   </style>
 </head>
 
@@ -184,239 +170,242 @@
           <div class="quiz-card">
             <div class="quiz-title">Module 1 – Reading</div>
             <div class="quiz-meta">32 minutes · full-length</div>
-            <a href="/practice/module1/preview.html">Preview</a>
+            <a href="/pages/preview.html?quizId=reading.module1">Preview</a>
           </div>
 
           <div class="quiz-card">
             <div class="quiz-title">Module 2 – Reading</div>
             <div class="quiz-meta">32 minutes · full-length</div>
-            <a href="/practice/module2/preview.html">Preview</a>
+            <a href="/pages/preview.html?quizId=reading.module2">Preview</a>
           </div>
 
           <div class="quiz-card">
             <div class="quiz-title">Module 3 – Math</div>
             <div class="quiz-meta">35 minutes · full-length</div>
-            <a href="/practice/module3/preview.html">Preview</a>
+            <a href="/pages/preview.html?quizId=math.module3">Preview</a>
           </div>
 
           <div class="quiz-card">
             <div class="quiz-title">Module 4 – Math</div>
             <div class="quiz-meta">35 minutes · full-length</div>
-            <a href="/practice/module4/preview.html">Preview</a>
+            <a href="/pages/preview.html?quizId=math.module4">Preview</a>
           </div>
         </div>
+
+        <p class="practice-note">
+          Tip: These are timed modules. You can resume mid-module if you leave and come back on the same device.
+        </p>
       </section>
 
-<!-- RANDOMIZED PRACTICE (UNTIMED) -->
-<section class="practice-section" id="random-math">
-  <h2><span> Untimed random math practice</span></h2>
-  <div class="practice-actions">
-    <select id="randCount" aria-label="Number of questions">
-      <option value="5">5 questions</option>
-      <option value="10" selected>10 questions</option>
-      <option value="15">15 questions</option>
-      <option value="20">20 questions</option>
-    </select>
+      <!-- RANDOMIZED PRACTICE (UNTIMED) -->
+      <section class="practice-section" id="random-math">
+        <h2><span>🎲 Untimed random math practice</span></h2>
+        <p>Quick drill mode: pick question count + difficulty and go.</p>
 
-    <select id="randDiff" aria-label="Difficulty">
-      <option value="">Any difficulty</option>
-      <option value="easy">Easy</option>
-      <option value="medium">Medium</option>
-      <option value="hard">Hard</option>
-    </select>
+        <div class="practice-actions">
+          <select id="randCount" aria-label="Number of questions">
+            <option value="5">5 questions</option>
+            <option value="10" selected>10 questions</option>
+            <option value="15">15 questions</option>
+            <option value="20">20 questions</option>
+          </select>
 
-    <button class="btn-start" id="startRandomMath">Start random math</button>
-  </div>
+          <select id="randDiff" aria-label="Difficulty">
+            <option value="">Any difficulty</option>
+            <option value="easy">Easy</option>
+            <option value="medium">Medium</option>
+            <option value="hard">Hard</option>
+          </select>
 
-</section>
+          <button class="btn-start" id="startRandomMath" type="button">Start random math</button>
+        </div>
 
-      
+        <p class="practice-note">
+          This mode pulls random questions from your math banks (once your quiz runner supports <code>mode=random</code>).
+        </p>
+      </section>
+
       <!-- TOPIC QUIZZES -->
       <section class="practice-section">
         <h2><span>🎯 Practice by topic</span></h2>
         <p>Pick a topic and drill with a focused 10-question quiz.</p>
-
 
         <div class="quiz-grid">
           <!-- READING & WRITING -->
           <div class="quiz-card">
             <div class="quiz-title">Central Ideas &amp; Details</div>
             <div class="quiz-meta">Reading · 10 questions · ~12 min</div>
-            <a href="/practice/central-ideas/preview.html">Preview</a>
+            <a href="/pages/preview.html?quizId=reading.central-ideas">Preview</a>
           </div>
 
           <div class="quiz-card">
             <div class="quiz-title">Inferences</div>
             <div class="quiz-meta">Reading · 10 questions · ~12 min</div>
-            <a href="/practice/inferences/preview.html">Preview</a>
+            <a href="/pages/preview.html?quizId=reading.inferences">Preview</a>
           </div>
 
           <div class="quiz-card">
             <div class="quiz-title">Command of Evidence</div>
             <div class="quiz-meta">Reading · 10 questions · ~12 min</div>
-            <a href="/practice/command-evidence/preview.html">Preview</a>
+            <a href="/pages/preview.html?quizId=reading.command-evidence">Preview</a>
           </div>
 
           <div class="quiz-card">
             <div class="quiz-title">Words in Context</div>
             <div class="quiz-meta">Reading · 10 questions · ~12 min</div>
-            <a href="/practice/words-context/preview.html">Preview</a>
+            <a href="/pages/preview.html?quizId=reading.words-context">Preview</a>
           </div>
 
           <div class="quiz-card">
             <div class="quiz-title">Text Structure &amp; Purpose</div>
             <div class="quiz-meta">Reading · 10 questions · ~12 min</div>
-            <!-- special revised link -->
-            <a href="/preview/structure-purpose.html">Preview</a>
+            <a href="/pages/preview.html?quizId=reading.structure-purpose">Preview</a>
           </div>
 
           <div class="quiz-card">
             <div class="quiz-title">Cross-Text Connections</div>
             <div class="quiz-meta">Reading · 10 questions · ~12 min</div>
-            <a href="/practice/cross-text/preview.html">Preview</a>
+            <a href="/pages/preview.html?quizId=reading.cross-text">Preview</a>
           </div>
 
           <div class="quiz-card">
             <div class="quiz-title">Rhetorical Synthesis</div>
             <div class="quiz-meta">Reading · 10 questions · ~12 min</div>
-            <a href="/practice/rhetorical-synthesis/preview.html">Preview</a>
+            <a href="/pages/preview.html?quizId=reading.rhetorical-synthesis">Preview</a>
           </div>
 
           <div class="quiz-card">
             <div class="quiz-title">Transitions</div>
             <div class="quiz-meta">Writing · 10 questions · ~12 min</div>
-            <a href="/practice/transitions/preview.html">Preview</a>
+            <a href="/pages/preview.html?quizId=writing.transitions">Preview</a>
           </div>
 
           <div class="quiz-card">
             <div class="quiz-title">Boundaries (Grammar)</div>
             <div class="quiz-meta">Writing · 10 questions · ~12 min</div>
-            <a href="/practice/boundaries/preview.html">Preview</a>
+            <a href="/pages/preview.html?quizId=writing.boundaries">Preview</a>
           </div>
 
           <div class="quiz-card">
             <div class="quiz-title">Form, Structure, &amp; Sense</div>
             <div class="quiz-meta">Writing · 10 questions · ~12 min</div>
-            <a href="/practice/form-structure-sense/preview.html">Preview</a>
+            <a href="/pages/preview.html?quizId=writing.form-structure-sense">Preview</a>
           </div>
 
           <!-- MATH -->
           <div class="quiz-card">
             <div class="quiz-title">Linear Equations (One Variable)</div>
             <div class="quiz-meta">Math · 10 questions · ~12 min</div>
-            <a href="/practice/linear-equations-one-variable/preview.html">Preview</a>
+            <a href="/pages/preview.html?quizId=math.linear-equations-one-variable">Preview</a>
           </div>
 
           <div class="quiz-card">
             <div class="quiz-title">Linear Functions</div>
             <div class="quiz-meta">Math · 10 questions · ~12 min</div>
-            <a href="/practice/linear-functions/preview.html">Preview</a>
+            <a href="/pages/preview.html?quizId=math.linear-functions">Preview</a>
           </div>
 
           <div class="quiz-card">
             <div class="quiz-title">Linear Equations (Two Variables)</div>
             <div class="quiz-meta">Math · 10 questions · ~12 min</div>
-            <a href="/practice/linear-equations-two-variables/preview.html">Preview</a>
+            <a href="/pages/preview.html?quizId=math.linear-equations-two-variables">Preview</a>
           </div>
 
           <div class="quiz-card">
             <div class="quiz-title">Systems of Linear Equations</div>
             <div class="quiz-meta">Math · 10 questions · ~12 min</div>
-            <a href="/practice/systems-linear-equations/preview.html">Preview</a>
+            <a href="/pages/preview.html?quizId=math.systems-linear-equations">Preview</a>
           </div>
 
           <div class="quiz-card">
             <div class="quiz-title">Linear Inequalities</div>
             <div class="quiz-meta">Math · 10 questions · ~12 min</div>
-            <a href="/practice/linear-inequalities/preview.html">Preview</a>
+            <a href="/pages/preview.html?quizId=math.linear-inequalities">Preview</a>
           </div>
 
           <div class="quiz-card">
             <div class="quiz-title">Nonlinear Functions</div>
             <div class="quiz-meta">Math · 10 questions · ~12 min</div>
-            <a href="/practice/nonlinear-functions/preview.html">Preview</a>
+            <a href="/pages/preview.html?quizId=math.nonlinear-functions">Preview</a>
           </div>
 
           <div class="quiz-card">
             <div class="quiz-title">Nonlinear Equations &amp; Systems</div>
             <div class="quiz-meta">Math · 10 questions · ~12 min</div>
-            <a href="/practice/nonlinear-equations/preview.html">Preview</a>
+            <a href="/pages/preview.html?quizId=math.nonlinear-equations">Preview</a>
           </div>
 
           <div class="quiz-card">
             <div class="quiz-title">Equivalent Expressions</div>
             <div class="quiz-meta">Math · 10 questions · ~12 min</div>
-            <a href="/practice/equivalent-expressions/preview.html">Preview</a>
+            <a href="/pages/preview.html?quizId=math.equivalent-expressions">Preview</a>
           </div>
 
           <div class="quiz-card">
             <div class="quiz-title">Ratios, Rates, &amp; Units</div>
             <div class="quiz-meta">Math · 10 questions · ~12 min</div>
-            <!-- special revised link -->
-            <a href="/preview/rates-ratios-units.html">Preview</a>
+            <a href="/pages/preview.html?quizId=math.rates-ratios-units">Preview</a>
           </div>
 
           <div class="quiz-card">
             <div class="quiz-title">Percentages</div>
             <div class="quiz-meta">Math · 10 questions · ~12 min</div>
-            <a href="/practice/percentages/preview.html">Preview</a>
+            <a href="/pages/preview.html?quizId=math.percentages">Preview</a>
           </div>
 
           <div class="quiz-card">
             <div class="quiz-title">One-Variable Data</div>
             <div class="quiz-meta">Math · 10 questions · ~12 min</div>
-            <a href="/practice/one-variable-data/preview.html">Preview</a>
+            <a href="/pages/preview.html?quizId=math.one-variable-data">Preview</a>
           </div>
 
           <div class="quiz-card">
             <div class="quiz-title">Two-Variable Data</div>
             <div class="quiz-meta">Math · 10 questions · ~12 min</div>
-            <a href="/practice/two-variable-data/preview.html">Preview</a>
+            <a href="/pages/preview.html?quizId=math.two-variable-data">Preview</a>
           </div>
 
           <div class="quiz-card">
             <div class="quiz-title">Probability &amp; Conditional Probability</div>
             <div class="quiz-meta">Math · 10 questions · ~12 min</div>
-            <a href="/practice/probability/preview.html">Preview</a>
+            <a href="/pages/preview.html?quizId=math.probability">Preview</a>
           </div>
 
           <div class="quiz-card">
             <div class="quiz-title">Inference from Sample Statistics</div>
             <div class="quiz-meta">Math · 10 questions · ~12 min</div>
-            <a href="/practice/inference-statistics/preview.html">Preview</a>
+            <a href="/pages/preview.html?quizId=math.inference-statistics">Preview</a>
           </div>
 
           <div class="quiz-card">
             <div class="quiz-title">Evaluating Statistical Claims</div>
             <div class="quiz-meta">Math · 10 questions · ~12 min</div>
-            <a href="/practice/statistical-claims/preview.html">Preview</a>
+            <a href="/pages/preview.html?quizId=math.statistical-claims">Preview</a>
           </div>
 
           <div class="quiz-card">
             <div class="quiz-title">Area &amp; Volume</div>
             <div class="quiz-meta">Math · 10 questions · ~12 min</div>
-            <a href="/practice/area-volume/preview.html">Preview</a>
+            <a href="/pages/preview.html?quizId=math.area-volume">Preview</a>
           </div>
 
           <div class="quiz-card">
             <div class="quiz-title">Lines, Angles, &amp; Triangles</div>
             <div class="quiz-meta">Math · 10 questions · ~12 min</div>
-            <a href="/practice/lines-angles-triangles/preview.html">Preview</a>
+            <a href="/pages/preview.html?quizId=math.lines-angles-triangles">Preview</a>
           </div>
 
           <div class="quiz-card">
             <div class="quiz-title">Right Triangles &amp; Trigonometry</div>
             <div class="quiz-meta">Math · 10 questions · ~12 min</div>
-            <!-- special revised link -->
-            <a href="/preview/right-triangles-trigonometry.html">Preview</a>
+            <a href="/pages/preview.html?quizId=math.right-triangles-trigonometry">Preview</a>
           </div>
 
           <div class="quiz-card">
             <div class="quiz-title">Circles</div>
             <div class="quiz-meta">Math · 10 questions · ~12 min</div>
-            <a href="/practice/circles/preview.html">Preview</a>
+            <a href="/pages/preview.html?quizId=math.circles">Preview</a>
           </div>
-
         </div>
       </section>
     </div>
@@ -425,32 +414,28 @@
   <!-- Footer injected by shell.js -->
   <div id="site-footer"></div>
 
-<script>
-  (function () {
-    const btn = document.getElementById("startRandomMath");
-    const countSel = document.getElementById("randCount");
-    const diffSel = document.getElementById("randDiff");
+  <script>
+    (function () {
+      const btn = document.getElementById("startRandomMath");
+      const countSel = document.getElementById("randCount");
+      const diffSel = document.getElementById("randDiff");
 
-    if (!btn || !countSel || !diffSel) return;
+      if (!btn || !countSel || !diffSel) return;
 
-    btn.addEventListener("click", () => {
-      const count = countSel.value || "10";
-      const diff = diffSel.value || "";
+      btn.addEventListener("click", () => {
+        const count = countSel.value || "10";
+        const diff = diffSel.value || "";
 
-      // Route to your existing quiz runner.
-      // Implement support in quizpage.js/engine by reading:
-      //   mode=random, section=math, count=..., diff=...
-      const url = new URL("/pages/quiz.html", location.origin);
-      url.searchParams.set("mode", "random");
-      url.searchParams.set("section", "math");
-      url.searchParams.set("count", String(count));
-      if (diff) url.searchParams.set("difficulty", diff);
-      url.searchParams.set("untimed", "1");
+        const url = new URL("/pages/quiz.html", location.origin);
+        url.searchParams.set("mode", "random");
+        url.searchParams.set("section", "math");
+        url.searchParams.set("count", String(count));
+        if (diff) url.searchParams.set("difficulty", diff);
+        url.searchParams.set("untimed", "1");
 
-      location.href = url.toString();
-    });
-  })();
-</script>
-  
+        location.href = url.toString();
+      });
+    })();
+  </script>
 </body>
 </html>
