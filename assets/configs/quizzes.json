@@ -134,7 +134,7 @@
     "timeLimitSec": 600
   },
 
-  "math.area-and-volume": {
+  "math.area-volume": {
     "title": "Math — Area & Volume",
     "description": "Geometric area and volume calculations.",
     "bank": "/assets/questionbank/math/area-and-volume.json",
