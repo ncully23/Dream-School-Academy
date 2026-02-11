@@ -1,139 +1,119 @@
 {
-  "quizId": "math.rates-ratios-units",
-  "title": "Rates, Ratios, and Units",
-  "section": "Math",
-  "domain": "Problem-Solving and Data Analysis",
-  "skill": "Ratios, rates, proportional relationships, and units",
+  "bankId": "math.rates_ratios_units",
+  "bankVersion": 1,
+  "title": "Math — Rates, Ratios, and Units",
+  "description": "SAT-style problems involving unit conversions, ratios, proportional reasoning, rates, and density.",
+  "updatedAt": "2026-02-10",
   "questions": [
     {
-      "id": "704554cf",
-      "prompt": "The International Space Station orbits Earth at an average speed of 4.76 miles per second. What is the station’s average speed in miles per hour?",
-      "choices": {
-        "A": "285.6",
-        "B": "571.2",
-        "C": "856.8",
-        "D": "17,136.0"
-      },
-      "correct": "D",
+      "questionId": "SAT-rru01",
+      "topic": "math.rates_ratios_units",
+      "skill": "unit-conversion-rate",
       "difficulty": "hard",
-      "rationale": "Convert seconds to hours: 1 hour = 3,600 seconds. Speed = 4.76 × 3,600 = 17,136 miles per hour."
+      "answerType": "mcq",
+      "prompt": "The International Space Station orbits Earth at an average speed of \\(4.76\\) miles per second. What is the station’s average speed in miles per hour?",
+      "choices": ["285.6", "571.2", "856.8", "17136"],
+      "answerIndex": 3,
+      "explanation": "There are 3,600 seconds in an hour. Multiply: \\(4.76 \\times 3600 = 17{,}136\\) miles per hour."
     },
     {
-      "id": "e8fbab3e",
+      "questionId": "SAT-rru02",
+      "topic": "math.rates_ratios_units",
+      "skill": "compare-unit-rates",
+      "difficulty": "hard",
+      "answerType": "mcq",
       "prompt": "Based on the table, what is the ratio of the cost per gram of protein in a large egg to the cost per gram of protein in a cup of milk?",
-      "choices": {
-        "A": "1 : 2",
-        "B": "2 : 3",
-        "C": "3 : 4",
-        "D": "2 : 1"
-      },
-      "correct": "D",
-      "difficulty": "hard",
-      "rationale": "Egg: $0.36 ÷ 6 = $0.06 per gram. Milk: $0.24 ÷ 8 = $0.03 per gram. Ratio = 0.06 : 0.03 = 2 : 1."
+      "choices": ["1:2", "2:3", "3:4", "2:1"],
+      "answerIndex": 3,
+      "explanation": "Egg: \\(0.36 \\div 6 = 0.06\\) dollars per gram. Milk: \\(0.24 \\div 8 = 0.03\\). Ratio \\(0.06:0.03 = 2:1\\)."
     },
     {
-      "id": "fb44ac59",
+      "questionId": "SAT-rru03",
+      "topic": "math.rates_ratios_units",
+      "skill": "unit-conversion",
+      "difficulty": "hard",
+      "answerType": "mcq",
       "prompt": "How many tablespoons are equivalent to 14 teaspoons? (3 teaspoons = 1 tablespoon)",
-      "choices": {
-        "A": "4",
-        "B": "4.5",
-        "C": "4.67",
-        "D": "5"
-      },
-      "correct": "C",
-      "difficulty": "hard",
-      "rationale": "14 ÷ 3 = 14/3 ≈ 4.67 tablespoons."
+      "choices": ["4", "4.5", "4.67", "5"],
+      "answerIndex": 2,
+      "explanation": "Divide teaspoons by 3: \\(14 \\div 3 = 14/3 \\approx 4.67\\) tablespoons."
     },
     {
-      "id": "804fdf21",
+      "questionId": "SAT-rru04",
+      "topic": "math.rates_ratios_units",
+      "skill": "multi-step-unit-conversion",
+      "difficulty": "hard",
+      "answerType": "mcq",
       "prompt": "A distance of 112 furlongs is equivalent to how many feet? (1 furlong = 220 yards and 1 yard = 3 feet)",
-      "choices": {
-        "A": "7,392",
-        "B": "39,600",
-        "C": "73,920",
-        "D": "112,000"
-      },
-      "correct": "C",
-      "difficulty": "hard",
-      "rationale": "112 × 220 × 3 = 73,920 feet."
+      "choices": ["7392", "39600", "73920", "112000"],
+      "answerIndex": 2,
+      "explanation": "Convert step by step: \\(112 \\times 220 \\times 3 = 73{,}920\\) feet."
     },
     {
-      "id": "1b0541ca",
+      "questionId": "SAT-rru05",
+      "topic": "math.rates_ratios_units",
+      "skill": "average-speed",
+      "difficulty": "hard",
+      "answerType": "mcq",
       "prompt": "Paul Revere rode 11 miles in 26 minutes. What was his average speed, to the nearest tenth of a mile per hour?",
-      "choices": {
-        "A": "23.1",
-        "B": "24.3",
-        "C": "25.4",
-        "D": "26.0"
-      },
-      "correct": "C",
-      "difficulty": "hard",
-      "rationale": "Speed = (11 ÷ 26) × 60 ≈ 25.4 miles per hour."
+      "choices": ["23.1", "24.3", "25.4", "26.0"],
+      "answerIndex": 2,
+      "explanation": "Convert minutes to hours: \\(26/60\\) hours. Speed \\(= 11 \\div (26/60) \\approx 25.4\\) mph."
     },
     {
-      "id": "eaa81aca",
-      "prompt": "The equation d = 55t gives the distance d (in miles) traveled in t hours. How many times the distance traveled after 3k hours is the distance traveled after k hours?",
-      "choices": {
-        "A": "3",
-        "B": "6",
-        "C": "3k",
-        "D": "6k"
-      },
-      "correct": "A",
+      "questionId": "SAT-rru06",
+      "topic": "math.rates_ratios_units",
+      "skill": "proportional-relationships",
       "difficulty": "hard",
-      "rationale": "Distance is proportional to time. Tripling time triples distance."
+      "answerType": "mcq",
+      "prompt": "The equation \\(d = 55t\\) gives the distance \\(d\\) (in miles) traveled in \\(t\\) hours. How many times the distance traveled after \\(3k\\) hours is the distance traveled after \\(k\\) hours?",
+      "choices": ["3", "6", "3k", "6k"],
+      "answerIndex": 0,
+      "explanation": "Distance is directly proportional to time. Tripling time triples distance."
     },
     {
-      "id": "dc08c9bd",
+      "questionId": "SAT-rru07",
+      "topic": "math.rates_ratios_units",
+      "skill": "area-unit-conversion",
+      "difficulty": "hard",
+      "answerType": "mcq",
       "prompt": "A park has an area of 11,863,808 square yards. What is the area, in square miles? (1 mile = 1,760 yards)",
-      "choices": {
-        "A": "1.96",
-        "B": "3.83",
-        "C": "3,444.39",
-        "D": "6,740.8"
-      },
-      "correct": "B",
-      "difficulty": "hard",
-      "rationale": "1 square mile = (1,760)^2 = 3,097,600 square yards. 11,863,808 ÷ 3,097,600 ≈ 3.83."
+      "choices": ["1.96", "3.83", "3444.39", "6740.8"],
+      "answerIndex": 1,
+      "explanation": "One square mile is \\(1760^2 = 3{,}097{,}600\\) square yards. Divide: \\(11{,}863{,}808 \\div 3{,}097{,}600 \\approx 3.83\\)."
     },
     {
-      "id": "e8cc85ac",
+      "questionId": "SAT-rru08",
+      "topic": "math.rates_ratios_units",
+      "skill": "density",
+      "difficulty": "hard",
+      "answerType": "mcq",
       "prompt": "An object has a mass of 168 grams and a volume of 24 cubic centimeters. What is the density, in grams per cubic centimeter?",
-      "choices": {
-        "A": "7",
-        "B": "144",
-        "C": "192",
-        "D": "4,032"
-      },
-      "correct": "A",
-      "difficulty": "hard",
-      "rationale": "Density = mass ÷ volume = 168 ÷ 24 = 7 g/cm³."
+      "choices": ["7", "144", "192", "4032"],
+      "answerIndex": 0,
+      "explanation": "Density equals mass divided by volume: \\(168 \\div 24 = 7\\) grams per cubic centimeter."
     },
     {
-      "id": "06124897",
+      "questionId": "SAT-rru09",
+      "topic": "math.rates_ratios_units",
+      "skill": "interpret-data-table",
+      "difficulty": "hard",
+      "answerType": "mcq",
       "prompt": "Based on the table, what is closest to the difference, in inches, between the diameters of a white birch and a pin oak after 10 years?",
-      "choices": {
-        "A": "1.0",
-        "B": "1.2",
-        "C": "1.3",
-        "D": "1.4"
-      },
-      "correct": "C",
-      "difficulty": "hard",
-      "rationale": "Using growth factors, the diameter difference after 10 years is approximately 1.3 inches."
+      "choices": ["1.0", "1.2", "1.3", "1.4"],
+      "answerIndex": 2,
+      "explanation": "Using the given growth rates, the estimated diameter difference after 10 years is closest to 1.3 inches."
     },
     {
-      "id": "3fad577a",
-      "prompt": "For values j and k, the ratio j to k is 11 to 12. If j is multiplied by 17, what must k be multiplied by to maintain the same ratio?",
-      "choices": {
-        "A": "11",
-        "B": "12",
-        "C": "17",
-        "D": "204"
-      },
-      "correct": "C",
+      "questionId": "SAT-rru10",
+      "topic": "math.rates_ratios_units",
+      "skill": "scale-factor-ratios",
       "difficulty": "hard",
-      "rationale": "To preserve a ratio, both quantities must be multiplied by the same factor."
+      "answerType": "mcq",
+      "prompt": "For values \\(j\\) and \\(k\\), the ratio \\(j:k\\) is \\(11:12\\). If \\(j\\) is multiplied by 17, what must \\(k\\) be multiplied by to maintain the same ratio?",
+      "choices": ["11", "12", "17", "204"],
+      "answerIndex": 2,
+      "explanation": "To keep a ratio the same, both quantities must be multiplied by the same factor. Therefore, \\(k\\) must also be multiplied by 17."
     }
   ]
 }
