@@ -1,139 +1,119 @@
 {
-  "quizId": "math.equivalent.expressions.set1",
-  "title": "Equivalent Expressions — Set 1",
-  "section": "Math",
-  "domain": "Algebra",
-  "skill": "Equivalent expressions",
+  "bankId": "math.equivalent.expressions",
+  "bankVersion": 1,
+  "title": "Math — Equivalent Expressions",
+  "description": "SAT-style questions testing algebraic equivalence through distribution, factoring, substitution, and simplification.",
+  "updatedAt": "2026-02-10",
   "questions": [
     {
-      "id": "ee01",
-      "prompt": "Which expression is equivalent to 3(2x − 5) − 4x?",
-      "choices": {
-        "A": "2x − 15",
-        "B": "6x − 15",
-        "C": "2x − 5",
-        "D": "6x − 5"
-      },
-      "correct": "A",
+      "questionId": "SAT-ee01",
+      "topic": "math.equivalent.expressions",
+      "skill": "distribute-and-combine-like-terms",
       "difficulty": "medium",
-      "rationale": "Distribute: 3(2x − 5) = 6x − 15. Subtract 4x to get 2x − 15."
+      "answerType": "mcq",
+      "prompt": "Which expression is equivalent to \\(3(2x-5)-4x\\)?",
+      "choices": ["2x-15", "6x-15", "2x-5", "6x-5"],
+      "answerIndex": 0,
+      "explanation": "Distribute first: \\(3(2x-5)=6x-15\\). Then subtract \\(4x\\): \\(6x-4x-15=2x-15\\)."
     },
     {
-      "id": "ee02",
-      "prompt": "Which expression is equivalent to (x + 4)(x − 4)?",
-      "choices": {
-        "A": "x² − 16",
-        "B": "x² + 16",
-        "C": "x² − 8x",
-        "D": "x² + 8x"
-      },
-      "correct": "A",
+      "questionId": "SAT-ee02",
+      "topic": "math.equivalent.expressions",
+      "skill": "difference-of-squares",
       "difficulty": "easy",
-      "rationale": "This is a difference of squares: (a + b)(a − b) = a² − b²."
+      "answerType": "mcq",
+      "prompt": "Which expression is equivalent to \\((x+4)(x-4)\\)?",
+      "choices": ["x^2-16", "x^2+16", "x^2-8x", "x^2+8x"],
+      "answerIndex": 0,
+      "explanation": "This is a difference of squares: \\((a+b)(a-b)=a^2-b^2\\). Here, \\(x^2-4^2=x^2-16\\)."
     },
     {
-      "id": "ee03",
-      "prompt": "Which expression is equivalent to 5x + 10 + 3(x − 2)?",
-      "choices": {
-        "A": "8x + 4",
-        "B": "8x + 10",
-        "C": "8x − 4",
-        "D": "5x + 4"
-      },
-      "correct": "A",
+      "questionId": "SAT-ee03",
+      "topic": "math.equivalent.expressions",
+      "skill": "distribute-and-simplify",
       "difficulty": "medium",
-      "rationale": "Distribute: 3(x − 2) = 3x − 6. Combine terms: 5x + 3x + 10 − 6 = 8x + 4."
+      "answerType": "mcq",
+      "prompt": "Which expression is equivalent to \\(5x+10+3(x-2)\\)?",
+      "choices": ["8x+4", "8x+10", "8x-4", "5x+4"],
+      "answerIndex": 0,
+      "explanation": "Distribute: \\(3(x-2)=3x-6\\). Combine like terms: \\(5x+3x+10-6=8x+4\\)."
     },
     {
-      "id": "ee04",
-      "prompt": "Which expression is equivalent to 4x² − 12x?",
-      "choices": {
-        "A": "4x(x − 3)",
-        "B": "x(4x − 12)",
-        "C": "4(x² − 3)",
-        "D": "x²(4 − 12)"
-      },
-      "correct": "A",
+      "questionId": "SAT-ee04",
+      "topic": "math.equivalent.expressions",
+      "skill": "factor-gcf",
       "difficulty": "medium",
-      "rationale": "Factor out the greatest common factor, 4x: 4x(x − 3)."
+      "answerType": "mcq",
+      "prompt": "Which expression is equivalent to \\(4x^2-12x\\)?",
+      "choices": ["4x(x-3)", "x(4x-12)", "4(x^2-3)", "x^2(4-12)"],
+      "answerIndex": 0,
+      "explanation": "Factor out the greatest common factor, \\(4x\\): \\(4x^2-12x=4x(x-3)\\)."
     },
     {
-      "id": "ee05",
-      "prompt": "If a = x − 2, which expression is equivalent to a² + 4a?",
-      "choices": {
-        "A": "x² − 4",
-        "B": "x² − 4x",
-        "C": "x² − 8",
-        "D": "x² − 4x + 4"
-      },
-      "correct": "A",
+      "questionId": "SAT-ee05",
+      "topic": "math.equivalent.expressions",
+      "skill": "substitute-and-simplify",
       "difficulty": "hard",
-      "rationale": "Substitute a = x − 2: (x − 2)² + 4(x − 2) = x² − 4x + 4 + 4x − 8 = x² − 4."
+      "answerType": "mcq",
+      "prompt": "If \\(a=x-2\\), which expression is equivalent to \\(a^2+4a\\)?",
+      "choices": ["x^2-4", "x^2-4x", "x^2-8", "x^2-4x+4"],
+      "answerIndex": 0,
+      "explanation": "Substitute \\(a=x-2\\): \\((x-2)^2+4(x-2)=x^2-4x+4+4x-8=x^2-4\\)."
     },
     {
-      "id": "ee06",
-      "prompt": "Which expression is equivalent to 2x(3x − 5) − x(3x − 5)?",
-      "choices": {
-        "A": "x(3x − 5)",
-        "B": "5x",
-        "C": "3x² − 5",
-        "D": "x² − 5x"
-      },
-      "correct": "A",
+      "questionId": "SAT-ee06",
+      "topic": "math.equivalent.expressions",
+      "skill": "factor-common-expression",
       "difficulty": "medium",
-      "rationale": "Factor out the common term (3x − 5): (2x − x)(3x − 5) = x(3x − 5)."
+      "answerType": "mcq",
+      "prompt": "Which expression is equivalent to \\(2x(3x-5)-x(3x-5)\\)?",
+      "choices": ["x(3x-5)", "5x", "3x^2-5", "x^2-5x"],
+      "answerIndex": 0,
+      "explanation": "Factor out the common expression \\((3x-5)\\): \\((2x-x)(3x-5)=x(3x-5)\\)."
     },
     {
-      "id": "ee07",
-      "prompt": "Which expression is equivalent to (x + 6)² − 36?",
-      "choices": {
-        "A": "x² + 12x",
-        "B": "x² + 36",
-        "C": "x(x + 12)",
-        "D": "x² − 12x"
-      },
-      "correct": "A",
+      "questionId": "SAT-ee07",
+      "topic": "math.equivalent.expressions",
+      "skill": "expand-square-and-simplify",
       "difficulty": "hard",
-      "rationale": "(x + 6)² = x² + 12x + 36. Subtracting 36 gives x² + 12x."
+      "answerType": "mcq",
+      "prompt": "Which expression is equivalent to \\((x+6)^2-36\\)?",
+      "choices": ["x^2+12x", "x^2+36", "x(x+12)", "x^2-12x"],
+      "answerIndex": 0,
+      "explanation": "Expand: \\((x+6)^2=x^2+12x+36\\). Subtract 36 to get \\(x^2+12x\\)."
     },
     {
-      "id": "ee08",
-      "prompt": "Which expression is equivalent to 7x − 14 + 3(2 − x)?",
-      "choices": {
-        "A": "4x − 8",
-        "B": "10x − 8",
-        "C": "4x − 20",
-        "D": "x − 8"
-      },
-      "correct": "A",
+      "questionId": "SAT-ee08",
+      "topic": "math.equivalent.expressions",
+      "skill": "distribute-and-combine-like-terms",
       "difficulty": "medium",
-      "rationale": "Distribute: 3(2 − x) = 6 − 3x. Combine: 7x − 3x − 14 + 6 = 4x − 8."
+      "answerType": "mcq",
+      "prompt": "Which expression is equivalent to \\(7x-14+3(2-x)\\)?",
+      "choices": ["4x-8", "10x-8", "4x-20", "x-8"],
+      "answerIndex": 0,
+      "explanation": "Distribute: \\(3(2-x)=6-3x\\). Combine terms: \\(7x-3x-14+6=4x-8\\)."
     },
     {
-      "id": "ee09",
-      "prompt": "Which expression is equivalent to (x − 3)(x + 5) − x?",
-      "choices": {
-        "A": "x² + x − 15",
-        "B": "x² + 2x − 15",
-        "C": "x² − 15",
-        "D": "x² − x − 15"
-      },
-      "correct": "A",
+      "questionId": "SAT-ee09",
+      "topic": "math.equivalent.expressions",
+      "skill": "expand-binomial-and-simplify",
       "difficulty": "hard",
-      "rationale": "Expand: (x − 3)(x + 5) = x² + 2x − 15. Subtract x to get x² + x − 15."
+      "answerType": "mcq",
+      "prompt": "Which expression is equivalent to \\((x-3)(x+5)-x\\)?",
+      "choices": ["x^2+x-15", "x^2+2x-15", "x^2-15", "x^2-x-15"],
+      "answerIndex": 0,
+      "explanation": "Expand first: \\((x-3)(x+5)=x^2+2x-15\\). Subtract \\(x\\) to get \\(x^2+x-15\\)."
     },
     {
-      "id": "ee10",
-      "prompt": "Which expression is equivalent to (x/2)(4x − 6)?",
-      "choices": {
-        "A": "2x² − 3x",
-        "B": "4x² − 6x",
-        "C": "2x² − 6",
-        "D": "x² − 3x"
-      },
-      "correct": "A",
+      "questionId": "SAT-ee10",
+      "topic": "math.equivalent.expressions",
+      "skill": "distribute-fraction",
       "difficulty": "medium",
-      "rationale": "Distribute: (x/2)·4x = 2x² and (x/2)·(−6) = −3x."
+      "answerType": "mcq",
+      "prompt": "Which expression is equivalent to \\(\\frac{x}{2}(4x-6)\\)?",
+      "choices": ["2x^2-3x", "4x^2-6x", "2x^2-6", "x^2-3x"],
+      "answerIndex": 0,
+      "explanation": "Distribute: \\(\\frac{x}{2}\\cdot4x=2x^2\\) and \\(\\frac{x}{2}\\cdot(-6)=-3x\\). Result: \\(2x^2-3x\\)."
     }
   ]
 }
