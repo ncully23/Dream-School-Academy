@@ -29,7 +29,7 @@
   "math.systems-two-linear-equations-two-variables": {
     "title": "Math — Systems of Linear Equations",
     "description": "Solving systems of two linear equations using algebra and graphs.",
-    "bank": "/assets/questionbank/math/systems-two-linear-equations-two-variables.json",
+    "bank": "/assets/questionbank/math/systems-linear-equations.json",
     "pickCount": 10,
     "shuffle": false,
     "timeLimitSec": 600
@@ -74,7 +74,7 @@
   "math.rates-ratios-and-units": {
     "title": "Math — Ratios, Rates, & Units",
     "description": "Solving problems involving ratios, rates, proportions, and unit conversions.",
-    "bank": "/assets/questionbank/math/rates-ratios-and-units.json",
+    "bank": "/assets/questionbank/math/rates-ratios-units.json",
     "pickCount": 10,
     "shuffle": false,
     "timeLimitSec": 600
@@ -128,7 +128,7 @@
   "math.evaluating-statistical-claims": {
     "title": "Math — Evaluating Statistical Claims",
     "description": "Assessing the validity of statistical arguments.",
-    "bank": "/assets/questionbank/math/evaluating-statistical-claims.json",
+    "bank": "/assets/questionbank/math/statistical-claims.json",
     "pickCount": 10,
     "shuffle": false,
     "timeLimitSec": 600
