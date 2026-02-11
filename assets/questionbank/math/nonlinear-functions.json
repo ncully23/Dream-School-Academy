@@ -1,126 +1,113 @@
 {
-  "quizId": "math.nonlinear.functions.set1",
-  "title": "Nonlinear Functions — Set 1",
-  "section": "Math",
-  "domain": "Advanced Math",
-  "skill": "Nonlinear functions",
+  "bankId": "math.nonlinear.functions",
+  "bankVersion": 1,
+  "title": "Math — Nonlinear Functions",
+  "description": "SAT-style nonlinear function questions (quadratics, absolute value with parameters, exponential models, sequences, and interpreting intercepts/vertices).",
+  "updatedAt": "2026-02-10",
   "questions": [
     {
-      "id": "301faf80",
+      "questionId": "SAT-301faf80",
+      "topic": "math.nonlinear.functions",
+      "skill": "quadratic-from-product-condition",
+      "difficulty": "hard",
+      "answerType": "mcq",
       "prompt": "The product of two positive integers is 462. If the first integer is 5 greater than twice the second integer, what is the smaller of the two integers?",
-      "choices": {
-        "A": "14",
-        "B": "21",
-        "C": "33",
-        "D": "66"
-      },
-      "correct": "A",
-      "difficulty": "hard",
-      "rationale": "Let the second integer be y. Then the first is 2y + 5 and y(2y + 5) = 462 → 2y^2 + 5y − 462 = 0 → (2y + 33)(y − 14) = 0. Positive solution: y = 14."
+      "choices": ["14", "21", "33", "66"],
+      "answerIndex": 0,
+      "explanation": "Let the smaller integer be \\(y\\). Then the other integer is \\(2y+5\\). The product condition gives \\(y(2y+5)=462\\), so \\(2y^2+5y-462=0\\). Factor: \\((2y+33)(y-14)=0\\). The positive solution is \\(y=14\\)."
     },
     {
-      "id": "128c75e2",
-      "prompt": "The function g is defined by g(x) = |x|/a − 14, where a < 0. What is the product of g(15a) and g(7a)?",
-      "choices": {
-        "A": "350",
-        "B": "525",
-        "C": "609",
-        "D": "735"
-      },
-      "correct": "C",
+      "questionId": "SAT-128c75e2",
+      "topic": "math.nonlinear.functions",
+      "skill": "absolute-value-with-negative-parameter",
       "difficulty": "hard",
-      "rationale": "Since a < 0, |15a|/a = −15 and |7a|/a = −7. So g(15a) = −15 − 14 = −29 and g(7a) = −7 − 14 = −21. Product: (−29)(−21) = 609."
+      "answerType": "mcq",
+      "prompt": "The function \\(g\\) is defined by \\(g(x)=\\frac{|x|}{a}-14\\), where \\(a<0\\). What is the product of \\(g(15a)\\) and \\(g(7a)\\)?",
+      "choices": ["350", "525", "609", "735"],
+      "answerIndex": 2,
+      "explanation": "Because \\(a<0\\), we have \\(|15a|= -15a\\) and \\(|7a|=-7a\\). Thus \\(\\frac{|15a|}{a}=\\frac{-15a}{a}=-15\\) and \\(\\frac{|7a|}{a}=-7\\). So \\(g(15a)=-15-14=-29\\) and \\(g(7a)=-7-14=-21\\). Product: \\((-29)(-21)=609\\)."
     },
     {
-      "id": "02060533",
-      "prompt": "The table shows three values of x and their corresponding values of g(x), where g(x) = f(x)/(x + 3) and f is a linear function. What is the y-intercept of the graph of y = f(x) in the xy-plane?\n\nTable:\n- x = −27, g(x) = 3\n- x = −9,  g(x) = 0\n- x = 21,  g(x) = 5",
-      "choices": {
-        "A": "(0, 36)",
-        "B": "(0, 12)",
-        "C": "(0, 4)",
-        "D": "(0, −9)"
-      },
-      "correct": "A",
+      "questionId": "SAT-02060533",
+      "topic": "math.nonlinear.functions",
+      "skill": "reconstruct-linear-from-rational-table",
       "difficulty": "hard",
-      "rationale": "From g(x)=f(x)/(x+3): f(−27)=3(−24)=−72 and f(−9)=0(−6)=0. Slope of f is (0−(−72))/((−9)−(−27))=72/18=4, so f(x)=4x+b. Using f(−9)=0 gives 0=−36+b → b=36. Thus y-intercept is (0,36)."
+      "answerType": "mcq",
+      "prompt": "The table shows three values of \\(x\\) and their corresponding values of \\(g(x)\\), where \\(g(x)=\\frac{f(x)}{x+3}\\) and \\(f\\) is a linear function. What is the \\(y\\)-intercept of the graph of \\(y=f(x)\\) in the \\(xy\\)-plane?\n\nTable:\n- \\(x=-27\\), \\(g(x)=3\\)\n- \\(x=-9\\), \\(g(x)=0\\)\n- \\(x=21\\), \\(g(x)=5\\)",
+      "choices": ["(0, 36)", "(0, 12)", "(0, 4)", "(0, -9)"],
+      "answerIndex": 0,
+      "explanation": "Since \\(g(x)=\\frac{f(x)}{x+3}\\), multiply to get \\(f(x)=g(x)(x+3)\\).\nFor \\(x=-27\\): \\(f(-27)=3(-27+3)=3(-24)=-72\\).\nFor \\(x=-9\\): \\(f(-9)=0(-9+3)=0\\).\nBecause \\(f\\) is linear, slope \\(m=\\frac{0-(-72)}{-9-(-27)}=\\frac{72}{18}=4\\). So \\(f(x)=4x+b\\). Use \\(f(-9)=0\\): \\(0=4(-9)+b=-36+b\\Rightarrow b=36\\). Thus the \\(y\\)-intercept is \\((0,36)\\)."
     },
     {
-      "id": "91e7ea5e",
-      "prompt": "The quadratic function h is defined as h(x) = 2(x − 4)^2 − 32. In the xy-plane, the graph of y = h(x) intersects the x-axis at the points (0, 0) and (t, 0), where t is a constant. What is the value of t?",
-      "choices": {
-        "A": "1",
-        "B": "2",
-        "C": "4",
-        "D": "8"
-      },
-      "correct": "D",
+      "questionId": "SAT-91e7ea5e",
+      "topic": "math.nonlinear.functions",
+      "skill": "quadratic-zeros-from-vertex-form",
       "difficulty": "hard",
-      "rationale": "x-intercepts satisfy h(x)=0: 0 = 2(x−4)^2 − 32 → 2(x−4)^2 = 32 → (x−4)^2 = 16 → x = 0 or x = 8. So t = 8."
+      "answerType": "mcq",
+      "prompt": "The quadratic function \\(h\\) is defined as \\(h(x)=2(x-4)^2-32\\). In the \\(xy\\)-plane, the graph of \\(y=h(x)\\) intersects the \\(x\\)-axis at the points \\((0,0)\\) and \\((t,0)\\), where \\(t\\) is a constant. What is the value of \\(t\\)?",
+      "choices": ["1", "2", "4", "8"],
+      "answerIndex": 3,
+      "explanation": "At \\(x\\)-intercepts, \\(h(x)=0\\): \\(2(x-4)^2-32=0\\Rightarrow 2(x-4)^2=32\\Rightarrow (x-4)^2=16\\Rightarrow x-4=\\pm 4\\). So \\(x=0\\) or \\(x=8\\). Since one intercept is \\((0,0)\\), the other is \\((8,0)\\), so \\(t=8\\)."
     },
     {
-      "id": "358f18bc",
-      "prompt": "If f(x) = x^2 − 48x + 2,304, what is the minimum value of the function?",
-      "choices": {
-        "A": "0",
-        "B": "1,152",
-        "C": "1,728",
-        "D": "2,304"
-      },
-      "correct": "C",
+      "questionId": "SAT-358f18bc",
+      "topic": "math.nonlinear.functions",
+      "skill": "quadratic-minimum-complete-square",
       "difficulty": "hard",
-      "rationale": "Complete the square: x^2 − 48x + 2304 = (x−24)^2 + 1728. Minimum occurs when (x−24)^2 = 0, so minimum value is 1728."
+      "answerType": "mcq",
+      "prompt": "If \\(f(x)=x^2-48x+2,304\\), what is the minimum value of the function?",
+      "choices": ["0", "1,152", "1,728", "2,304"],
+      "answerIndex": 0,
+      "explanation": "Complete the square: \\(x^2-48x+2304=(x-24)^2\\). A square is minimized at 0, so the minimum value is \\(0\\) (at \\(x=24\\))."
     },
     {
-      "id": "8490cc45",
-      "prompt": "The function f is defined by f(x) = (−8)·2^x + 22. What is the y-intercept of the graph of y = f(x) in the xy-plane?",
-      "choices": {
-        "A": "(0, 14)",
-        "B": "(0, 2)",
-        "C": "(0, 22)",
-        "D": "(0, −8)"
-      },
-      "correct": "A",
+      "questionId": "SAT-8490cc45",
+      "topic": "math.nonlinear.functions",
+      "skill": "exponential-y-intercept",
       "difficulty": "hard",
-      "rationale": "The y-intercept occurs at x = 0: f(0) = (−8)·2^0 + 22 = −8 + 22 = 14, so (0,14)."
+      "answerType": "mcq",
+      "prompt": "The function \\(f\\) is defined by \\(f(x)=(-8)\\cdot 2^x+22\\). What is the \\(y\\)-intercept of the graph of \\(y=f(x)\\) in the \\(xy\\)-plane?",
+      "choices": ["(0, 14)", "(0, 2)", "(0, 22)", "(0, -8)"],
+      "answerIndex": 0,
+      "explanation": "The \\(y\\)-intercept occurs at \\(x=0\\). Compute \\(f(0)=(-8)\\cdot 2^0+22=-8+22=14\\). So the intercept is \\((0,14)\\)."
     },
     {
-      "id": "ebed7dc6",
-      "prompt": "An auditorium has seats for 1,800 people. Tickets currently cost $4.00. For each $1.00 increase to the ticket price, 100 fewer tickets will be sold. This situation can be modeled by y = −100x^2 + 1,400x + 7,200, where x represents the increase in the ticket price (in dollars) and y represents the revenue (in dollars) from ticket sales. If this equation is graphed in the xy-plane, at what value of x is the maximum of the graph?",
-      "choices": {
-        "A": "4",
-        "B": "7",
-        "C": "14",
-        "D": "18"
-      },
-      "correct": "B",
+      "questionId": "SAT-ebed7dc6",
+      "topic": "math.nonlinear.functions",
+      "skill": "quadratic-vertex-maximum",
       "difficulty": "hard",
-      "rationale": "For y = ax^2 + bx + c with a < 0, maximum occurs at vertex x = −b/(2a) = −1400/(2·−100) = 7."
+      "answerType": "mcq",
+      "prompt": "An auditorium has seats for 1,800 people. Tickets currently cost \\$4.00. For each \\$1.00 increase to the ticket price, 100 fewer tickets will be sold. This situation can be modeled by \\(y=-100x^2+1400x+7200\\), where \\(x\\) represents the increase in the ticket price (in dollars) and \\(y\\) represents the revenue (in dollars) from ticket sales. If this equation is graphed in the \\(xy\\)-plane, at what value of \\(x\\) is the maximum of the graph?",
+      "choices": ["4", "7", "14", "18"],
+      "answerIndex": 1,
+      "explanation": "A quadratic \\(y=ax^2+bx+c\\) with \\(a<0\\) has a maximum at the vertex \\(x=-\\frac{b}{2a}\\). Here \\(a=-100\\) and \\(b=1400\\), so \\(x=-\\frac{1400}{2(-100)}=7\\)."
     },
     {
-      "id": "a9084ca4",
-      "prompt": "The function f(x) = 9,000(0.66)^x models the number of advertisements a company sent to its clients each year, where x represents the number of years since 1997 and 0 ≤ x ≤ 5. If y = f(x) is graphed in the xy-plane, which of the following is the best interpretation of the y-intercept of the graph in this context?",
-      "choices": {
-        "A": "The minimum estimated number of advertisements the company sent to its clients during the 5 years was 1,708.",
-        "B": "The minimum estimated number of advertisements the company sent to its clients during the 5 years was 9,000.",
-        "C": "The estimated number of advertisements the company sent to its clients in 1997 was 1,708.",
-        "D": "The estimated number of advertisements the company sent to its clients in 1997 was 9,000."
-      },
-      "correct": "D",
+      "questionId": "SAT-a9084ca4",
+      "topic": "math.nonlinear.functions",
+      "skill": "exponential-model-y-intercept-interpretation",
       "difficulty": "hard",
-      "rationale": "The y-intercept is at x = 0, which corresponds to year 1997. f(0) = 9000(0.66)^0 = 9000, so it represents 9,000 ads in 1997."
+      "answerType": "mcq",
+      "prompt": "The function \\(f(x)=9000(0.66)^x\\) models the number of advertisements a company sent to its clients each year, where \\(x\\) represents the number of years since 1997 and \\(0\\le x\\le 5\\). If \\(y=f(x)\\) is graphed in the \\(xy\\)-plane, which of the following is the best interpretation of the \\(y\\)-intercept of the graph in this context?",
+      "choices": [
+        "The minimum estimated number of advertisements the company sent to its clients during the 5 years was 1,708.",
+        "The minimum estimated number of advertisements the company sent to its clients during the 5 years was 9,000.",
+        "The estimated number of advertisements the company sent to its clients in 1997 was 1,708.",
+        "The estimated number of advertisements the company sent to its clients in 1997 was 9,000."
+      ],
+      "answerIndex": 3,
+      "explanation": "The \\(y\\)-intercept is at \\(x=0\\), which corresponds to the year 1997. Evaluate \\(f(0)=9000(0.66)^0=9000\\). So it represents sending 9,000 advertisements in 1997."
     },
     {
-      "id": "2c6f214f",
-      "prompt": "The first term of a sequence is 9. Each term after the first is 4 times the preceding term. If w represents the nth term of the sequence, which equation gives w in terms of n?",
-      "choices": {
-        "A": "w = 4(9^n)",
-        "B": "w = 4(9^(n−1))",
-        "C": "w = 9(4^n)",
-        "D": "w = 9(4^(n−1))"
-      },
-      "correct": "D",
+      "questionId": "SAT-2c6f214f",
+      "topic": "math.nonlinear.functions",
+      "skill": "geometric-sequence-explicit-form",
       "difficulty": "hard",
-      "rationale": "This is a geometric sequence with first term 9 and ratio 4, so w_n = 9·4^(n−1)."
+      "answerType": "mcq",
+      "prompt": "The first term of a sequence is 9. Each term after the first is 4 times the preceding term. If \\(w\\) represents the \\(n\\)th term of the sequence, which equation gives \\(w\\) in terms of \\(n\\)?",
+      "choices": ["w = 4(9^n)", "w = 4(9^(n-1))", "w = 9(4^n)", "w = 9(4^(n-1))"],
+      "answerIndex": 3,
+      "explanation": "This is a geometric sequence with first term \\(a_1=9\\) and common ratio \\(r=4\\). The \\(n\\)th term is \\(w_n=a_1\\,r^{n-1}=9\\cdot 4^{n-1}\\)."
     }
   ]
 }
