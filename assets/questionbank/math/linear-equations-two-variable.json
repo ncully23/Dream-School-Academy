@@ -1,139 +1,149 @@
 {
-  "quizId": "math.linear.two-variable.set1",
-  "title": "Two-Variable Linear Equations — Set 1",
-  "section": "Math",
-  "domain": "Algebra",
-  "skill": "Linear equations in two variables",
+  "bankId": "math.linear-equations-two-variables",
+  "bankVersion": 1,
+  "title": "Math — Linear Equations (Two Variables)",
+  "description": "SAT-style two-variable linear equation questions: interpreting coefficients, slope/intercepts, linear models, and graph transformations.",
+  "updatedAt": "2026-02-10",
   "questions": [
     {
-      "id": "b98324c9",
-      "prompt": "The equation 5G + 45R = 380 represents the total points a student earned by collecting G green tokens and R red tokens. How many more points is a red token worth than a green token?",
-      "choices": {
-        "A": "35",
-        "B": "40",
-        "C": "45",
-        "D": "50"
-      },
-      "correct": "B",
+      "questionId": "SAT-b98324c9",
+      "topic": "math.linear-equations-two-variables",
+      "skill": "interpret-coefficients",
       "difficulty": "hard",
-      "rationale": "The coefficient of G is 5 and the coefficient of R is 45, so a red token is worth 45 − 5 = 40 more points than a green token."
+      "answerType": "mcq",
+      "prompt": "The equation \\(5G+45R=380\\) represents the total points a student earned by collecting \\(G\\) green tokens and \\(R\\) red tokens. How many more points is a red token worth than a green token?",
+      "choices": ["35", "40", "45", "50"],
+      "answerIndex": 1,
+      "explanation": "The coefficients represent points per token: green is 5 points, red is 45 points. Difference: \\(45-5=40\\)."
     },
     {
-      "id": "ccad6eb5",
-      "prompt": "In the xy-plane, line k passes through the points (0, −5) and (1, −1). Which equation defines line k?",
-      "choices": {
-        "A": "y = −x + 4",
-        "B": "y = 4x − 5",
-        "C": "y = −4x + 4",
-        "D": "y = 4x − 5"
-      },
-      "correct": "D",
+      "questionId": "SAT-ccad6eb5",
+      "topic": "math.linear-equations-two-variables",
+      "skill": "equation-from-two-points",
       "difficulty": "hard",
-      "rationale": "The slope is (−1 − (−5)) / (1 − 0) = 4. The y-intercept is −5, so the equation is y = 4x − 5."
+      "answerType": "mcq",
+      "prompt": "In the xy-plane, line \\(k\\) passes through \\((0,-5)\\) and \\((1,-1)\\). Which equation defines line \\(k\\)?",
+      "choices": [
+        "\\(y=-x+4\\)",
+        "\\(y=4x-5\\)",
+        "\\(y=-4x-5\\)",
+        "\\(y=\\frac{1}{4}x-5\\)"
+      ],
+      "answerIndex": 1,
+      "explanation": "Slope \\(m=\\frac{-1-(-5)}{1-0}=\\frac{4}{1}=4\\). Since the line passes through \\((0,-5)\\), the y-intercept is −5. So \\(y=4x-5\\)."
     },
     {
-      "id": "90f45b92",
-      "prompt": "In the xy-plane, line p has a slope of −5/3 and an x-intercept of (−6, 0). What is the y-coordinate of the y-intercept of line p?",
-      "choices": {
-        "A": "−6",
-        "B": "−10",
-        "C": "10",
-        "D": "15"
-      },
-      "correct": "B",
+      "questionId": "SAT-90f45b92",
+      "topic": "math.linear-equations-two-variables",
+      "skill": "y-intercept-from-slope-and-x-intercept",
       "difficulty": "hard",
-      "rationale": "Using y = mx + b and the point (−6, 0): 0 = (−5/3)(−6) + b = 10 + b, so b = −10."
+      "answerType": "mcq",
+      "prompt": "In the xy-plane, line \\(p\\) has slope \\(-\\frac{5}{3}\\) and x-intercept \\((-6,0)\\). What is the y-coordinate of the y-intercept of line \\(p\\)?",
+      "choices": ["-6", "-10", "10", "15"],
+      "answerIndex": 1,
+      "explanation": "Use \\(y=mx+b\\) with point \\((-6,0)\\): \\(0=\\left(-\\frac{5}{3}\\right)(-6)+b=10+b\\). Thus \\(b=-10\\)."
     },
     {
-      "id": "b2dfe71a",
-      "prompt": "Figures A and B are regular polygons. The sum of their perimeters is represented by the equation 3a + 6b = 63, where a and b are the number of sides of figures A and B, respectively. Which statement best interprets the meaning of 6 in this context?",
-      "choices": {
-        "A": "Each side of figure B has a length of 6 inches.",
-        "B": "The number of sides of figure B is 6.",
-        "C": "Each side of figure A has a length of 6 inches.",
-        "D": "The number of sides of figure A is 6."
-      },
-      "correct": "A",
+      "questionId": "SAT-b2dfe71a",
+      "topic": "math.linear-equations-two-variables",
+      "skill": "interpret-linear-model-constants",
       "difficulty": "hard",
-      "rationale": "The coefficient 6 multiplies b, the number of sides of figure B, so it represents the length of each side of figure B in inches."
+      "answerType": "mcq",
+      "prompt": "Figures A and B are regular polygons. The sum of their perimeters is represented by \\(3a+6b=63\\), where \\(a\\) and \\(b\\) are the numbers of sides of figures A and B, respectively. Which statement best interprets the meaning of 6 in this context?",
+      "choices": [
+        "Each side of figure B has a length of 6 inches.",
+        "The number of sides of figure B is 6.",
+        "Each side of figure A has a length of 6 inches.",
+        "The number of sides of figure A is 6."
+      ],
+      "answerIndex": 0,
+      "explanation": "Perimeter = (side length) × (number of sides). Since 6 multiplies \\(b\\) (the number of sides of figure B), 6 represents the side length of figure B (in inches)."
     },
     {
-      "id": "1c50f722",
-      "prompt": "A neighborhood has a 2-hectare park and a 35-hectare residential area with a total of 3,934 trees. The equation 2x + 35y = 3,934 represents this situation. What does x represent?",
-      "choices": {
-        "A": "The average number of trees per hectare in the park",
-        "B": "The average number of trees per hectare in the residential area",
-        "C": "The total number of trees in the park",
-        "D": "The total number of trees in the residential area"
-      },
-      "correct": "A",
+      "questionId": "SAT-1c50f722",
+      "topic": "math.linear-equations-two-variables",
+      "skill": "interpret-variables-in-context",
       "difficulty": "hard",
-      "rationale": "Since 2 is the number of hectares in the park, x must represent the average number of trees per hectare in the park."
+      "answerType": "mcq",
+      "prompt": "A neighborhood has a 2-hectare park and a 35-hectare residential area with a total of 3,934 trees. The equation \\(2x+35y=3934\\) represents this situation. What does \\(x\\) represent?",
+      "choices": [
+        "The average number of trees per hectare in the park",
+        "The average number of trees per hectare in the residential area",
+        "The total number of trees in the park",
+        "The total number of trees in the residential area"
+      ],
+      "answerIndex": 0,
+      "explanation": "The coefficient 2 is the number of park hectares, so \\(2x\\) is (hectares)×(trees per hectare). Thus \\(x\\) must be the average trees per hectare in the park."
     },
     {
-      "id": "df8225f0",
-      "prompt": "In the xy-plane, line t passes through the points (0, 9) and (1, 17). Which equation defines line t?",
-      "choices": {
-        "A": "y = 8x + 9",
-        "B": "y = x + 8",
-        "C": "y = x + 9",
-        "D": "y = 8x + 9"
-      },
-      "correct": "D",
+      "questionId": "SAT-df8225f0",
+      "topic": "math.linear-equations-two-variables",
+      "skill": "equation-from-two-points",
       "difficulty": "hard",
-      "rationale": "The slope is (17 − 9)/(1 − 0) = 8 and the y-intercept is 9, so the equation is y = 8x + 9."
+      "answerType": "mcq",
+      "prompt": "In the xy-plane, line \\(t\\) passes through \\((0,9)\\) and \\((1,17)\\). Which equation defines line \\(t\\)?",
+      "choices": [
+        "\\(y=8x+9\\)",
+        "\\(y=8x+17\\)",
+        "\\(y=\\frac{1}{8}x+9\\)",
+        "\\(y=-8x+9\\)"
+      ],
+      "answerIndex": 0,
+      "explanation": "Slope \\(m=\\frac{17-9}{1-0}=8\\). Passing through \\((0,9)\\) gives y-intercept 9, so \\(y=8x+9\\)."
     },
     {
-      "id": "9939ce85",
-      "prompt": "An artist paints and sells square tiles. The selling price P, in dollars, is a linear function of the side length s, in inches. The table shows that when s increases by 3, P increases by 10. Which equation defines the relationship?",
-      "choices": {
-        "A": "P = 3s + 10",
-        "B": "P = (10/3)s + 8",
-        "C": "P = (10/3)s − 2",
-        "D": "P = (3/10)s − 1"
-      },
-      "correct": "C",
+      "questionId": "SAT-9939ce85",
+      "topic": "math.linear-equations-two-variables",
+      "skill": "linear-function-from-rate-and-point",
       "difficulty": "hard",
-      "rationale": "The slope is 10/3. Substituting a point from the table gives an intercept of −2, so P = (10/3)s − 2."
+      "answerType": "mcq",
+      "prompt": "An artist paints and sells square tiles. The selling price \\(P\\) (dollars) is a linear function of side length \\(s\\) (inches). The table shows that when \\(s\\) increases by 3, \\(P\\) increases by 10. Which equation defines the relationship?",
+      "choices": [
+        "\\(P=3s+10\\)",
+        "\\(P=\\frac{10}{3}s+8\\)",
+        "\\(P=\\frac{10}{3}s-2\\)",
+        "\\(P=\\frac{3}{10}s-1\\)"
+      ],
+      "answerIndex": 2,
+      "explanation": "Rate of change \\(m=\\frac{10}{3}\\) dollars per inch. Using a point from the table (implied by the problem’s original rationale) gives intercept −2, so \\(P=\\frac{10}{3}s-2\\)."
     },
     {
-      "id": "2e4a551c",
-      "prompt": "If the graph of 27x + 33y = 297 is shifted down 5 units in the xy-plane, what is the y-intercept of the resulting graph?",
-      "choices": {
-        "A": "(0, 4)",
-        "B": "(0, 6)",
-        "C": "(0, 14)",
-        "D": "(0, 28)"
-      },
-      "correct": "A",
+      "questionId": "SAT-2e4a551c",
+      "topic": "math.linear-equations-two-variables",
+      "skill": "graph-translation-intercept",
       "difficulty": "hard",
-      "rationale": "The original y-intercept is (0, 9). Shifting down 5 units gives (0, 4)."
+      "answerType": "mcq",
+      "prompt": "If the graph of \\(27x+33y=297\\) is shifted down 5 units in the xy-plane, what is the y-intercept of the resulting graph?",
+      "choices": ["(0, 4)", "(0, 6)", "(0, 14)", "(0, 28)"],
+      "answerIndex": 0,
+      "explanation": "Original y-intercept: set \\(x=0\\): \\(33y=297\\Rightarrow y=9\\), so \\((0,9)\\). Shifting down 5 makes the y-value 5 less: \\((0,4)\\)."
     },
     {
-      "id": "bee8dd41",
-      "prompt": "What is the slope of the graph of y = (1/3)(29x + 10) + 5x?",
-      "choices": {
-        "A": "14",
-        "B": "44/3",
-        "C": "15",
-        "D": "29"
-      },
-      "correct": "B",
+      "questionId": "SAT-bee8dd41",
+      "topic": "math.linear-equations-two-variables",
+      "skill": "slope-from-expression",
       "difficulty": "hard",
-      "rationale": "Distribute: y = (29/3)x + 10/3 + 5x = (29/3 + 15/3)x + 10/3 = (44/3)x + 10/3. The slope is 44/3."
+      "answerType": "mcq",
+      "prompt": "What is the slope of the graph of \\(y=\\frac{1}{3}(29x+10)+5x\\)?",
+      "choices": ["14", "\\(\\frac{44}{3}\\)", "15", "29"],
+      "answerIndex": 1,
+      "explanation": "Distribute: \\(y=\\frac{29}{3}x+\\frac{10}{3}+5x\\). Combine x-terms: \\(\\frac{29}{3}x+\\frac{15}{3}x=\\frac{44}{3}x\\). Slope is \\(\\frac{44}{3}\\)."
     },
     {
-      "id": "bdc6c566",
-      "prompt": "A city is planning to build a rock retaining wall and a garden. Limestone weighs 120 lb/ft³ and basalt weighs 180 lb/ft³. If 330 pounds of granite will also be used and the total weight of all rocks is 1,000 pounds, which equation represents this situation?",
-      "choices": {
-        "A": "165x + 180y = 670",
-        "B": "165x + 120y = 1,000",
-        "C": "120x + 180y = 670",
-        "D": "120x + 180y = 1,000"
-      },
-      "correct": "C",
+      "questionId": "SAT-bdc6c566",
+      "topic": "math.linear-equations-two-variables",
+      "skill": "build-linear-equation-from-weights",
       "difficulty": "hard",
-      "rationale": "Subtracting the 330 pounds of granite leaves 670 pounds. Limestone contributes 120x and basalt contributes 180y, giving 120x + 180y = 670."
+      "answerType": "mcq",
+      "prompt": "A city is planning to build a rock retaining wall and a garden. Limestone weighs 120 lb/ft\\(^3\\) and basalt weighs 180 lb/ft\\(^3\\). If 330 pounds of granite will also be used and the total weight of all rocks is 1,000 pounds, which equation represents this situation?",
+      "choices": [
+        "\\(165x+180y=670\\)",
+        "\\(165x+120y=1000\\)",
+        "\\(120x+180y=670\\)",
+        "\\(120x+180y=1000\\)"
+      ],
+      "answerIndex": 2,
+      "explanation": "Granite contributes 330 lb, leaving \\(1000-330=670\\) lb for limestone and basalt. Limestone weight is \\(120x\\), basalt weight is \\(180y\\). So \\(120x+180y=670\\)."
     }
   ]
 }
