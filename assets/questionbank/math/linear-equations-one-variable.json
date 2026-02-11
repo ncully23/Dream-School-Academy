@@ -1,139 +1,169 @@
 {
-  "quizId": "math.linear.one-variable.set1",
-  "title": "One-Variable Linear Equations — Set 1",
-  "section": "Math",
-  "domain": "Algebra",
-  "skill": "Linear equations in one variable",
+  "bankId": "math.linear-equations-one-variable",
+  "bankVersion": 1,
+  "title": "Math — Linear Equations (One Variable)",
+  "description": "SAT-style one-variable linear equation questions, including distribution, combining like terms, and modeling with rates and costs.",
+  "updatedAt": "2026-02-10",
   "questions": [
     {
-      "id": "26fac581",
-      "prompt": "If 2(x − 5) + 3(x − 5) = 10, what is the value of x − 5?",
-      "choices": {
-        "A": "2",
-        "B": "5",
-        "C": "7",
-        "D": "12"
-      },
-      "correct": "A",
+      "questionId": "SAT-26fac581",
+      "topic": "math.linear-equations-one-variable",
+      "skill": "solve-for-expression",
       "difficulty": "hard",
-      "rationale": "Combine like terms: 5(x − 5) = 10. Divide both sides by 5 to get x − 5 = 2."
+      "answerType": "mcq",
+      "prompt": "If \\(2(x-5)+3(x-5)=10\\), what is the value of \\(x-5\\)?",
+      "choices": [
+        "2",
+        "5",
+        "7",
+        "12"
+      ],
+      "answerIndex": 0,
+      "explanation": "Combine like terms: \\(2(x-5)+3(x-5)=5(x-5)\\). Then \\(5(x-5)=10\\), so \\(x-5=2\\)."
     },
     {
-      "id": "48bad848",
-      "prompt": "Megan earns p dollars per hour for the first 8 hours of work and 1.5p for each hour beyond 8. If she worked 10 hours and earned $137.50, what is her regular hourly wage?",
-      "choices": {
-        "A": "$11.75",
-        "B": "$12.50",
-        "C": "$13.25",
-        "D": "$13.75"
-      },
-      "correct": "B",
+      "questionId": "SAT-48bad848",
+      "topic": "math.linear-equations-one-variable",
+      "skill": "overtime-pay-equation",
       "difficulty": "hard",
-      "rationale": "Earnings equation: 8p + 2(1.5p) = 137.5 → 11p = 137.5 → p = 12.5."
+      "answerType": "mcq",
+      "prompt": "Megan earns \\(p\\) dollars per hour for the first 8 hours of work and \\(1.5p\\) for each hour beyond 8. If she worked 10 hours and earned \\($137.50\\), what is her regular hourly wage?",
+      "choices": [
+        "$11.75",
+        "$12.50",
+        "$13.25",
+        "$13.75"
+      ],
+      "answerIndex": 1,
+      "explanation": "First 8 hours: \\(8p\\). Extra 2 hours: \\(2(1.5p)=3p\\). Total: \\(11p=137.5\\Rightarrow p=12.5\\)."
     },
     {
-      "id": "f0581e16",
-      "prompt": "Alan drives 100 miles per week. His car averages 25 miles per gallon and gas costs $4 per gallon. Which equation can be used to find how many fewer miles m he must drive to reduce his weekly gas cost by $5?",
-      "choices": {
-        "A": "(25/4)m = 95",
-        "B": "(25/4)m = 5",
-        "C": "(4/25)m = 95",
-        "D": "(4/25)m = 5"
-      },
-      "correct": "D",
+      "questionId": "SAT-f0581e16",
+      "topic": "math.linear-equations-one-variable",
+      "skill": "cost-per-unit-rate-model",
       "difficulty": "hard",
-      "rationale": "Cost per mile is 4/25 dollars. Multiplying by m gives the cost reduction: (4/25)m = 5."
+      "answerType": "mcq",
+      "prompt": "Alan drives 100 miles per week. His car averages 25 miles per gallon and gas costs \\($4\\) per gallon. Which equation can be used to find how many fewer miles \\(m\\) he must drive to reduce his weekly gas cost by \\($5\\)?",
+      "choices": [
+        "\\(\\frac{25}{4}m=95\\)",
+        "\\(\\frac{25}{4}m=5\\)",
+        "\\(\\frac{4}{25}m=95\\)",
+        "\\(\\frac{4}{25}m=5\\)"
+      ],
+      "answerIndex": 3,
+      "explanation": "Cost per mile is \\(\\frac{4}{25}\\) dollars (\\($4\\) per gallon ÷ 25 miles per gallon). A reduction of \\(m\\) miles saves \\(\\frac{4}{25}m\\) dollars. Set savings to 5: \\(\\frac{4}{25}m=5\\)."
     },
     {
-      "id": "a0127d06",
-      "prompt": "If x is the solution to 3(2x − 6) − 11 = 4(x − 3) + 6, what is the value of x − 3?",
-      "choices": {
-        "A": "23/2",
-        "B": "17/2",
-        "C": "15/2",
-        "D": "13/2"
-      },
-      "correct": "B",
+      "questionId": "SAT-a0127d06",
+      "topic": "math.linear-equations-one-variable",
+      "skill": "solve-linear-then-shift",
       "difficulty": "hard",
-      "rationale": "Solving the equation gives x = 23/2, so x − 3 = 17/2."
+      "answerType": "mcq",
+      "prompt": "If \\(x\\) is the solution to \\(3(2x-6)-11=4(x-3)+6\\), what is the value of \\(x-3\\)?",
+      "choices": [
+        "\\(\\frac{23}{2}\\)",
+        "\\(\\frac{17}{2}\\)",
+        "\\(\\frac{15}{2}\\)",
+        "\\(\\frac{13}{2}\\)"
+      ],
+      "answerIndex": 1,
+      "explanation": "Expand: LHS \\(=3(2x-6)-11=6x-18-11=6x-29\\). RHS \\(=4(x-3)+6=4x-12+6=4x-6\\). Solve: \\(6x-29=4x-6\\Rightarrow2x=23\\Rightarrow x=\\frac{23}{2}\\). Then \\(x-3=\\frac{23}{2}-\\frac{6}{2}=\\frac{17}{2}\\)."
     },
     {
-      "id": "6e706172",
-      "prompt": "A product sells for $100 and the salesperson earns a 20% commission. If the company makes $6,840 profit, which equation gives the number of units u sold?",
-      "choices": {
-        "A": "(100(1 − 0.2) − 65)u = 6840",
-        "B": "(100 − 65)(1 − 0.8)u = 6840",
-        "C": "0.8(100)u − 65u = 6840",
-        "D": "(0.2(100) + 65)u = 6840"
-      },
-      "correct": "A",
+      "questionId": "SAT-6e706172",
+      "topic": "math.linear-equations-one-variable",
+      "skill": "profit-per-unit-equation",
       "difficulty": "hard",
-      "rationale": "Company revenue per unit is 80 − 65 = 15, so 15u = 6840."
+      "answerType": "mcq",
+      "prompt": "A product sells for \\($100\\) and the salesperson earns a 20% commission. If the company makes \\($6{,}840\\) profit, which equation gives the number of units \\(u\\) sold?",
+      "choices": [
+        "\\((100(1-0.2)-65)u=6840\\)",
+        "\\((100-65)(1-0.8)u=6840\\)",
+        "\\(0.8(100)u-65u=6840\\)",
+        "\\((0.2(100)+65)u=6840\\)"
+      ],
+      "answerIndex": 0,
+      "explanation": "Company keeps \\(100(1-0.2)=80\\) dollars per unit after commission. If cost is 65 per unit, profit per unit is \\(80-65=15\\). Total profit: \\(15u=6840\\), which is \\((100(1-0.2)-65)u=6840\\)."
     },
     {
-      "id": "3b6b5f30",
+      "questionId": "SAT-3b6b5f30",
+      "topic": "math.linear-equations-one-variable",
+      "skill": "constant-rate-linear-model",
+      "difficulty": "hard",
+      "answerType": "mcq",
       "prompt": "A bin initially contains 24,000 bushels of corn. After 5 hours, 19,350 bushels remain. If corn is removed at a constant rate, how many hours after starting will 12,840 bushels remain?",
-      "choices": {
-        "A": "3",
-        "B": "7",
-        "C": "8",
-        "D": "12"
-      },
-      "correct": "D",
-      "difficulty": "hard",
-      "rationale": "Removal rate is 930 bushels/hour. Solving 24,000 − 930t = 12,840 gives t = 12."
+      "choices": [
+        "3",
+        "7",
+        "8",
+        "12"
+      ],
+      "answerIndex": 3,
+      "explanation": "Removed in 5 hours: \\(24000-19350=4650\\), so rate is \\(4650/5=930\\) bushels/hour. Model: \\(24000-930t=12840\\Rightarrow930t=11160\\Rightarrow t=12\\)."
     },
     {
-      "id": "10298d3e",
-      "prompt": "If 2(3t − 10) + t = 40 + 4t, what is the value of 3t?",
-      "choices": {
-        "A": "40",
-        "B": "50",
-        "C": "60",
-        "D": "70"
-      },
-      "correct": "C",
+      "questionId": "SAT-10298d3e",
+      "topic": "math.linear-equations-one-variable",
+      "skill": "solve-and-evaluate-expression",
       "difficulty": "hard",
-      "rationale": "Simplifying yields 6t − 20 + t = 40 + 4t → 3t = 60."
+      "answerType": "mcq",
+      "prompt": "If \\(2(3t-10)+t=40+4t\\), what is the value of \\(3t\\)?",
+      "choices": [
+        "40",
+        "50",
+        "60",
+        "70"
+      ],
+      "answerIndex": 2,
+      "explanation": "Expand: \\(2(3t-10)+t=6t-20+t=7t-20\\). Set equal: \\(7t-20=40+4t\\Rightarrow3t=60\\)."
     },
     {
-      "id": "509cb1a6",
-      "prompt": "In the equation 4a + 12 = a(8 + a) + 3, a is a constant. If the equation has infinitely many solutions, what is the value of a?",
-      "choices": {
-        "A": "0",
-        "B": "3",
-        "C": "8",
-        "D": "12"
-      },
-      "correct": "C",
+      "questionId": "SAT-509cb1a6",
+      "topic": "math.linear-equations-one-variable",
+      "skill": "infinite-solutions-parameter",
       "difficulty": "hard",
-      "rationale": "Both sides must be identical. Solving gives a = 8."
+      "answerType": "mcq",
+      "prompt": "In the equation \\(4a+12=a(8+a)+3\\), \\(a\\) is a constant. If the equation has infinitely many solutions, what is the value of \\(a\\)?",
+      "choices": [
+        "0",
+        "3",
+        "8",
+        "12"
+      ],
+      "answerIndex": 2,
+      "explanation": "For infinitely many solutions, both sides must be identical after simplifying (same coefficients and constants). Solving the identity condition gives \\(a=8\\)."
     },
     {
-      "id": "e0f54202",
-      "prompt": "How many solutions does the equation 12(z − 3) = −3(z + 12) have?",
-      "choices": {
-        "A": "Exactly one",
-        "B": "Exactly two",
-        "C": "Infinitely many",
-        "D": "Zero"
-      },
-      "correct": "A",
+      "questionId": "SAT-e0f54202",
+      "topic": "math.linear-equations-one-variable",
+      "skill": "count-solutions-linear-equation",
       "difficulty": "hard",
-      "rationale": "Simplifying gives 15z = 0, so there is exactly one solution."
+      "answerType": "mcq",
+      "prompt": "How many solutions does the equation \\(12(z-3)=-3(z+12)\\) have?",
+      "choices": [
+        "Exactly one",
+        "Exactly two",
+        "Infinitely many",
+        "Zero"
+      ],
+      "answerIndex": 0,
+      "explanation": "Expand: \\(12z-36=-3z-36\\Rightarrow15z=0\\Rightarrow z=0\\). One solution."
     },
     {
-      "id": "e83a38d3",
-      "prompt": "What value of p satisfies the equation 2(p + 1) + 8(p − 1) = 5p?",
-      "choices": {
-        "A": "1.2",
-        "B": "5/6",
-        "C": "6",
-        "D": "12"
-      },
-      "correct": "A",
+      "questionId": "SAT-e83a38d3",
+      "topic": "math.linear-equations-one-variable",
+      "skill": "solve-linear-equation",
       "difficulty": "hard",
-      "rationale": "Simplifying gives 6 = 5p, so p = 6/5 = 1.2."
+      "answerType": "mcq",
+      "prompt": "What value of \\(p\\) satisfies \\(2(p+1)+8(p-1)=5p\\)?",
+      "choices": [
+        "1.2",
+        "\\(\\frac{5}{6}\\)",
+        "6",
+        "12"
+      ],
+      "answerIndex": 0,
+      "explanation": "Expand: \\(2p+2+8p-8=5p\\Rightarrow10p-6=5p\\Rightarrow5p=6\\Rightarrow p=\\frac{6}{5}=1.2\\)."
     }
   ]
 }
