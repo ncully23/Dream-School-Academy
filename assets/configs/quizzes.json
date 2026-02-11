@@ -143,10 +143,10 @@
     "timeLimitSec": 600
   },
 
-  "math.lines-angles-and-triangles": {
+  "math.lines-angles-triangles": {
     "title": "Math — Lines, Angles, & Triangles",
     "description": "Angle relationships and triangle properties.",
-    "bank": "/assets/questionbank/math/lines-angles-and-triangles.json",
+    "bank": "/assets/questionbank/math/lines-angles-triangles.json",
     "pickCount": 10,
     "shuffle": false,
     "timeLimitSec": 600
