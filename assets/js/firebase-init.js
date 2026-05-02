@@ -9,53 +9,53 @@
 // - Provide lightweight, actionable diagnostics (helps when Progress doesn't log).
 
 
-// ES module import to bring in three specific functions—initializeApp, getApps, and getApp—from the Firebase SDK hosted at a Google URL
-// Here, we use the CDN Method: Use the CDN import (this method) when building simple browser-based apps or prototypes where you want quick setup with no build tools
-// Download/install Firebase locally (via npm) when using frameworks like Next.js/React or when you need bundling, version control, and better performance optimization
-// initializeApp is used to start (initialize) a Firebase application using your project’s configuration
-// getApps returns a list of all Firebase apps that have already been initialized in the current page
-// getApp retrieves an existing initialized app
-// Together, these functions let your code safely check whether Firebase is already running and either reuse it or initialize it, which prevents errors caused by initializing Firebase multiple times.
 
-import {
-  initializeApp,
-  getApps,
-  getApp,
+
+
+import { // // ES module import to bring i3 functions from the Firebase SDK hosted at a Google URL
+// Here, we use the CDN Method to build a simple browser-based app or prototypes where you want quick setup with no build tools
+// Download/install Firebase locally (via npm) when using frameworks like Next.js/React or when you need bundling, version control, and better performance optimization
+  initializeApp, // initializes a Firebase application using your project’s configuration
+  getApps, // returns a list of all Firebase apps that have already been initialized in the current page
+  getApp, // retrieves an existing initialized app
 } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-app.js";
 
 
-
-
-import {
-  getAuth,
+import { // pulls in the core Firebase Authentication tools your app needs to handle user login and session management
+  getAuth, // creates the main authentication controller
   setPersistence,
-  browserLocalPersistence,
-  GoogleAuthProvider,
-  onAuthStateChanged,
-} from "https://www.gstatic.com/firebasejs/10.12.4/firebase-auth.js";
+  browserLocalPersistence, // setPersistence and browserLocalPersistence ensure users stay logged in across refreshes
+  GoogleAuthProvider, // enables Google sign-in
+  onAuthStateChanged, // lets your app react when a user logs in or out
+} from "https://www.gstatic.com/firebasejs/10.12.4/firebase-auth.js";   // tells the browser exactly where to load the module from—here, a hosted Firebase Authentication file on Google’s CDN.
+  // Instead of pulling code from your local project, it fetches this file over the internet and makes its exported functions available to your script.
 
-import {
-  getFirestore,
-  enableIndexedDbPersistence,
+
+import { // brings in the Firestore database tools from Firebase’s hosted SDK & allows your app to connect to and use the database
+  getFirestore, // creates the main database instance
+  enableIndexedDbPersistence, // turns on local browser storage so data can be cached and accessed offline or more quickly
 } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-firestore.js";
 
 /* -----------------------------
    Firebase config (must match Firebase Console)
 ------------------------------ */
 
-const firebaseConfig = {
-  apiKey: "AIzaSyD7R7ZsmTpGojgLNt7w_R0tm_mWg_FZEYE",
-  authDomain: "dream-school-academy.firebaseapp.com",
-  projectId: "dream-school-academy",
-  storageBucket: "dream-school-academy.firebasestorage.app",
-  messagingSenderId: "665412130733",
-  appId: "1:665412130733:web:c3d59ab2c20f65a2277324",
-  measurementId: "G-HCJWBWZXKZ",
+// This firebaseConfig object is the configuration bundle that connects your app to a specific Firebase project
+// act as the identifier Firebase uses to route all authentication, database, and storage requests correctly.
+// When you call initializeApp(firebaseConfig), Firebase reads these fields to know which backend resources to use, ensuring your app talks to the correct project environment.
+
+
+  const firebaseConfig = {
+  apiKey: "AIzaSyD7R7ZsmTpGojgLNt7w_R0tm_mWg_FZEYE", // Public key used to identify and authorize your app when making requests to Firebase services.
+  authDomain: "dream-school-academy.firebaseapp.com", // domain used for handling authentication flows like login redirects and OAuth callbacks.
+  projectId: "dream-school-academy",  // unique identifier for your Firebase project, used to scope database and service access.
+  storageBucket: "dream-school-academy.firebasestorage.app", // location for storing and retrieving files (e.g., images, uploads) in Firebase Storage.
+  messagingSenderId: "665412130733", // Identifier used for Firebase Cloud Messaging (push notifications).
+  appId: "1:665412130733:web:c3d59ab2c20f65a2277324", // Unique ID for this specific app instance within the Firebase project.
+  measurementId: "G-HCJWBWZXKZ", // Identifier used for Google Analytics tracking and event measurement.
 };
 
-/* -----------------------------
-   Init exactly once
------------------------------- */
+// Initialize exactly once
 
 const app = getApps().length ? getApp() : initializeApp(firebaseConfig);
 
