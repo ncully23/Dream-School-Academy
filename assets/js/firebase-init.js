@@ -8,11 +8,23 @@
 // - Provide a single GoogleAuthProvider instance.
 // - Provide lightweight, actionable diagnostics (helps when Progress doesn't log).
 
+
+// ES module import to bring in three specific functions—initializeApp, getApps, and getApp—from the Firebase SDK hosted at a Google URL
+// Here, we use the CDN Method: Use the CDN import (this method) when building simple browser-based apps or prototypes where you want quick setup with no build tools
+// Download/install Firebase locally (via npm) when using frameworks like Next.js/React or when you need bundling, version control, and better performance optimization
+// initializeApp is used to start (initialize) a Firebase application using your project’s configuration
+// getApps returns a list of all Firebase apps that have already been initialized in the current page
+// getApp retrieves an existing initialized app
+// Together, these functions let your code safely check whether Firebase is already running and either reuse it or initialize it, which prevents errors caused by initializing Firebase multiple times.
+
 import {
   initializeApp,
   getApps,
   getApp,
 } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-app.js";
+
+
+
 
 import {
   getAuth,
