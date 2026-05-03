@@ -13,55 +13,77 @@
 // It contains things the browser gives your code access to, such as the page document (window.document), the URL (window.location), timers (window.setTimeout), and custom values you add, like window.__dsa_my_progress_initialized.
 
 
-  
-  document.addEventListener('DOMContentLoaded', function () {
-    const summaryEl = document.getElementById('summary');
-    const historyBody = document.getElementById('historyBody');
-    const exportBtn = document.getElementById('exportBtn');
-    const clearBtn = document.getElementById('clearBtn');
-
-    const loadingEl = document.getElementById('progressLoading');   // optional
-    const unsyncedEl = document.getElementById('unsyncedBanner');   // optional
+  // document is the browser’s JavaScript object that represents the HTML page itself.
+  document.addEventListener('DOMContentLoaded', function () { // use the document’s .addEventListener() method to listen for the DOMContentLoaded event, and when that event happens, run the function.
+    const summaryEl = document.getElementById('summary'); // find the HTML element with the ID summary and save it in a variable named summaryEl.
+    const historyBody = document.getElementById('historyBody'); // find the HTML element with the ID historyBody and save it in a variable named historyBody.
+    const exportBtn = document.getElementById('exportBtn'); // find the HTML button or element with the ID exportBtn and save it in a variable named exportBtn.
+    const clearBtn = document.getElementById('clearBtn'); // find the HTML button or element with the ID clearBtn and save it in a variable named clearBtn
+    const loadingEl = document.getElementById('progressLoading');   // optional; find the HTML element with the ID progressLoading and save it in a variable named loadingEl.
+    const unsyncedEl = document.getElementById('unsyncedBanner');   // optional; find the HTML element with the ID unsyncedBanner and save it in a variable named unsyncedEl
 
     // Optional modal elements for nicer details UI
-    const detailsModal = document.getElementById('detailsModal');
-    const detailsBody = document.getElementById('detailsBody');
-    const detailsClose = document.getElementById('detailsClose');
+    const detailsModal = document.getElementById('detailsModal'); // find the HTML element with the ID detailsModal and save it in a variable named detailsModal. This is probably the pop-up box that shows more information about a test attempt
+    const detailsBody = document.getElementById('detailsBody'); // find the HTML element with the ID detailsBody and save it in a variable named detailsBody. This is probably the area inside the pop-up where the test details are displayed.
+    const detailsClose = document.getElementById('detailsClose'); // find the HTML element with the ID detailsClose and save it in a variable named detailsClose. This is probably the button the user clicks to close the details pop-up.
+
 
     // If the page doesn't include the expected elements, bail quietly
-    if (!summaryEl || !historyBody) return;
+    if (!summaryEl || !historyBody) return; // if the script cannot find the summary area or the history table body, stop running immediately
+    // This prevents errors because those two page elements are required for the My Progress page to work.
 
+    
     // Helpers
     function secToHMS(s) {
-      if (!s || s <= 0) return '-';
-      const h = Math.floor(s / 3600);
-      const m = Math.floor((s % 3600) / 60);
-      const sec = s % 60;
+      if (!s || s <= 0) return '-'; // if the value is missing, zero, or negative, return '-'
+      // In JavaScript, the ! operator means logical NOT, so JavaScript first converts s into a Boolean value, then flips i
+      // !s = Is s NOT truthy?
+      // it catches values like undefined, null, 0, "", or false.
+      // || = OR
+      const h = Math.floor(s / 3600); // calculates the number of full hours.
+      const m = Math.floor((s % 3600) / 60); // calculates the remaining full minutes after hours are removed.
+      const sec = s % 60; // calculates the remaining seconds after hours and minutes are removed.
       return (h ? h + 'h ' : '') + (m ? m + 'm ' : '') + (sec ? sec + 's' : '');
     }
 
+
+    // Makes it safe to put text into HTML
+    // It is called escapeHtml because it escapes special HTML characters so the browser treats them as plain text instead of HTML code.
+    // For example, it changes < into &lt;, so the browser displays < instead of reading it as the start of an HTML tag.
+ 
+    // When it finds one, it replaces it with a safe HTML code, such as changing < into &lt;, so the browser displays it as text instead of treating it like real HTML code
     function escapeHtml(str) {
-      if (!str) return '';
+      if (!str) return ''; // If str is empty, missing, or false-like, it returns an empty string.
       return String(str).replace(/[&<>"']/g, m => ({
+        // Otherwise, String(str) converts the input into text, and .replace(/[&<>"']/g, ...) searches for dangerous HTML characters like &, <, >, ", and '.
         '&': '&amp;',
         '<': '&lt;',
         '>': '&gt;',
         '"': '&quot;',
         "'": '&#39;'
+        // In this object, the colon means “this key maps to this value.”
       }[m]));
     }
 
+
+
+    // This function tries to turn ts into a normal JavaScript Date. 
+    // ts is the function’s input parameter, and it stands for something like timestamp.
+    // In this script, ts could be a missing value, a JavaScript Date, a date string, or a Firestore Timestamp, so the function checks what kind of timestamp it received and converts it into a normal JavaScript Date.
     function toDateMaybe(ts) {
-      if (!ts) return new Date();
-      if (ts instanceof Date) return ts;
-      if (typeof ts === 'string') return new Date(ts);
-      if (typeof ts.toDate === 'function') return ts.toDate(); // Firestore Timestamp
-      return new Date();
+      if (!ts) return new Date(); // if ts is missing or false-like, it returns the current date and time with new Date()
+      if (ts instanceof Date) return ts; // if ts is already a JavaScript Date object, return it as-is.
+      if (typeof ts === 'string') return new Date(ts);     // If ts is a string, it tries to convert that string into a date with new Date(ts).
+      if (typeof ts.toDate === 'function') return ts.toDate(); // Firestore Timestamp: If ts has a .toDate() function, like a Firestore Timestamp, it calls that function to convert it into a JavaScript Date.
+      return new Date();     // If none of those cases work, it returns the current date and time as a safe fallback.
     }
 
+
+    
     function computePercent(score, total) {
-      if (!total || total <= 0) return 0;
-      return Math.round((score / total) * 10000) / 100; // 2 decimals
+      if (!total || total <= 0) return 0; // if total is missing, false-like, zero, or negative, return 0 so the code does not divide by a bad number
+      return Math.round((score / total) * 10000) / 100; // First, score / total gives the decimal score. For example, 2 / 3 gives 0.6666.... Multiplying by 10000 does two things at once: it turns the score into a percent and shifts the decimal two extra places.
+      // So 0.6666... * 10000 becomes 6666.666.... Then Math.round(...) rounds that to 6667. Finally, dividing by 100 turns it into 66.67
     }
 
     /**
