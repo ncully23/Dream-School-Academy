@@ -1,12 +1,19 @@
-// my-progress.js
 // "My Progress" page: shows combined results from Firestore (quizData)
 // and local fallback (DreamSchoolRecorder), with summary + history table.
 
 (function () {
-  // Prevent double initialization if script is loaded twice
+  // If there is a truthy value named __dsa_my_progress_initialized on the window object, stop this function immediately and do nothing else
   if (window.__dsa_my_progress_initialized) return;
+  // mark this script as already initialized.
   window.__dsa_my_progress_initialized = true;
 
+// It is important because running this script twice could attach the same click handlers twice, render duplicate table rows, show repeated alerts, or run duplicate data loading/export logic.
+// It is not that JavaScript literally cannot run it twice; it is that running it twice can create bugs, so this guard makes the script run only once on purpose.
+// In browser JavaScript, window is the global object that represents the browser tab or page.
+// It contains things the browser gives your code access to, such as the page document (window.document), the URL (window.location), timers (window.setTimeout), and custom values you add, like window.__dsa_my_progress_initialized.
+
+
+  
   document.addEventListener('DOMContentLoaded', function () {
     const summaryEl = document.getElementById('summary');
     const historyBody = document.getElementById('historyBody');
@@ -24,10 +31,7 @@
     // If the page doesn't include the expected elements, bail quietly
     if (!summaryEl || !historyBody) return;
 
-    // -----------------------------
     // Helpers
-    // -----------------------------
-
     function secToHMS(s) {
       if (!s || s <= 0) return '-';
       const h = Math.floor(s / 3600);
