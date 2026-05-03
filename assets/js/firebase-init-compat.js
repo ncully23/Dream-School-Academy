@@ -5,7 +5,10 @@
 (function () {
   "use strict";
 
-  // Prevent double initialization (important if scripts load twice)
+// Prevent double initialization (important if scripts load twice)
+// Checks whether Firebase is already initialized before running the rest of the code.
+// The condition uses && to ensure three things: window.firebase exists, firebase.apps exists, and firebase.apps.length is greater than 0 (meaning at least one app is already initialized).
+//  If all three are true, return; exits the function immediately, preventing Firebase from being initialized a second time.
   if (window.firebase && firebase.apps && firebase.apps.length) {
     return;
   }
