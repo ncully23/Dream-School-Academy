@@ -269,16 +269,74 @@ Overall, this file 1. takes a central quiz list, 2. turns it into a Practice pag
   });
 
   // Wire up filtering for topic section only (keep full tests always visible)
+  /*
+Connects the search box and subject dropdown to the topic quiz cards.
+It creates a function called runFilter that calls applyFilters(...) using the current search text and selected subject.
+Then it attaches that function to the search input and subject dropdown, so the topic cards update whenever the user types or changes the subject.
+Finally, it runs the filter once immediately and catches any startup error from the larger async function.
+  */
   const runFilter = () => {
-    applyFilters(topicCards, {
+    // Written as an arrow function (ie. shorter)
+    // runs the filtering logic whenever the user searches or changes the subject filter
+    applyFilters(topicCards, { // runFilter (higher order) function calls applyFilters
+      // The second input starts with {, which means the code is creating an object that holds the filter settings
       search: searchEl ? searchEl.value : "",
+      /*
+      Creates a property named search inside the filter settings object.
+      Uses a ternary operator, which means “if this is true, use this value; otherwise, use another value.”
+      "If the search box exists, use what the user typed in it; if the search box does not exist, use an empty string."
+      */
       subject: subjectEl ? subjectEl.value : ""
+      /*
+      creates a property named subject inside the same filter settings object.
+      If "the subject dropdown exists, use the selected subject value; if the dropdown does not exist, use an empty string."
+      Prevents errors if the page does not have a subject filter.
+      */
     });
   };
 
-  if (searchEl) searchEl.addEventListener("input", runFilter);
-  if (subjectEl) subjectEl.addEventListener("change", runFilter);
+/*
+}); closes the applyFilters(...) function call. The } closes the filter settings object, the ) closes the function call, and the ; ends the statement.
 
+}; closes the runFilter function. The } ends the function body, and the ; ends the variable assignment because runFilter was created with const.
+*/
+
+
+  
+  if (searchEl) searchEl.addEventListener("input", runFilter);
+  /*
+hecks whether the search box exists.
+If it does, the script attaches an event listener to it.
+The "input" event happens whenever the user types, deletes, or changes text in the search box. When that happens, JavaScript runs runFilter, so the visible topic cards update immediately.
+  */
+  if (subjectEl) subjectEl.addEventListener("change", runFilter);
+/*
+checks whether the subject dropdown exists.
+If it does, the script attaches an event listener to it.
+The "change" event happens when the user selects a different subject.
+When that happens, JavaScript runs runFilter, so the topic cards are filtered by the new subject.
+*/
+
+  
   // Initial filter (in case of prefilled inputs)
   runFilter();
+  /*
+runs the filter function immediately.
+The page does not wait for the user to type or change the dropdown before applying the current filter settings
+  */
 })().catch((err) => console.error("practicepage.js init failed:", err));
+/*
+closes and immediately runs the larger async function that contains this code.
+The .catch(...) part handles errors from that async setup.
+If something fails while the Practice page is starting, the script logs "practicepage.js init failed:" and the actual error to the console.
+*/
+
+
+
+/*
+This is organized this way because runFilter acts as a small reusable callback function that can be passed into multiple event listeners.
+Instead of writing the same applyFilters(...) logic once for the search box and again for the subject dropdown, the script defines runFilter one time, then gives that same function to both addEventListener("input", runFilter) and addEventListener("change", runFilter).
+That is the higher-order-function idea here: addEventListener is a function that receives another function as an input and calls it later when the event happens.
+There are other options: you could write the filtering code directly inside each event listener, but that would duplicate code; you could define runFilter with normal function runFilter() { ... } syntax instead of an arrow function; or you could use one shared event listener on a parent container if there were many filter controls.
+This version is clean because it keeps the filtering logic in one named place and reuses it for both user actions.
+*/
