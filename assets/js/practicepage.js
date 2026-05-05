@@ -7,20 +7,27 @@
 //  - Preview: /pages/preview.html?quizId=...
 //  - Quiz:    /pages/quiz.html?quizId=...
 
+
+
+// fetches the JSON file from the server, checks that the request worked, and converts the response into JavaScript data
 async function loadJson(url) {
   const res = await fetch(url, { cache: "no-store" });
   if (!res.ok) throw new Error(`Failed to fetch ${url}: ${res.status}`);
   return res.json();
 }
 
+
+// shortcut for document.getElementById(id)
 function qs(id) {
   return document.getElementById(id);
 }
 
+// turns text into lowercase trimmed text so search and comparisons are easier
 function norm(s) {
   return String(s || "").trim().toLowerCase();
 }
 
+// turns seconds into minutes
 function formatTime(sec) {
   const n = Number(sec);
   if (!Number.isFinite(n) || n <= 0) return "";
@@ -28,6 +35,8 @@ function formatTime(sec) {
   return `${m} min`;
 }
 
+
+// builds the small metadata line for each quiz, such as subject, question count, time limit, and difficulty
 function formatMeta(q) {
   const subj = q.subject === "math" ? "Math" : q.subject === "rw" ? "Reading & Writing" : "";
   const count = Number.isFinite(Number(q.questionCount)) ? `${q.questionCount} questions` : "";
@@ -39,10 +48,18 @@ function formatMeta(q) {
   return bits.join(" · ");
 }
 
+
+// chooses the best title available for a quiz
 function titleFor(q) {
   return q.sectionTitle || q.title || q.quizId || "Quiz";
 }
 
+
+// creates one visible quiz card on the page
+// It reads the quiz’s quizId, title, and metadata, then builds two links: one for previewing the quiz and one for starting the quiz.
+// It uses encodeURIComponent(quizId) so the quiz ID is safe to place inside a URL.
+// Then it creates a new <div>, gives it the class quiz-card, stores extra information on it using dataset, and fills it with HTML showing the title, meta line, Preview link, and Start link.
+// It turns one quiz object from the JSON file into one clickable card on the Practice page.
 function buildCard(q) {
   const quizId = q.quizId;
   const title = titleFor(q);
