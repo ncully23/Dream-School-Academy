@@ -9,23 +9,67 @@
 
 
 
-// fetches the JSON file from the server, checks that the request worked, and converts the response into JavaScript data
+// fetches the JSON file from the server, checks that the request worked, and converts the response into JavaScript data.
 async function loadJson(url) {
+// A regular function runs normally and returns a value directly.
+// An async function always returns a Promise. It lets you use await inside it to pause until asynchronous work finishes, like fetch() loading data from a serve
   const res = await fetch(url, { cache: "no-store" });
+  /*
+Use const so res is not be reassigned after the response is stored.
+res stands for response because fetch() returns a Response object.
+Use = because you are assigning a value to a variable.
+      == and === are for comparison, meaning they ask whether two values are equal; they do not store anything in res.
+await pauses this async function until fetch() finishes getting a response.
+fetch is the browser function used to request data from a URL.
+url is the input telling fetch() where to get the data from.
+{ cache: "no-store" } is an options object that tells the browser not to use a cached copy.
+cache is the option name for controlling browser caching behavior.
+"no-store" means the browser should request a fresh copy instead of saving or reusing the response.
+The whole line means: get fresh data from url, wait for the response, and store that response in res.
+  */ 
   if (!res.ok) throw new Error(`Failed to fetch ${url}: ${res.status}`);
+  /*
+if starts a condition, meaning the code only runs if the condition is true.
+res.ok checks whether the HTTP request succeeded, usually with a status code from 200 to 299.
+!res.ok means “not successful,” so it catches failed responses.
+) throw means if the condition is true, immediately throw an error.
+new Error(...) creates a new JavaScript Error object with a custom message.
+The backticks create a template literal, which lets you insert variables into text.
+${url} inserts the actual URL that failed.
+${res.status} inserts the HTTP status code, like 404 or 500.
+The whole line means: if the request failed, stop and report which URL failed and what status code came back.
+  */
   return res.json();
 }
+  /*
+return sends a value back from the function.
+res is the Response object returned by fetch().
+.json() reads the response body and converts JSON text into JavaScript data.
+res.json() returns a Promise, because reading and parsing the response takes time.
+The whole line means: convert the fetched JSON response into JavaScript data and send it back from the function.
+  */
 
 
-// shortcut for document.getElementById(id)
+
+
+
+
+// small shortcut that takes an element ID as input and returns the matching HTML element from the page. 
+// "Give this function an ID name, and it finds the page element with that ID."
 function qs(id) {
-  return document.getElementById(id);
+  return document.getElementById(id); // shortcut for document.getElementById(id)
 }
+/*
+This function is a shortcut because it lets the script write qs("summary") instead of writing the longer command document.getElementById("summary") every time.
+The script gives qs an ID name, such as "fullTestsGrid" or "topicGrid", and qs sends that ID into document.getElementById(id). Then it returns the matching HTML element. This makes the rest of the script shorter and easier to read.
+*/
+
 
 // turns text into lowercase trimmed text so search and comparisons are easier
 function norm(s) {
   return String(s || "").trim().toLowerCase();
 }
+
 
 // turns seconds into minutes
 function formatTime(sec) {
@@ -85,6 +129,8 @@ function buildCard(q) {
   return card;
 }
 
+// function for cleaning and organizing the quiz registry
+// allows the JSON file to be either an array of quiz objects or an object keyed by quiz ID, then converts either format into a normal array
 function toArrayFromRegistry(registry) {
   // Supports either:
   //  A) object keyed by quizId: { "math.circles": {...}, ... }
@@ -102,6 +148,8 @@ function toArrayFromRegistry(registry) {
   return [];
 }
 
+
+// decides whether a quiz is a full test by checking q.kind or using a fallback rule based on the quiz ID
 function isFullTest(q) {
   const k = norm(q.kind);
   if (k) return k === "fulltest";
@@ -110,12 +158,15 @@ function isFullTest(q) {
   return id.startsWith("test.") || id.includes("module");
 }
 
+// decides whether a quiz is a topic quiz.
 function isTopic(q) {
   const k = norm(q.kind);
   if (k) return k === "topic";
   return !isFullTest(q);
 }
 
+
+// handles the search and subject filter by checking each topic card’s title, metadata, quiz ID, and subject, then showing or hiding the card with card.style.display
 function applyFilters(cards, { search, subject }) {
   const q = norm(search);
   const subj = norm(subject);
@@ -139,6 +190,17 @@ function applyFilters(cards, { search, subject }) {
     card.style.display = hitSearch && hitSubject ? "" : "none";
   });
 }
+
+
+/*
+The main part of the script is the async IIFE initPracticePage.
+It runs automatically when the file loads.
+First, it finds the important HTML containers: fullTestsGrid, topicGrid, qSearch, and qSubject.
+If the page is missing the full test grid or topic grid, it logs an error and stops.
+Then it loads /assets/configs/quizzes.json.
+Next, it converts the registry into an array, filters out invalid entries, and normalizes each quiz.
+Normalizing means it checks each quiz has a quizId, tries to infer the subject from the quiz ID, and fills in the kind field as either "fulltest" or "topic" if it is missing.
+*/
 
 (async function initPracticePage() {
   const fullGrid = qs("fullTestsGrid");
@@ -177,6 +239,18 @@ function applyFilters(cards, { search, subject }) {
     });
 
   // Render
+
+/*
+
+After the quiz data is loaded and cleaned, the script renders the page.
+It clears the full test grid and topic grid, creates empty arrays to track full test cards and topic cards, then loops through every quiz.
+For each quiz, it calls buildCard(q). If the quiz is a full test, it adds the card to the full test grid.
+Otherwise, it adds the card to the topic grid. Finally, it wires up the search box and subject dropdown so they filter only the topic cards while leaving the full tests visible.
+At the end, it runs the filter once in case the search or subject input already has a value.
+Overall, this file 1. takes a central quiz list, 2. turns it into a Practice page, 3. separates full tests from topic practice, and 4. lets the user search or filter topic quizzes.
+
+*/
+  
   fullGrid.innerHTML = "";
   topicGrid.innerHTML = "";
 
