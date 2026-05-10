@@ -211,226 +211,229 @@
   <script type="module" src="/assets/js/shell.js"></script>
 
   <!-- Login / signup logic -->
-  <script type="module">
-    import { auth, db, googleProvider, authReady } from "/assets/firebase-init.js";
+ <script type="module"> // Declare this script as an ES module to enable import/export syntax and strict mode by default
+  // Import Firebase configuration and initialized instances from local firebase-init.js module
+  import { auth, db, googleProvider, authReady } from "/assets/firebase-init.js"; // auth: Firebase Auth instance, db: Firestore instance, googleProvider: OAuth config for Google, authReady: Promise that resolves when Auth is fully initialized
 
-    import {
-      onAuthStateChanged,
-      signInWithEmailAndPassword,
-      createUserWithEmailAndPassword,
-      sendPasswordResetEmail,
-      updateProfile,
-      signInWithPopup,
-      getRedirectResult
-    } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-auth.js";
+  // Import specific Firebase Authentication functions from CDN version 10.12.4
+  import {
+    onAuthStateChanged, // Listener function that triggers when user login state changes (login/logout)
+    signInWithEmailAndPassword, // Function to authenticate user with email and password
+    createUserWithEmailAndPassword, // Function to create new user account with email and password
+    sendPasswordResetEmail, // Function to send password recovery email to user
+    updateProfile, // Function to update user's profile metadata like displayName
+    signInWithPopup, // Function to trigger OAuth sign-in flow in a popup window
+    getRedirectResult // Function to check for pending sign-in result after page redirect
+  } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-auth.js"; // Load Auth SDK from Firebase CDN
 
-    import {
-      doc,
-      getDoc,
-      setDoc,
-      serverTimestamp
-    } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-firestore.js";
+  // Import specific Firebase Firestore functions from CDN version 10.12.4
+  import {
+    doc, // Function to create a reference to a specific document in a collection
+    getDoc, // Function to fetch a document snapshot from Firestore
+    setDoc, // Function to create or overwrite a document in Firestore
+    serverTimestamp // Function that returns a placeholder for server-generated timestamp
+  } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-firestore.js"; // Load Firestore SDK from Firebase CDN
 
-    // --- Friendly error messages
-    const nice = (e) => ({
-      "auth/invalid-email":        "That email looks invalid.",
-      "auth/missing-password":     "Enter your password.",
-      "auth/weak-password":        "Use 6+ characters for your password.",
-      "auth/email-already-in-use": "That email is already registered.",
-      "auth/user-not-found":       "No account with that email.",
-      "auth/wrong-password":       "Incorrect password.",
-      "auth/popup-blocked":        "Popup blocked. Allow popups and try again.",
-      "auth/popup-closed-by-user": "Popup closed before completing sign-in.",
-      "auth/unauthorized-domain":  "This domain isn't authorized in Firebase Auth."
-    }[e?.code] || e?.message || "Something went wrong.");
+  // --- Friendly error messages: Map Firebase error codes to user-friendly text
+  const nice = (e) => ({ // Define arrow function that takes error object e and returns friendly message string
+    "auth/invalid-email":        "That email looks invalid.", // User-friendly message for invalid email format error
+    "auth/missing-password":     "Enter your password.", // Message when password field is empty
+    "auth/weak-password":        "Use 6+ characters for your password.", // Message when password doesn't meet strength requirements
+    "auth/email-already-in-use": "That email is already registered.", // Message when email is already associated with an account
+    "auth/user-not-found":       "No account with that email.", // Message when no user exists with provided email
+    "auth/wrong-password":       "Incorrect password.", // Message when password doesn't match the account
+    "auth/popup-blocked":        "Popup blocked. Allow popups and try again.", // Message when browser blocks OAuth popup window
+    "auth/popup-closed-by-user": "Popup closed before completing sign-in.", // Message when user manually closes OAuth popup
+    "auth/unauthorized-domain":  "This domain isn't authorized in Firebase Auth." // Message when domain isn't whitelisted in Firebase console
+  }[e?.code] || e?.message || "Something went wrong."); // Look up error by e.code property, fallback to e.message, then generic message; ?. is optional chaining to avoid null errors
 
-    // --- Ensure user profile doc exists
-    async function ensureProfile(u, first = "") {
-      if (!u) return;
+  // --- Ensure user profile doc exists: Create Firestore document for new users
+  async function ensureProfile(u, first = "") { // Define async function that takes user object u and optional first name string with default empty
+    if (!u) return; // Early exit if user object is null/undefined to prevent errors
+    const ref  = doc(db, "users", u.uid); // Create Firestore document reference at path "users/{userId}" using user's unique ID
+    const snap = await getDoc(ref); // Fetch the document snapshot from Firestore (async operation)
+    if (!snap.exists()) { // Check if document doesn't already exist in database
+      await setDoc(ref, { // Create new document with provided data (async operation)
+        userId: u.uid, // Store Firebase user ID for easy reference
+        email: u.email || "", // Store email address, fallback to empty string if missing
+        name: (u.displayName || first || "").trim(), // Store display name from Auth profile or provided first name, trim whitespace
+        createdAt: serverTimestamp() // Store server-generated timestamp for account creation time
+      }); // End setDoc data object
+    } // End if document doesn't exist check
+  } // End ensureProfile function definition
 
-      const ref  = doc(db, "users", u.uid);
-      const snap = await getDoc(ref);
+  // --- DOM: Cache references to HTML elements for efficient access
+  const tabLogin     = document.getElementById("tab-login"); // Get reference to login tab button element by ID
+  const tabSignup    = document.getElementById("tab-signup"); // Get reference to signup tab button element by ID
+  const loginForm    = document.getElementById("login-form"); // Get reference to login form container element by ID
+  const signupForm   = document.getElementById("signup-form"); // Get reference to signup form container element by ID
+  const loginStatus  = document.getElementById("login-status"); // Get reference to login status message element by ID
+  const signupStatus = document.getElementById("signup-status"); // Get reference to signup status message element by ID
+  const btnReset     = document.getElementById("reset"); // Get reference to password reset button element by ID
+  const btnGoogleIn  = document.getElementById("google-login"); // Get reference to Google login button element by ID
+  const btnGoogleUp  = document.getElementById("google-signup"); // Get reference to Google signup button element by ID
 
-      if (!snap.exists()) {
-        await setDoc(ref, {
-          userId: u.uid,
-          email: u.email || "",
-          name: (u.displayName || first || "").trim(),
-          createdAt: serverTimestamp()
-        });
-      }
-    }
+  // Helper function to update status message element with text and optional success styling
+  const setStatus = (el, msg, ok = false) => { // Define arrow function taking element, message string, and optional success boolean
+    if (!el) return; // Early exit if element reference is null to prevent errors
+    el.textContent = msg || ""; // Set element's text content to message or empty string if falsy
+    el.classList.toggle("ok", !!ok); // Add "ok" CSS class if ok is truthy, remove if falsy; !! coerces to boolean
+  }; // End setStatus function definition
 
-    // --- DOM
-    const tabLogin     = document.getElementById("tab-login");
-    const tabSignup    = document.getElementById("tab-signup");
-    const loginForm    = document.getElementById("login-form");
-    const signupForm   = document.getElementById("signup-form");
-    const loginStatus  = document.getElementById("login-status");
-    const signupStatus = document.getElementById("signup-status");
-    const btnReset     = document.getElementById("reset");
-    const btnGoogleIn  = document.getElementById("google-login");
-    const btnGoogleUp  = document.getElementById("google-signup");
+  // Helper function to disable or enable all interactive elements within a form
+  const disable = (formEl, on) => { // Define arrow function taking form element and boolean on/off state
+    if (!formEl) return; // Early exit if form element is null to prevent errors
+    Array.from(formEl.querySelectorAll("button, input")).forEach((node) => { // Select all buttons and inputs in form, convert NodeList to Array, iterate each
+      node.disabled = !!on; // Set disabled property to true if on is truthy, false otherwise; !! coerces to boolean
+    }); // End forEach loop
+  }; // End disable function definition
 
-    const setStatus = (el, msg, ok = false) => {
-      if (!el) return;
-      el.textContent = msg || "";
-      el.classList.toggle("ok", !!ok);
-    };
+  // --- Tabs: Functions to switch between login and signup form views
+  const showLogin = () => { // Define arrow function to display login tab and hide signup tab
+    tabLogin.classList.add("active"); // Add "active" CSS class to login tab for visual highlighting
+    tabSignup.classList.remove("active"); // Remove "active" CSS class from signup tab to deactivate it
+    tabLogin.setAttribute("aria-selected", "true"); // Set accessibility attribute indicating login tab is selected
+    tabSignup.setAttribute("aria-selected", "false"); // Set accessibility attribute indicating signup tab is not selected
+    loginForm.style.display = "block"; // Show login form by setting CSS display property to block
+    signupForm.style.display = "none"; // Hide signup form by setting CSS display property to none
+    setStatus(loginStatus, ""); // Clear any previous status message in login status area
+    setStatus(signupStatus, ""); // Clear any previous status message in signup status area
+  }; // End showLogin function definition
 
-    const disable = (formEl, on) => {
-      if (!formEl) return;
-      Array.from(formEl.querySelectorAll("button, input")).forEach((node) => {
-        node.disabled = !!on;
-      });
-    };
+  const showSignup = () => { // Define arrow function to display signup tab and hide login tab
+    tabSignup.classList.add("active"); // Add "active" CSS class to signup tab for visual highlighting
+    tabLogin.classList.remove("active"); // Remove "active" CSS class from login tab to deactivate it
+    tabSignup.setAttribute("aria-selected", "true"); // Set accessibility attribute indicating signup tab is selected
+    tabLogin.setAttribute("aria-selected", "false"); // Set accessibility attribute indicating login tab is not selected
+    signupForm.style.display = "block"; // Show signup form by setting CSS display property to block
+    loginForm.style.display = "none"; // Hide login form by setting CSS display property to none
+    setStatus(loginStatus, ""); // Clear any previous status message in login status area
+    setStatus(signupStatus, ""); // Clear any previous status message in signup status area
+  }; // End showSignup function definition
 
-    // --- Tabs
-    const showLogin = () => {
-      tabLogin.classList.add("active");
-      tabSignup.classList.remove("active");
-      tabLogin.setAttribute("aria-selected", "true");
-      tabSignup.setAttribute("aria-selected", "false");
-      loginForm.style.display = "block";
-      signupForm.style.display = "none";
-      setStatus(loginStatus, "");
-      setStatus(signupStatus, "");
-    };
+  tabLogin.addEventListener("click", showLogin); // Attach click event listener to login tab that calls showLogin function
+  tabSignup.addEventListener("click", showSignup); // Attach click event listener to signup tab that calls showSignup function
+  showLogin(); // Initialize page by showing login tab as default view
 
-    const showSignup = () => {
-      tabSignup.classList.add("active");
-      tabLogin.classList.remove("active");
-      tabSignup.setAttribute("aria-selected", "true");
-      tabLogin.setAttribute("aria-selected", "false");
-      signupForm.style.display = "block";
-      loginForm.style.display = "none";
-      setStatus(loginStatus, "");
-      setStatus(signupStatus, "");
-    };
+  // --- Email/password login: Handle form submission for traditional login
+  loginForm.addEventListener("submit", async (e) => { // Attach submit event listener to login form with async callback
+    e.preventDefault(); // Prevent default form submission behavior (page reload) to handle with JavaScript
+    setStatus(loginStatus, "Signing in…"); // Update status message to indicate login in progress
+    disable(loginForm, true); // Disable all form inputs and buttons to prevent duplicate submissions
 
-    tabLogin.addEventListener("click", showLogin);
-    tabSignup.addEventListener("click", showSignup);
-    showLogin();
+    try { // Begin try block to catch and handle any errors during async operations
+      const email = document.getElementById("login-email").value.trim(); // Get trimmed email value from login email input field
+      const pass  = document.getElementById("login-password").value; // Get password value from login password input field
+      const cred  = await signInWithEmailAndPassword(auth, email, pass); // Call Firebase Auth to sign in with credentials (async)
+      await ensureProfile(cred.user); // Ensure Firestore profile document exists for authenticated user (async)
+      location.href = "/"; // Redirect user to homepage after successful login
+    } catch (err) { // Catch any errors thrown during try block execution
+      console.error(err); // Log full error details to developer console for debugging
+      setStatus(loginStatus, nice(err)); // Display user-friendly error message using nice() helper function
+      disable(loginForm, false); // Re-enable form inputs and buttons so user can retry
+    } // End try-catch error handling block
+  }); // End login form submit event listener
 
-    // --- Email/password login (form submit handles Enter key too)
-    loginForm.addEventListener("submit", async (e) => {
-      e.preventDefault();
-      setStatus(loginStatus, "Signing in…");
-      disable(loginForm, true);
+  // --- Password reset: Handle password recovery flow
+  btnReset.addEventListener("click", async (e) => { // Attach click event listener to reset button with async callback
+    e.preventDefault(); // Prevent default link/button behavior to handle with JavaScript
+    const email = document.getElementById("login-email").value.trim(); // Get trimmed email value from login email input field
 
-      try {
-        const email = document.getElementById("login-email").value.trim();
-        const pass  = document.getElementById("login-password").value;
-        const cred  = await signInWithEmailAndPassword(auth, email, pass);
-        await ensureProfile(cred.user);
-        location.href = "/";
-      } catch (err) {
-        console.error(err);
-        setStatus(loginStatus, nice(err));
-        disable(loginForm, false);
-      }
-    });
+    if (!email) { // Check if email field is empty
+      setStatus(loginStatus, "Enter your email first."); // Prompt user to provide email before proceeding
+      return; // Exit function early since email is required
+    } // End email validation check
 
-    // --- Password reset
-    btnReset.addEventListener("click", async (e) => {
-      e.preventDefault();
-      const email = document.getElementById("login-email").value.trim();
+    setStatus(loginStatus, "Sending reset email…"); // Update status to indicate reset email is being sent
+    try { // Begin try block to catch and handle any errors during async operation
+      await sendPasswordResetEmail(auth, email); // Call Firebase Auth to send password reset email (async)
+      setStatus(loginStatus, "Password reset email sent.", true); // Display success message with ok=true for green styling
+    } catch (err) { // Catch any errors thrown during try block execution
+      console.error(err); // Log full error details to developer console for debugging
+      setStatus(loginStatus, nice(err)); // Display user-friendly error message using nice() helper function
+    } // End try-catch error handling block
+  }); // End reset button click event listener
 
-      if (!email) {
-        setStatus(loginStatus, "Enter your email first.");
-        return;
-      }
+  // --- Google login: Handle OAuth sign-in via Google popup
+  btnGoogleIn.addEventListener("click", async () => { // Attach click event listener to Google login button with async callback
+    setStatus(loginStatus, "Opening Google…"); // Update status to indicate Google OAuth flow is starting
+    disable(loginForm, true); // Disable login form inputs to prevent concurrent actions during OAuth
 
-      setStatus(loginStatus, "Sending reset email…");
-      try {
-        await sendPasswordResetEmail(auth, email);
-        setStatus(loginStatus, "Password reset email sent.", true);
-      } catch (err) {
-        console.error(err);
-        setStatus(loginStatus, nice(err));
-      }
-    });
+    try { // Begin try block to catch and handle any errors during async operations
+      await authReady; // Wait for Firebase Auth initialization promise to resolve before proceeding
+      const res = await signInWithPopup(auth, googleProvider); // Trigger Google OAuth popup and wait for result (async)
+      await ensureProfile(res.user); // Ensure Firestore profile document exists for authenticated Google user (async)
+      location.href = "/"; // Redirect user to homepage after successful Google sign-in
+    } catch (err) { // Catch any errors thrown during try block execution
+      console.error(err); // Log full error details to developer console for debugging
+      setStatus(loginStatus, nice(err)); // Display user-friendly error message using nice() helper function
+      disable(loginForm, false); // Re-enable form inputs so user can retry alternative login methods
+    } // End try-catch error handling block
+  }); // End Google login button click event listener
 
-    // --- Google login
-    btnGoogleIn.addEventListener("click", async () => {
-      setStatus(loginStatus, "Opening Google…");
-      disable(loginForm, true);
+  // --- Email/password signup: Handle form submission for new account creation
+  signupForm.addEventListener("submit", async (e) => { // Attach submit event listener to signup form with async callback
+    e.preventDefault(); // Prevent default form submission behavior (page reload) to handle with JavaScript
+    setStatus(signupStatus, "Creating account…"); // Update status message to indicate account creation in progress
+    disable(signupForm, true); // Disable all form inputs and buttons to prevent duplicate submissions
 
-      try {
-        await authReady;
-        const res = await signInWithPopup(auth, googleProvider);
-        await ensureProfile(res.user);
-        location.href = "/";
-      } catch (err) {
-        console.error(err);
-        setStatus(loginStatus, nice(err));
-        disable(loginForm, false);
-      }
-    });
+    try { // Begin try block to catch and handle any errors during async operations
+      const first = document.getElementById("signup-first").value.trim(); // Get trimmed first name value from signup input
+      const email = document.getElementById("signup-email").value.trim(); // Get trimmed email value from signup input
+      const pass  = document.getElementById("signup-password").value; // Get password value from signup input
 
-    // --- Email/password signup
-    signupForm.addEventListener("submit", async (e) => {
-      e.preventDefault();
-      setStatus(signupStatus, "Creating account…");
-      disable(signupForm, true);
+      const cred = await createUserWithEmailAndPassword(auth, email, pass); // Call Firebase Auth to create new user account (async)
 
-      try {
-        const first = document.getElementById("signup-first").value.trim();
-        const email = document.getElementById("signup-email").value.trim();
-        const pass  = document.getElementById("signup-password").value;
+      if (first) { // Check if user provided a first name value
+        try { await updateProfile(cred.user, { displayName: first }); } catch {} // Attempt to update Auth profile with displayName; silently ignore errors
+      } // End first name conditional update
 
-        const cred = await createUserWithEmailAndPassword(auth, email, pass);
+      await ensureProfile(cred.user, first); // Ensure Firestore profile document exists with provided first name as fallback (async)
+      location.href = "/"; // Redirect user to homepage after successful signup
+    } catch (err) { // Catch any errors thrown during try block execution
+      console.error(err); // Log full error details to developer console for debugging
+      setStatus(signupStatus, nice(err)); // Display user-friendly error message using nice() helper function
+      disable(signupForm, false); // Re-enable form inputs and buttons so user can correct and retry
+    } // End try-catch error handling block
+  }); // End signup form submit event listener
 
-        if (first) {
-          try { await updateProfile(cred.user, { displayName: first }); } catch {}
-        }
+  // --- Google signup: Handle OAuth sign-up via Google popup (same flow as login)
+  btnGoogleUp.addEventListener("click", async () => { // Attach click event listener to Google signup button with async callback
+    setStatus(signupStatus, "Opening Google…"); // Update status to indicate Google OAuth flow is starting
+    disable(signupForm, true); // Disable signup form inputs to prevent concurrent actions during OAuth
 
-        await ensureProfile(cred.user, first);
-        location.href = "/";
-      } catch (err) {
-        console.error(err);
-        setStatus(signupStatus, nice(err));
-        disable(signupForm, false);
-      }
-    });
+    try { // Begin try block to catch and handle any errors during async operations
+      await authReady; // Wait for Firebase Auth initialization promise to resolve before proceeding
+      const res = await signInWithPopup(auth, googleProvider); // Trigger Google OAuth popup and wait for result (async)
+      await ensureProfile(res.user); // Ensure Firestore profile document exists for authenticated Google user (async)
+      location.href = "/"; // Redirect user to homepage after successful Google sign-up
+    } catch (err) { // Catch any errors thrown during try block execution
+      console.error(err); // Log full error details to developer console for debugging
+      setStatus(signupStatus, nice(err)); // Display user-friendly error message using nice() helper function
+      disable(signupForm, false); // Re-enable form inputs so user can retry alternative signup methods
+    } // End try-catch error handling block
+  }); // End Google signup button click event listener
 
-    // --- Google signup
-    btnGoogleUp.addEventListener("click", async () => {
-      setStatus(signupStatus, "Opening Google…");
-      disable(signupForm, true);
+  // --- Redirect fallback: Handle sign-in result if using redirect flow instead of popup
+  (async () => { // Define and immediately invoke async arrow function for redirect result checking
+    try { // Begin try block to catch and handle any errors during async operations
+      await authReady; // Wait for Firebase Auth initialization promise to resolve before checking redirect
+      const r = await getRedirectResult(auth); // Check for pending sign-in result from redirect flow (async)
+      if (r?.user) { // Check if redirect result contains authenticated user object (optional chaining)
+        await ensureProfile(r.user); // Ensure Firestore profile document exists for redirected user (async)
+        location.href = "/"; // Redirect user to homepage after successful redirect sign-in
+      } // End user existence check
+    } catch (e) { // Catch any errors thrown during try block execution
+      // Not fatal; only relevant for redirect flows // Comment: redirect errors are non-critical for popup-based auth
+      console.warn("Redirect sign-in check failed:", e); // Log warning to console without interrupting user experience
+    } // End try-catch error handling block
+  })(); // End and immediately invoke async IIFE
 
-      try {
-        await authReady;
-        const res = await signInWithPopup(auth, googleProvider);
-        await ensureProfile(res.user);
-        location.href = "/";
-      } catch (err) {
-        console.error(err);
-        setStatus(signupStatus, nice(err));
-        disable(signupForm, false);
-      }
-    });
-
-    // --- Redirect fallback (if you ever switch to signInWithRedirect)
-    (async () => {
-      try {
-        await authReady;
-        const r = await getRedirectResult(auth);
-        if (r?.user) {
-          await ensureProfile(r.user);
-          location.href = "/";
-        }
-      } catch (e) {
-        // Not fatal; only relevant for redirect flows
-        console.warn("Redirect sign-in check failed:", e);
-      }
-    })();
-
-    // Optional: auto-redirect if already signed in
-    onAuthStateChanged(auth, (user) => {
-      // If you prefer, uncomment:
-      // if (user) location.href = "/";
-    });
-  </script>
+  // Optional: auto-redirect if already signed in (commented out by default)
+  onAuthStateChanged(auth, (user) => { // Register listener that fires whenever Firebase Auth state changes
+    // If you prefer, uncomment: // Comment: this block is optional and disabled by default
+    // if (user) location.href = "/"; // If user is authenticated, automatically redirect to homepage (currently commented out)
+  }); // End onAuthStateChanged listener registration
+</script> // End module script tag
 </body>
 </html>
